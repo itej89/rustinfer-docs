@@ -8,7 +8,7 @@ summary: The executor, scheduler, KV cache and sampler as the SRS specifies them
 # Runtime and serving
 
 Read from SRS §3.2.11 to §3.2.19 and §3.2.21, `docs/observability.md`, and
-the state, sequence and concurrency diagrams at commit `e91e002`. The
+the state, sequence and concurrency diagrams at commit `082df51`. The
 `rustinfer-runtime` crate is an error type; issue #13 implements the R1
 executor and #14 wires `run` through it. No request has been served.
 

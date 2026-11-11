@@ -9,7 +9,7 @@ summary: ADR-006; the .rie file is a cache of build decisions that run and serve
 # Build on first load, and strict mode
 
 Read from ADR-006, RI-CLI-003, RI-CLI-004, RI-PLN-004 and
-`docs/uml/sequence-diagram.md` §2 at commit `e91e002`. On the scaffold
+`docs/uml/sequence-diagram.md` §2 at commit `082df51`. On the scaffold
 branch the refusal half of this page is implemented and tested
 (`test_run_with_require_prebuilt_refuses_a_directory`); the build half is
 issue #11.

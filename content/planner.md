@@ -9,7 +9,7 @@ summary: The pass that places weights, KV tiers, phases and serving functions ac
 # The topology planner
 
 Read from SRS §3.2.6 (`RI-PLN`), §2.1, ADR-006 and
-`docs/planning/datacenter-device-inventory.md` §9 at commit `e91e002`. The
+`docs/planning/datacenter-device-inventory.md` §9 at commit `082df51`. The
 `rustinfer-planner` crate is an error type; issue #15 implements the R1
 interfaces (the types and a single-device planner). The owner's decision,
 recorded in the SRS changelog, is interfaces in Release 1 and implementation

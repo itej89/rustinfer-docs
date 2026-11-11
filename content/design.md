@@ -8,7 +8,7 @@ summary: The three representations, the fourteen crates and the direction their 
 # Design
 
 Read from ADR-001, ADR-003, ADR-005, SRS §2, `docs/uml/component-diagram.md`,
-`Cargo.toml` and `crates/rustinfer-core/` at commit `e91e002`. The diagrams
+`Cargo.toml` and `crates/rustinfer-core/` at commit `082df51`. The diagrams
 themselves are on [design diagrams](design-diagrams.html).
 
 ## Three representations
@@ -52,7 +52,7 @@ behaviour; every other crate has its `COMPONENT` name, its error enum and its
 `pub use` list, so the dependency graph is fixed from the first commit (the
 component diagram cites heuristic G22, logical dependencies made physical).
 Note that the diagram shows the compilers and runtime depending on `mir`,
-`target` and `artifact`, while the Cargo manifests at `e91e002` list only
+`target` and `artifact`, while the Cargo manifests at `082df51` list only
 `core`; the edges are added when the issues that need them land.
 
 The public API of a crate is the `pub use` list in its `lib.rs`; everything

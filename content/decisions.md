@@ -45,9 +45,19 @@ the discussion that preceded the SRS.
 
 ## Reversals
 
-None yet; the tree is one day old. The only revision is ADR-003's, the same
-day, when ADR-005 removed the idea of pluggable kernel providers in favour of
-generators.
+None yet. The only revision is ADR-003's, on 2026-11-10, when ADR-005
+removed the idea of pluggable kernel providers in favour of generators.
+
+## Resolved since this site was first written
+
+Discrepancies the first reading of 2026-11-10 found and the tree has since
+closed; kept for one cycle so the next reader knows they were real.
+
+| found | resolved |
+|---|---|
+| ADR-002 listed six sections (`plan`, `graph`, `profile`, `metadata`, `kernels`, `weights`) under older `RI-ENG` and `RI-CMP` ids while RI-ART-002 lists nine plus `lora_slots` | 2026-11-11: ADR-002 corrected on `docs/1-srs-rustinfer` to the nine R1 sections plus `lora_slots`, citing RI-ART, RI-GC and RI-PLN ids |
+| No `LICENSE` file although the manifest and README said MIT | 2026-11-11: `LICENSE` (MIT) added at `082df51` |
+| CI actions referenced by tag, no `timeout-minutes`, no `permissions` | 2026-11-11: full-SHA pins, `permissions: contents: read`, `timeout-minutes: 10`, Codeberg runner labels; recorded in ADR-004 |
 
 ## Retracted conclusions
 
@@ -56,9 +66,7 @@ further. Kept so that the next reader does not reach them again.
 
 | believed | disproved by |
 |---|---|
-| ADR-002 lists the artifact's sections | it lists six (`plan`, `graph`, `profile`, `metadata`, `kernels`, `weights`) under older `RI-ENG` and `RI-CMP` ids; the SRS's RI-ART-002 lists nine plus `lora_slots` and is the authority. The ADR predates the SRS rewrite and was not re-edited |
 | The scaffold branch is at `42e6c2d` | a post-coding refactor commit `e91e002` landed on the branch while this site was being written; the footer and the generators read the commit from git so this cannot recur |
 | `--require-prebuilt` on a directory reports a dedicated error code | the CLI reports it under `invalid`; the `PrebuiltRequired` variant exists but maps to that code |
 | The version manifest names the software `rustinfer` | it names the crate, `rustinfer-cli`, since the name comes from `CARGO_PKG_NAME` |
-| The component diagram's edges are the Cargo dependencies today | every non-core crate depends only on `rustinfer-core` at `e91e002`; the diagram's edges from the compilers, runtime and artifact to `mir`, `target` and `artifact` are added by the issues that need them |
-| The tree has a `LICENSE` file | `license = "MIT"` is declared in `[workspace.package]` and the README says MIT, but no `LICENSE` file is committed at `e91e002` |
+| The component diagram's edges are the Cargo dependencies today | every non-core crate depends only on `rustinfer-core` at `082df51`; the diagram's edges from the compilers, runtime and artifact to `mir`, `target` and `artifact` are added by the issues that need them |

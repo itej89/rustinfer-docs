@@ -9,7 +9,7 @@ summary: The four releases the SRS tags its requirements with, what each proves,
 
 Read from SRS §1.5 and the release tags on every requirement, the use-case to
 release map in `docs/planning/use-cases.md`, and the Epic drafted in
-`docs/planning/issues/01-epic-release-1.md` at commit `e91e002`. The
+`docs/planning/issues/01-epic-release-1.md` at commit `082df51`. The
 requirement counts are from the [generated requirements page](ref-requirements.html),
 counting each requirement under the first release it names.
 

@@ -8,7 +8,7 @@ summary: The targets the workspace registers and the AMD and RISC-V device lands
 # Hardware
 
 Read from SRS §2.4, §3.2.8 to §3.2.10, ADR-003 and
-`docs/planning/datacenter-device-inventory.md` at commit `e91e002`. The
+`docs/planning/datacenter-device-inventory.md` at commit `082df51`. The
 inventory's scope statement: AMD and the open-standard and RISC-V ecosystem
 around it; NVIDIA parts are out of scope and appear only where a design
 pattern is cited; figures are vendor numbers from the sources listed in the
@@ -17,7 +17,7 @@ run rustinfer.
 
 ## Targets
 
-| architecture string | hardware | backend crate | state at `e91e002` | release |
+| architecture string | hardware | backend crate | state at `082df51` | release |
 |---|---|---|---|---|
 | `cpu` | any host | `rustinfer-target` | error type only; issue #5 | R1 (operators), R2 (collectives) |
 | `gfx942` | MI300X, MI308X, MI325X | `rustinfer-target-rocm`, feature `rocm` | error type only; issue #12 | R1 |

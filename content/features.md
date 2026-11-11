@@ -8,7 +8,7 @@ summary: Every feature of the engine by component with its release tag and its s
 # Features
 
 Read from the SRS by component and from `docs/feature-matrix.md` at commit
-`e91e002`. A status of **Supported** means tested in the tree; **Planned
+`082df51`. A status of **Supported** means tested in the tree; **Planned
 R*n*** means a requirement and, for R1, an issue exist; **Not started** is
 used where the SRS names the release but no issue has been opened yet (every
 R2 to R4 row). On 2026-11-10 the only supported rows are the ones the scaffold

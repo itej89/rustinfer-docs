@@ -8,7 +8,7 @@ summary: Install the toolchain, build and test the workspace, and run the rustin
 # Getting started
 
 Read from `README.md`, `CONTRIBUTING.md`, `Cargo.toml` and
-`crates/rustinfer-cli/` at commit `e91e002`. The full gate list is on
+`crates/rustinfer-cli/` at commit `082df51`. The full gate list is on
 [build steps](build-steps.html).
 
 ## Toolchain

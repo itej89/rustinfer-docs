@@ -9,7 +9,7 @@ summary: How a release will be deployed as of 2026-11-10; one static binary, one
 
 Read from `README.md`, `.env.example`, `docs/entry-points.md`,
 `docs/api/CHANGELOG.md`, `Cargo.toml`, `ci.yml` and ADR-006 at commit
-`e91e002`. **Nothing here has been deployed.** The steps are the ones the
+`082df51`. **Nothing here has been deployed.** The steps are the ones the
 tree's design commits to, with each step marked Done, In progress, Planned
 with its issue, or Not started.
 

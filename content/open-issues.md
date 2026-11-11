@@ -8,7 +8,7 @@ summary: The eleven open issues of SRS §4 with their status, impact and recorde
 
 # Open issues and risks
 
-Read from SRS §4 at commit `e91e002`. An open issue is a decision the SRS
+Read from SRS §4 at commit `082df51`. An open issue is a decision the SRS
 could not make when it was written; each names the requirements it affects
 and the resolution it expects. **Open** means a decision is due before the
 release its requirements name; **Deferred** means it waits on hardware.

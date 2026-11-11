@@ -8,7 +8,7 @@ summary: SWG-001 as the tree adopts it; the gates every change passes, the branc
 # Engineering rules
 
 Read from `CONTRIBUTING.md`, ADR-001, ADR-004, `Cargo.toml`, `clippy.toml`,
-`.github/` and `scripts/ci/` at commit `e91e002`. The standard is SWG-001,
+`.github/` and `scripts/ci/` at commit `082df51`. The standard is SWG-001,
 Software Development Guidelines v4.0 of 2026-10-03, as adapted for Rust by
 ADR-001 and for Codeberg by ADR-004; `CONTRIBUTING.md` says it is the
 checklist and the standard and the ADRs are the authority.
@@ -40,8 +40,12 @@ and labels with the same `Closes #N` workflow; the workflow stays at
 Forgejo's reviewer suggestion finds it, with approvals enforced by branch
 protection rather than the file; Renovate is unavailable on the free tier so
 `cargo audit` and `cargo outdated` run in CI instead; repository secrets keep
-their names. The GitHub mirror created the same day is not a source of
-truth.
+their names; `runs-on: ubuntu-latest` becomes Codeberg's own runner label
+`codeberg-medium`, with every job under its ten-minute limit and tools
+installed as pinned prebuilt binaries, and the ADR notes that the issues
+linking LLVM will need a self-hosted Forgejo runner (added 2026-11-11, see
+[build steps](build-steps.html)). The GitHub mirror created the same day is
+not a source of truth.
 
 ## Design rules and what enforces each
 
@@ -80,7 +84,7 @@ What SWG-001 §1 requires and the scaffold branch carries:
 | `docs/api/CHANGELOG.md`, `CHANGELOG.md` | external-interface changes marked **BREAKING** where so; Keep a Changelog for the rest |
 | `.env.example` | every variable rustinfer reads, with placeholders; `.env` is never committed |
 | `.github/workflows/ci.yml`, `CODEOWNERS`, `PULL_REQUEST_TEMPLATE.md` | the pipeline, ownership, the checklist |
-| `README.md`, `CONTRIBUTING.md` | the licence is `MIT` in the workspace manifest and the README; no `LICENSE` file exists at `e91e002` |
+| `README.md`, `CONTRIBUTING.md`, `LICENSE` (MIT, added 2026-11-11 at `082df51`) | |
 | `scripts/ci/` | the four checks CI runs beyond cargo |
 
 ## How to contribute

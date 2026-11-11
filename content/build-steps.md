@@ -9,7 +9,7 @@ summary: The toolchain, the cargo gates, the four CI scripts, coverage, the rocm
 
 Read from `README.md`, `CONTRIBUTING.md`, `Cargo.toml`, `clippy.toml`,
 `rustfmt.toml`, `deny.toml`, `.github/workflows/ci.yml` and `scripts/ci/` at
-commit `e91e002`.
+commit `082df51` (2026-11-11).
 
 ## Toolchain
 
@@ -17,7 +17,7 @@ commit `e91e002`.
 |---|---|---|
 | Rust | stable channel, edition 2021, `rust-version = "1.85"` | `[workspace.package]` |
 | components | `rustfmt`, `clippy`; `llvm-tools-preview` for coverage | `ci.yml` |
-| external tools | `cargo-llvm-cov`, `cargo-audit` (installed in CI with `cargo install --locked`); `cargo-deny` through its action | `ci.yml` |
+| external tools | `cargo-llvm-cov` 0.9.1 and `cargo-audit` 0.23.0, installed in CI as prebuilt binaries through `taiki-e/install-action`; `cargo-deny` through its action | `ci.yml` |
 | ROCm | not needed to build or test; the ROCm backend is behind the `rocm` feature of `rustinfer-target-rocm` (RI-NFR-016) | `README.md` |
 | MLIR, LLVM | not yet a dependency; see the last section | SRS §2.4, OI-009 |
 
@@ -59,22 +59,41 @@ python3 scripts/ci/validate_mermaid.py docs/uml/*.md
 ## The CI pipeline
 
 `.github/workflows/ci.yml`, on push to `main` and on every pull request,
-with `RUSTFLAGS: -D warnings` for every job. Four jobs, each needing the one
-before, so a failure blocks the next stage (SWG-001 §11.1):
+with `RUSTFLAGS: -D warnings` for every job, `permissions: contents: read`
+at the top, and `timeout-minutes: 10` on every job. Four jobs, each needing
+the one before, so a failure blocks the next stage (SWG-001 §11.1):
 
 | job | steps |
 |---|---|
 | `lint` | checkout; stable toolchain with `rustfmt` and `clippy`; format; clippy; rustdoc with private items; unsafe budget; diagram headers; Mermaid parse |
-| `security` | checkout; `cargo-deny` action (licences, advisories, sources per `deny.toml`); `cargo audit` for CVEs (RI-NFR-012) |
-| `test` | checkout; toolchain with `llvm-tools-preview`; `cargo install cargo-llvm-cov`; `cargo llvm-cov --workspace --all-features --fail-under-lines 80 --lcov --output-path lcov.info` (RI-NFR-013); upload `lcov.info` as the `coverage` artifact |
+| `security` | checkout; `cargo-deny` action (licences, advisories, sources per `deny.toml`); `cargo-audit` 0.23.0 installed as a prebuilt binary through `taiki-e/install-action`; `cargo audit` for CVEs (RI-NFR-012) |
+| `test` | checkout; toolchain with `llvm-tools-preview`; `cargo-llvm-cov` 0.9.1 installed as a prebuilt binary; `cargo llvm-cov --workspace --all-features --fail-under-lines 80 --lcov --output-path lcov.info` (RI-NFR-013); upload `lcov.info` as the `coverage` artifact |
 | `build` | checkout; `cargo build --release --workspace`; smoke test `target/release/rustinfer --version` (RI-CLI-001); upload the binary as the `rustinfer` artifact |
 
-The actions are referenced by tag at `e91e002` (`actions/checkout@v4`,
-`dtolnay/rust-toolchain@stable`, `EmbarkStudios/cargo-deny-action@v2`,
-`actions/upload-artifact@v4`); the standard's post-coding gate asks for
-full-SHA pins, `timeout-minutes` and a `permissions` block, none of which the
-file has at this commit. Forgejo Actions on Codeberg reads this path
-(ADR-004).
+Every action is pinned to a full commit SHA with the tag in a comment, as
+SWG-001 §11 asks (`actions/checkout` v4, `dtolnay/rust-toolchain` stable of
+2026-11, `EmbarkStudios/cargo-deny-action` v2, `taiki-e/install-action` v2,
+`actions/upload-artifact` v4). Forgejo Actions on Codeberg reads this path
+(ADR-004); Actions was enabled on the repository and the first run queued on
+2026-11-11.
+
+### Runners
+
+Codeberg's hosted runners answer only their own labels, so every job runs on
+`codeberg-medium`. ADR-004 records the labels and the reason the tools are
+prebuilt: each job must fit the label's time limit.
+
+| label | CPU | RAM | limit |
+|---|---|---|---|
+| `codeberg-tiny` | 1 | 2 GB | 2 min |
+| `codeberg-small` | 2 | 4 GB | 5 min |
+| `codeberg-medium` | 4 | 8 GB | 10 min |
+
+Each label has a `-lazy` variant; the default image is
+`ghcr.io/catthehacker/ubuntu:act-latest`. ADR-004 also states that the
+issues that link LLVM (#7 onward) will not fit ten minutes on a hosted runner
+and will need a self-hosted Forgejo runner, to be decided in ADR-007 together
+with the LLVM pinning (OI-009).
 
 ## Coverage
 
@@ -92,7 +111,7 @@ comment, since `clippy.toml` permits them in tests.
 `rustinfer-target-rocm` has features `default` and `rocm`. Without `rocm`
 the crate compiles everywhere and the target reports itself unsupported on
 selection; with it the workspace links `libamdhip64`. The feature is empty
-at `e91e002` (issue #12 fills it). The SRS requires that the kernel compiler
+at `082df51` (issue #12 fills it). The SRS requires that the kernel compiler
 produce binaries for any target on any host, so only autotuning needs the
 device (RI-NFR-016).
 
@@ -103,7 +122,7 @@ pinned version, with `lld` linked for code objects and no system LLVM
 required (SRS §2.4, RI-KC-008). The SRS's reference table names LLVM 22.
 Open issue OI-009 says building it in CI is slow and records the resolution
 as a vendored prebuilt with a recorded hash; the draft of issue #7 says
-ADR-007 will decide how CI and developers obtain it. At `e91e002` there is no
+ADR-007 will decide how CI and developers obtain it. At `082df51` there is no
 `melior` dependency, no ADR-007 and no LLVM in the build; the workspace
 builds with four external crates. When #7 lands this page's toolchain table
 gains a row.

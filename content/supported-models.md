@@ -8,7 +8,7 @@ summary: Which model families each release lowers and serves, from the SRS front
 # Supported models
 
 Read from SRS §3.2.2 (`RI-FE`), §2.4, the feature inventory and the use cases
-at commit `e91e002`.
+at commit `082df51`.
 
 **No model runs today.** The tree is the Release 1 scaffold: the frontend
 crate has an error type and nothing else (issue #6 adds the LLaMA lowering),

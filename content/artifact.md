@@ -9,7 +9,7 @@ summary: The .rie engine file from ADR-002 and the artifact requirements; header
 # The artifact
 
 Read from ADR-002, SRS §3.2.7 (`RI-ART`), RI-SEC-002, RI-PLN-005 and
-`constants.rs` at commit `e91e002`. No artifact has been written yet: the
+`constants.rs` at commit `082df51`. No artifact has been written yet: the
 `rustinfer-artifact` crate is an error type, and issue #4 implements this
 page. The API changelog records that format version 1 and the magic are
 reserved.
@@ -54,13 +54,11 @@ From ADR-002, little-endian throughout:
 | `topology`, `placement` | empty at build unless pinned | reserved from R1 for format stability (RI-PLN-005) |
 | `lora_slots` | adapter application points | from R3 (RI-ART-002) |
 
-The SRS's section list (RI-ART-002) is the authority; ADR-002's text, written
-first, names six sections (`plan`, `graph`, `profile`, `metadata`, `kernels`,
-`weights`) and uses older requirement ids of the form `RI-ENG` and `RI-CMP`.
-The ADR was not re-edited after the SRS rewrite; the
-[decisions](decisions.html) page records this as a conclusion to keep in
-mind rather than a contradiction, since the ADR's header, hash and write
-protocol are what the SRS requires.
+ADR-002 and RI-ART-002 agree on this list: the ADR was corrected on
+2026-11-11 to name the nine Release 1 sections and the Release 3
+`lora_slots`, citing the RI-ART, RI-GC and RI-PLN ids, after the first
+reading for this site found it still carrying its pre-SRS six-section list
+([decisions](decisions.html), resolved table).
 
 ## The reader
 

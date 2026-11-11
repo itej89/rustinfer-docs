@@ -8,7 +8,7 @@ summary: The route from a Rust generator to a device binary; the tile-level Kern
 # Kernel compiler
 
 Read from ADR-005, SRS §3.2.5 (`RI-KC`), §3.2.10 (`RI-RV`), §2.6 and §4 at
-commit `e91e002`. The `rustinfer-kc` crate is an error type; issues #7, #8
+commit `082df51`. The `rustinfer-kc` crate is an error type; issues #7, #8
 and #9 implement this page in that order. Nothing described here has been
 compiled, lowered or measured.
 
@@ -119,6 +119,6 @@ that `inspect` prints (RI-KC-012).
 OI-009: `melior` needs a pinned MLIR and LLVM and building them in CI is
 slow; the SRS's §1.4 names LLVM 22, and the recorded resolution is a vendored
 prebuilt with a recorded hash. The issue draft for #7 says an ADR-007 will
-record it; no ADR-007 exists at `e91e002`. OI-008: autotuning needs a gfx950
+record it; no ADR-007 exists at `082df51`. OI-008: autotuning needs a gfx950
 host. OI-003: no RISC-V accelerator is on the bench. See
 [open issues](open-issues.html).

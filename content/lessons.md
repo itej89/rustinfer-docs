@@ -10,7 +10,7 @@ summary: What the planning documents and the SRS rationales take from the three 
 
 Read from `docs/planning/trt-llm-feature-inventory.md`, the rationale lines
 of the SRS, and the context sections of ADR-005 and ADR-006 at commit
-`e91e002`. The inventory was read from NVIDIA's documentation on 2026-11-10;
+`082df51`. The inventory was read from NVIDIA's documentation on 2026-11-10;
 rows it could not source from documentation are marked in the file as coming
 from the executor API headers as known to the author. The vLLM and SGLang
 lessons are the ones the SRS states as rationale; this page does not add

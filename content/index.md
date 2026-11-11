@@ -16,9 +16,9 @@ kernels rustinfer generates itself from a **Kernel IR**, and executed by a
 runtime that makes no graph, kernel, layout or memory decision at inference
 time. No kernel library, no vendor BLAS, no Python, no NVIDIA.
 
-This site is a reading of the tree at commit `e91e002` on branch
-`feat/2-project-scaffold`, 2026-11-10, the day the project was specified and
-scaffolded. Everything on it was read from the source, the SRS, the ADRs and
+This site is a reading of the tree at commit `082df51` on branch
+`feat/2-project-scaffold`, first written on 2026-11-10, the day the project
+was specified and scaffolded, and refreshed on 2026-11-11. Everything on it was read from the source, the SRS, the ADRs and
 the planning documents in `docs/`; nothing was run on a GPU. Where a page
 describes behaviour that does not exist yet it says so and names the issue
 that will add it.
@@ -34,7 +34,7 @@ only the requirement exists.
 |---|---|
 | Specification: SRS-RI-v0.1, 171 requirements, 27 groups, release tags R1 to R4 | <span class="state-ok">done</span>, status Draft until approved ([requirements](ref-requirements.html)) |
 | Decisions: ADR-001 to ADR-006 | <span class="state-ok">done</span> ([decisions](decisions.html)) |
-| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-part">in progress</span> — on `feat/2-project-scaffold`, PR pending ([crates](ref-crates.html)) |
+| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-part">in progress</span> — on `feat/2-project-scaffold`, PR #17 open since 2026-11-11 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-part">in progress</span> — same branch; tested ([design](design.html)) |
 | The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-part">in progress</span> — every subcommand answers `not_implemented` after validation ([getting started](getting-started.html)) |
 | Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 ([issues](issues.html)) |
@@ -46,7 +46,7 @@ only the requirement exists.
 | What | Where |
 |---|---|
 | Repository | `codeberg.org/itej89/rustinfer`, private; `main` holds the skeleton commit, `docs/1-srs-rustinfer` the SRS and ADRs, `feat/2-project-scaffold` the workspace |
-| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15, milestone `R1 — foundation` |
+| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 with dependencies linked, milestone `R1 — foundation`; PRs #16 (SRS) and #17 (scaffold) open since 2026-11-11; Actions enabled with the first run queued ([issues](issues.html)) |
 | Specification | `docs/SRS-RI-v0.1.md` |
 | Decisions | `docs/adr/ADR-001` to `ADR-006` |
 | Planning | `docs/planning/`: the TensorRT-LLM feature inventory, 24 use cases, the device inventory, the issue drafts |
