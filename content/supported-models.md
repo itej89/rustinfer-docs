@@ -1,7 +1,7 @@
 ---
 title: Supported models
 section: Overview
-order: 3
+order: 4
 summary: Which model families each release lowers and serves, from the SRS frontend requirements and the use cases; on 2026-11-10 no model runs, because only the scaffold exists.
 ---
 

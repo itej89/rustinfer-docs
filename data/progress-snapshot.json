@@ -1,0 +1,272 @@
+{
+ "fetched_at": "2026-11-11T05:59:56+00:00",
+ "issues": [
+  {
+   "number": 1,
+   "title": "Epic: rustinfer Release 1 — foundation",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "epic",
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": []
+  },
+  {
+   "number": 2,
+   "title": "Project scaffold: workspace, core, CLI, CI, mandatory files",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": []
+  },
+  {
+   "number": 3,
+   "title": "Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    2
+   ]
+  },
+  {
+   "number": 4,
+   "title": "Artifact format: `.rie` header, section table, hash, bounded reader, writer",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3
+   ]
+  },
+  {
+   "number": 5,
+   "title": "Target abstraction and CPU reference target",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3
+   ]
+  },
+  {
+   "number": 6,
+   "title": "Frontend: LLaMA family from a Hugging Face checkpoint",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3
+   ]
+  },
+  {
+   "number": 7,
+   "title": "Kernel IR dialect and the MLIR/LLVM link",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature",
+    "infra"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    2
+   ]
+  },
+  {
+   "number": 8,
+   "title": "AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    7
+   ]
+  },
+  {
+   "number": 9,
+   "title": "R1 kernel generators, catalog and autotuner (`tune` command)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    5,
+    8
+   ]
+  },
+  {
+   "number": 10,
+   "title": "Graph compiler: pass pipeline from Model IR to Plan",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3,
+    5,
+    9
+   ]
+  },
+  {
+   "number": 11,
+   "title": "`build` and `inspect` commands",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    4,
+    6,
+    10
+   ]
+  },
+  {
+   "number": 12,
+   "title": "ROCm target: HIP binding behind one FFI module",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    5
+   ]
+  },
+  {
+   "number": 13,
+   "title": "Executor: static batch, KV block pool, sampler",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    10,
+    12
+   ]
+  },
+  {
+   "number": 14,
+   "title": "`run` command end to end",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    11,
+    13
+   ]
+  },
+  {
+   "number": 15,
+   "title": "Planner: topology model and placement interfaces",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3
+   ]
+  }
+ ],
+ "pulls": [
+  {
+   "number": 16,
+   "title": "docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning",
+   "state": "open",
+   "head": "docs/1-srs-rustinfer",
+   "base": "main",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-11"
+  },
+  {
+   "number": 17,
+   "title": "feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files",
+   "state": "open",
+   "head": "feat/2-project-scaffold",
+   "base": "docs/1-srs-rustinfer",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-11"
+  }
+ ],
+ "milestones": [
+  {
+   "title": "R1 — foundation",
+   "state": "open",
+   "open": 15,
+   "closed": 0
+  }
+ ],
+ "runs": [
+  {
+   "id": 8503584,
+   "title": "chore: add the MIT licence text declared in Cargo.toml",
+   "status": "waiting",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "082df51",
+   "created": "2026-11-11T06:45",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/3"
+  },
+  {
+   "id": 8503554,
+   "title": "ci: run on Codeberg hosted runners within their limits",
+   "status": "cancelled",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "c65fa29",
+   "created": "2026-11-11T06:42",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/2"
+  },
+  {
+   "id": 8503533,
+   "title": "ci: trigger the first pipeline run after enabling Actions",
+   "status": "cancelled",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "db6d252",
+   "created": "2026-11-11T06:40",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/1"
+  }
+ ]
+}

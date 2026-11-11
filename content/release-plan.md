@@ -1,7 +1,7 @@
 ---
 title: Release plan
 section: Overview
-order: 5
+order: 6
 summary: The four releases the SRS tags its requirements with, what each proves, and the fifteen issues of Release 1 in their implementation order.
 ---
 

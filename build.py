@@ -35,6 +35,8 @@ import sys
 import markdown
 import subprocess
 
+import progress
+
 ROOT = pathlib.Path(__file__).resolve().parent
 CONTENT = ROOT / "content"
 THEME = ROOT / "theme"
@@ -96,6 +98,7 @@ def collect():
             summary=meta.get("summary", ""),
             group=meta.get("group", ""),
             navtitle=meta.get("navtitle") or "",
+            meta=meta,
             text=text,
         ))
     return pages
@@ -194,6 +197,14 @@ def build():
     OUT.mkdir(parents=True)
     template = (THEME / "base.html").read_text(encoding="utf-8")
     pages = collect()
+    # the Progress page: counted from the other pages' trackers
+    pages.append(dict(
+        slug="progress", url="progress.html", title="Progress",
+        section="Overview", order=2,
+        summary="Every tracked item on this site, counted by its state, in pies.",
+        group="", navtitle="", meta={},
+        text="# Progress\n\n" + progress.page(pages, SECTIONS),
+    ))
     for page in pages:
         dest = OUT / page["url"]
         dest.parent.mkdir(parents=True, exist_ok=True)

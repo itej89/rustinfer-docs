@@ -11,7 +11,9 @@ summary: The eleven open issues of SRS §4 with their status, impact and recorde
 Read from SRS §4 at commit `082df51`. An open issue is a decision the SRS
 could not make when it was written; each names the requirements it affects
 and the resolution it expects. **Open** means a decision is due before the
-release its requirements name; **Deferred** means it waits on hardware.
+release its requirements name; **Deferred** means it waits on hardware. The
+table is a tracker the [progress](progress.html) page counts; a row closes
+when the ADR or decision it asks for lands.
 
 | id | issue | status | impact | resolution recorded |
 |---|---|---|---|---|
@@ -22,8 +24,8 @@ release its requirements name; **Deferred** means it waits on hardware.
 | OI-005 | Multi-rank artifact layout | Open | RI-ART-007, RI-DIST-001 | an ADR before R2; one file per rank provisionally |
 | OI-006 | Grammar backend for guided decoding | Open | RI-SMP-006 | an ADR before R3; a Rust-native backend preferred over an FFI |
 | OI-007 | Tokenizer | Open | RI-SRV-003, RI-CLI-006 | new-dep evaluation of the `tokenizers` crate before R2 |
-| OI-008 | Reference hardware. Autotuning and the baselines need a gfx950 host with vLLM and AITER. | Open | RI-KC-006, RI-NFR-003, RI-NFR-004, RI-NFR-006 | rent an MI355X node for R1 autotuning and the R2 acceptance run |
-| OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | Open | RI-KC-003, RI-NFR-012, RI-NFR-016 | ADR-005 names the version; a vendored prebuilt with a recorded hash. The draft of issue #7 assigns this to an ADR-007 |
+| OI-008 | Reference hardware. Autotuning and the baselines need a gfx950 host with vLLM and AITER. | Open; only the owner can rent the node | RI-KC-006, RI-NFR-003, RI-NFR-004, RI-NFR-006 | rent an MI355X node for R1 autotuning and the R2 acceptance run |
+| OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | **Open**; blocks #7 | RI-KC-003, RI-NFR-012, RI-NFR-016 | ADR-005 names the version; a vendored prebuilt with a recorded hash. The draft of issue #7 assigns this to an ADR-007 |
 | OI-010 | DPU agent ISA and deployment | Deferred | RI-PLN-006 | after a DPU is on the bench |
 | OI-011 | Tensix mesh lowering: whether the mesh path targets TT-MLIR's dialects or emits its own kernels for the Tensix cores | Deferred | RI-KC-004, RI-RV-001 | decide with a Blackhole card in hand |
 

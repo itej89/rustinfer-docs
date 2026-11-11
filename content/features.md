@@ -1,7 +1,7 @@
 ---
 title: Features
 section: Overview
-order: 4
+order: 5
 summary: Every feature of the engine by component with its release tag and its status on 2026-11-10, and the feature combination matrix the tree refuses unlisted pairs against.
 ---
 

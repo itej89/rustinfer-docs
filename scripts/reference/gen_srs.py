@@ -37,6 +37,8 @@ out = header("Requirements", "Reference", 1,
              "Every requirement of SRS-RI-v0.1 with its priority, status and release, "
              "generated from the SRS in the tree.",
              navtitle="Requirements (SRS)", script="gen_srs.py")
+# one tracker card per component on the progress page
+out = out.replace("---\n<!--", "cards: headings\n---\n<!--", 1)
 out += f"""# Requirements
 
 Generated from `docs/SRS-RI-v0.1.md` at commit {commit()}. {total} requirements
@@ -45,15 +47,16 @@ in {len(groups)} groups, every one at status *Draft* until the SRS is approved
 a requirement is split across releases the full text is kept.
 
 By first release: {", ".join(f"{k} {v}" for k, v in sorted(by_release.items()))}.
+Each component is one tracker table; the [progress](progress.html) page counts a *Draft*
+requirement as open work and an *Implemented* one as done.
 
-| id | text | priority | status | release |
-|---|---|---|---|---|
 """
 for title, reqs in groups:
-    out += f"| **{title}** | | | | |\n"
+    out += f"## {title}\n\n| id | text | priority | status | release |\n|---|---|---|---|---|\n"
     for rid, rtext, prio, status, release, rationale in reqs:
-        cell = rtext.replace("|", "\\|")
+        cell = rtext.replace("|", " or ")
         if rationale:
-            cell += f" *Rationale: {rationale.replace('|', chr(92) + '|')}*"
-        out += f"| `{rid}` | {cell} | {prio} | {status} | {release.replace('|', chr(92) + '|')} |\n"
+            cell += f" *Rationale: {rationale.replace('|', ' or ')}*"
+        out += f"| {rid} | {cell} | {prio} | {status} | {release.replace('|', ' or ')} |\n"
+    out += "\n"
 write("ref-requirements.md", out)

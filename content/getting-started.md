@@ -1,7 +1,7 @@
 ---
 title: Getting started
 section: Overview
-order: 2
+order: 3
 summary: Install the toolchain, build and test the workspace, and run the rustinfer command; what each of its six subcommands does on 2026-11-10.
 ---
 

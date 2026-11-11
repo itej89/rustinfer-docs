@@ -28,7 +28,10 @@ that will add it.
 **Done** means the code is in the tree and exercised by a test. **In
 progress** means a branch exists and is not merged. **Planned** means an
 approved-for-draft requirement and an issue exist. **Not started** means
-only the requirement exists.
+only the requirement exists. The numbers behind this table, issues
+closed, pull requests, the latest CI run, tests and coverage, are on the
+[progress](progress.html) page, generated from Codeberg and the tree; the
+steps in order are the [roadmap](roadmap.html).
 
 | Area | State |
 |---|---|
@@ -79,6 +82,8 @@ the mandatory build step of the TensorRT engine model was dropped and its
 properties kept.
 
 <ul class="cards">
+<li><a href="roadmap.html"><span class="card-title">Roadmap</span><span class="card-note">The steps to Release 1 in order, dated as they close, with the defects met on the way.</span></a></li>
+<li><a href="progress.html"><span class="card-title">Progress</span><span class="card-note">Issues closed, PRs, CI, requirements, tests, coverage: the roadmap's measure.</span></a></li>
 <li><a href="design.html"><span class="card-title">Design</span><span class="card-note">The three representations, the crates, the error contract, logging, settings and constants.</span></a></li>
 <li><a href="design-diagrams.html"><span class="card-title">Design diagrams</span><span class="card-note">The six UML diagrams the tree keeps, rendered as committed.</span></a></li>
 <li><a href="features.html"><span class="card-title">Features</span><span class="card-note">Every feature with its release and its status today.</span></a></li>
@@ -95,7 +100,7 @@ properties kept.
 
 ## Reading order
 
-Start with **design** for the three representations and the rules the
+Start with the **roadmap** and its measure, **progress**, then **design** for the three representations and the rules the
 compiler enforces, then the **diagrams**. **Features** and **supported
 models** say what each release delivers and what exists today. **Compiler**
 takes the graph compiler and the kernel compiler in turn; **Runtime** covers
