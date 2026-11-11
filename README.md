@@ -20,6 +20,15 @@ are drawn in the browser by mermaid.js from a CDN.
 
 Then open <http://localhost:8080>. `./serve.sh` does the last step.
 
+## Publishing
+
+The site is served by Codeberg Pages at
+<https://itej89.codeberg.page/rustinfer-docs/> from the `pages` branch of
+this repository. `./publish.sh` rebuilds `out/`, checks the links, writes the
+result as a single commit on an orphan `pages` branch and force-pushes it;
+`main` keeps the sources only. Run it after every content change you want
+visible.
+
 ## Where the content comes from
 
 `content/*.md` are the pages, each with a small header naming its title,
