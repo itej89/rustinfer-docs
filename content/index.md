@@ -49,7 +49,7 @@ steps in order are the [roadmap](roadmap.html).
 | What | Where |
 |---|---|
 | Repository | `codeberg.org/itej89/rustinfer`, private; `main` holds the skeleton commit, `docs/1-srs-rustinfer` the SRS and ADRs, `feat/2-project-scaffold` the workspace |
-| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 with dependencies linked, milestone `R1 — foundation`; PRs #16 (SRS) and #17 (scaffold) open since 2026-11-11; Actions enabled with the first run queued ([issues](issues.html)) |
+| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 with dependencies linked, milestone `R1 — foundation`; PRs #16 (SRS) and #17 (scaffold) open since 2026-11-11; CI green on Codeberg's hosted runners since run 7 ([issues](issues.html)) |
 | Specification | `docs/SRS-RI-v0.1.md` |
 | Decisions | `docs/adr/ADR-001` to `ADR-006` |
 | Planning | `docs/planning/`: the TensorRT-LLM feature inventory, 24 use cases, the device inventory, the issue drafts |

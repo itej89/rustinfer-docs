@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-11T05:59:56+00:00",
+ "fetched_at": "2026-11-11T13:39:21+00:00",
  "issues": [
   {
    "number": 1,
@@ -236,9 +236,53 @@
  ],
  "runs": [
   {
+   "id": 8512737,
+   "title": "fix(ci): pin upload-artifact to the v3 line Forgejo supports",
+   "status": "success",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "cc3e293",
+   "created": "2026-11-11T14:30",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/7"
+  },
+  {
+   "id": 8512650,
+   "title": "fix(ci): upload artifacts with Forgejo's upload-artifact fork",
+   "status": "failure",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "d380d0a",
+   "created": "2026-11-11T14:24",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/6"
+  },
+  {
+   "id": 8512542,
+   "title": "fix(ci): make cargo-deny accept path-only workspace dependencies",
+   "status": "failure",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "b252ea6",
+   "created": "2026-11-11T14:18",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/5"
+  },
+  {
+   "id": 8512392,
+   "title": "fix(ci): qualify GitHub-only actions with their full URL",
+   "status": "failure",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "ac68ff1",
+   "created": "2026-11-11T14:13",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/4"
+  },
+  {
    "id": 8503584,
    "title": "chore: add the MIT licence text declared in Cargo.toml",
-   "status": "waiting",
+   "status": "failure",
    "conclusion": null,
    "event": "pull_request",
    "ref": "#17",

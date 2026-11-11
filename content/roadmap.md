@@ -71,8 +71,17 @@ pinned to full commit SHAs, `permissions: contents: read` and
 binaries so they fit; ADR-004 records the labels and that the LLVM-linking
 steps will not fit a hosted runner at all.
 
+**Three more were Codeberg's own rules.** Once the repository was public,
+the hosted runners answered, and runs 3 to 6 each failed one step further
+along: short action names resolve against `data.forgejo.org`, which mirrors
+only `actions/*`; `cargo-deny` reads version-less workspace path
+dependencies as wildcards; and `upload-artifact` v4 refuses any host but
+github.com. Each got a one-line fix and a sentence in ADR-004 (`ac68ff1`,
+`b252ea6`, `d380d0a`, `cc3e293`), and run 7 was green across lint,
+security, test and build.
+
 **Where it stands, 2026-11-11.** PR #17 is open, stacked on PR #16, at
-`082df51`; the third CI run is queued. What separates in review from done is
+`cc3e293` with CI green (run 7). What separates in review from done is
 a reviewer's sign-off on both PRs and a green run.
 
 ## 2. Model IR (#3)
@@ -170,5 +179,5 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
-| 2026-11-11 | The tracker created on Codeberg: Epic #1, issues #2 to #15 with dependencies linked, labels, milestone `R1 — foundation`. PR #16 (SRS, `docs/1-srs-rustinfer` → `main`) and PR #17 (scaffold, stacked on #16) opened. The post-coding gate for #2 passed with three findings fixed (`refactor(scaffold)`, `e91e002`). CI retargeted from `ubuntu-latest` to Codeberg's `codeberg-medium` runners with full-SHA pins, permissions and timeouts, after the first two runs were cancelled unanswered; ADR-004 updated. ADR-002 corrected to the SRS's section list. `LICENSE` added (`082df51`). This documentation site written and published locally, with its [progress](progress.html) page counted from the trackers |
+| 2026-11-11 | The tracker created on Codeberg: Epic #1, issues #2 to #15 with dependencies linked, labels, milestone `R1 — foundation`. PR #16 (SRS, `docs/1-srs-rustinfer` → `main`) and PR #17 (scaffold, stacked on #16) opened. The post-coding gate for #2 passed with three findings fixed (`refactor(scaffold)`, `e91e002`). CI retargeted from `ubuntu-latest` to Codeberg's `codeberg-medium` runners with full-SHA pins, permissions and timeouts, after the first two runs were cancelled unanswered; ADR-004 updated. ADR-002 corrected to the SRS's section list. `LICENSE` added (`082df51`). This documentation site written and published locally, with its [progress](progress.html) page counted from the trackers. Repository made public so Codeberg's hosted runners serve it; runs 3 to 6 fixed one Codeberg rule each (ADR-004); run 7 green on `cc3e293`, PR #17 checklist steps 10d and 13e filled |
 | 2026-11-10 | The TensorRT-LLM feature inventory, the use cases and the device inventory written; SRS-RI-v0.1 written with 171 requirements; ADR-001 to ADR-006 accepted; the workspace scaffold built: 14 crates, `rustinfer-core`, the `rustinfer` command, CI, every mandatory file; 37 tests green, clippy and rustdoc clean |

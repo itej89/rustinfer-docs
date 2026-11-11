@@ -72,16 +72,27 @@ the one before, so a failure blocks the next stage (SWG-001 §11.1):
 
 Every action is pinned to a full commit SHA with the tag in a comment, as
 SWG-001 §11 asks (`actions/checkout` v4, `dtolnay/rust-toolchain` stable of
-2026-11, `EmbarkStudios/cargo-deny-action` v2, `taiki-e/install-action` v2,
-`actions/upload-artifact` v4). Forgejo Actions on Codeberg reads this path
-(ADR-004); Actions was enabled on the repository and the first run queued on
-2026-11-11.
+2026-11, `taiki-e/install-action` v2 installing `cargo-deny` 0.20.2,
+`cargo-audit` 0.23.0 and `cargo-llvm-cov` 0.9.1, `actions/upload-artifact`
+v3.2.2). Forgejo Actions on Codeberg reads this path (ADR-004). The first
+green run, run 7 of 2026-11-11, took about five and a half minutes for the
+four jobs in sequence.
+
+Three Codeberg rules, learned from runs 3 to 6 and recorded in ADR-004:
+
+| rule | symptom when broken |
+|---|---|
+| A short `uses: owner/repo@sha` is resolved against `data.forgejo.org`, which mirrors only `actions/*`; every other action carries its full `https://github.com/` URL | *Set up job* fails with `repository not found` |
+| `cargo-deny` reads a version-less `path =` workspace dependency as `*`; the crates are private, so `deny.toml` sets `allow-wildcard-paths = true` | `error[wildcard]` for every workspace crate |
+| `actions/upload-artifact` v4 (and Forgejo's fork of it) refuses any host but github.com; Forgejo's artifact service implements the v3 protocol | `not currently supported on GHES` |
 
 ### Runners
 
 Codeberg's hosted runners answer only their own labels, so every job runs on
-`codeberg-medium`. ADR-004 records the labels and the reason the tools are
-prebuilt: each job must fit the label's time limit.
+`codeberg-medium`, and they serve only public repositories under a free
+licence, so the repository was made public on 2026-11-11 (it is MIT).
+ADR-004 records the labels and the reason the tools are prebuilt: each job
+must fit the label's time limit.
 
 | label | CPU | RAM | limit |
 |---|---|---|---|

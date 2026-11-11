@@ -241,9 +241,10 @@ for p in pulls:
 out += """
 ## CI runs
 
-The most recent runs of `ci.yml`, newest first. `waiting` means queued for a runner; the two
-cancelled runs of 2026-11-11 were the jobs that asked for `ubuntu-latest`, a label Codeberg's
-hosted runners never answer, before CI was retargeted to `codeberg-medium` (ADR-004).
+The most recent runs of `ci.yml`, newest first. `waiting` means queued for a runner. On
+2026-11-11 runs 1 and 2 were cancelled unanswered (`ubuntu-latest`, a label Codeberg never
+serves), runs 3 to 6 each failed on one Codeberg-specific action rule now recorded in ADR-004,
+and run 7 was the first green run ([build steps](build-steps.html)).
 
 | run | for | commit | event | state | when |
 |---|---|---|---|---|---|
