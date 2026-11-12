@@ -2,7 +2,7 @@
 title: The topology planner
 navtitle: Topology planner
 section: Runtime
-order: 3
+order: 4
 summary: The pass that places weights, KV tiers, phases and serving functions across GPUs, host CPUs, DPUs, DRAM, CXL and NVMe; its interfaces are Release 1, its implementation Release 2.
 ---
 

@@ -38,7 +38,8 @@ generated on the [crates](ref-crates.html) page.
 | layer | crates | depends on |
 |---|---|---|
 | command | `rustinfer-cli` | everything below |
-| runtime | `rustinfer-runtime` | artifact, target, planner, core |
+| runtime | `rustinfer-runtime` | artifact, target, planner, sluice, core |
+| sluice | `rustinfer-sluice` (the weight streamer, #18) | artifact, target, core |
 | compilers | `rustinfer-compiler` (graph), `rustinfer-kc` (kernel) | mir, target, artifact, core |
 | planner | `rustinfer-planner` | mir, core |
 | frontend | `rustinfer-frontend` | mir, core |

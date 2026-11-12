@@ -41,7 +41,7 @@ steps in order are the [roadmap](roadmap.html).
 | Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-part">in progress</span> — on `feat/2-project-scaffold`, PR #17 open since 2026-11-11 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-part">in progress</span> — same branch; tested ([design](design.html)) |
 | The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-part">in progress</span> — every subcommand answers `not_implemented` after validation ([getting started](getting-started.html)) |
-| Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 ([issues](issues.html)) |
+| Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 and #18 ([issues](issues.html)) |
 | Any model running on any device | <span class="state-no">not started</span> ([supported models](supported-models.html)) |
 | Documentation in the tree: six diagrams, entry points, observability, feature matrix, API changelog | <span class="state-part">in progress</span> — same branch ([design diagrams](design-diagrams.html)) |
 
@@ -90,7 +90,7 @@ properties kept.
 <li><a href="features.html"><span class="card-title">Features</span><span class="card-note">Every feature with its release and its status today.</span></a></li>
 <li><a href="supported-models.html"><span class="card-title">Supported models</span><span class="card-note">What will run in each release; nothing runs today.</span></a></li>
 <li><a href="kernel-compiler.html"><span class="card-title">Kernel compiler</span><span class="card-note">Generators, the Kernel IR, the lowerings, the catalog and the autotuner.</span></a></li>
-<li><a href="runtime.html"><span class="card-title">Runtime and serving</span><span class="card-note">Executor, scheduler, KV cache, sampler; what R1 has and what follows.</span></a></li>
+<li><a href="runtime.html"><span class="card-title">Runtime and serving</span><span class="card-note">Executor, Sluice, scheduler, KV cache, sampler; what R1 has and what follows.</span></a></li>
 <li><a href="hardware.html"><span class="card-title">Hardware</span><span class="card-note">The targets and the AMD and RISC-V device landscape the planner must describe.</span></a></li>
 <li><a href="build-steps.html"><span class="card-title">Build steps</span><span class="card-note">Toolchain, the cargo gates, the CI scripts, coverage.</span></a></li>
 <li><a href="deployment.html"><span class="card-title">Deployment</span><span class="card-note">One binary, one artifact, strict mode; what is not there yet.</span></a></li>
@@ -105,7 +105,7 @@ Start with the **roadmap** and its measure, **progress**, then **design** for th
 compiler enforces, then the **diagrams**. **Features** and **supported
 models** say what each release delivers and what exists today. **Compiler**
 takes the graph compiler and the kernel compiler in turn; **Runtime** covers
-the executor, the artifact cache and the planner. **Hardware** lists the
+the executor, Sluice, the artifact cache and the planner. **Hardware** lists the
 targets and the devices. **Development** has the engineering rules, the build
 and the deployment story. **Trackers** hold the issues, the open questions and
 the decisions. **Reference** is generated from the tree: requirements,

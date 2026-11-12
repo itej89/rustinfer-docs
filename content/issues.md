@@ -8,8 +8,8 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Cod
 # Issue tracker
 
 **As of 2026-11-11.** The tracker state is read live from Codeberg
-(fetched 2026-11-12 00:53 UTC, kept in `data/progress-snapshot.json`); the
-counts of requirements, tests and lines are read from the rustinfer tree at commit c0bd8f3 2026-11-11.
+(fetched 2026-11-12 01:18 UTC, kept in `data/progress-snapshot.json`); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit 0c918f6 2026-11-11.
 Coverage is not measured here: it is the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
 
@@ -17,13 +17,13 @@ below with every other tracker on the site; the [roadmap](roadmap.html) is the s
 
 | measure | state | note |
 |---|---|---|
-| Release 1 issues closed | `░░░░░░░░░░ 0/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 0 closed, 15 open |
+| Release 1 issues closed | `░░░░░░░░░░ 0/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 0 closed, 16 open |
 | Pull requests | 0 merged, 2 open | #16 `docs/1-srs-rustinfer` → `main` (open), #17 `feat/2-project-scaffold` → `docs/1-srs-rustinfer` (open) |
-| Latest CI run | run 8512737 (#17, `cc3e293`): **success**, 2026-11-11 14:30 | Forgejo Actions on Codeberg; the recent runs are listed below |
-| SRS requirements implemented | `░░░░░░░░░░ 0/174` | a requirement is implemented when the issue that carries it is closed; by SRS status today: Draft 174; by release: R1 92, R2 45, R3 33, R4 4 |
-| Tests | 0 | `#[test]` functions across 1 crates |
+| Latest CI run | run 8528970 (#17, `0c918f6`): **running**, 2026-11-12 02:16 | Forgejo Actions on Codeberg; the recent runs are listed below |
+| SRS requirements implemented | `░░░░░░░░░░ 0/171` | a requirement is implemented when the issue that carries it is closed; by SRS status today: Draft 171; by release: R1 90, R2 44, R3 33, R4 4 |
+| Tests | 40 | `#[test]` functions across 14 crates |
 | Line coverage | 89.15% | from the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11; the CI gate is 80 percent |
-| Rust | 8 lines in 1 files | `crates/**/*.rs`, tests and build scripts included |
+| Rust | 2,233 lines in 54 files | `crates/**/*.rs`, tests and build scripts included |
 
 ## Release 1 issues
 
@@ -47,7 +47,7 @@ open issue in dependency order whose blockers are all closed. Bodies are drafted
 | R1-10 | Graph compiler: pass pipeline from Model IR to Plan | #3, #5, #9 | Not started; waits on #3, #5, #9 | — |
 | R1-11 | `build` and `inspect` commands | #4, #6, #10 | Not started; waits on #4, #6, #10 | — |
 | R1-12 | ROCm target: HIP binding behind one FFI module | #5 | Not started; waits on #5 | needs an MI300X or MI355X on the bench (OI-008) |
-| R1-13 | Executor: static batch, KV block pool, sampler | #10, #12 | Not started; waits on #10, #12 | — |
+| R1-13 | Executor: static batch, KV block pool, sampler | #10, #12, #18 | Not started; waits on #10, #12, #18 | — |
 | R1-14 | `run` command end to end | #11, #13 | Not started; waits on #11, #13 | closes the Epic's acceptance criteria |
 | R1-15 | Planner: topology model and placement interfaces | #3 | Not started; waits on #3 | — |
 
@@ -69,6 +69,7 @@ and run 7 was the first green run ([build steps](build-steps.html)).
 
 | run | for | commit | event | state | when |
 |---|---|---|---|---|---|
+| [8528970](https://codeberg.org/itej89/rustinfer/actions/runs/8) | #17 | `0c918f6` | pull_request | **running** | 2026-11-12 02:16 |
 | [8512737](https://codeberg.org/itej89/rustinfer/actions/runs/7) | #17 | `cc3e293` | pull_request | **success** | 2026-11-11 14:30 |
 | [8512650](https://codeberg.org/itej89/rustinfer/actions/runs/6) | #17 | `d380d0a` | pull_request | **failure** | 2026-11-11 14:24 |
 | [8512542](https://codeberg.org/itej89/rustinfer/actions/runs/5) | #17 | `b252ea6` | pull_request | **failure** | 2026-11-11 14:18 |

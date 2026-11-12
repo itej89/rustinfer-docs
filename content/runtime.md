@@ -25,8 +25,9 @@ AITER backend (RI-NFR-003).
 ## The executor
 
 The executor loads an artifact, verifies the target, runs the planner,
-allocates the arena, the KV pool and the per-sequence state once, and copies
-weights, all before the first request; no device allocation happens on the
+allocates the arena, the KV pool and the per-sequence state once, and has
+[Sluice](sluice.html) stream every weight the rank needs into device memory in
+its target layout, all before the first request; no device allocation happens on the
 request path (RI-RT-001). Each iteration executes the Plan's launches in
 order with no kernel selection, shape inference or allocation (RI-RT-002).
 RI-NFR-001 makes that testable: zero heap allocations on the decode path

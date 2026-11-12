@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-12T00:53:22+00:00",
+ "fetched_at": "2026-11-12T01:18:20+00:00",
  "issues": [
   {
    "number": 1,
@@ -171,7 +171,8 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     10,
-    12
+    12,
+    18
    ]
   },
   {
@@ -199,6 +200,20 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     3
+   ]
+  },
+  {
+   "number": 18,
+   "title": "Sluice: stream checkpoint weights into device memory from the weight manifest",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    4,
+    5
    ]
   }
  ],
@@ -230,11 +245,22 @@
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 15,
+   "open": 16,
    "closed": 0
   }
  ],
  "runs": [
+  {
+   "id": 8528970,
+   "title": "docs(planning): add #18 Sluice to the Epic's task list and sequence",
+   "status": "running",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#17",
+   "sha": "0c918f6",
+   "created": "2026-11-12T02:16",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/8"
+  },
   {
    "id": 8512737,
    "title": "fix(ci): pin upload-artifact to the v3 line Forgejo supports",

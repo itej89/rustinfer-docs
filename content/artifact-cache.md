@@ -2,7 +2,7 @@
 title: Build on first load, and strict mode
 navtitle: Artifact as cache, strict mode
 section: Runtime
-order: 2
+order: 3
 summary: ADR-006; the .rie file is a cache of build decisions that run and serve produce on first load and that --require-prebuilt turns back into a requirement for production starts.
 ---
 

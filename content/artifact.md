@@ -20,7 +20,8 @@ ADR-002's context: a TensorRT engine is one file holding everything the
 runtime needs so that inference performs no compilation, selection or
 planning. rustinfer wants the same property plus four more: inspectable
 without the GPU, integrity-checked before use, never left half-written, and
-weights memory-mappable. The alternatives it rejected were a tar or zip
+small, because it holds the engine and never the weights (the amendment of
+2026-11-11, below). The alternatives it rejected were a tar or zip
 container (no page alignment, hash semantics unclear), FlatBuffers or Cap'n
 Proto (a dependency for a format with a handful of sections) and safetensors
 for the whole file (no section typing, no kernel binaries).
@@ -50,7 +51,7 @@ From ADR-002, little-endian throughout:
 | `metadata` | build options, producer, `rustc` and LLVM versions, catalog version, input hashes, origin (`build` or first load), timestamp | RI-ART-008, RI-SEC-004 |
 | `catalog` | the kernel entries the Plan references | |
 | `kernels` | concatenated code objects with an index JSON at the start | |
-| `weights` | raw bytes, 4096-byte aligned, with an index of (weight id, dtype, shape, layout, offset, length) | `ARTIFACT_WEIGHT_ALIGNMENT`; RI-ART-005 |
+| `weights` | the **weight manifest**, canonical JSON: the checkpoint's format and root, and per weight id the source shard, tensor name, dtype, shape, source layout, byte range, target layout, transform and the ranks that need it; never a weight byte | RI-ART-005, RI-ART-012; read by [Sluice](sluice.html) |
 | `topology`, `placement` | empty at build unless pinned | reserved from R1 for format stability (RI-PLN-005) |
 | `lora_slots` | adapter application points | from R3 (RI-ART-002) |
 
@@ -80,13 +81,32 @@ file at the destination (RI-ART-004, RI-NFR-007). The same protocol serves
 `build` and the first-load path into the cache directory, which is why
 ADR-006 can require the two paths to produce identical artifacts.
 
+## Why the weights stay out
+
+The first draft of ADR-002 bundled the weights, as a TensorRT engine does.
+On 2026-11-11 the owner struck that: a 2.4T-parameter checkpoint is near
+5 TB at bf16, sharded over dozens of ranks, and writing it a second time into
+an engine file is not practical on disk, in build time or for distribution.
+The artifact now references the checkpoint through the weight manifest and
+never copies it (RI-ART-012). Three things follow:
+
+- `build` reads only `config.json` and the safetensors headers, so its time
+  and disk use do not depend on model size, and a published prebuilt artifact
+  (RI-ART-011) is megabytes and carries no weight licence.
+- The layout the kernels want is still produced, but at load, on the device,
+  one shard at a time, by [Sluice](sluice.html), the weight streamer
+  (RI-GC-008, RI-WST). A fine-tune of the same architecture reuses the
+  artifact unchanged.
+- `metadata` records the checkpoint's identity as hashes of `config.json`,
+  the shard headers and the file sizes; `run` refuses a checkpoint that
+  differs, and `--verify-weights` opts into a full per-tensor hash check.
+
 ## Costs the ADR records
 
-The hash covers the weights, so hashing a 140 GB artifact costs a full read
-at write and at first load; the ADR says a later version may add per-section
-hashes. JSON for the small sections is larger than a binary encoding but
-readable in any tool, and the ADR estimates the plan of a 70B model at a few
-megabytes.
+First load pays the layout transform on the device, streamed per shard, so
+load time scales with weight size as every engine's does. JSON for the small
+sections is larger than a binary encoding but readable in any tool, and the
+ADR estimates the plan of a 70B model at a few megabytes.
 
 ## Multi-rank
 
