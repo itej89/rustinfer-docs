@@ -54,6 +54,14 @@ def source_commit():
     except Exception:  # noqa: BLE001
         return "unknown"
 
+
+def source_branch():
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(RUSTINFER_SRC), "branch", "--show-current"], text=True).strip() or "detached"
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
 SECTIONS = ["Overview", "Design", "Compiler", "Runtime", "Hardware",
             "Development", "Trackers", "Reference"]
 
@@ -188,6 +196,7 @@ def render(pages, page, template):
             .replace("{{content}}", content)
             .replace("{{aside}}", aside)
             .replace("{{commit}}", html.escape(source_commit()))
+            .replace("{{branch}}", html.escape(source_branch()))
             .replace("{{up}}", up))
 
 
