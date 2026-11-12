@@ -302,8 +302,9 @@ def issue_status(state, n):
 
 
 # --------------------------------------------------------- derived states
-IMPLEMENTED, IN_PROGRESS, PLANNED = "implemented", "in progress", "planned"
-BADGE = {IMPLEMENTED: "state-ok", IN_PROGRESS: "state-part", PLANNED: "state-no"}
+IMPLEMENTED, PARTIAL, IN_PROGRESS, PLANNED = "implemented", "partial", "in progress", "planned"
+BADGE = {IMPLEMENTED: "state-ok", PARTIAL: "state-part", IN_PROGRESS: "state-part", PLANNED: "state-no"}
+LABEL = {PARTIAL: "implemented in part"}
 
 
 def requirement_states(reqs, state, citations):
@@ -312,6 +313,8 @@ def requirement_states(reqs, state, citations):
     * implemented: a test in the tree cites the id in a comment (`tests`
       lists the files), or the Epic's checklist assigns it to a closed issue
       (`closed_issues`), or both; `sources` says which.
+    * partial: tests cite the id plainly in some files and as a reserved
+      feature in others (`tests` and `reserved`); not added to implemented.
     * in progress: assigned to an open issue whose branch exists on GitHub
       or whose pull request is open (`open_issues` with their status).
     * planned: otherwise; `label` carries the SRS release tag.
@@ -334,7 +337,9 @@ def requirement_states(reqs, state, citations):
         opened = [i for i in assigned.get(rid, []) if i["state"] != "closed"]
         active = [i for i in opened if not i["derived_status"].startswith("Not started")]
         sources = [s for s, ok in (("tests", bool(tests)), ("epic", bool(closed))) if ok]
-        if sources:
+        if tests and reserved:
+            st = PARTIAL
+        elif sources:
             st = IMPLEMENTED
         elif active:
             st = IN_PROGRESS
@@ -350,7 +355,7 @@ def requirement_states(reqs, state, citations):
                     "closed_issues": [i["number"] for i in closed],
                     "open_issues": [(i["number"], i["derived_status"]) for i in opened],
                     "disagree": disagree,
-                    "label": st if st != PLANNED else f"planned {r['tag']}".strip()}
+                    "label": LABEL.get(st, st) if st != PLANNED else f"planned {r['tag']}".strip()}
     return out
 
 
@@ -359,13 +364,15 @@ def badge(info):
 
 
 def state_counts(states):
-    """The headline numbers: implemented (and by which sources), in progress, planned."""
+    """The headline numbers: implemented (and by which sources), partial, in progress, planned."""
     vals = states.values()
+    done = [v for v in vals if v["state"] == IMPLEMENTED]
     return {
-        "implemented": sum(1 for v in vals if v["state"] == IMPLEMENTED),
-        "by_tests": sum(1 for v in vals if "tests" in v["sources"]),
-        "by_epic": sum(1 for v in vals if "epic" in v["sources"]),
-        "both": sum(1 for v in vals if len(v["sources"]) == 2),
+        "implemented": len(done),
+        "by_tests": sum(1 for v in done if "tests" in v["sources"]),
+        "by_epic": sum(1 for v in done if "epic" in v["sources"]),
+        "both": sum(1 for v in done if len(v["sources"]) == 2),
+        "partial": sum(1 for v in vals if v["state"] == PARTIAL),
         "in_progress": sum(1 for v in vals if v["state"] == IN_PROGRESS),
         "planned": sum(1 for v in vals if v["state"] == PLANNED),
         "disagree": sorted(k for k, v in states.items() if v["disagree"]),

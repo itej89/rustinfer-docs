@@ -34,7 +34,7 @@ STATES = [
     ("awaiting", "Awaiting the board",
      r"with the next (image|release)|in the next release|in the release after|to verify on the board|shipping\b|"
      r"^in the build|^awaiting$"),
-    ("progress", "In progress", r"^(partly|improving|in progress|in review|pr open|prototype|done as a prototype|built|designed|"
+    ("progress", "In progress", r"^(partly|implemented in part|improving|in progress|in review|pr open|prototype|done as a prototype|built|designed|"
                                 r"written|running|in the driver|started|underway)"),
     ("done", "Done", r"^(done|fixed|verified|met|working|shipped|conforms|passes|seen|on the board|measured|"
                      r"audited|confirmed|listed|decided|supported|in place|complete|parity|installed|tested|"

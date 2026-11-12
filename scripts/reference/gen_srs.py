@@ -33,6 +33,7 @@ if any(r["tag"] == "unspecified" for r in reqs):
 def per_release(tag):
     ids = [r["id"] for r in reqs if r["tag"] == tag]
     return (len(ids), sum(1 for i in ids if states[i]["state"] == "implemented"),
+            sum(1 for i in ids if states[i]["state"] == "partial"),
             sum(1 for i in ids if states[i]["state"] == "in progress"),
             sum(1 for i in ids if states[i]["state"] == "planned"))
 
@@ -70,6 +71,10 @@ def state_cell(info):
         cell += " — by " + " and ".join(info["sources"])
         if info["disagree"]:
             cell += f" only; {info['disagree']}"
+    elif info["state"] == "partial":
+        cell += (" — plain citations in " + ", ".join(f"`{f}`" for f in info["tests"])
+                 + "; reserved-feature citations in " + ", ".join(f"`{f}`" for f in info["reserved"])
+                 + (f"; Epic: closed " + ", ".join(f"#{n}" for n in info["closed_issues"]) if info["closed_issues"] else ""))
     elif info["state"] == "in progress":
         cell += " — " + ", ".join(f"#{n} {st.lower()}" for n, st in info["open_issues"])
     elif info["reserved"]:
@@ -93,35 +98,38 @@ the first release named; where a requirement is split across releases the full t
 
 ## Headline
 
-**{counts["implemented"]} implemented, {counts["in_progress"]} in progress, {counts["planned"]} planned**
-of {len(reqs)}. Implemented by a test that cites the id: {counts["by_tests"]} ({reserved_only} more ids are cited only by
-reserved-feature tests and stay planned); by the Epic's checklist
+**{counts["implemented"]} implemented, {counts["partial"]} implemented in part, {counts["in_progress"]} in progress,
+{counts["planned"]} planned** of {len(reqs)}. Implemented by a test that cites the id: {counts["by_tests"]}
+({counts["partial"]} ids with both plain and reserved-feature citations are *implemented in part* and not
+counted here; {reserved_only} ids cited only by reserved-feature tests stay planned); by the Epic's checklist
 assigning it to a closed issue ({", ".join(issue_link(n) for n in closed_issues) or "none"}):
 {counts["by_epic"]}; by both: {counts["both"]}. The two sources disagree on
 {len(counts["disagree"])} ids (a test cites them but the Epic assigns them to an open issue or to
 none; each row says so): {", ".join(counts["disagree"]) or "none"}.
 
-| release | requirements | implemented | in progress | planned |
-|---|---|---|---|---|
+| release | requirements | implemented | implemented in part | in progress | planned |
+|---|---|---|---|---|---|
 """
 for tag in TAGS:
-    n, done, prog, plan = per_release(tag)
-    out += f"| {tag} | {n} | {done} | {prog} | {plan} |\n"
-out += f"| all | {len(reqs)} | {counts['implemented']} | {counts['in_progress']} | {counts['planned']} |\n"
+    n, done, part, prog, plan = per_release(tag)
+    out += f"| {tag} | {n} | {done} | {part} | {prog} | {plan} |\n"
+out += f"| all | {len(reqs)} | {counts['implemented']} | {counts['partial']} | {counts['in_progress']} | {counts['planned']} |\n"
 
 out += f"""
 **How the state is derived.** A requirement is <span class="state-ok">implemented</span> when a test
 on `main` cites its id in a comment (the integration tests under `crates/*/tests` and the
 `#[cfg(test)]` modules under `crates/*/src`, matched as a whole token; the files are linked in the
 *evidence* column; a comment that says the feature is reserved, not implemented, refused as R2 or
-R3, or of a later release cites the id without implementing it, and such a file is noted, not counted) or when the Epic [#1]({WEB}/issues/1) checklist assigns it to an issue that is
-closed; the row says which of the two applies, and when only one does, what the other says. It
-is <span class="state-part">in progress</span> when its issue is open and has a branch on GitHub or an
+R3, or of a later release cites the id without implementing it, and such a file is noted, not counted).
+An id cited plainly in some test files and as a reserved feature in others is
+<span class="state-part">implemented in part</span>, with both lists, counted on its own and not as implemented. It or when the Epic [#1]({WEB}/issues/1) checklist assigns it to an issue that is
+closed; the row says which of the two applies, and when only one does, what the other says.
+A requirement is <span class="state-part">in progress</span> when its issue is open and has a branch on GitHub or an
 open pull request, and <span class="state-no">planned</span> otherwise, with its release tag. The
 SRS's own status field, in the *SRS status* column, changes only when a release revises the
 document, so it is *Draft* for every requirement today (by SRS status: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))})
 and is not what the [progress](progress.html) page counts: that page reads the *state* column of each
-component table below, implemented as done, in progress as progress, planned as later. The tracker
+component table below, implemented as done, implemented in part and in progress as progress, planned as later. The tracker
 state is {"read live from GitHub" if source == "live" else "the committed snapshot"}
 (`data/progress-snapshot.json`, fetched {state["fetched_at"][:16].replace("T", " ")} UTC); the
 [issues](issues.html) page computes its *SRS requirements implemented* headline from the same code.

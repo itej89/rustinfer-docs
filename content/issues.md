@@ -8,7 +8,7 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Git
 # Issue tracker
 
 **As of 2026-11-12.** The tracker state is read live from GitHub
-(fetched 2026-11-12 21:56 UTC, kept in `data/progress-snapshot.json`); the
+(fetched 2026-11-12 21:59 UTC, kept in `data/progress-snapshot.json`); the
 counts of requirements, tests and lines are read from the rustinfer tree at commit f6d01ec 2026-11-12.
 Coverage is not measured here: it is the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
@@ -23,7 +23,7 @@ runs did not move and are listed below as history.
 | Release 1 issues closed | `████░░░░░░ 5/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 9 closed, 11 open |
 | Pull requests on GitHub | 4 merged, 0 open | [#19](https://github.com/itej89/rustinfer/pull/19) `infra/github-hosting` → `main` (merged), [#20](https://github.com/itej89/rustinfer/pull/20) `feat/15-planner-interfaces` → `main` (merged), [#21](https://github.com/itej89/rustinfer/pull/21) `feat/5-target-and-cpu-reference` → `main` (merged), [#22](https://github.com/itej89/rustinfer/pull/22) `docs/readme-docs-link` → `main` (merged); four more were merged on Codeberg before the move, see below |
 | Latest CI run | [run 10](https://github.com/itej89/rustinfer/actions/runs/43311967409) (main, `f6d01ec`): **success**, 2026-11-12 21:36 | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
-| SRS requirements implemented | `███░░░░░░░ 53/186` | a requirement is implemented when a test on `main` cites its id (53) or the Epic's checklist assigns it to a closed issue (#3, #4, #5, #15; 24), both for 24; 0 in progress, 133 planned; the derivation per id is on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 186; by release: R1 105, R2 44, R3 33, R4 4 |
+| SRS requirements implemented | `███░░░░░░░ 51/186` | a requirement is implemented when a test on `main` cites its id (51) or the Epic's checklist assigns it to a closed issue (#3, #4, #5, #15; 24), both for 24; 2 implemented in part (plain and reserved-feature citations), 0 in progress, 133 planned; the derivation per id is on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 186; by release: R1 105, R2 44, R3 33, R4 4 |
 | Tests | 523 | `#[test]` functions across 14 crates |
 | Line coverage | 96.44% | from the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12; the CI gate is 80 percent |
 | Rust | 25,869 lines in 159 files | `crates/**/*.rs`, tests and build scripts included |
