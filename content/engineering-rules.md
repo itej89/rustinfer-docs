@@ -36,16 +36,16 @@ artifact verification, deployment audit, and two reviewer sign-offs.
 
 On 2026-11-12 the project moved to GitHub (`github.com/itej89/rustinfer`)
 because Codeberg's July 2026 terms amendment bans repositories that mostly
-consist of AI-written code. ADR-008, in the hosting pull request, records
-it and supersedes ADR-004: SWG-001's GitHub rules now apply as written,
+consist of AI-written code. ADR-008, on `main` since GitHub PR #19 (9d448ce,
+2026-11-12), records it and supersedes ADR-004: SWG-001's GitHub rules now apply as written,
 GitHub issues, milestones and labels with the same `Closes #N` workflow and
 the issue numbers kept from Codeberg; `.github/workflows/ci.yml`,
 `.github/CODEOWNERS` and the PR template at their native paths with
-approvals enforced by GitHub; `cargo audit` and `cargo outdated` stay in CI;
-the jobs run on `ubuntu-latest` with the actions pinned by full SHA and
-`actions/upload-artifact` v4 ([build steps](build-steps.html)). The
-checkout at `678b084` still carries ADR-004's mapping; the pull request
-replaces it.
+approvals enforced by GitHub; `cargo audit` and `cargo deny` keep running on every push and Dependabot
+is available but not enabled until the owner decides; the jobs run on
+`ubuntu-latest` with the actions pinned by full SHA and
+`actions/upload-artifact` v4 ([build steps](build-steps.html)). ADR-004
+stays in the tree as superseded, the record of what Forgejo needed.
 
 Until the move ADR-004 mapped the standard to Forgejo: the same workflow
 path because Forgejo Actions reads it; a root `CODEOWNERS` symlink so

@@ -11,8 +11,8 @@ Read from the SRS by component and from `docs/feature-matrix.md` at commit
 `082df51`. A status of **Supported** means tested in the tree; **Planned
 R*n*** means a requirement and, for R1, an issue exist; **Not started** is
 used where the SRS names the release but no issue has been opened yet (every
-R2 to R4 row). On 2026-11-10 the only supported rows are the ones the scaffold
-branch carries, and that branch is not merged.
+R2 to R4 row). On 2026-11-12 the supported rows are the core, the Model IR, the
+artifact, the planner interfaces and the targets, all on `main`.
 
 ## By component
 
@@ -41,14 +41,14 @@ branch carries, and that branch is not merged.
 | Kernel compiler | SPIR-V lowering, elementwise fuser, resource reports | RI-KC-004, -010, -012 | R2 | Not started |
 | Kernel compiler | RISC-V vector lowering; MoE, MLA, LoRA, verification generators | RI-KC-004, -005 | R3 | Not started |
 | Kernel compiler | RISC-V mesh lowering; assembly generator for one hot kernel | RI-KC-004, -009 | R4 | Not started |
-| Planner | topology model, reserved artifact sections | RI-PLN-001, -005 | R1 | Planned R1, #15 |
+| Planner | topology model, reserved artifact sections | RI-PLN-001, -005 | R1 | <span class="state-ok">done</span> — GitHub PR #20 merged 2026-11-12 |
 | Planner | discovery, placement over GPU, host, DRAM, NVMe, RDMA; cached and pinnable | RI-PLN-002 to -004 | R2 | Not started |
 | Planner | CXL tier, expert placement | RI-PLN-003 | R3 | Not started |
 | Planner | DPU-resident serving functions | RI-PLN-006 | R4 | Not started |
-| Artifact | header, sections, verifying reader, atomic writer, alignment, versions, metadata | RI-ART-001 to -006, -008 | R1 | Planned R1, #4 |
+| Artifact | header, sections, verifying reader, atomic writer, alignment, versions, metadata | RI-ART-001 to -006, -008 | R1 | <span class="state-ok">done</span> — Codeberg PR #21 merged 2026-11-12 |
 | Artifact | one artifact per rank | RI-ART-007 | R2 | Not started |
-| Targets | architecture strings, the `Target` trait, CPU reference operators, one-crate backends, stub targets that fail with `catalog empty` | RI-TGT-001 to -004, RI-RV-001, -002 | R1 | Planned R1, #5 |
-| Targets | device graph capture; CPU collectives | RI-TGT-005, -003 | R2 | Not started |
+| Targets | architecture strings, the `Target` trait, CPU reference operators, one-crate backends, stub targets that fail with `catalog empty` | RI-TGT-001 to -004, RI-RV-001, -002 | R1 | <span class="state-ok">done</span> — GitHub PR #21 merged 2026-11-12 |
+| Targets | device graph capture; CPU collectives | RI-TGT-005, -003 | R2 | <span class="state-part">in progress</span> — `capture` and `replay` exist, eager on the CPU; collectives not started |
 | ROCm | HIP binding, typed errors, `gcnArchName` check, module loading with resource checks, `unsafe` confined to `ffi` | RI-ROC-001 to -005 | R1 | Planned R1, #12 |
 | ROCm | RCCL collectives, HIP graphs per batch bucket | RI-ROC-006, -007 | R2 | Not started |
 | ROCm | own IPC all-reduce for small messages | RI-ROC-006 | R3 | Not started |
@@ -71,7 +71,7 @@ branch carries, and that branch is not merged.
 | Distributed | expert parallel, attention data parallel | RI-DIST-002, -003 | R3 | Not started |
 | Distributed | pipeline and context parallel, multi-node, Helios scale-up, disaggregated prefill and decode | RI-DIST-005 | R4 | Not started |
 | Server | OpenAI-compatible endpoints, health and metrics, chat templates, request ids, limits, profiling toggles | RI-SRV-001 to -006 | R3 | Not started |
-| Observability | `docs/observability.md` tier assessment and signal inventory | RI-OBS-004 | R1 | <span class="state-part">in progress</span> — file exists on the scaffold branch |
+| Observability | `docs/observability.md` tier assessment and signal inventory | RI-OBS-004 | R1 | <span class="state-part">in progress</span> — the file is on `main` |
 | Observability | Prometheus metrics, request logs, bench datasets | RI-OBS-001 to -003 | R2 | Not started |
 | Security | canonical paths, only HIP and RCCL loaded, bounded artifact reader, bounded file parsing, input hashes, matrix refusal | RI-SEC-001 to -005 | R1 | Planned R1 (#2 carries path canonicalisation; the rest with #4, #6, #10) |
 | Security | time budgets for grammars and post-processors | RI-SEC-006 | R3 | Not started |

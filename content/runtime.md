@@ -8,9 +8,14 @@ summary: The executor, scheduler, KV cache and sampler as the SRS specifies them
 # Runtime and serving
 
 Read from SRS §3.2.11 to §3.2.19 and §3.2.21, `docs/observability.md`, and
-the state, sequence and concurrency diagrams at commit `082df51`. The
-`rustinfer-runtime` crate is an error type; issue #13 implements the R1
-executor and #14 wires `run` through it. No request has been served.
+the state, sequence and concurrency diagrams, and `crates/rustinfer-target/`
+and `crates/rustinfer-planner/` at commit `f039b4d`. The `rustinfer-runtime`
+crate is an error type; issue #13 implements the R1 executor and #14 wires
+`run` through it. What the executor will drive is in the code since
+2026-11-12: the `Device` and `Launcher` traits with buffers, streams, events,
+copies, graph capture and counted host synchronisations in `rustinfer-target`
+(GitHub PR #21), and the placement the planner fills in `rustinfer-planner`
+(PR #20). No request has been served.
 
 ## The first-class workload
 
@@ -32,6 +37,14 @@ request path (RI-RT-001). Each iteration executes the Plan's launches in
 order with no kernel selection, shape inference or allocation (RI-RT-002).
 RI-NFR-001 makes that testable: zero heap allocations on the decode path
 after warm-up, verified by an allocation-counting test on the CPU target.
+Two of the instruments exist in the code: the `Device` trait counts stream
+synchronisations, event synchronisations and readbacks (`SyncCounters`) so a
+test can prove a decode path performs no host synchronisation (RI-RT-010),
+and `capture` and `replay` take a sub-plan keyed by a batch bucket as graph
+segments split at the host-synchronising launches (RI-TGT-005, RI-GC-015),
+eager on the CPU reference. The planner call is `rustinfer_planner::place`,
+which validates the document, the profile and the topology, fills every
+placement and device slot and refuses a document with one left empty.
 
 | API verb | release |
 |---|---|

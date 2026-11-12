@@ -9,10 +9,13 @@ summary: The .rie engine file from ADR-002 and the artifact requirements; header
 # The artifact
 
 Read from ADR-002, SRS §3.2.7 (`RI-ART`), RI-SEC-002, RI-PLN-005 and
-`constants.rs` at commit `082df51`. No artifact has been written yet: the
-`rustinfer-artifact` crate is an error type, and issue #4 implements this
-page. The API changelog records that format version 1 and the magic are
-reserved.
+`constants.rs` at commit `082df51`, when the `rustinfer-artifact` crate was
+an error type. The crate is in the code since Codeberg PR #21 merged into
+`main` as 678b084 on 2026-11-12 (issue #4): the fixed header, the section
+table with nine sections, the content hash, the verifying reader and the
+atomic writer under format version 1, with the layout the code writes in
+`docs/api/artifact.md` in the tree. This page still describes the format
+from ADR-002 and the SRS; no `build` writes an artifact yet (#11).
 
 ## Why a single file
 

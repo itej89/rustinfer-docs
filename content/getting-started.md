@@ -105,8 +105,10 @@ may change; the `error=` and `component=` fields may not
 ## What to do next
 
 Nothing runs a model yet. The Model IR (issue #3) landed on 2026-11-12 as
-the library crate `rustinfer-mir`, which no subcommand calls yet; the next
-things are the artifact (#4), the target abstraction with the CPU reference
-(#5) and the LLaMA frontend (#6); `build` and `inspect` become real with #11
-and `run` with #14. The order and blockers are on the
+the library crate `rustinfer-mir`, which no subcommand calls yet; the
+artifact (#4), the planner interfaces (#15) and the target abstraction with
+the CPU reference (#5) followed the same day, and `build` and `tune` now
+resolve `--target` through the registry before answering `not_implemented`;
+the next things are Sluice (#18), the LLaMA frontend (#6) and the Kernel IR
+(#7); `build` and `inspect` become real with #11 and `run` with #14. The order and blockers are on the
 [issue tracker](issues.html).

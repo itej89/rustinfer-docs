@@ -82,9 +82,11 @@ five and a half minutes for the four jobs in sequence.
 What changed and why: on 2026-11-12 the project moved from Codeberg to
 GitHub because Codeberg's July 2026 terms amendment bans repositories that
 mostly consist of AI-written code (ADR-008, superseding ADR-004). GitHub
-Actions reads the same `.github/workflows/ci.yml`; the hosting pull request
-in the code repository retargets the jobs, and until it merges the checkout
-at `678b084` still names Codeberg's runner label and the v3 upload action.
+Actions reads the same `.github/workflows/ci.yml`; GitHub PR #19 (9d448ce,
+merged 2026-11-12) retargeted the jobs, and at `f039b4d` the workflow names
+`ubuntu-latest` on every job, `timeout-minutes: 10`, a top-level
+`permissions: contents: read`, a concurrency group with `cancel-in-progress`
+and `actions/upload-artifact` v4.6.2 pinned by SHA.
 
 | on GitHub | detail |
 |---|---|

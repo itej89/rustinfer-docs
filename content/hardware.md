@@ -7,8 +7,11 @@ summary: The targets the workspace registers and the AMD and RISC-V device lands
 
 # Hardware
 
-Read from SRS §2.4, §3.2.8 to §3.2.10, ADR-003 and
-`docs/planning/datacenter-device-inventory.md` at commit `082df51`. The
+Read from SRS §2.4, §3.2.8 to §3.2.10, ADR-003,
+`docs/planning/datacenter-device-inventory.md`, `crates/rustinfer-target/`
+and the four backend crates at commit `f039b4d`; the targets table is read
+from the code since GitHub PR #21 (2026-11-12, issue #5), the device tables
+from the inventory. The
 inventory's scope statement: AMD and the open-standard and RISC-V ecosystem
 around it; NVIDIA parts are out of scope and appear only where a design
 pattern is cited; figures are vendor numbers from the sources listed in the
@@ -17,18 +20,24 @@ run rustinfer.
 
 ## Targets
 
-| architecture string | hardware | backend crate | state at `082df51` | release |
+| architecture string | hardware | backend crate | state at `f039b4d` | release |
 |---|---|---|---|---|
-| `cpu` | any host | `rustinfer-target` | error type only; issue #5 | R1 (operators), R2 (collectives) |
-| `gfx942` | MI300X, MI308X, MI325X | `rustinfer-target-rocm`, feature `rocm` | error type only; issue #12 | R1 |
+| `cpu` | any host | `rustinfer-target` | `CpuTarget` in the code: every R1 operator as `f32` reference functions, a catalog of one `cpu.<operator>` kernel per compute operator, one device with a 16 GiB default budget, the oracle of every other target (RI-TGT-003) | R1 (operators), R2 (collectives) |
+| `gfx942` | MI300X, MI308X, MI325X | `rustinfer-target-rocm`, feature `rocm` | `RocmTarget` stub: empty catalog, no device; issue #12 binds HIP | R1 |
 | `gfx950` | MI350X, MI355X | same | same | R1; the reference architecture for autotuning and benchmarks (OI-008) |
 | CDNA successor (`gfx1250` class, the inventory's guess) | MI450, MI455X in Helios | same, when available | — | not in a release tag |
-| `spirv-vulkan` | Imagination BXM-4-64 on the SpacemiT K3 | `rustinfer-target-spirv-vulkan` | stub | R2 lowering, compile-tested |
-| `riscv-vector` | SpacemiT K3 X100 cores (RVA23, RVV 1.0), SpacemiT V100 | `rustinfer-target-riscv-vector` | stub | R3 lowering, compile-tested; first device bring-up R3 |
-| `riscv-mesh` | Tenstorrent Blackhole (120 Tensix cores plus 16 RISC-V Linux cores) | `rustinfer-target-riscv-mesh` | stub | R4 |
+| `spirv-vulkan` | Imagination BXM-4-64 on the SpacemiT K3 | `rustinfer-target-spirv-vulkan` | `SpirvVulkanTarget` stub | R2 lowering, compile-tested |
+| `riscv-vector` | SpacemiT K3 X100 cores (RVA23, RVV 1.0), SpacemiT V100 | `rustinfer-target-riscv-vector` | `RiscvVectorTarget` stub | R3 lowering, compile-tested; first device bring-up R3 |
+| `riscv-mesh` | Tenstorrent Blackhole (120 Tensix cores plus 16 RISC-V Linux cores) | `rustinfer-target-riscv-mesh` | `RiscvMeshTarget` stub | R4 |
 
-A stub compiles on every host, registers its string, and makes a build fail
-at kernel selection with `catalog empty` (RI-RV-002). The ROCm runtime is
+In the code, a stub implements `Target` with an `EmptyCatalog` and no
+device: it compiles on every host, registers its string through one
+`entry()`, any kernel request fails with `catalog empty` naming the target
+(RI-RV-002) and `device(0)` with `NoDevice`. The command's registry lists
+exactly the six strings above and `build` and `tune` resolve `--target`
+through it before any component runs (RI-TGT-001, -004); a product name or
+an unregistered string is refused listing the registered ones. The rest of
+this section is specified in the SRS for #12: the ROCm runtime is
 `libamdhip64` through one FFI module, with every HIP error carried as a
 typed error, the architecture read from `gcnArchName` and a mismatched
 artifact refused, code objects loaded only after the artifact check with

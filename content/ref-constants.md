@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-678b084 2026-11-12. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 62
+f039b4d 2026-11-12. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 91
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -86,3 +86,33 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_MAX_RANKS_PER_WEIGHT` | `usize` | `65_536` | Upper bound on the ranks listed for one weight of the manifest (RI-SEC-003). |
 | `ARTIFACT_MAX_STRING_LENGTH` | `usize` | `1024` | Upper bound on the byte length of a name, path or version string inside an artifact section (RI-SEC-003). |
 | `ARTIFACT_TMP_SUFFIX` | `&str` | `"tmp"` | Suffix of the writer's temporary file: `<out>.tmp-<pid>` (RI-ART-004). |
+| `TOPOLOGY_FORMAT_VERSION` | `u32` | `1` | Topology section format version this build writes (RI-PLN-001). Versioned independently of `ARTIFACT_FORMAT_VERSION` and `MODEL_IR_FORMAT_VERSION`. |
+| `TOPOLOGY_SUPPORTED_VERSIONS` | `&[u32]` | `&[TOPOLOGY_FORMAT_VERSION]` | Topology section versions the reader accepts (RI-PLN-001). |
+| `PLACEMENT_FORMAT_VERSION` | `u32` | `1` | Placement section format version this build writes (RI-PLN-005). |
+| `PLACEMENT_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLACEMENT_FORMAT_VERSION]` | Placement section versions the reader accepts (RI-PLN-005). |
+| `TOPOLOGY_MAX_DOCUMENT_BYTES` | `usize` | `4 * 1024 * 1024` | Upper bound on the byte length of a topology JSON text the reader parses; checked before parsing (RI-SEC-003). |
+| `TOPOLOGY_MAX_DEVICES` | `usize` | `1024` | Upper bound on the devices of one topology. |
+| `TOPOLOGY_MAX_MEMORY_TIERS` | `usize` | `4096` | Upper bound on the memory tiers of one topology. |
+| `TOPOLOGY_MAX_LINKS` | `usize` | `65_536` | Upper bound on the links of one topology. |
+| `TOPOLOGY_MAX_OFFLOAD_ENGINES` | `usize` | `1024` | Upper bound on the offload engines of one topology. |
+| `TOPOLOGY_MAX_REACHABLE_PER_TIER` | `usize` | `TOPOLOGY_MAX_DEVICES` | Upper bound on the reachable-from entries of one memory tier. |
+| `TOPOLOGY_MAX_NAME_LENGTH` | `usize` | `MODEL_IR_MAX_NAME_LENGTH` | Upper bound on the length in bytes of a topology name, a placement tensor name or a placement node path. |
+| `PLACEMENT_MAX_DOCUMENT_BYTES` | `usize` | `MODEL_IR_MAX_DOCUMENT_BYTES` | Upper bound on the byte length of a placement JSON text the reader parses; a placement names every tensor of a Model IR document (RI-SEC-003). |
+| `PLACEMENT_MAX_TENSORS` | `usize` | `MODEL_IR_MAX_WEIGHTS
+    + MODEL_IR_MAX_FUNCTIONS * MODEL_IR_MAX_NODES_PER_FUNCTION * MODEL_IR_MAX_NODE_OUTPUTS` | Upper bound on the tensors one placement names: every weight plus every output of every node of every function. |
+| `PLACEMENT_MAX_NODES` | `usize` | `MODEL_IR_MAX_FUNCTIONS * MODEL_IR_MAX_NODES_PER_FUNCTION` | Upper bound on the node paths one placement names across its functions. |
+| `PLACEMENT_MAX_DECISIONS` | `usize` | `PLACEMENT_MAX_NODES` | Upper bound on the explained decisions of one placement (RI-PLN-003). |
+| `PLANNER_NODE_PATH_SEPARATOR` | `&str` | `"/"` | Separator between a fused node and one of its parts in a placement node path: `outer/part` (RI-MIR-005). |
+| `PLANNER_SCOPE_WEIGHTS` | `&str` | `"weights"` | Pseudo-function naming the weight set in a placement error. |
+| `PLANNER_SINGLE_DEVICE` | `&str` | `"single_device"` | Name of the single-device planner of Release 1 (RI-PLN-005). |
+| `PLANNER_COST_MODEL` | `&str` | `"cost_model"` | Name of the cost-model planner reserved for Release 2 (RI-PLN-003). |
+| `TARGET_ARCHITECTURE_CPU` | `&str` | `"cpu"` | Architecture string of the CPU reference target (RI-TGT-001, ADR-003). |
+| `TARGET_ARCHITECTURES_ROCM` | `&[&str]` | `&["gfx942", "gfx950"]` | Architecture strings the `ROCm` target registers (RI-ROC-003). |
+| `TARGET_ARCHITECTURE_RISCV_VECTOR` | `&str` | `"riscv-vector"` | Architecture string of the RISC-V vector target (RI-RV-001). |
+| `TARGET_ARCHITECTURE_RISCV_MESH` | `&str` | `"riscv-mesh"` | Architecture string of the RISC-V mesh target (RI-RV-001). |
+| `TARGET_ARCHITECTURE_SPIRV_VULKAN` | `&str` | `"spirv-vulkan"` | Architecture string of the SPIR-V Vulkan target (RI-RV-001). |
+| `TARGET_MAX_ARCHITECTURE_LENGTH` | `usize` | `64` | Upper bound on the byte length of an architecture string, checked before the registry is consulted (RI-TGT-001, RI-SEC-003). |
+| `CPU_DEVICE_NAME` | `&str` | `"cpu reference"` | Device name the CPU reference target reports. |
+| `CPU_DEVICE_DEFAULT_MEMORY_BYTES` | `u64` | `16 * 1024 * 1024 * 1024` | Default memory budget of the CPU reference device, in bytes; allocations beyond it fail like a device out of memory. |
+| `CPU_KERNEL_ID_PREFIX` | `&str` | `"cpu."` | Prefix of every CPU reference kernel id: `cpu.<operator>`. |
+| `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |

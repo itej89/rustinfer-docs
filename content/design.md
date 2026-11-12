@@ -8,8 +8,9 @@ summary: The three representations, the fourteen crates and the direction their 
 # Design
 
 Read from ADR-001, ADR-003, ADR-005, SRS §2, `docs/uml/component-diagram.md`,
-`Cargo.toml`, `crates/rustinfer-core/` and `crates/rustinfer-mir/` at commit
-`2d75c5d`. The diagrams themselves are on [design diagrams](design-diagrams.html).
+`Cargo.toml`, `crates/rustinfer-core/`, `crates/rustinfer-mir/`,
+`crates/rustinfer-target/`, `crates/rustinfer-planner/` and
+`crates/rustinfer-cli/src/targets.rs` at commit `f039b4d`. The diagrams themselves are on [design diagrams](design-diagrams.html).
 
 ## Three representations
 
@@ -18,9 +19,9 @@ between a model file and machine code.
 
 | representation | what it is | who produces it | who consumes it | carried in the artifact as |
 |---|---|---|---|---|
-| **Model IR** | a typed SSA graph: each node applies one operator to named input tensors and defines named outputs; shapes mix static integers with the four named dynamic dimensions `batch`, `num_tokens`, `seq_len`, `beam`, bounded by a profile; every tensor has a placement slot and every node a device slot. In the code as `rustinfer-mir` since PR #19 (below) | the frontend | the graph compiler, the planner, every target | canonical JSON (sorted keys, compact, exact integers), versioned on its own (RI-MIR-007, -008) |
+| **Model IR** | a typed SSA graph: each node applies one operator to named input tensors and defines named outputs; shapes mix static integers with the four named dynamic dimensions `batch`, `num_tokens`, `seq_len`, `beam`, bounded by a profile; every tensor has a placement slot and every node a device slot. In the code as `rustinfer-mir` since Codeberg PR #19 (below) | the frontend | the graph compiler, the planner, every target | canonical JSON (sorted keys, compact, exact integers), versioned on its own (RI-MIR-007, -008) |
 | **Kernel IR** | a tile-level MLIR dialect with explicit layouts: tiles, memory spaces (global, shared, register), barriers, a matrix-multiply op, masked loads and stores, reductions, structured control flow; thread identity does not appear | Rust generator functions, through a builder | the kernel compiler's lowerings | not carried; the lowered binaries are, in the `kernels` section |
-| **Plan** | the static schedule: an ordered list of launches with kernel id, argument bindings, shape expressions over the dynamic dimensions, and sub-plans for prefill, decode and a mixed iteration | the graph compiler | the executor, verbatim | the `plan` section |
+| **Plan** | the static schedule: an ordered list of launches with kernel id, argument bindings, shape expressions over the dynamic dimensions, and sub-plans for prefill, decode and a mixed iteration. The launch itself, `Launch` in `rustinfer-target` (kernel id, operator, operand ranges with dtype and shape, a host-sync mark), is in the code since GitHub PR #21; the schedule is the graph compiler's, #10 | the graph compiler | the executor, verbatim | the `plan` section |
 
 The SRS's §2.1 names the model: Core ML's MIL as the one graph contract, MLX's
 fixed catalog of kernels plus a small fuser, Metal's AIR as portable IR
@@ -31,7 +32,8 @@ retargets to SIMT, vector and mesh devices; a thread IR does not.
 ## The Model IR in the code
 
 Read from `crates/rustinfer-mir/src/` and `docs/api/model-ir.md` at
-`2d75c5d`. PR #19 merged into `main` on 2026-11-12 and closed issue #3; the
+`f039b4d`. Codeberg PR #19 merged into `main` as 2d75c5d on 2026-11-12 and
+closed issue #3; the
 crate is the first component crate with behaviour, and its public API is
 the `pub use` list of `lib.rs`: `Document`, `Function`, `KvGroup`, `Node`,
 `Op` with its attribute structs, `OpKind` and the registry types, `Tensor`,
@@ -117,45 +119,88 @@ generated on the [crates](ref-crates.html) page.
 | planner | `rustinfer-planner` | mir, core |
 | frontend | `rustinfer-frontend` | mir, core |
 | artifact | `rustinfer-artifact` | mir, core |
-| targets | `rustinfer-target` (trait, CPU reference); `rustinfer-target-rocm`, `-riscv-vector`, `-riscv-mesh`, `-spirv-vulkan` | target, core |
+| targets | `rustinfer-target` (traits, registry, CPU reference); `rustinfer-target-rocm`, `-riscv-vector`, `-riscv-mesh`, `-spirv-vulkan` | `rustinfer-target`: mir, core; each backend: target, core |
 | model IR | `rustinfer-mir` | core |
 | foundation | `rustinfer-core` | nothing in the workspace |
 
-At `2d75c5d` `rustinfer-core`, `rustinfer-cli` and `rustinfer-mir` carry
-behaviour; every other crate has its `COMPONENT` name, its error enum and its
-`pub use` list, so the dependency graph is fixed from the first commit (the
-component diagram cites heuristic G22, logical dependencies made physical).
-Note that the diagram shows the compilers and runtime depending on `mir`,
-`target` and `artifact`, while the Cargo manifests at `2d75c5d` still list
-only `core` for every crate but the command; the edges are added when the
-issues that need them land. `rustinfer-mir` adds `serde` and `serde_json`,
-pinned, for the canonical JSON.
+At `f039b4d` `rustinfer-core`, `rustinfer-cli`, `rustinfer-mir`,
+`rustinfer-artifact`, `rustinfer-planner` and `rustinfer-target` carry
+behaviour and the four backend crates implement `Target` as stubs; the
+compilers, the frontend and the runtime have their `COMPONENT` name, their
+error enum and their `pub use` list, so the dependency graph is fixed from
+the first commit (the component diagram cites heuristic G22, logical
+dependencies made physical). The Cargo manifests carry the edges `mir` →
+`core`; `artifact`, `planner` and `target` → `mir`, `core`; each backend →
+`target`, `core`; the command → every crate. The compilers and the runtime
+still list only `core`, and the diagram's edges from them to `mir`, `target`
+and `artifact` are added when the issues that need them land.
+`rustinfer-mir` adds `serde` and `serde_json`, pinned, for the canonical
+JSON; `rustinfer-planner` the same two and `tracing`; `rustinfer-target`
+`tracing`.
 
 The public API of a crate is the `pub use` list in its `lib.rs`; everything
 else is crate-private. `missing_docs = deny` makes every public item a
 documented decision.
 
-## Targets
+## Targets in the code
 
-ADR-003: one trait, `Target`, composed of three capabilities. `Catalog` is
-device-free, the list of generated kernels for an architecture with
-constraints, tuned parameters, cost and validation records; the graph compiler
-queries it, so `build` runs on any host. `Device` is enumeration, properties,
-buffers, streams, events, copies and graph capture. `Launcher` executes one
-Plan entry against bound buffers. A backend crate implements all three,
-registers its architecture strings, and provides one Kernel IR lowering;
-adding a target touches a new crate, one registry entry and one lowering, and
-nothing in the compilers, planner or runtime (RI-TGT-004). Targets are
-resolved from the architecture string only; product names are never
-interpreted (RI-TGT-001). The runtime holds `Box<dyn Target>`, which ADR-003
-prices at one indirect call per launch.
+Read from `crates/rustinfer-target/src/`, the four backend crates and
+`crates/rustinfer-cli/src/targets.rs` at `f039b4d`. GitHub PR #21 merged
+into `main` on 2026-11-12 and closed issue #5. ADR-003's one trait composed
+of three capabilities is the `pub use` list of `lib.rs`:
 
-Registered strings: `cpu`, `gfx942`, `gfx950`, `riscv-vector`, `riscv-mesh`,
-`spirv-vulkan`. The CPU reference implements every R1 operator in Rust with
-fp32 accumulation and is the correctness oracle for every other target
-(RI-TGT-003). The three RISC-V and SPIR-V crates are stubs until hardware is
-on the bench; a build for one fails at kernel selection with `catalog empty`,
-which RI-RV-002 keeps as the proof that the abstraction holds end to end.
+| trait | methods in the code | notes |
+|---|---|---|
+| `Target` | `architecture`, `catalog`, `devices`, `device(index)`, `launcher(index)` | `NoDevice` for an index the host does not have (RI-NFR-016) |
+| `Catalog` | `architecture`, `entries`, `select(query)` | device-free; `select` returns the cheapest entry matching operator, dtype, layout and bucket among those whose `Validation` names this architecture (RI-GC-005, RI-KC-013); `CatalogEmpty` naming the target when there are no entries (RI-RV-002), `NoKernel` naming the query when nothing matches |
+| `Device` | `properties`, `alloc`, `free`, `create_stream`, `create_event`, `record`, `wait`, `copy_to_device`, `copy_to_host`, `copy_on_device`, `synchronize`, `synchronize_event`, `capture`, `replay`, `sync_counters`, `reset_sync_counters` | every method takes `&self`, a backend serialises its own state; `wait` makes a stream wait on the device without the host; the three host synchronisations are counted (`SyncCounters`) so a test can prove a path performs none (RI-RT-010); `capture` splits a sub-plan into graph segments at the host-synchronising launches, keyed by a batch bucket (RI-TGT-005, RI-GC-015) |
+| `Launcher` | `load(binary)`, `launch(launch, stream)` | executes one resolved `Launch` against bound buffers; refuses an unknown kernel, a mismatched operand, an unsupported dtype or a range outside a live buffer before any byte is read |
+
+All four are object-safe and `Send + Sync`, so the runtime will hold
+`Box<dyn Target>` (one indirect call per launch, ADR-003's price) and the
+compiler `&dyn Catalog`, which is why `build` will run on any host. A
+`KernelEntry` is a kernel id, the operator, its dtypes, a layout, shape rules,
+a `KernelCost` (measured, or `Untuned`), an optional `Validation` record
+(architecture, driver version, date) and tuned parameters; a `KernelBinary`
+carries the bytes, their format and the Kernel IR beside them (RI-ART-013).
+A `Launch` is the kernel id, the operator, input and output `Operand`s (a
+buffer range with dtype and shape) and a `HostSync` mark; `segments` splits a
+launch list at the marks.
+
+A backend exposes one `TargetEntry` (its architecture strings and a
+constructor) and the `Registry` resolves a target from an architecture string
+only, validated at the boundary (non-empty, at most 64 bytes, `[A-Za-z0-9_-]`)
+and never mapped from a product name (RI-TGT-001); the refusal is logged once
+as `stage=resolve boundary=architecture_string`. The composition root is
+`rustinfer-cli/src/targets.rs`, one line per backend crate, and a unit test
+there asserts the registry lists exactly `cpu`, `gfx942`, `gfx950`,
+`riscv-vector`, `riscv-mesh` and `spirv-vulkan`; adding a target is a new
+crate and one line there, nothing in the compilers, planner or runtime
+(RI-TGT-004). `build` and `tune` resolve `--target` before any component
+runs. The one Kernel IR lowering a backend is to provide does not exist yet
+(#7, #8).
+
+The CPU reference target `CpuTarget` registers `cpu`: a `reference` module
+of plain functions over `f32` slices with `f32` accumulation, the
+correctness oracle of every other target (RI-TGT-003, RI-KC-007), covering
+`embedding`, `matmul`, `logits_head`, `rmsnorm`, `layernorm`, `rope` in the
+rotate-half convention, `silu_and_mul`, `gelu_and_mul` (tanh approximation),
+`residual_add`, `attention_prefill`, `attention_decode_paged`,
+`kv_cache_write`, `quantize`, `dequantize` and `sample`, a pure function of
+a caller-supplied uniform draw; each checks its operand lengths and index
+operands and refuses a mismatch naming the operator and the operand. The
+`numeric` module converts `bf16`, `fp16` and the fp8 `e4m3` and `e4m3fnuz`
+formats, round to nearest even and saturating. The catalog lists one
+`Untuned` native kernel `cpu.<operator>` per compute operator, validated on
+`cpu`, and no fused kernel, so the compiler never fuses for `cpu`; the one
+device has a memory budget (16 GiB by default, `OutOfMemory` past it), and
+its launcher checks buffers out of one mutex around the compute so no lock
+is held across a launch. The four backend crates (`RocmTarget` under
+`gfx942` and `gfx950`, `RiscvVectorTarget`, `RiscvMeshTarget`,
+`SpirvVulkanTarget`) implement `Target` with an `EmptyCatalog` and no device,
+so a build for one fails at kernel selection with `catalog empty` naming the
+target, which RI-RV-002 keeps as the proof that the abstraction holds end to
+end; the `unsafe` budget is still `0`, the HIP binding is #12.
 
 ## The error contract
 

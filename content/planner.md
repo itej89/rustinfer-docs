@@ -8,12 +8,15 @@ summary: The pass that places weights, KV tiers, phases and serving functions ac
 
 # The topology planner
 
-Read from SRS §3.2.6 (`RI-PLN`), §2.1, ADR-006 and
-`docs/planning/datacenter-device-inventory.md` §9 at commit `082df51`. The
-`rustinfer-planner` crate is an error type; issue #15 implements the R1
-interfaces (the types and a single-device planner). The owner's decision,
-recorded in the SRS changelog, is interfaces in Release 1 and implementation
-in Release 2, so the R1 types are shaped by the R2 job.
+Read from SRS §3.2.6 (`RI-PLN`), §2.1, ADR-006,
+`docs/planning/datacenter-device-inventory.md` §9, `crates/rustinfer-planner/src/`
+and `docs/api/topology.md` at commit `f039b4d`. GitHub PR #20 merged into
+`main` as d886a3c on 2026-11-12 and closed issue #15: the crate holds the
+R1 interfaces, the topology model and the single-device planner, and
+discovery and the cost-model planner answer `not_implemented` until
+Release 2. That is the owner's decision, recorded in the SRS changelog:
+interfaces in Release 1 and implementation in Release 2, so the R1 types are
+shaped by the R2 job.
 
 ## The job
 
@@ -27,17 +30,55 @@ device slot, empty after the frontend and filled by the planner (RI-MIR-005).
 ## The topology model (R1)
 
 RI-PLN-001 names what the model describes, serialisable to and from JSON;
-the device inventory's §9 is the longer form.
+the device inventory's §9 is the longer form. The table is the code's
+`Topology` in `topology.rs`, with the SRS's words where they differ.
 
-| element | attributes |
+| element | attributes in the code |
 |---|---|
-| device | architecture id; compute kind (simt, vector, mesh, scalar cores, sram-decode); matrix formats; phase affinity (prefill, decode, both); local memory tier; graph capture; whether rustinfer generates code for it or only routes around it |
-| memory tier | capacity; read and write bandwidth; latency; sharing scope (device, socket, node, rack, cluster); the set of units that reach it and by what mechanism (direct, RDMA, peer-to-peer, CXL, DPU-mediated) |
-| link | endpoints; bandwidth; latency; adjacency pattern (crossbar, ring, mesh, PCIe tree); hardware collective support |
-| offload engine | a device that can run serving-stack functions (DPU cores, a persistent GPU kernel) and which functions: ingress, tokenization, streaming, KV eviction, storage I/O |
+| `Device` | `name`; `architecture`, the target registry's string; `compute_kind` (`simt`, `vector`, `mesh`, `scalar_cores`, `sram_decode`); `matrix_formats`, Model IR dtypes; `phase_affinity` (`prefill`, `decode`, either, both or none); `local_tier`, an index into the memory tiers; `graph_capture`. The SRS also names whether rustinfer generates code for the device or only routes around it; the code does not carry that yet |
+| `MemoryTierSpec` | `name`; `kind`, the Model IR placement tier (`hbm`, `dram`, `cxl`, `nvme`); `capacity_bytes`; `read_bandwidth_bytes_per_s` and `write_bandwidth_bytes_per_s`; `latency_ns`; `sharing_scope` (`device`, `socket`, `node`, `rack`, `cluster`); `reachable_from`, the devices that reach it each with a mechanism (`direct`, `peer_to_peer`, `rdma`, `cxl`, `dpu_mediated`) |
+| `Link` | two distinct `endpoints`; `bandwidth_bytes_per_s`; `latency_ns`; `adjacency` (`point_to_point`, `switched`, `ring`, `mesh`; the SRS says crossbar, ring, mesh, PCIe tree); `hardware_collectives` |
+| `OffloadEngine` | `name`; `device`; `functions` (`ingress`, `tokenization`, `streaming`, `kv_eviction`, `storage_io`) |
 
-The artifact reserves `topology` and `placement` sections from R1, empty at
-build unless pinned (RI-PLN-005: "format stability").
+In the code a `Topology` goes to and from canonical JSON (sorted keys,
+compact, exact integers) under `topology_version` 1, the only version the
+reader accepts; the reader is bounded before parsing
+(`TOPOLOGY_MAX_DOCUMENT_BYTES`) and every list by a `TOPOLOGY_MAX_*`
+constant ([constants](ref-constants.html)); `validate` refuses a fault naming
+the field by path (`devices[2].local_tier`), a duplicate name naming the
+list, and an unknown, missing or mistyped field as `malformed`. An empty
+topology is valid and is what an unpinned artifact carries. The artifact's
+`topology` and `placement` sections exist in `rustinfer-artifact` since
+Codeberg PR #21 and are empty unless pinned (RI-PLN-005: "format
+stability"); the `build` that writes them is #11.
+
+## Placement in the code
+
+A `Placement` is a tier per tensor name, a device index per node path
+(`outer/part` for the part of a fused node), the `Strategy`
+(`single_device` in R1, `null` for the empty section) and a list of
+`Decision`s, each a subject, a choice and a reason in words (RI-PLN-003); it
+serialises the same way under `placement_version` 1. `Placement::apply`
+fills the Model IR's placement and device slots and refuses, naming the
+function and the tensor or node, when the placement lacks an entry or names
+one the document does not have; `Placement::check_filled` refuses a document
+with any slot still empty (RI-MIR-005).
+
+The `Planner` trait is two methods: `name`, the strategy recorded in the log
+line, and `plan(document, profile, topology) -> Placement`, which fills
+nothing itself. `SingleDevicePlanner::new(index)` (or `for_architecture`,
+the first device with that string) puts every tensor in the device's local
+tier and every node on the device, and refuses with `capacity_exceeded`
+naming the device, the tier, the required and the available bytes when the
+footprint at the profile's `max` (the weights plus the largest function's
+distinct inputs and outputs, each tensor once) exceeds the tier; KV blocks
+are not in the footprint, the runtime sizes the pool (RI-KVC-003). `place`
+is the one call the rest of R1 makes: validate the document, the profile and
+the topology, plan, apply, check that no slot is empty; on a refusal the
+document is left as it was. `CostModelPlanner::plan` and `discover()` exist
+and answer `not_implemented` naming RI-PLN-003 and RI-PLN-002. Every type
+is `Send + Sync`; the PR's tests share one planner and topology across four
+threads.
 
 ## Discovery and placement (R2 and beyond)
 
@@ -55,8 +96,9 @@ the placement section (RI-PLN-003):
 
 Placement is computed at load, cached beside the artifact keyed by topology
 hash, and pinnable; a pinned placement is refused on a differing topology
-(RI-PLN-004). The unit of placement is a node or a rack; the inventory says
-the cluster layer above, a cache-aware router, decides which rack.
+(RI-PLN-004, specified in the SRS; load-path behaviour, not in the crate).
+The unit of placement is a node or a rack; the inventory says the cluster
+layer above, a cache-aware router, decides which rack.
 
 ## What the planner may see
 

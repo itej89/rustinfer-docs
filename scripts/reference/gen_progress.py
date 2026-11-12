@@ -11,6 +11,11 @@ fetched_at timestamp so a build without `gh` reproduces the last one.
 The project moved from Codeberg to GitHub on 2026-11-12 (ADR-008). The
 issues keep their numbers; the Codeberg pull requests (#16, #17, #19, #21)
 and Actions runs 1 to 11 did not move and are recorded here as history.
+GitHub's own pull requests start at #19 again, so GitHub PR #19 (hosting),
+#20 (planner) and #21 (target) are not the Codeberg PRs of the same number.
+
+A requirement counts as implemented when the Epic's checklist assigns it to
+an issue that is closed; the assignment is parsed from the checklist lines.
 """
 import datetime
 import json
@@ -25,9 +30,9 @@ WEB = f"https://github.com/{REPO}"
 SNAPSHOT = SITE / "data" / "progress-snapshot.json"
 TODAY = datetime.date.today().isoformat()
 
-# Coverage is taken from the merge-readiness checklist of PR #19, not measured here.
-COVERAGE = ("95.50%", "the coverage block of PR #19's merge-readiness checklist "
-            "(`cargo llvm-cov --workspace --all-features`), 2026-11-12")
+# Coverage is taken from the final test run of PR #21's checklist, not measured here.
+COVERAGE = ("96.44%", "the final test run of GitHub PR #21's merge-readiness checklist "
+            "(`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12")
 EPIC = 1
 SEQUENCE = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  # the Epic's order
 
@@ -44,6 +49,25 @@ CODEBERG_PULLS = [
 ]
 # The issue body's `## Blocked By` section, the drafts' form, when the dependency API has nothing.
 BLOCKED_BY = re.compile(r"^##\s*Blocked By\s*\n(.*?)(?=^##\s|\Z)", re.I | re.M | re.S)
+# One Epic checklist line: `- [ ] #5 Target ... (RI-TGT-001 to -004; RI-RV-001, -002)`.
+CHECKLIST = re.compile(r"^- \[[ xX]\] #(\d+) [^(\n]*\(([^)\n]*)\)", re.M)
+
+
+def checklist_requirements(body):
+    """The requirement ids the Epic's checklist assigns to each issue, ranges expanded."""
+    found = {}
+    for n, spec in CHECKLIST.findall(body or ""):
+        ids, group = [], None
+        for part in re.split(r"[;,]\s*", spec):
+            m = re.match(r"(RI-[A-Z]+)-(\d{3})(?:\s+to\s+-(\d{3}))?$", part.strip())
+            short = re.match(r"-(\d{3})$", part.strip())
+            if m:
+                group, lo, hi = m.group(1), int(m.group(2)), int(m.group(3) or m.group(2))
+                ids += [f"{group}-{i:03d}" for i in range(lo, hi + 1)]
+            elif short and group:
+                ids.append(f"{group}-{int(short.group(1)):03d}")
+        found[int(n)] = ids
+    return found
 
 
 # ------------------------------------------------------------------- GitHub
@@ -83,6 +107,8 @@ def live_state():
         runs = gh("actions/runs?per_page=12", paginate=False).get("workflow_runs", [])
         branches = gh("branches?per_page=100")
         deps = {i["number"]: blocked_by(i) for i in issues}
+        epic = next((i for i in issues if i["number"] == EPIC), {})
+        assigned = checklist_requirements(epic.get("body"))
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError, ValueError, KeyError):
         return None
     if not issues and not pulls:
@@ -94,7 +120,8 @@ def live_state():
                     "closed_at": (i.get("closed_at") or "")[:10],
                     "labels": [l["name"] for l in i["labels"]],
                     "milestone": (i.get("milestone") or {}).get("title"),
-                    "blocked_by": deps.get(i["number"], [])}
+                    "blocked_by": deps.get(i["number"], []),
+                    "requirements": assigned.get(i["number"], [])}
                    for i in sorted(issues, key=lambda x: x["number"])],
         "pulls": [{"number": p["number"], "title": p["title"], "state": p["state"],
                    "head": p["head"]["ref"], "base": p["base"]["ref"],
@@ -155,7 +182,8 @@ pulls = state["pulls"]
 pr_for_branch = {p["head"]: p for p in pulls}
 codeberg_pr_for_branch = {p["head"]: p for p in CODEBERG_PULLS}
 closed = [n for n in SEQUENCE if issues.get(n, {}).get("state") == "closed"]
-implemented = 0  # a requirement is implemented when its issue is closed; none is
+srs_ids = {q[0] for q in reqs}
+implemented = len({r for n in closed for r in issues[n].get("requirements", []) if r in srs_ids})
 
 
 def branch_of(n):
@@ -221,7 +249,7 @@ runs did not move and are listed below as history.
 | Release 1 issues closed | `{bar(len(closed), len(SEQUENCE))}` | #2 to #15; the Epic #1 is not counted. Milestone `{milestone["title"] if milestone else "—"}`: {milestone["closed"] if milestone else 0} closed, {milestone["open"] if milestone else 0} open |
 | Pull requests on GitHub | {merged} merged, {open_prs} open | {", ".join(f"[#{p['number']}]({p.get('url', WEB + '/pull/' + str(p['number']))}) `{p['head']}` → `{p['base']}` ({'merged' if p['merged'] else p['state']})" for p in pulls) or "none yet"}; four more were merged on Codeberg before the move, see below |
 | Latest CI run | {ci_text} | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
-| SRS requirements implemented | `{bar(implemented, len(reqs))}` | a requirement is implemented when the issue that carries it is closed; by SRS status today: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))}; by release: {", ".join(f"{k} {v}" for k, v in by_release.items())} |
+| SRS requirements implemented | `{bar(implemented, len(reqs))}` | a requirement is implemented when the Epic's checklist assigns it to a closed issue ({", ".join(f"#{n}" for n in closed) or "none"}); the SRS's own status field is not updated until a release, so by SRS status today: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))}; by release: {", ".join(f"{k} {v}" for k, v in by_release.items())} |
 | Tests | {tests} | `#[test]` functions across {len(crates)} crates |
 | Line coverage | {COVERAGE[0]} | from {COVERAGE[1]}; the CI gate is 80 percent |
 | Rust | {lines_rs:,} lines in {len(rs_files)} files | `crates/**/*.rs`, tests and build scripts included |
@@ -257,7 +285,7 @@ for n in SEQUENCE:
                      + ("" if p["mergeable"] else ", not mergeable as it stands"))
     cb = next((p for p in CODEBERG_PULLS if p["title"].endswith(f"(#{n})")), None)
     if cb:
-        notes.append(f"Codeberg PR #{cb['number']} `{cb['head']}` merged {cb['merged_at']}, before the move")
+        notes.append(f"Codeberg PR #{cb['number']} `{cb['head']}` merged {cb['merged_at']}, before the move (not GitHub PR #{cb['number']})")
     if n == 7:
         notes.append("writes ADR-007 (OI-009); needs a self-hosted runner for LLVM")
     if n in (9, 12):
@@ -274,8 +302,9 @@ The Epic [#{EPIC}]({WEB}/issues/{EPIC}) is `{e.get("state", "?")}` with labels {
 ## Pull requests
 
 GitHub's pull requests, then the four merged on Codeberg before the move. The Codeberg numbers
-are history: they are not GitHub pull requests and GitHub's own numbering continues after the
-issues it holds.
+are history: they are not GitHub pull requests, and GitHub's own numbering restarted after the
+eighteen issues it holds, so GitHub PR #19 (hosting), #20 (planner) and #21 (target) share
+their numbers with Codeberg PR #19 (Model IR) and #21 (artifact) and are different pull requests.
 
 | id | work | required by | status | notes |
 |---|---|---|---|---|
@@ -290,11 +319,11 @@ for p in pulls:
     base_pr = next((q for q in pulls if q["head"] == p["base"]), None)
     req = f"PR-{base_pr['number']} merged first (stacked)" if base_pr else "a reviewer's sign-off"
     notes = (f"`{p['head']}` → `{p['base']}`; {'mergeable' if p['mergeable'] else 'not mergeable as it stands'}"
-             + ("; only the owner can approve the SRS" if p["base"] == "main" else ""))
+             + ("; only the owner can approve the SRS" if p["head"].startswith("docs/1-") else ""))
     out += f"| PR-{p['number']} | [{p['title']}]({p.get('url', WEB + '/pull/' + str(p['number']))}) | {req} | {st} | {notes} |\n"
 for p in CODEBERG_PULLS:
     out += (f"| PR-{p['number']} | {p['title']} | a reviewer's sign-off | Merged {p['merged_at']} | "
-            f"`{p['head']}` → `{p['base']}`; merged on Codeberg before the move, the branch is on GitHub |\n")
+            f"`{p['head']}` → `{p['base']}`; merged on Codeberg before the move; the branch did not move |\n")
 
 out += f"""
 ## CI runs
@@ -303,7 +332,7 @@ The most recent runs of `ci.yml` on GitHub Actions, newest first. `queued` means
 hosted runner. GitHub's run numbers restart at 1: the Codeberg history, runs 1 and 2 of
 2026-11-11 cancelled unanswered (`ubuntu-latest`, a label Codeberg never served), runs 3 to 6
 each failing on one Codeberg-specific rule recorded in ADR-004, run 7 the first green run, runs 8
-to 11 green on PRs #17 and #19 and `main`, did not move and is gone with the Codeberg repository
+to 11 green on Codeberg PRs #17 and #19 and `main`, did not move and is gone with the Codeberg repository
 ([build steps](build-steps.html)).
 
 | run | for | commit | event | state | when |
@@ -319,11 +348,16 @@ out += f"""
 | branch | holds |
 |---|---|
 """
-HOLDS = {"main": "the approved SRS v0.2, ADR-001 to ADR-006, the fourteen-crate workspace, the Model IR and the artifact crate (Codeberg PRs #16, #17, #19 and #21)",
+HOLDS = {"main": "the approved SRS v0.2, ADR-001 to ADR-006 and ADR-008, the fourteen-crate workspace, the Model IR, the artifact crate, the planner interfaces and the target abstraction with the CPU reference (Codeberg PRs #16, #17, #19, #21; GitHub PRs #19, #20, #21)",
          "feat/3-model-ir": "the Model IR crate `rustinfer-mir`, merged as Codeberg PR #19",
          "feat/4-artifact-format": "the `.rie` artifact crate `rustinfer-artifact`, merged as Codeberg PR #21",
-         "feat/5-target-and-cpu-reference": "the `Target` trait and the CPU reference target (#5), in progress",
-         "feat/15-planner-interfaces": "the planner's R1 interfaces (#15), in progress",
+         "infra/github-hosting": "ADR-008 and the CI retarget to GitHub, merged as GitHub PR #19 (9d448ce)",
+         "feat/15-planner-interfaces": "the planner's topology model, placement and `Planner` trait (#15), merged as GitHub PR #20 (d886a3c)",
+         "feat/5-target-and-cpu-reference": "the `Target` trait family, the registry and the CPU reference target (#5), merged as GitHub PR #21 (f039b4d)",
+         "feat/18-sluice": "Sluice, the weight streamer (#18), in progress",
+         "feat/6-llama-frontend": "the LLaMA frontend (#6), in progress",
+         "feat/7-kernel-ir-mlir-link": "the Kernel IR dialect and the MLIR link (#7), in progress",
+         "docs/readme-docs-link": "the README's link to this site, GitHub PR #22",
          "docs/1-srs-rustinfer": "the SRS, ADR-001 to ADR-006, planning documents, issue drafts",
          "feat/2-project-scaffold": "the workspace, core, command, CI, mandatory files; rebased on the docs branch"}
 for b in branches:

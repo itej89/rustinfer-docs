@@ -1,18 +1,19 @@
 {
- "fetched_at": "2026-11-12T19:29:48+00:00",
+ "fetched_at": "2026-11-12T21:36:03+00:00",
  "source": "github",
  "issues": [
   {
    "number": 1,
    "title": "Epic: rustinfer Release 1 — foundation",
-   "state": "closed",
-   "closed_at": "2026-11-12",
+   "state": "open",
+   "closed_at": "",
    "labels": [
     "epic",
     "feature"
    ],
    "milestone": "R1 — foundation",
-   "blocked_by": []
+   "blocked_by": [],
+   "requirements": []
   },
   {
    "number": 2,
@@ -23,7 +24,8 @@
     "feature"
    ],
    "milestone": "R1 — foundation",
-   "blocked_by": []
+   "blocked_by": [],
+   "requirements": []
   },
   {
    "number": 3,
@@ -36,6 +38,16 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     2
+   ],
+   "requirements": [
+    "RI-MIR-001",
+    "RI-MIR-002",
+    "RI-MIR-003",
+    "RI-MIR-004",
+    "RI-MIR-005",
+    "RI-MIR-006",
+    "RI-MIR-007",
+    "RI-MIR-008"
    ]
   },
   {
@@ -49,19 +61,37 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     3
+   ],
+   "requirements": [
+    "RI-ART-001",
+    "RI-ART-002",
+    "RI-ART-003",
+    "RI-ART-004",
+    "RI-ART-005",
+    "RI-ART-006",
+    "RI-ART-008",
+    "RI-SEC-002"
    ]
   },
   {
    "number": 5,
    "title": "Target abstraction and CPU reference target",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
    "milestone": "R1 — foundation",
    "blocked_by": [
     3
+   ],
+   "requirements": [
+    "RI-TGT-001",
+    "RI-TGT-002",
+    "RI-TGT-003",
+    "RI-TGT-004",
+    "RI-RV-001",
+    "RI-RV-002"
    ]
   },
   {
@@ -75,6 +105,11 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     3
+   ],
+   "requirements": [
+    "RI-FE-001",
+    "RI-FE-002",
+    "RI-FE-003"
    ]
   },
   {
@@ -89,6 +124,11 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     2
+   ],
+   "requirements": [
+    "RI-KC-002",
+    "RI-KC-008",
+    "RI-KC-011"
    ]
   },
   {
@@ -102,6 +142,9 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     7
+   ],
+   "requirements": [
+    "RI-KC-003"
    ]
   },
   {
@@ -116,6 +159,14 @@
    "blocked_by": [
     5,
     8
+   ],
+   "requirements": [
+    "RI-KC-001",
+    "RI-KC-005",
+    "RI-KC-006",
+    "RI-KC-007",
+    "RI-KC-013",
+    "RI-CLI-007"
    ]
   },
   {
@@ -131,6 +182,18 @@
     3,
     5,
     9
+   ],
+   "requirements": [
+    "RI-GC-001",
+    "RI-GC-002",
+    "RI-GC-003",
+    "RI-GC-004",
+    "RI-GC-005",
+    "RI-GC-006",
+    "RI-GC-007",
+    "RI-GC-008",
+    "RI-GC-009",
+    "RI-GC-014"
    ]
   },
   {
@@ -146,6 +209,13 @@
     4,
     6,
     10
+   ],
+   "requirements": [
+    "RI-CLI-002",
+    "RI-CLI-005",
+    "RI-CLI-003",
+    "RI-CLI-004",
+    "RI-ART-004"
    ]
   },
   {
@@ -159,6 +229,13 @@
    "milestone": "R1 — foundation",
    "blocked_by": [
     5
+   ],
+   "requirements": [
+    "RI-ROC-001",
+    "RI-ROC-002",
+    "RI-ROC-003",
+    "RI-ROC-004",
+    "RI-ROC-005"
    ]
   },
   {
@@ -174,6 +251,19 @@
     10,
     12,
     18
+   ],
+   "requirements": [
+    "RI-RT-001",
+    "RI-RT-002",
+    "RI-RT-003",
+    "RI-RT-004",
+    "RI-RT-006",
+    "RI-RT-008",
+    "RI-SCH-003",
+    "RI-KVC-001",
+    "RI-KVC-002",
+    "RI-KVC-004",
+    "RI-SMP-001"
    ]
   },
   {
@@ -188,19 +278,29 @@
    "blocked_by": [
     11,
     13
+   ],
+   "requirements": [
+    "RI-CLI-006",
+    "RI-NFR-001",
+    "RI-NFR-017"
    ]
   },
   {
    "number": 15,
    "title": "Planner: topology model and placement interfaces",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
    "milestone": "R1 — foundation",
    "blocked_by": [
     3
+   ],
+   "requirements": [
+    "RI-PLN-001",
+    "RI-PLN-005",
+    "RI-MIR-005"
    ]
   },
   {
@@ -212,7 +312,8 @@
     "docs"
    ],
    "milestone": null,
-   "blocked_by": []
+   "blocked_by": [],
+   "requirements": []
   },
   {
    "number": 17,
@@ -223,7 +324,8 @@
     "feature"
    ],
    "milestone": null,
-   "blocked_by": []
+   "blocked_by": [],
+   "requirements": []
   },
   {
    "number": 18,
@@ -237,19 +339,164 @@
    "blocked_by": [
     4,
     5
+   ],
+   "requirements": [
+    "RI-WST-001",
+    "RI-WST-002",
+    "RI-WST-003",
+    "RI-WST-004",
+    "RI-WST-005",
+    "RI-ART-012"
    ]
   }
  ],
- "pulls": [],
+ "pulls": [
+  {
+   "number": 19,
+   "title": "ci: move hosting to GitHub (ADR-008)",
+   "state": "closed",
+   "head": "infra/github-hosting",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/19"
+  },
+  {
+   "number": 20,
+   "title": "feat(planner): topology model, placement interfaces and the single-device planner (#15)",
+   "state": "closed",
+   "head": "feat/15-planner-interfaces",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/20"
+  },
+  {
+   "number": 21,
+   "title": "feat(target): Target trait family, architecture registry and the CPU reference target (#5)",
+   "state": "closed",
+   "head": "feat/5-target-and-cpu-reference",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/21"
+  },
+  {
+   "number": 22,
+   "title": "docs(readme): link the documentation site",
+   "state": "open",
+   "head": "docs/readme-docs-link",
+   "base": "main",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/22"
+  }
+ ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 12,
-   "closed": 4
+   "open": 11,
+   "closed": 8
   }
  ],
  "runs": [
+  {
+   "id": 9,
+   "title": "docs(readme): link the documentation site",
+   "status": "in_progress",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "docs/readme-docs-link",
+   "sha": "452f44a",
+   "created": "2026-11-12T21:33",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43311429219"
+  },
+  {
+   "id": 8,
+   "title": "Merge pull request #21 from itej89/feat/5-target-and-cpu-reference",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "f039b4d",
+   "created": "2026-11-12T21:30",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43310924889"
+  },
+  {
+   "id": 7,
+   "title": "feat(target): Target trait family, architecture registry and the CPU reference target (#5)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/5-target-and-cpu-reference",
+   "sha": "6e018f2",
+   "created": "2026-11-12T21:11",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43307816222"
+  },
+  {
+   "id": 6,
+   "title": "Merge pull request #20 from itej89/feat/15-planner-interfaces",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "d886a3c",
+   "created": "2026-11-12T21:08",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43307265059"
+  },
+  {
+   "id": 5,
+   "title": "feat(target): Target trait family, architecture registry and the CPU reference target (#5)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/5-target-and-cpu-reference",
+   "sha": "2e3bf7f",
+   "created": "2026-11-12T19:40",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43292497018"
+  },
+  {
+   "id": 4,
+   "title": "feat(planner): topology model, placement interfaces and the single-device planner (#15)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/15-planner-interfaces",
+   "sha": "b668521",
+   "created": "2026-11-12T19:39",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43292453581"
+  },
+  {
+   "id": 3,
+   "title": "Merge pull request #19 from itej89/infra/github-hosting",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "9d448ce",
+   "created": "2026-11-12T19:37",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43292064455"
+  },
+  {
+   "id": 2,
+   "title": "ci: move hosting to GitHub (ADR-008)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "infra/github-hosting",
+   "sha": "13de986",
+   "created": "2026-11-12T19:30",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43290907945"
+  },
   {
    "id": 1,
    "title": "Merge pull request 'feat(artifact): the .rie engine artifact, verifyi…",
@@ -263,6 +510,7 @@
   }
  ],
  "branches": [
+  "docs/readme-docs-link",
   "feat/15-planner-interfaces",
   "feat/5-target-and-cpu-reference",
   "infra/github-hosting",

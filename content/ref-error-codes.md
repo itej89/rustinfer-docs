@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 678b084 2026-11-12. A failure leaves the command as one line on
+`src/error.rs` at commit f039b4d 2026-11-12. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -70,6 +70,7 @@ and component.
 | `rustinfer-cli` | `cli` | `Artifact` | `delegated` |
 | `rustinfer-cli` | `cli` | `Runtime` | `delegated` |
 | `rustinfer-cli` | `cli` | `KernelCompiler` | `delegated` |
+| `rustinfer-cli` | `cli` | `Target` | `delegated` |
 | `rustinfer-compiler` | `compiler` | `NotImplemented` | `not_implemented` |
 | `rustinfer-frontend` | `frontend` | `NotImplemented` | `not_implemented` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
@@ -101,8 +102,41 @@ and component.
 | `rustinfer-mir` | `mir` | `InvalidProfile` | `delegated` |
 | `rustinfer-mir` | `mir` | `NonFiniteAttribute` | `delegated` |
 | `rustinfer-mir` | `mir` | `UnsupportedFeature` | `unsupported` |
+| `rustinfer-planner` | `planner` | `Malformed` | `delegated` |
+| `rustinfer-planner` | `planner` | `TooLarge` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnsupportedVersion` | `delegated` |
+| `rustinfer-planner` | `planner` | `InvalidField` | `delegated` |
+| `rustinfer-planner` | `planner` | `DuplicateName` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnknownDevice` | `delegated` |
+| `rustinfer-planner` | `planner` | `NoDeviceForArchitecture` | `delegated` |
+| `rustinfer-planner` | `planner` | `CapacityExceeded` | `unsupported` |
+| `rustinfer-planner` | `planner` | `SizeOverflow` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnplacedTensor` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnplacedNode` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnknownTensor` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnknownFunction` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnknownNode` | `delegated` |
+| `rustinfer-planner` | `planner` | `Model` | `delegated` |
 | `rustinfer-planner` | `planner` | `NotImplemented` | `not_implemented` |
 | `rustinfer-runtime` | `runtime` | `NotImplemented` | `not_implemented` |
+| `rustinfer-target` | `target` | `CatalogEmpty` | `delegated` |
+| `rustinfer-target` | `target` | `NoKernel` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownArchitecture` | `delegated` |
+| `rustinfer-target` | `target` | `InvalidArchitecture` | `delegated` |
+| `rustinfer-target` | `target` | `DuplicateArchitecture` | `internal` |
+| `rustinfer-target` | `target` | `NoDevice` | `delegated` |
+| `rustinfer-target` | `target` | `OutOfMemory` | `delegated` |
+| `rustinfer-target` | `target` | `InvalidAllocation` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownBuffer` | `delegated` |
+| `rustinfer-target` | `target` | `OutOfBounds` | `delegated` |
+| `rustinfer-target` | `target` | `BufferBusy` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownStream` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownEvent` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownKernel` | `delegated` |
+| `rustinfer-target` | `target` | `UnsupportedBinary` | `delegated` |
+| `rustinfer-target` | `target` | `OperandMismatch` | `delegated` |
+| `rustinfer-target` | `target` | `UnsupportedDtype` | `unsupported` |
+| `rustinfer-target` | `target` | `IndexOutOfRange` | `delegated` |
 | `rustinfer-target` | `target` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target-riscv-mesh` | `?` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target-riscv-vector` | `?` | `NotImplemented` | `not_implemented` |

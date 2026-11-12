@@ -66,6 +66,7 @@ checkpoint shards ──► Sluice ──► device buffers in target layout ─
    byte ranges      weight manifest (artifact `weights` section)
 ```
 
-Issue #18 is blocked by #4 (the manifest) and #5 (device buffers, copy
-queues and the reference target's host transforms), and blocks #13 (the
+Issue #18 was blocked by #4 (the manifest) and #5 (device buffers, copy
+queues and the reference target's host transforms), both closed on
+2026-11-12, and is being implemented since then; it blocks #13 (the
 executor). The acceptance criteria are on the [tracker](issues.html).

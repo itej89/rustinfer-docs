@@ -9,8 +9,9 @@ summary: The pass pipeline from Model IR to Plan: shape inference under a profil
 
 Read from SRS §3.2.4 (`RI-GC`), `docs/uml/activity-diagram.md` and ADR-005
 at commit `082df51`. The `rustinfer-compiler` crate is an error type; issue
-#10 implements this page, after the Model IR (#3), the target abstraction
-(#5) and the generators (#9) it needs.
+#10 implements this page, after the Model IR (#3, done), the target
+abstraction with the `Catalog` it selects from (#5, done 2026-11-12) and
+the generators (#9) it needs.
 
 ## The pipeline
 
