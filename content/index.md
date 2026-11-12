@@ -36,7 +36,7 @@ steps in order are the [roadmap](roadmap.html).
 
 | Area | State |
 |---|---|
-| Specification: SRS-RI-v0.1 at version 0.2, 186 requirements, 28 groups, release tags R1 to R4 | <span class="state-ok">done</span> — status Approved 2026-11-11, PR #16 merged into `main` 2026-11-12; each requirement stays Draft until its issue closes ([requirements](ref-requirements.html)) |
+| Specification: SRS-RI-v0.1 at version 0.2, 186 requirements, 28 groups, release tags R1 to R4 | <span class="state-ok">done</span> — status Approved 2026-11-11, PR #16 merged into `main` 2026-11-12; the SRS's own status field stays *Draft* until a release revises the document, so the [requirements](ref-requirements.html) page derives each requirement's state from the tests that cite it and the Epic's checklist instead |
 | Decisions: ADR-001 to ADR-006, ADR-008 | <span class="state-ok">done</span> — ADR-008 (hosting on GitHub, superseding ADR-004) on `main` since GitHub PR #19 merged 2026-11-12; ADR-007 (the MLIR and LLVM link) is not written yet, it belongs to #7 ([decisions](decisions.html)) |
 | Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-ok">done</span> — PR #17 merged into `main` 2026-11-12 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-ok">done</span> — PR #17 merged; tested ([design](design.html)) |

@@ -1,66 +1,133 @@
 #!/usr/bin/env python3
-"""Every requirement in docs/SRS-RI-v0.1.md: id, text, priority, status and
-release, grouped by component in the SRS's own order."""
-import re
+"""Every requirement in docs/SRS-RI-v0.1.md: id, text, priority, release and
+the implementation state the site derives for it, next to the SRS's own
+status field, grouped by component in the SRS's own order.
 
-from common import RUSTINFER, commit, header, write
+The SRS's status field is *Draft* for every requirement until a release
+revises the document, so it says nothing about what the tree holds. The
+state column is derived instead (common.requirement_states): *implemented*
+when a test in the tree cites the id or the Epic's checklist assigns it to a
+closed issue, *in progress* when its issue has a branch or an open pull
+request, *planned* otherwise. The issues page computes its headline from
+the same function."""
+from common import (WEB, badge, commit, header, requirement_states, srs_meta,
+                    srs_requirements, state_counts, test_citations, tracker_state, write)
 
-SRS = RUSTINFER / "docs/SRS-RI-v0.1.md"
-text = SRS.read_text(encoding="utf-8")
-
-# Components appear as "#### 3.2.N Name (`RI-XXX`)" and "#### 3.3.N Name".
-sections = re.split(r"^#### ", text, flags=re.M)[1:]
+reqs = srs_requirements()
+doc_version, doc_status = srs_meta()
+source, state = tracker_state()
+citations = test_citations()
+states = requirement_states(reqs, state, citations)
+counts = state_counts(states)
 groups = []
-for sec in sections:
-    title_line, _, body = sec.partition("\n")
-    title = re.sub(r"\s*\(`RI-[A-Z]+`\)\s*$", "", title_line.strip())
-    reqs = []
-    for m in re.finditer(
-        r"^(RI-[A-Z]+-\d{3})\s+(.*?)\nPriority:\s*(\w+)\s+Status:\s*(\w+)\s+Release:\s*([^\n]*)"
-        r"(?:\nRationale:\s*([^\n]*))?",
-        body, re.S | re.M):
-        rid, rtext, prio, status, release, rationale = m.groups()
-        rtext = " ".join(line.strip() for line in rtext.splitlines())
-        reqs.append((rid, rtext, prio, status, release.strip(), (rationale or "").strip()))
-    if reqs:
-        groups.append((title, reqs))
+for r in reqs:
+    if not groups or groups[-1][0] != r["group"]:
+        groups.append((r["group"], []))
+    groups[-1][1].append(r)
 
-total = sum(len(r) for _, r in groups)
-# The document's own version and status, from its header block.
-doc_version = re.search(r"^\*\*Version\*\*:\s*(\S+)", text, re.M).group(1)
-doc_status = re.search(r"^\*\*Status\*\*:\s*(\S+)", text, re.M).group(1)
-by_release = {}
-for _, reqs in groups:
-    for _, _, _, _, release, _ in reqs:
-        first = re.match(r"R\d", release)
-        key = first.group(0) if first else "unspecified"
-        by_release[key] = by_release.get(key, 0) + 1
+TAGS = ["R1", "R2", "R3", "R4"]
+if any(r["tag"] == "unspecified" for r in reqs):
+    TAGS.append("unspecified")
+
+
+def per_release(tag):
+    ids = [r["id"] for r in reqs if r["tag"] == tag]
+    return (len(ids), sum(1 for i in ids if states[i]["state"] == "implemented"),
+            sum(1 for i in ids if states[i]["state"] == "in progress"),
+            sum(1 for i in ids if states[i]["state"] == "planned"))
+
+
+by_status = {}
+for r in reqs:
+    by_status[r["status"]] = by_status.get(r["status"], 0) + 1
+closed_issues = sorted({n for v in states.values() for n in v["closed_issues"]})
+
+
+def issue_link(n):
+    return f"[#{n}]({WEB}/issues/{n})"
+
+
+def evidence(info):
+    parts = []
+    if info["tests"]:
+        parts.append("tests: " + ", ".join(
+            f"[`{f}`]({WEB}/blob/main/crates/{f})" for f in info["tests"]))
+    if info["closed_issues"]:
+        parts.append("Epic: closed " + ", ".join(issue_link(n) for n in info["closed_issues"]))
+    if info["open_issues"]:
+        parts.append("Epic: open " + ", ".join(
+            f"{issue_link(n)} ({st.lower()})" for n, st in info["open_issues"]))
+    return "; ".join(parts) or "—"
+
+
+def state_cell(info):
+    cell = badge(info)
+    if info["state"] == "implemented":
+        cell += " — by " + " and ".join(info["sources"])
+        if info["disagree"]:
+            cell += f" only; {info['disagree']}"
+    elif info["state"] == "in progress":
+        cell += " — " + ", ".join(f"#{n} {st.lower()}" for n, st in info["open_issues"])
+    return cell
+
 
 out = header("Requirements", "Reference", 1,
-             "Every requirement of SRS-RI-v0.1 with its priority, status and release, "
-             "generated from the SRS in the tree.",
+             "Every requirement of SRS-RI-v0.1 with its priority, release, the implementation "
+             "state derived from the tests and the tracker, and the SRS's own status field.",
              navtitle="Requirements (SRS)", script="gen_srs.py")
 # one tracker card per component on the progress page
 out = out.replace("---\n<!--", "cards: headings\n---\n<!--", 1)
 out += f"""# Requirements
 
 Generated from `docs/SRS-RI-v0.1.md` at commit {commit()}: document version
-{doc_version}, status *{doc_status}* (the SRS header says so). {total} requirements
-in {len(groups)} groups, each with its own status field, *Draft* until the issue
-that carries it closes. The *release* column is the first release named; where
-a requirement is split across releases the full text is kept.
+{doc_version}, status *{doc_status}* (the SRS header says so). {len(reqs)} requirements
+in {len(groups)} groups. The *state* column is derived from the tree and the tracker
+(below); the *SRS status* column is the document's own field. The *release* column is
+the first release named; where a requirement is split across releases the full text is kept.
 
-By first release: {", ".join(f"{k} {v}" for k, v in sorted(by_release.items()))}.
-Each component is one tracker table; the [progress](progress.html) page counts a *Draft*
-requirement as open work and an *Implemented* one as done.
+## Headline
+
+**{counts["implemented"]} implemented, {counts["in_progress"]} in progress, {counts["planned"]} planned**
+of {len(reqs)}. Implemented by a test that cites the id: {counts["by_tests"]}; by the Epic's checklist
+assigning it to a closed issue ({", ".join(issue_link(n) for n in closed_issues) or "none"}):
+{counts["by_epic"]}; by both: {counts["both"]}. The two sources disagree on
+{len(counts["disagree"])} ids (a test cites them but the Epic assigns them to an open issue or to
+none; each row says so): {", ".join(counts["disagree"]) or "none"}.
+
+| release | requirements | implemented | in progress | planned |
+|---|---|---|---|---|
+"""
+for tag in TAGS:
+    n, done, prog, plan = per_release(tag)
+    out += f"| {tag} | {n} | {done} | {prog} | {plan} |\n"
+out += f"| all | {len(reqs)} | {counts['implemented']} | {counts['in_progress']} | {counts['planned']} |\n"
+
+out += f"""
+**How the state is derived.** A requirement is <span class="state-ok">implemented</span> when a test
+on `main` cites its id in a comment (the integration tests under `crates/*/tests` and the
+`#[cfg(test)]` modules under `crates/*/src`, matched as a whole token; the files are linked in the
+*evidence* column) or when the Epic [#1]({WEB}/issues/1) checklist assigns it to an issue that is
+closed; the row says which of the two applies, and when only one does, what the other says. It
+is <span class="state-part">in progress</span> when its issue is open and has a branch on GitHub or an
+open pull request, and <span class="state-no">planned</span> otherwise, with its release tag. The
+SRS's own status field, in the *SRS status* column, changes only when a release revises the
+document, so it is *Draft* for every requirement today (by SRS status: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))})
+and is not what the [progress](progress.html) page counts: that page reads the *state* column of each
+component table below, implemented as done, in progress as progress, planned as later. The tracker
+state is {"read live from GitHub" if source == "live" else "the committed snapshot"}
+(`data/progress-snapshot.json`, fetched {state["fetched_at"][:16].replace("T", " ")} UTC); the
+[issues](issues.html) page computes its *SRS requirements implemented* headline from the same code.
 
 """
-for title, reqs in groups:
-    out += f"## {title}\n\n| id | text | priority | status | release |\n|---|---|---|---|---|\n"
-    for rid, rtext, prio, status, release, rationale in reqs:
-        cell = rtext.replace("|", " or ")
-        if rationale:
-            cell += f" *Rationale: {rationale.replace('|', ' or ')}*"
-        out += f"| {rid} | {cell} | {prio} | {status} | {release.replace('|', ' or ')} |\n"
+for title, rs in groups:
+    out += (f"## {title}\n\n| id | text | priority | release | state | SRS status | evidence |\n"
+            f"|---|---|---|---|---|---|---|\n")
+    for r in rs:
+        cell = r["text"].replace("|", " or ")
+        if r["rationale"]:
+            cell += f" *Rationale: {r['rationale'].replace('|', ' or ')}*"
+        info = states[r["id"]]
+        out += (f"| {r['id']} | {cell} | {r['priority']} | {r['release'].replace('|', ' or ')} | "
+                f"{state_cell(info)} | {r['status']} | {evidence(info)} |\n")
     out += "\n"
 write("ref-requirements.md", out)

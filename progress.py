@@ -50,7 +50,7 @@ PENDING = ("awaiting", "progress", "later", "open")
 
 
 def classify(cell):
-    s = re.sub(r"[*`_]", "", cell).strip().lower()
+    s = re.sub(r"[*`_]", "", re.sub(r"<[^>]+>", "", cell)).strip().lower()  # badges are tags
     # what a status was before ("...; was: Shipping in the next release")
     # is history, never its state now
     s = re.split(r"[;.,]\s*(?:was|before|earlier):", s)[0]
@@ -66,7 +66,7 @@ def classify(cell):
 
 def strip_md(s):
     s = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)
-    return re.sub(r"[*`]", "", s).strip()
+    return re.sub(r"[*`]|<[^>]+>", "", s).strip()
 
 
 def items(text, with_heading=False):

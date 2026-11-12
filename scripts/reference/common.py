@@ -1,7 +1,12 @@
-"""Shared bits for the reference generators: where the rustinfer tree is, and
-how to write a page header."""
+"""Shared bits for the reference generators: where the rustinfer tree is, how
+to write a page header, the SRS parsed, the tracker state read from GitHub (or
+the snapshot), the requirement ids the tests cite, and the implementation state
+derived from them that the requirements and issues pages both report."""
+import datetime
+import json
 import os
 import pathlib
+import re
 import subprocess
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -48,3 +53,291 @@ def header(title, section, order, summary, group="", navtitle="", script=""):
 def write(name, text):
     (CONTENT / name).write_text(text, encoding="utf-8")
     print(f"wrote {name} ({len(text.splitlines())} lines)")
+
+
+# ---------------------------------------------------------------- the SRS
+
+REPO = "itej89/rustinfer"
+WEB = f"https://github.com/{REPO}"
+SRS = RUSTINFER / "docs/SRS-RI-v0.1.md"
+SNAPSHOT = SITE / "data" / "progress-snapshot.json"
+EPIC = 1
+SEQUENCE = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  # the Release 1 issues, the Epic's order
+REQ_ID = re.compile(r"\bRI-[A-Z]+-\d{3}\b")
+# One Epic checklist line: `- [ ] #5 Target ... (RI-TGT-001 to -004; RI-RV-001, -002)`.
+CHECKLIST = re.compile(r"^- \[[ xX]\] #(\d+) [^(\n]*\(([^)\n]*)\)", re.M)
+# The issue body's `## Blocked By` section, the drafts' form, when the dependency API has nothing.
+BLOCKED_BY = re.compile(r"^##\s*Blocked By\s*\n(.*?)(?=^##\s|\Z)", re.I | re.M | re.S)
+BRANCH_PREFIX = r"(feat|fix|docs|refactor|ci|chore|infra)/{n}-"
+
+
+def srs_requirements():
+    """Every requirement of the SRS in document order: dicts with id, text,
+    priority, status, release (the full field), tag (the first release named,
+    'R1'..'R4' or 'unspecified'), rationale and group (the #### heading)."""
+    text = SRS.read_text(encoding="utf-8")
+    reqs = []
+    for sec in re.split(r"^#### ", text, flags=re.M)[1:]:
+        title_line, _, body = sec.partition("\n")
+        group = re.sub(r"\s*\(`RI-[A-Z]+`\)\s*$", "", title_line.strip())
+        for m in re.finditer(
+            r"^(RI-[A-Z]+-\d{3})\s+(.*?)\nPriority:\s*(\w+)\s+Status:\s*(\w+)\s+Release:\s*([^\n]*)"
+            r"(?:\nRationale:\s*([^\n]*))?", body, re.S | re.M):
+            rid, rtext, prio, status, release, rationale = m.groups()
+            first = re.match(r"R\d", release.strip())
+            reqs.append({"id": rid, "text": " ".join(l.strip() for l in rtext.splitlines()),
+                         "priority": prio, "status": status, "release": release.strip(),
+                         "tag": first.group(0) if first else "unspecified",
+                         "rationale": (rationale or "").strip(), "group": group})
+    return reqs
+
+
+def srs_meta():
+    """The SRS header's own version and status."""
+    text = SRS.read_text(encoding="utf-8")
+    return (re.search(r"^\*\*Version\*\*:\s*(\S+)", text, re.M).group(1),
+            re.search(r"^\*\*Status\*\*:\s*(\S+)", text, re.M).group(1))
+
+
+# -------------------------------------------------------------- the tests
+def _comments(src):
+    """The comment text of a Rust source: line comments (`//`, `///`, `//!`)
+    and block comments. String literals are not searched."""
+    return "\n".join(re.findall(r"//[^\n]*", src) + re.findall(r"/\*.*?\*/", src, re.S))
+
+
+def _cfg_test_modules(src):
+    """The bodies of the inline `#[cfg(test)] mod ... { ... }` modules of a source file."""
+    bodies = []
+    for m in re.finditer(r"#\[cfg\(test\)\]\s*(?:pub(?:\([^)]*\))?\s+)?mod\s+\w+\s*\{", src):
+        depth, i = 1, m.end()
+        while i < len(src) and depth:
+            depth += {"{": 1, "}": -1}.get(src[i], 0)
+            i += 1
+        bodies.append(src[m.end():i])
+    return bodies
+
+
+def test_citations():
+    """{requirement id: sorted list of 'crate/tests/file.rs'} for every id a
+    test cites in a comment: the integration tests under crates/*/tests and
+    the `#[cfg(test)]` modules under crates/*/src."""
+    found = {}
+    crates = RUSTINFER / "crates"
+    for path in sorted(crates.rglob("*.rs")):
+        rel = path.relative_to(crates).as_posix()
+        parts = rel.split("/")
+        if len(parts) < 3:
+            continue
+        src = path.read_text(encoding="utf-8", errors="replace")
+        if parts[1] == "tests":
+            hay = _comments(src)
+        elif parts[1] == "src":
+            hay = "\n".join(_comments(b) for b in _cfg_test_modules(src))
+        else:
+            continue
+        for rid in set(REQ_ID.findall(hay)):
+            found.setdefault(rid, set()).add(rel)
+    return {k: sorted(v) for k, v in found.items()}
+
+
+# ------------------------------------------------------------------ GitHub
+def checklist_requirements(body):
+    """The requirement ids the Epic's checklist assigns to each issue, ranges expanded."""
+    found = {}
+    for n, spec in CHECKLIST.findall(body or ""):
+        ids, group = [], None
+        for part in re.split(r"[;,]\s*", spec):
+            m = re.match(r"(RI-[A-Z]+)-(\d{3})(?:\s+to\s+-(\d{3}))?$", part.strip())
+            short = re.match(r"-(\d{3})$", part.strip())
+            if m:
+                group, lo, hi = m.group(1), int(m.group(2)), int(m.group(3) or m.group(2))
+                ids += [f"{group}-{i:03d}" for i in range(lo, hi + 1)]
+            elif short and group:
+                ids.append(f"{group}-{int(short.group(1)):03d}")
+        found[int(n)] = ids
+    return found
+
+
+def gh(path, paginate=True):
+    """One `gh api` call; the token never leaves `gh`'s keyring."""
+    cmd = ["gh", "api"] + (["--paginate"] if paginate else []) + [f"repos/{REPO}/{path}"]
+    out = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL, timeout=120)
+    if paginate and out.count("][") > 0:  # --paginate concatenates pages of a list
+        out = "[" + out.replace("][", ",") + "]" if not out.startswith("[[") else out
+        parts = json.loads(out)
+        return [x for page in parts for x in page] if parts and isinstance(parts[0], list) else parts
+    return json.loads(out)
+
+
+def _blocked_by(issue):
+    """The issues this one waits on: GitHub's dependency API and the body's `## Blocked By` section."""
+    found = set()
+    try:
+        deps = gh(f"issues/{issue['number']}/dependencies/blocked_by", paginate=False)
+        if isinstance(deps, list):
+            found.update(d["number"] for d in deps)
+    except (subprocess.CalledProcessError, OSError, ValueError, KeyError, TypeError):
+        pass
+    for m in BLOCKED_BY.finditer(issue.get("body") or ""):
+        found.update(int(n) for n in re.findall(r"#(\d+)", m.group(1)))
+    found.discard(issue["number"])
+    return sorted(found)
+
+
+def _live_state():
+    try:
+        subprocess.check_output(["gh", "auth", "status"], stderr=subprocess.DEVNULL, timeout=30)
+        items = gh("issues?state=all&per_page=100")
+        issues = [i for i in items if "pull_request" not in i]  # GitHub lists PRs as issues
+        pulls = gh("pulls?state=all&per_page=100")
+        milestones = gh("milestones?state=all")
+        runs = gh("actions/runs?per_page=12", paginate=False).get("workflow_runs", [])
+        branches = gh("branches?per_page=100")
+        deps = {i["number"]: _blocked_by(i) for i in issues}
+        epic = next((i for i in issues if i["number"] == EPIC), {})
+        assigned = checklist_requirements(epic.get("body"))
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError, ValueError, KeyError):
+        return None
+    if not issues and not pulls:
+        return None  # the tracker is not on GitHub yet; keep the snapshot
+    return {
+        "fetched_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "source": "github",
+        "issues": [{"number": i["number"], "title": i["title"], "state": i["state"],
+                    "closed_at": (i.get("closed_at") or "")[:10],
+                    "labels": [l["name"] for l in i["labels"]],
+                    "milestone": (i.get("milestone") or {}).get("title"),
+                    "blocked_by": deps.get(i["number"], []),
+                    "requirements": assigned.get(i["number"], [])}
+                   for i in sorted(issues, key=lambda x: x["number"])],
+        "pulls": [{"number": p["number"], "title": p["title"], "state": p["state"],
+                   "head": p["head"]["ref"], "base": p["base"]["ref"],
+                   "merged": bool(p.get("merged_at")), "merged_at": (p.get("merged_at") or "")[:10],
+                   "mergeable": p.get("mergeable", True) is not False,
+                   "created_at": p["created_at"][:10], "url": p["html_url"]}
+                  for p in sorted(pulls, key=lambda x: x["number"])],
+        "milestones": [{"title": m["title"], "state": m["state"],
+                        "open": m["open_issues"], "closed": m["closed_issues"]} for m in milestones],
+        "runs": [{"id": r["run_number"], "title": r.get("display_title"), "status": r.get("status"),
+                  "conclusion": r.get("conclusion"), "event": r.get("event"),
+                  "ref": r.get("head_branch"), "sha": (r.get("head_sha") or "")[:7],
+                  "created": (r.get("created_at") or "")[:16], "url": r.get("html_url")}
+                 for r in runs],
+        "branches": sorted(b["name"] for b in branches),
+    }
+
+
+def tracker_state():
+    """The tracker as a dict and where it came from: ('live', state) after a
+    fetch through `gh api` that is written back to data/progress-snapshot.json,
+    else ('snapshot', state) from that file. Each issue also carries the
+    derived `branch` and `derived_status` fields (see issue_status)."""
+    state = _live_state()
+    if state:
+        SNAPSHOT.parent.mkdir(exist_ok=True)
+        source = "live"
+    else:
+        state = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+        source = "snapshot"
+    for i in state["issues"]:
+        i["branch"] = branch_of(state, i["number"])
+        i["derived_status"] = issue_status(state, i["number"])
+    if source == "live":
+        SNAPSHOT.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    return source, state
+
+
+def branch_of(state, n):
+    """The branch on GitHub named for issue n (`feat/5-...`), if any."""
+    return next((b for b in state.get("branches", [])
+                 if re.match(BRANCH_PREFIX.format(n=n), b)), None)
+
+
+def open_pull_for(state, branch):
+    return next((p for p in state["pulls"] if p["head"] == branch and p["state"] == "open"), None)
+
+
+def issue_status(state, n):
+    """The tracker's derived status word for issue n: 'Done <date>', 'In review
+    <date>', 'In progress' or 'Not started'."""
+    i = next((x for x in state["issues"] if x["number"] == n), None)
+    if not i:
+        return "Not started"
+    if i["state"] == "closed":
+        return f"Done {i['closed_at']}".strip()
+    b = branch_of(state, n)
+    p = open_pull_for(state, b) if b else None
+    if p:
+        return f"In review {p['created_at']}"
+    if b:
+        return "In progress"
+    return "Not started"
+
+
+# --------------------------------------------------------- derived states
+IMPLEMENTED, IN_PROGRESS, PLANNED = "implemented", "in progress", "planned"
+BADGE = {IMPLEMENTED: "state-ok", IN_PROGRESS: "state-part", PLANNED: "state-no"}
+
+
+def requirement_states(reqs, state, citations):
+    """{id: dict} for every SRS requirement, the state the site derives:
+
+    * implemented: a test in the tree cites the id in a comment (`tests`
+      lists the files), or the Epic's checklist assigns it to a closed issue
+      (`closed_issues`), or both; `sources` says which.
+    * in progress: assigned to an open issue whose branch exists on GitHub
+      or whose pull request is open (`open_issues` with their status).
+    * planned: otherwise; `label` carries the SRS release tag.
+
+    `disagree` names the fact the other source does not share: tests cite
+    an id the Epic assigns to an open issue (or to none), or a closed
+    issue carries an id no test cites."""
+    assigned = {}
+    for i in state["issues"]:
+        for rid in i.get("requirements", []):
+            assigned.setdefault(rid, []).append(i)
+    out = {}
+    for r in reqs:
+        rid = r["id"]
+        tests = citations.get(rid, [])
+        closed = [i for i in assigned.get(rid, []) if i["state"] == "closed"]
+        opened = [i for i in assigned.get(rid, []) if i["state"] != "closed"]
+        active = [i for i in opened if not i["derived_status"].startswith("Not started")]
+        sources = [s for s, ok in (("tests", bool(tests)), ("epic", bool(closed))) if ok]
+        if sources:
+            st = IMPLEMENTED
+        elif active:
+            st = IN_PROGRESS
+        else:
+            st = PLANNED
+        disagree = ""
+        if tests and not closed:
+            disagree = ("the Epic assigns it to open " + ", ".join(f"#{i['number']}" for i in opened)
+                        if opened else "the Epic's checklist does not assign it to any issue")
+        elif closed and not tests:
+            disagree = "no test cites it"
+        out[rid] = {"state": st, "sources": sources, "tests": tests,
+                    "closed_issues": [i["number"] for i in closed],
+                    "open_issues": [(i["number"], i["derived_status"]) for i in opened],
+                    "disagree": disagree,
+                    "label": st if st != PLANNED else f"planned {r['tag']}".strip()}
+    return out
+
+
+def badge(info):
+    return f'<span class="{BADGE[info["state"]]}">{info["label"]}</span>'
+
+
+def state_counts(states):
+    """The headline numbers: implemented (and by which sources), in progress, planned."""
+    vals = states.values()
+    return {
+        "implemented": sum(1 for v in vals if v["state"] == IMPLEMENTED),
+        "by_tests": sum(1 for v in vals if "tests" in v["sources"]),
+        "by_epic": sum(1 for v in vals if "epic" in v["sources"]),
+        "both": sum(1 for v in vals if len(v["sources"]) == 2),
+        "in_progress": sum(1 for v in vals if v["state"] == IN_PROGRESS),
+        "planned": sum(1 for v in vals if v["state"] == PLANNED),
+        "disagree": sorted(k for k, v in states.items() if v["disagree"]),
+    }

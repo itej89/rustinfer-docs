@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-12T21:36:03+00:00",
+ "fetched_at": "2026-11-12T21:54:14+00:00",
  "source": "github",
  "issues": [
   {
@@ -13,7 +13,9 @@
    ],
    "milestone": "R1 — foundation",
    "blocked_by": [],
-   "requirements": []
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 2,
@@ -25,7 +27,9 @@
    ],
    "milestone": "R1 — foundation",
    "blocked_by": [],
-   "requirements": []
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 3,
@@ -48,7 +52,9 @@
     "RI-MIR-006",
     "RI-MIR-007",
     "RI-MIR-008"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 4,
@@ -71,7 +77,9 @@
     "RI-ART-006",
     "RI-ART-008",
     "RI-SEC-002"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 5,
@@ -92,7 +100,9 @@
     "RI-TGT-004",
     "RI-RV-001",
     "RI-RV-002"
-   ]
+   ],
+   "branch": "feat/5-target-and-cpu-reference",
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 6,
@@ -110,7 +120,9 @@
     "RI-FE-001",
     "RI-FE-002",
     "RI-FE-003"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 7,
@@ -129,7 +141,9 @@
     "RI-KC-002",
     "RI-KC-008",
     "RI-KC-011"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 8,
@@ -145,7 +159,9 @@
    ],
    "requirements": [
     "RI-KC-003"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 9,
@@ -167,7 +183,9 @@
     "RI-KC-007",
     "RI-KC-013",
     "RI-CLI-007"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 10,
@@ -194,7 +212,9 @@
     "RI-GC-008",
     "RI-GC-009",
     "RI-GC-014"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 11,
@@ -216,7 +236,9 @@
     "RI-CLI-003",
     "RI-CLI-004",
     "RI-ART-004"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 12,
@@ -236,7 +258,9 @@
     "RI-ROC-003",
     "RI-ROC-004",
     "RI-ROC-005"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 13,
@@ -264,7 +288,9 @@
     "RI-KVC-002",
     "RI-KVC-004",
     "RI-SMP-001"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 14,
@@ -283,7 +309,9 @@
     "RI-CLI-006",
     "RI-NFR-001",
     "RI-NFR-017"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   },
   {
    "number": 15,
@@ -301,7 +329,9 @@
     "RI-PLN-001",
     "RI-PLN-005",
     "RI-MIR-005"
-   ]
+   ],
+   "branch": "feat/15-planner-interfaces",
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 16,
@@ -313,7 +343,9 @@
    ],
    "milestone": null,
    "blocked_by": [],
-   "requirements": []
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 17,
@@ -325,7 +357,9 @@
    ],
    "milestone": null,
    "blocked_by": [],
-   "requirements": []
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 18,
@@ -347,7 +381,9 @@
     "RI-WST-004",
     "RI-WST-005",
     "RI-ART-012"
-   ]
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   }
  ],
  "pulls": [
@@ -390,11 +426,11 @@
   {
    "number": 22,
    "title": "docs(readme): link the documentation site",
-   "state": "open",
+   "state": "closed",
    "head": "docs/readme-docs-link",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-12",
    "mergeable": true,
    "created_at": "2026-11-12",
    "url": "https://github.com/itej89/rustinfer/pull/22"
@@ -405,15 +441,26 @@
    "title": "R1 — foundation",
    "state": "open",
    "open": 11,
-   "closed": 8
+   "closed": 9
   }
  ],
  "runs": [
   {
+   "id": 10,
+   "title": "Merge pull request #22 from itej89/docs/readme-docs-link",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "f6d01ec",
+   "created": "2026-11-12T21:36",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43311967409"
+  },
+  {
    "id": 9,
    "title": "docs(readme): link the documentation site",
-   "status": "in_progress",
-   "conclusion": null,
+   "status": "completed",
+   "conclusion": "success",
    "event": "pull_request",
    "ref": "docs/readme-docs-link",
    "sha": "452f44a",
