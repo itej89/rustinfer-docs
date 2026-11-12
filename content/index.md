@@ -38,7 +38,7 @@ steps in order are the [roadmap](roadmap.html).
 |---|---|
 | Specification: SRS-RI-v0.1, 171 requirements, 27 groups, release tags R1 to R4 | <span class="state-ok">done</span>, status Draft until approved ([requirements](ref-requirements.html)) |
 | Decisions: ADR-001 to ADR-006 | <span class="state-ok">done</span> ([decisions](decisions.html)) |
-| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-part">in progress</span> — on `feat/2-project-scaffold`, PR #17 open since 2026-11-11 ([crates](ref-crates.html)) |
+| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-yes">done</span> — PR #17 merged into `main` 2026-11-11 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-part">in progress</span> — same branch; tested ([design](design.html)) |
 | The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-part">in progress</span> — every subcommand answers `not_implemented` after validation ([getting started](getting-started.html)) |
 | Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 and #18 ([issues](issues.html)) |
@@ -49,7 +49,7 @@ steps in order are the [roadmap](roadmap.html).
 
 | What | Where |
 |---|---|
-| Repository | `codeberg.org/itej89/rustinfer`, private; `main` holds the skeleton commit, `docs/1-srs-rustinfer` the SRS and ADRs, `feat/2-project-scaffold` the workspace |
+| Repository | `codeberg.org/itej89/rustinfer`, public; `main` holds the approved SRS v0.2, ADR-001 to ADR-006 and the fourteen-crate workspace since 2026-11-11 (PRs #16 and #17 merged) |
 | Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 with dependencies linked, milestone `R1 — foundation`; PRs #16 (SRS) and #17 (scaffold) open since 2026-11-11; CI green on Codeberg's hosted runners since run 7 ([issues](issues.html)) |
 | Specification | `docs/SRS-RI-v0.1.md` |
 | Decisions | `docs/adr/ADR-001` to `ADR-006` |

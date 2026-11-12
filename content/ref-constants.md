@@ -8,7 +8,7 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-082df51 2026-11-10. The file's own header says a literal that encodes a concept appears
+33fadd0 2026-11-12. The file's own header says a literal that encodes a concept appears
 there and nowhere else (design heuristics G25 and G35 of SWG-001); 16
 constants are defined. The requirement id in a note is the one the source cites.
 

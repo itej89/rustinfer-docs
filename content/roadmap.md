@@ -26,8 +26,8 @@ on this site counted by state, the [issues](issues.html) first, then the
 
 The TensorRT-LLM feature inventory, 24 use cases and the AMD and RISC-V
 device inventory, then SRS-RI-v0.1 with 171 requirements in 27 groups,
-every one tagged R1 to R4, and ADR-001 to ADR-006. Status *Draft* on every
-requirement until PR #16 is merged, which is the approval. The Epic and the
+every one tagged R1 to R4, and ADR-001 to ADR-006. The owner approved it on
+2026-11-11 and PR #16 merged into `main` as 1c7a008, carrying v0.2. The Epic and the
 fourteen issue bodies were drafted in the tree before the tracker existed so
 the numbers would match the branch names.
 
@@ -37,7 +37,7 @@ and `RI-CMP` ids while RI-ART-002 lists nine plus `lora_slots`. Found by the
 first reading for this site on 2026-11-10; corrected on the docs branch on
 2026-11-11.
 
-## 1. Scaffold (#2) — built 2026-11-10, in review since 2026-11-11
+## 1. Scaffold (#2) — **done, 2026-11-11**
 
 Fourteen crates, one per box of the component diagram, dependencies
 downward only and enforced by Cargo; `rustinfer-core` with constants
@@ -80,9 +80,10 @@ github.com. Each got a one-line fix and a sentence in ADR-004 (`ac68ff1`,
 `b252ea6`, `d380d0a`, `cc3e293`), and run 7 was green across lint,
 security, test and build.
 
-**Where it stands, 2026-11-11.** PR #17 is open, stacked on PR #16, at
-`cc3e293` with CI green (run 7). What separates in review from done is
-a reviewer's sign-off on both PRs and a green run.
+**Where it stands, 2026-11-11.** PR #17 merged into `main` as 33fadd0 after
+PR #16, with CI green on run 8; issue #2 is closed. `main` now holds the
+approved SRS, the six ADRs and the fourteen-crate workspace, and every later
+branch has its base.
 
 ## 2. Model IR (#3)
 
@@ -164,8 +165,8 @@ and Release 4 (4). The [release plan](release-plan.html) has each.
 
 | Must happen | Before |
 |---|---|
-| PR #16 merged | the SRS is approved; any requirement is implementable |
-| PR #17 merged (#2) | any branch has a base |
+| ~~PR #16 merged~~ done 2026-11-11 | the SRS is approved; any requirement is implementable |
+| ~~PR #17 merged (#2)~~ done 2026-11-11 | any branch has a base |
 | Model IR (#3) | artifact, targets, frontend, graph compiler, planner |
 | Kernel IR link (#7) and a self-hosted runner | any kernel compiles in CI |
 | A gfx950 host (OI-008) | the catalog has a validated entry; `run` on a GPU |

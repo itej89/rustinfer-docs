@@ -1,11 +1,11 @@
 {
- "fetched_at": "2026-11-12T01:51:47+00:00",
+ "fetched_at": "2026-11-12T02:15:35+00:00",
  "issues": [
   {
    "number": 1,
    "title": "Epic: rustinfer Release 1 — foundation",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "epic",
     "feature"
@@ -16,8 +16,8 @@
   {
    "number": 2,
    "title": "Project scaffold: workspace, core, CLI, CI, mandatory files",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
@@ -221,22 +221,22 @@
   {
    "number": 16,
    "title": "docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning",
-   "state": "open",
+   "state": "closed",
    "head": "docs/1-srs-rustinfer",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-12",
    "mergeable": true,
    "created_at": "2026-11-11"
   },
   {
    "number": 17,
    "title": "feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files",
-   "state": "open",
+   "state": "closed",
    "head": "feat/2-project-scaffold",
-   "base": "docs/1-srs-rustinfer",
-   "merged": false,
-   "merged_at": "",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
    "mergeable": true,
    "created_at": "2026-11-11"
   }
@@ -245,11 +245,22 @@
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 16,
-   "closed": 0
+   "open": 14,
+   "closed": 2
   }
  ],
  "runs": [
+  {
+   "id": 8530545,
+   "title": "Merge pull request 'feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files' (#17) from feat/2-project-scaffold into main",
+   "status": "running",
+   "conclusion": null,
+   "event": "push",
+   "ref": "main",
+   "sha": "33fadd0",
+   "created": "2026-11-12T03:14",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/9"
+  },
   {
    "id": 8528970,
    "title": "docs(planning): add #18 Sluice to the Epic's task list and sequence",

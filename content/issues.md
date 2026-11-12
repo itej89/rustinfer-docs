@@ -8,8 +8,8 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Cod
 # Issue tracker
 
 **As of 2026-11-11.** The tracker state is read live from Codeberg
-(fetched 2026-11-12 01:51 UTC, kept in `data/progress-snapshot.json`); the
-counts of requirements, tests and lines are read from the rustinfer tree at commit 2b1089a 2026-11-11.
+(fetched 2026-11-12 02:15 UTC, kept in `data/progress-snapshot.json`); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit 33fadd0 2026-11-12.
 Coverage is not measured here: it is the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
 
@@ -17,13 +17,13 @@ below with every other tracker on the site; the [roadmap](roadmap.html) is the s
 
 | measure | state | note |
 |---|---|---|
-| Release 1 issues closed | `░░░░░░░░░░ 0/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 0 closed, 16 open |
-| Pull requests | 0 merged, 2 open | #16 `docs/1-srs-rustinfer` → `main` (open), #17 `feat/2-project-scaffold` → `docs/1-srs-rustinfer` (open) |
-| Latest CI run | run 8528970 (#17, `0c918f6`): **success**, 2026-11-12 02:16 | Forgejo Actions on Codeberg; the recent runs are listed below |
+| Release 1 issues closed | `█░░░░░░░░░ 1/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 2 closed, 14 open |
+| Pull requests | 2 merged, 0 open | #16 `docs/1-srs-rustinfer` → `main` (merged), #17 `feat/2-project-scaffold` → `main` (merged) |
+| Latest CI run | run 8530545 (main, `33fadd0`): **running**, 2026-11-12 03:14 | Forgejo Actions on Codeberg; the recent runs are listed below |
 | SRS requirements implemented | `░░░░░░░░░░ 0/186` | a requirement is implemented when the issue that carries it is closed; by SRS status today: Draft 186; by release: R1 105, R2 44, R3 33, R4 4 |
-| Tests | 0 | `#[test]` functions across 1 crates |
+| Tests | 40 | `#[test]` functions across 14 crates |
 | Line coverage | 89.15% | from the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11; the CI gate is 80 percent |
-| Rust | 8 lines in 1 files | `crates/**/*.rs`, tests and build scripts included |
+| Rust | 2,233 lines in 54 files | `crates/**/*.rs`, tests and build scripts included |
 
 ## Release 1 issues
 
@@ -36,12 +36,12 @@ open issue in dependency order whose blockers are all closed. Bodies are drafted
 
 | id | work | required by | status | notes |
 |---|---|---|---|---|
-| R1-2 | Project scaffold: workspace, core, CLI, CI, mandatory files | — | **In review 2026-11-11** | branch `feat/2-project-scaffold`; PR #17 → `docs/1-srs-rustinfer`, opened 2026-11-11, open |
-| R1-3 | Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip | #2 | Not started; waits on #2 | — |
+| R1-2 | Project scaffold: workspace, core, CLI, CI, mandatory files | — | Done 2026-11-12 | branch `feat/2-project-scaffold`; PR #17 → `main`, opened 2026-11-11, merged 2026-11-12 |
+| R1-3 | Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip | #2 | **Not started** | — |
 | R1-4 | Artifact format: `.rie` header, section table, hash, bounded reader, writer | #3 | Not started; waits on #3 | — |
 | R1-5 | Target abstraction and CPU reference target | #3 | Not started; waits on #3 | — |
 | R1-6 | Frontend: LLaMA family from a Hugging Face checkpoint | #3 | Not started; waits on #3 | — |
-| R1-7 | Kernel IR dialect and the MLIR/LLVM link | #2 | Not started; waits on #2 | writes ADR-007 (OI-009); needs a self-hosted runner for LLVM |
+| R1-7 | Kernel IR dialect and the MLIR/LLVM link | #2 | Not started | writes ADR-007 (OI-009); needs a self-hosted runner for LLVM |
 | R1-8 | AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS | #7 | Not started; waits on #7 | — |
 | R1-9 | R1 kernel generators, catalog and autotuner (`tune` command) | #5, #8 | Not started; waits on #5, #8 | needs an MI300X or MI355X on the bench (OI-008) |
 | R1-10 | Graph compiler: pass pipeline from Model IR to Plan | #3, #5, #9 | Not started; waits on #3, #5, #9 | — |
@@ -51,14 +51,14 @@ open issue in dependency order whose blockers are all closed. Bodies are drafted
 | R1-14 | `run` command end to end | #11, #13 | Not started; waits on #11, #13 | closes the Epic's acceptance criteria |
 | R1-15 | Planner: topology model and placement interfaces | #3 | Not started; waits on #3 | — |
 
-The Epic #1 is `open` with labels `epic`, `feature`; it closes with R1-14.
+The Epic #1 is `closed` with labels `epic`, `feature`; it closes with R1-14.
 
 ## Pull requests
 
 | id | work | required by | status | notes |
 |---|---|---|---|---|
-| PR-16 | docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning | a reviewer's sign-off | In review 2026-11-11 | `docs/1-srs-rustinfer` → `main`; mergeable; only the owner can approve the SRS |
-| PR-17 | feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files | PR-16 merged first (stacked) | In review 2026-11-11 | `feat/2-project-scaffold` → `docs/1-srs-rustinfer`; mergeable |
+| PR-16 | docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning | a reviewer's sign-off | Merged 2026-11-12 | `docs/1-srs-rustinfer` → `main`; mergeable; only the owner can approve the SRS |
+| PR-17 | feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files | a reviewer's sign-off | Merged 2026-11-12 | `feat/2-project-scaffold` → `main`; mergeable; only the owner can approve the SRS |
 
 ## CI runs
 
@@ -69,6 +69,7 @@ and run 7 was the first green run ([build steps](build-steps.html)).
 
 | run | for | commit | event | state | when |
 |---|---|---|---|---|---|
+| [8530545](https://codeberg.org/itej89/rustinfer/actions/runs/9) | main | `33fadd0` | push | **running** | 2026-11-12 03:14 |
 | [8528970](https://codeberg.org/itej89/rustinfer/actions/runs/8) | #17 | `0c918f6` | pull_request | **success** | 2026-11-12 02:16 |
 | [8512737](https://codeberg.org/itej89/rustinfer/actions/runs/7) | #17 | `cc3e293` | pull_request | **success** | 2026-11-11 14:30 |
 | [8512650](https://codeberg.org/itej89/rustinfer/actions/runs/6) | #17 | `d380d0a` | pull_request | **failure** | 2026-11-11 14:24 |
