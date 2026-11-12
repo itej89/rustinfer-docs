@@ -24,9 +24,9 @@ TOKEN_FILE = pathlib.Path.home() / ".ssh" / "rustinfer.token"
 SNAPSHOT = SITE / "data" / "progress-snapshot.json"
 TODAY = datetime.date.today().isoformat()
 
-# Coverage is taken from the merge-readiness checklist of PR #17, not measured here.
-COVERAGE = ("89.15%", "the coverage block of PR #17's merge-readiness checklist "
-            "(`cargo llvm-cov --workspace --all-features`), 2026-11-11")
+# Coverage is taken from the merge-readiness checklist of PR #19, not measured here.
+COVERAGE = ("95.50%", "the coverage block of PR #19's merge-readiness checklist "
+            "(`cargo llvm-cov --workspace --all-features`), 2026-11-12")
 EPIC = 1
 SEQUENCE = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  # the Epic's order
 
@@ -259,7 +259,8 @@ out += """
 | branch | holds |
 |---|---|
 """
-HOLDS = {"main": "the skeleton commit",
+HOLDS = {"main": "the approved SRS v0.2, ADR-001 to ADR-006, the fourteen-crate workspace and the Model IR (PRs #16, #17 and #19)",
+         "feat/3-model-ir": "the Model IR crate `rustinfer-mir`, merged as PR #19",
          "docs/1-srs-rustinfer": "the SRS, ADR-001 to ADR-006, planning documents, issue drafts",
          "feat/2-project-scaffold": "the workspace, core, command, CI, mandatory files, `LICENSE`; rebased on the docs branch"}
 for b in branches:

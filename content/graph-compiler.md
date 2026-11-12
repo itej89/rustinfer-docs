@@ -20,7 +20,7 @@ activity diagram gives the order; the passes are:
 
 | pass | does | fails on |
 |---|---|---|
-| validate | the Model IR's own checks: no cycle, no undefined input, no double definition, no dtype mismatch, no dynamic dimension outside the set (RI-MIR-006) | names the node |
+| validate | the Model IR's own checks: no cycle, no undefined input, no use before definition, no double definition, no arity or dtype-rule breach, no unknown KV group (RI-MIR-006); in the code as `Document::validate` since PR #19 | names the function, the node and the field |
 | shape inference | resolves every tensor under the profile (RI-GC-002) | an unresolved dimension; a profile with min > opt or opt > max; a `max_num_tokens` not a multiple of the KV block size |
 | precision | assigns each matmul and attention a weight and activation format from the build options or the imported quantization, and inserts the quantize and scale nodes the chosen kernel requires (RI-GC-004) | bf16 and fp8 in R1; int8, MXFP4 and fp8 KV in R2; int4 weight-only in R3 |
 | fusion | replaces matched sequences with fused nodes: rmsnorm→matmul, matmul→silu_and_mul, residual_add→rmsnorm, rope→kv_cache_write, quantize→matmul, elementwise chains (RI-GC-003) | only when the catalog lists a kernel for the fused node or the elementwise fuser (RI-KC-010, R2) can produce one |

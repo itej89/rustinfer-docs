@@ -104,8 +104,9 @@ may change; the `error=` and `component=` fields may not
 
 ## What to do next
 
-Nothing runs a model yet. The next thing that lands is the Model IR
-(issue #3), then the artifact (#4), the target abstraction with the CPU
-reference (#5) and the LLaMA frontend (#6); `build` and `inspect` become real
-with #11 and `run` with #14. The order and blockers are on the
+Nothing runs a model yet. The Model IR (issue #3) landed on 2026-11-12 as
+the library crate `rustinfer-mir`, which no subcommand calls yet; the next
+things are the artifact (#4), the target abstraction with the CPU reference
+(#5) and the LLaMA frontend (#6); `build` and `inspect` become real with #11
+and `run` with #14. The order and blockers are on the
 [issue tracker](issues.html).

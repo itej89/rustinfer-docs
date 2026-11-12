@@ -26,6 +26,9 @@ for sec in sections:
         groups.append((title, reqs))
 
 total = sum(len(r) for _, r in groups)
+# The document's own version and status, from its header block.
+doc_version = re.search(r"^\*\*Version\*\*:\s*(\S+)", text, re.M).group(1)
+doc_status = re.search(r"^\*\*Status\*\*:\s*(\S+)", text, re.M).group(1)
 by_release = {}
 for _, reqs in groups:
     for _, _, _, _, release, _ in reqs:
@@ -41,9 +44,10 @@ out = header("Requirements", "Reference", 1,
 out = out.replace("---\n<!--", "cards: headings\n---\n<!--", 1)
 out += f"""# Requirements
 
-Generated from `docs/SRS-RI-v0.1.md` at commit {commit()}. {total} requirements
-in {len(groups)} groups, every one at status *Draft* until the SRS is approved
-(the SRS header says so). The *release* column is the first release named; where
+Generated from `docs/SRS-RI-v0.1.md` at commit {commit()}: document version
+{doc_version}, status *{doc_status}* (the SRS header says so). {total} requirements
+in {len(groups)} groups, each with its own status field, *Draft* until the issue
+that carries it closes. The *release* column is the first release named; where
 a requirement is split across releases the full text is kept.
 
 By first release: {", ".join(f"{k} {v}" for k, v in sorted(by_release.items()))}.

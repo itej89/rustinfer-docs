@@ -45,7 +45,7 @@ From ADR-002, little-endian throughout:
 
 | section | holds | notes |
 |---|---|---|
-| `model_ir` | the Model IR as canonical JSON | sorted keys, exact numerics (RI-MIR-007) |
+| `model_ir` | the Model IR document as canonical JSON: the weight set as tensor descriptors (name, dtype, shape, encoding, placement slot), the named functions and the KV groups; never a weight byte | sorted keys, compact, exact integers (RI-MIR-007); the document and its writer and reader exist in `rustinfer-mir` since PR #19 ([design](design.html)), the section around them is #4 |
 | `plan` | the Plan as canonical JSON | deterministic key order (RI-GC-009) |
 | `profile` | `min`, `opt`, `max` per dynamic dimension | |
 | `metadata` | build options, producer, `rustc` and LLVM versions, catalog version, input hashes, origin (`build` or first load), timestamp | RI-ART-008, RI-SEC-004 |

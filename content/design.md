@@ -8,8 +8,8 @@ summary: The three representations, the fourteen crates and the direction their 
 # Design
 
 Read from ADR-001, ADR-003, ADR-005, SRS §2, `docs/uml/component-diagram.md`,
-`Cargo.toml` and `crates/rustinfer-core/` at commit `082df51`. The diagrams
-themselves are on [design diagrams](design-diagrams.html).
+`Cargo.toml`, `crates/rustinfer-core/` and `crates/rustinfer-mir/` at commit
+`2d75c5d`. The diagrams themselves are on [design diagrams](design-diagrams.html).
 
 ## Three representations
 
@@ -18,7 +18,7 @@ between a model file and machine code.
 
 | representation | what it is | who produces it | who consumes it | carried in the artifact as |
 |---|---|---|---|---|
-| **Model IR** | a typed SSA graph: each node applies one operator to named input tensors and defines named outputs; shapes mix static integers with the four named dynamic dimensions `batch`, `num_tokens`, `seq_len`, `beam`, bounded by a profile; every tensor has a placement slot and every node a device slot | the frontend | the graph compiler, the planner, every target | canonical JSON (sorted keys, exact numerics), versioned on its own (RI-MIR-007, -008) |
+| **Model IR** | a typed SSA graph: each node applies one operator to named input tensors and defines named outputs; shapes mix static integers with the four named dynamic dimensions `batch`, `num_tokens`, `seq_len`, `beam`, bounded by a profile; every tensor has a placement slot and every node a device slot. In the code as `rustinfer-mir` since PR #19 (below) | the frontend | the graph compiler, the planner, every target | canonical JSON (sorted keys, compact, exact integers), versioned on its own (RI-MIR-007, -008) |
 | **Kernel IR** | a tile-level MLIR dialect with explicit layouts: tiles, memory spaces (global, shared, register), barriers, a matrix-multiply op, masked loads and stores, reductions, structured control flow; thread identity does not appear | Rust generator functions, through a builder | the kernel compiler's lowerings | not carried; the lowered binaries are, in the `kernels` section |
 | **Plan** | the static schedule: an ordered list of launches with kernel id, argument bindings, shape expressions over the dynamic dimensions, and sub-plans for prefill, decode and a mixed iteration | the graph compiler | the executor, verbatim | the `plan` section |
 
@@ -27,6 +27,79 @@ fixed catalog of kernels plus a small fuser, Metal's AIR as portable IR
 finalised on the device, Core ML's scheduler as the planner across units. The
 rationale for a tile IR rather than a thread IR is RI-KC-002's: a tile IR
 retargets to SIMT, vector and mesh devices; a thread IR does not.
+
+## The Model IR in the code
+
+Read from `crates/rustinfer-mir/src/` and `docs/api/model-ir.md` at
+`2d75c5d`. PR #19 merged into `main` on 2026-11-12 and closed issue #3; the
+crate is the first component crate with behaviour, and its public API is
+the `pub use` list of `lib.rs`: `Document`, `Function`, `KvGroup`, `Node`,
+`Op` with its attribute structs, `OpKind` and the registry types, `Tensor`,
+`DType`, `Shape`, `Dim`, `DynamicDim`, `Profile`, `Encoding`,
+`PlacementSlot`, `MemoryTier`, `DeviceSlot`, `Limits` and `Error`.
+
+**The document.** `Document` holds `ir_version`, one weight set, the
+functions by name and the KV groups by name. A weight is a `Tensor`
+descriptor and nothing more: name, dtype, shape, an `encoding` present
+exactly when the dtype is fp8 (RI-MIR-011), and a `PlacementSlot` whose tier
+(`hbm`, `dram`, `cxl` or `nvme`) is empty until the planner fills it
+(RI-MIR-005). The document never holds a weight byte; the bytes are the
+weight manifest's and Sluice's business ([artifact](artifact.html),
+[Sluice](sluice.html)).
+
+**Functions.** `prefill` and `decode` in R1 (RI-MIR-009); `draft` and
+`adapter` are refused as R3 and any other name as unknown. A `Function` is
+its input tensors, its output names and its nodes in definition-before-use
+order: a node reads only weights, function inputs and the outputs of earlier
+nodes, a cycle is refused naming the first node on it, and an acyclic but
+mis-ordered list is refused as `use_before_definition`. Every node carries
+an `Op` and a `DeviceSlot`, empty until the planner fills it.
+
+**KV groups.** A `KvGroup` is `kind` (`paged` in R1), `dtype`,
+`num_kv_heads` and `head_dim`, one per document in R1 (RI-MIR-010). Every
+`attention_prefill`, `attention_decode_paged` and `kv_cache_write` node names
+its group in `attrs.kv_group`; a missing or unknown name is refused naming
+the node.
+
+**Operators.** The twenty operators of RI-MIR-004 are one static registry in
+`registry.rs`, an `OperatorSpec` of release, arity and dtype rules per
+operator, kept in `OpKind::ALL` order by a unit test; adding an operator is
+one row. Sixteen are accepted in R1, `fused` among them as the composition
+of its parts; `collective` (R2) and `moe_route`, `moe_experts` and
+`lora_apply` (R3) exist as variants and are refused with
+`error=unsupported` naming the node, the operator and the release.
+
+**The validator.** `Document::validate` refuses the first fault it meets,
+and the error names the function, the node and the field: a cycle, an
+undefined input, use before definition, a duplicate definition, an arity or
+dtype-rule breach, a non-finite attribute, a missing or unknown KV group, an
+encoding fault, or a later-release operator or feature (RI-MIR-006). Every
+`Error` maps to the code `invalid` or `unsupported` under `component=mir`,
+following the [error contract](#the-error-contract).
+
+**Canonical JSON.** `to_json` validates first, then writes sorted keys,
+compact, exact integers, shortest round-trip reals, and empty slots and
+absent encodings as explicit `null`. `from_json(to_json(d)) == d` and
+`to_json(from_json(text)) == text` for any text the writer produced, under
+`ir_version` 1, the only version the reader accepts (RI-MIR-007, -008). The
+schema is `docs/api/model-ir.md` in the tree and the format has its own
+changelog line in `docs/api/CHANGELOG.md`.
+
+**The bounded reader.** `from_json` caps the text length, parses, and then
+reads in three phases: an untyped scan of the version, the counts and every
+name (operator, dtype, dimension, encoding, KV group) that refuses naming
+the node or tensor; typed construction that refuses a missing, unknown or
+mistyped field as `malformed`; then validation. The bounds are the
+`MODEL_IR_MAX_*` constants in `rustinfer-core` ([constants](ref-constants.html)),
+and every refusal is logged once at `error` as
+`stage=read boundary=model_ir_json reason=...` (RI-SEC-003).
+
+**What is not in it.** The `Profile` is a type of the crate but not part of
+the document: the artifact carries it as its own section (ADR-002) and the
+graph compiler resolves dimensions against it (RI-GC-002). The R2 dtypes
+`int8`, `fp4x2` and `e8m0`, the R3 `int4x2`, the `lookup_table` and
+`sparse` encodings and per-block granularity are specified in the SRS and
+refused by this release naming the tensor.
 
 ## The crates and the direction of dependencies
 
@@ -48,13 +121,15 @@ generated on the [crates](ref-crates.html) page.
 | model IR | `rustinfer-mir` | core |
 | foundation | `rustinfer-core` | nothing in the workspace |
 
-On the scaffold branch only `rustinfer-core` and `rustinfer-cli` carry
+At `2d75c5d` `rustinfer-core`, `rustinfer-cli` and `rustinfer-mir` carry
 behaviour; every other crate has its `COMPONENT` name, its error enum and its
 `pub use` list, so the dependency graph is fixed from the first commit (the
 component diagram cites heuristic G22, logical dependencies made physical).
 Note that the diagram shows the compilers and runtime depending on `mir`,
-`target` and `artifact`, while the Cargo manifests at `082df51` list only
-`core`; the edges are added when the issues that need them land.
+`target` and `artifact`, while the Cargo manifests at `2d75c5d` still list
+only `core` for every crate but the command; the edges are added when the
+issues that need them land. `rustinfer-mir` adds `serde` and `serde_json`,
+pinned, for the canonical JSON.
 
 The public API of a crate is the `pub use` list in its `lib.rs`; everything
 else is crate-private. `missing_docs = deny` makes every public item a

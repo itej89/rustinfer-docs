@@ -2,7 +2,7 @@
 title: rustinfer
 section: Overview
 order: 1
-summary: The inference engine for AMD Instinct and RISC-V accelerators, read from its tree: what it is meant to be, what exists on 2026-11-10, and where the work is tracked.
+summary: The inference engine for AMD Instinct and RISC-V accelerators, read from its tree: what it is meant to be, what exists on 2026-11-12, and where the work is tracked.
 ---
 
 # rustinfer
@@ -17,9 +17,9 @@ kernels rustinfer generates itself from a **Kernel IR**, and executed by a
 runtime that makes no graph, kernel, layout or memory decision at inference
 time. No kernel library, no vendor BLAS, no Python, no NVIDIA.
 
-This site is a reading of the tree at commit `082df51` on branch
-`feat/2-project-scaffold`, first written on 2026-11-10, the day the project
-was specified and scaffolded, and refreshed on 2026-11-11. Everything on it was read from the source, the SRS, the ADRs and
+This site is a reading of the tree at commit `2d75c5d` on `main`, the merge
+of PR #19, first written on 2026-11-10, the day the project was specified and
+scaffolded, and refreshed on 2026-11-11 and 2026-11-12. Everything on it was read from the source, the SRS, the ADRs and
 the planning documents in `docs/`; nothing was run on a GPU. Where a page
 describes behaviour that does not exist yet it says so and names the issue
 that will add it.
@@ -36,21 +36,22 @@ steps in order are the [roadmap](roadmap.html).
 
 | Area | State |
 |---|---|
-| Specification: SRS-RI-v0.1, 171 requirements, 27 groups, release tags R1 to R4 | <span class="state-ok">done</span>, status Draft until approved ([requirements](ref-requirements.html)) |
+| Specification: SRS-RI-v0.1 at version 0.2, 186 requirements, 28 groups, release tags R1 to R4 | <span class="state-ok">done</span> — status Approved 2026-11-11, PR #16 merged into `main` 2026-11-12; each requirement stays Draft until its issue closes ([requirements](ref-requirements.html)) |
 | Decisions: ADR-001 to ADR-006 | <span class="state-ok">done</span> ([decisions](decisions.html)) |
-| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-ok">done</span> — PR #17 merged into `main` 2026-11-11 ([crates](ref-crates.html)) |
-| `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-part">in progress</span> — same branch; tested ([design](design.html)) |
-| The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-part">in progress</span> — every subcommand answers `not_implemented` after validation ([getting started](getting-started.html)) |
-| Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 and #18 ([issues](issues.html)) |
+| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-ok">done</span> — PR #17 merged into `main` 2026-11-12 ([crates](ref-crates.html)) |
+| `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-ok">done</span> — PR #17 merged; tested ([design](design.html)) |
+| The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-ok">done</span> — PR #17 merged; every subcommand answers `not_implemented` after validation until #11 and #14 ([getting started](getting-started.html)) |
+| Model IR: `rustinfer-mir`, the typed graph with one weight set, named functions, KV groups, twenty operators, validator and canonical JSON | <span class="state-ok">done</span> — PR #19 merged into `main` 2026-11-12, issue #3 closed; 201 workspace tests, 95.5 percent line coverage in the PR's checklist ([design](design.html)) |
+| Artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #4 to #15 and #18; #4, #5 and #15 are being prepared on 2026-11-12 and show as in progress once their branches are on Codeberg ([issues](issues.html)) |
 | Any model running on any device | <span class="state-no">not started</span> ([supported models](supported-models.html)) |
-| Documentation in the tree: six diagrams, entry points, observability, feature matrix, API changelog | <span class="state-part">in progress</span> — same branch ([design diagrams](design-diagrams.html)) |
+| Documentation in the tree: six diagrams, entry points, observability, feature matrix, API changelog, the Model IR JSON schema | <span class="state-ok">done</span> — PRs #17 and #19 merged ([design diagrams](design-diagrams.html)) |
 
 ## Where things live
 
 | What | Where |
 |---|---|
-| Repository | `codeberg.org/itej89/rustinfer`, public; `main` holds the approved SRS v0.2, ADR-001 to ADR-006 and the fourteen-crate workspace since 2026-11-11 (PRs #16 and #17 merged) |
-| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 with dependencies linked, milestone `R1 — foundation`; PRs #16 (SRS) and #17 (scaffold) open since 2026-11-11; CI green on Codeberg's hosted runners since run 7 ([issues](issues.html)) |
+| Repository | `codeberg.org/itej89/rustinfer`, public; `main` holds the approved SRS v0.2, ADR-001 to ADR-006, the fourteen-crate workspace and the Model IR crate since 2026-11-12 (PRs #16, #17 and #19 merged) |
+| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 and #18 with dependencies linked, milestone `R1 — foundation`; #2 and #3 closed; PRs #16 (SRS), #17 (scaffold) and #19 (Model IR) merged 2026-11-12; CI green on Codeberg's hosted runners since run 7 ([issues](issues.html)) |
 | Specification | `docs/SRS-RI-v0.1.md` |
 | Decisions | `docs/adr/ADR-001` to `ADR-006` |
 | Planning | `docs/planning/`: the TensorRT-LLM feature inventory, 24 use cases, the device inventory, the issue drafts |
@@ -65,7 +66,8 @@ Three decisions produce everything else; they are set out in full under
 device.** The Model IR is a typed SSA graph with profile-bounded dynamic
 dimensions that every frontend lowers to and every backend consumes. The
 Kernel IR is a tile-level MLIR dialect with explicit layouts and no thread
-identity, emitted by Rust generator functions. The Plan is the static schedule
+identity, emitted by Rust generator functions. Of the three only the Model
+IR is in the code today, as `rustinfer-mir` since PR #19. The Plan is the static schedule
 the executor runs verbatim. ADR-005 calls this Apple's arrangement applied to
 data-centre inference.
 
@@ -96,7 +98,7 @@ properties kept.
 <li><a href="deployment.html"><span class="card-title">Deployment</span><span class="card-note">One binary, one artifact, strict mode; what is not there yet.</span></a></li>
 <li><a href="issues.html"><span class="card-title">Issue tracker</span><span class="card-note">#1 to #15 with blockers, branches and status.</span></a></li>
 <li><a href="decisions.html"><span class="card-title">Decisions</span><span class="card-note">The ADRs, the owner's decisions, and the conclusions this site had to retract.</span></a></li>
-<li><a href="ref-requirements.html"><span class="card-title">Requirements</span><span class="card-note">All 171, generated from the SRS.</span></a></li>
+<li><a href="ref-requirements.html"><span class="card-title">Requirements</span><span class="card-note">All 186, generated from the SRS.</span></a></li>
 </ul>
 
 ## Reading order

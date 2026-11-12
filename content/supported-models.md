@@ -10,9 +10,10 @@ summary: Which model families each release lowers and serves, from the SRS front
 Read from SRS §3.2.2 (`RI-FE`), §2.4, the feature inventory and the use cases
 at commit `082df51`.
 
-**No model runs today.** The tree is the Release 1 scaffold: the frontend
-crate has an error type and nothing else (issue #6 adds the LLaMA lowering),
-and there is no Model IR, artifact, target or executor for it to feed. The
+**No model runs today.** The frontend crate has an error type and nothing
+else (issue #6 adds the LLaMA lowering); the Model IR it will lower to
+exists since PR #19 (2026-11-12), but there is no artifact, target or
+executor to consume one. The
 table below is the plan the SRS commits to, with the release each row names
 and the status on 2026-11-10.
 

@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-12T02:15:35+00:00",
+ "fetched_at": "2026-11-12T06:35:05+00:00",
  "issues": [
   {
    "number": 1,
@@ -27,8 +27,8 @@
   {
    "number": 3,
    "title": "Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
@@ -239,21 +239,54 @@
    "merged_at": "2026-11-12",
    "mergeable": true,
    "created_at": "2026-11-11"
+  },
+  {
+   "number": 19,
+   "title": "feat(mir): Model IR, the typed graph every frontend lowers to (#3)",
+   "state": "closed",
+   "head": "feat/3-model-ir",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
+   "mergeable": true,
+   "created_at": "2026-11-12"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 14,
-   "closed": 2
+   "open": 13,
+   "closed": 3
   }
  ],
  "runs": [
   {
+   "id": 8535408,
+   "title": "Merge pull request 'feat(mir): Model IR, the typed graph every frontend lowers to (#3)' (#19) from feat/3-model-ir into main",
+   "status": "waiting",
+   "conclusion": null,
+   "event": "push",
+   "ref": "main",
+   "sha": "2d75c5d",
+   "created": "2026-11-12T07:28",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/11"
+  },
+  {
+   "id": 8531904,
+   "title": "test(mir): the boundary refusal is logged once at error in key=value form",
+   "status": "success",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "#19",
+   "sha": "75d987f",
+   "created": "2026-11-12T04:16",
+   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/10"
+  },
+  {
    "id": 8530545,
    "title": "Merge pull request 'feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files' (#17) from feat/2-project-scaffold into main",
-   "status": "running",
+   "status": "success",
    "conclusion": null,
    "event": "push",
    "ref": "main",

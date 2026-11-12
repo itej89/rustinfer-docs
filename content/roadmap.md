@@ -16,7 +16,8 @@ the graph compiler joins them.
 Today a change means an issue, a branch named after it, tests that cite
 requirement ids, the post-coding gate, and a pull request whose template is
 the standard's 15-step checklist. Nothing runs a model; every subcommand of
-the one binary validates its arguments and answers `not_implemented`.
+the one binary validates its arguments and answers `not_implemented`. The
+first component with behaviour is the Model IR, merged on 2026-11-12.
 
 The [progress](progress.html) page is this roadmap's measure: every tracker
 on this site counted by state, the [issues](issues.html) first, then the
@@ -27,7 +28,8 @@ on this site counted by state, the [issues](issues.html) first, then the
 The TensorRT-LLM feature inventory, 24 use cases and the AMD and RISC-V
 device inventory, then SRS-RI-v0.1 with 171 requirements in 27 groups,
 every one tagged R1 to R4, and ADR-001 to ADR-006. The owner approved it on
-2026-11-11 and PR #16 merged into `main` as 1c7a008, carrying v0.2. The Epic and the
+2026-11-11 and PR #16 merged into `main` as 1c7a008 on 2026-11-12, carrying
+v0.2 with 186 requirements in 28 groups. The Epic and the
 fourteen issue bodies were drafted in the tree before the tracker existed so
 the numbers would match the branch names.
 
@@ -80,21 +82,37 @@ github.com. Each got a one-line fix and a sentence in ADR-004 (`ac68ff1`,
 `b252ea6`, `d380d0a`, `cc3e293`), and run 7 was green across lint,
 security, test and build.
 
-**Where it stands, 2026-11-11.** PR #17 merged into `main` as 33fadd0 after
-PR #16, with CI green on run 8; issue #2 is closed. `main` now holds the
-approved SRS, the six ADRs and the fourteen-crate workspace, and every later
-branch has its base.
+**Where it stands.** PR #17 merged into `main` as 33fadd0 on 2026-11-12
+after PR #16, with CI green on run 8 and on run 9 for `main`; issue #2 is
+closed. `main` holds the approved SRS, the six ADRs and the fourteen-crate
+workspace, and every later branch has its base.
 
-## 2. Model IR (#3)
+## 2. Model IR (#3) — **done, 2026-11-12**
 
-The typed SSA graph every later step consumes: profile-bounded dynamic
-dimensions, the R1 dtype set, the operator set, placement slots, a
-validator that names the offending node, canonical JSON that round-trips
-byte for byte, and its own version number ([design](design.html)). Blocked
-on #2. Nothing else in Release 1 can start before it except the Kernel IR
-chain.
+The typed SSA graph every later step consumes, as the crate `rustinfer-mir`
+([design](design.html)): a `Document` holding one weight set as tensor
+descriptors (name, dtype, shape, an encoding when quantized, a placement
+slot) and never a weight byte; the named functions `prefill` and `decode`,
+each a list of nodes in definition-before-use order; KV groups the attention
+nodes name; the twenty operators of RI-MIR-004 in one static registry of
+release, arity and dtype rules; a validator that refuses the first fault
+naming the function, the node and the field; canonical JSON (sorted keys,
+compact) that round-trips byte for byte under `ir_version` 1; and a bounded
+three-phase reader. PR #19 merged into `main` as 2d75c5d on 2026-11-12 with
+CI green on run 10; 201 workspace tests, 95.50 percent line coverage in the
+PR's checklist. The schema is `docs/api/model-ir.md` in the tree and the
+read path is sequence diagram §4 ([design diagrams](design-diagrams.html)).
 
-## 3. Artifact (#4), target abstraction and CPU reference (#5), LLaMA frontend (#6)
+Two readings the PR records rather than decides: the `Profile` is a type of
+the crate but not part of the document, because ADR-002 stores it as its own
+artifact section; and "quantized tensors carry an encoding" is enforced as
+an encoding present exactly when the dtype is fp8.
+
+## 3. Artifact (#4), target abstraction and CPU reference (#5), LLaMA frontend (#6) — #4 and #5 in progress
+
+On 2026-11-12 the artifact (#4) and the target abstraction (#5) are being
+prepared, each on its own branch; the [issue tracker](issues.html) marks
+them in progress once the branches are on Codeberg.
 
 Three steps that need only the Model IR and can run in parallel. The
 `.rie` reader and writer with the bounded, hash-last protocol of ADR-002
@@ -147,11 +165,12 @@ built for `cpu` and `gfx950`, inspected without a GPU, generating the same
 tokens on the CPU reference and an MI355X, every generator autotuned and
 validated, CI green.
 
-## 8. Planner interfaces (#15)
+## 8. Planner interfaces (#15) — in progress
 
 The topology model and the single-device placement that fills the Model
-IR's slots, blocked only on #3 and off the critical path; its implementation
-is Release 2 ([planner](planner.html)).
+IR's slots, unblocked since #3 closed and off the critical path; being
+prepared on 2026-11-12 beside #4 and #5. Its implementation is Release 2
+([planner](planner.html)).
 
 ## What comes next
 
@@ -165,9 +184,9 @@ and Release 4 (4). The [release plan](release-plan.html) has each.
 
 | Must happen | Before |
 |---|---|
-| ~~PR #16 merged~~ done 2026-11-11 | the SRS is approved; any requirement is implementable |
-| ~~PR #17 merged (#2)~~ done 2026-11-11 | any branch has a base |
-| Model IR (#3) | artifact, targets, frontend, graph compiler, planner |
+| ~~PR #16 merged~~ done 2026-11-12 | the SRS is approved; any requirement is implementable |
+| ~~PR #17 merged (#2)~~ done 2026-11-12 | any branch has a base |
+| ~~Model IR (#3)~~ done 2026-11-12 (PR #19) | artifact, targets, frontend, graph compiler, planner |
 | Kernel IR link (#7) and a self-hosted runner | any kernel compiles in CI |
 | A gfx950 host (OI-008) | the catalog has a validated entry; `run` on a GPU |
 | CPU reference (#5) | any kernel is validated |
@@ -180,5 +199,6 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
+| 2026-11-12 | PRs #16 and #17 merged into `main` (1c7a008, 33fadd0) shortly after midnight; CI run 9 green on `main`. Issue #3 implemented on `feat/3-model-ir`: the `rustinfer-mir` crate with the document, functions, KV groups, the operator registry, the validator, canonical JSON and the bounded reader, `serde` and `serde_json` added as pinned dependencies, the `MODEL_IR_*` constants in `rustinfer-core`, the JSON schema in `docs/api/model-ir.md`, sequence diagram §4 and the API changelog; CI run 10 green; PR #19 merged as 2d75c5d, issue #3 closed. 201 workspace tests, 95.50 percent line coverage. #4, #5 and #15 started. This site refreshed: generated pages from 2d75c5d, the Model IR described from the code on the design page |
 | 2026-11-11 | The tracker created on Codeberg: Epic #1, issues #2 to #15 with dependencies linked, labels, milestone `R1 — foundation`. PR #16 (SRS, `docs/1-srs-rustinfer` → `main`) and PR #17 (scaffold, stacked on #16) opened. The post-coding gate for #2 passed with three findings fixed (`refactor(scaffold)`, `e91e002`). CI retargeted from `ubuntu-latest` to Codeberg's `codeberg-medium` runners with full-SHA pins, permissions and timeouts, after the first two runs were cancelled unanswered; ADR-004 updated. ADR-002 corrected to the SRS's section list. `LICENSE` added (`082df51`). This documentation site written and published locally, with its [progress](progress.html) page counted from the trackers. Repository made public so Codeberg's hosted runners serve it; runs 3 to 6 fixed one Codeberg rule each (ADR-004); run 7 green on `cc3e293`, PR #17 checklist steps 10d and 13e filled . Weights left the artifact (RI-ART-012) and Sluice (#18) became the weight streamer. SRS v0.2 after a review against vLLM V1, SGLang and Apple's stack: named functions over one weight set, KV groups, the cache key beyond tokens, device-resident request state, enumerated buckets with graph capture for any sub-plan, compression encodings in the IR; reserved interfaces in OI-012 |
 | 2026-11-10 | The TensorRT-LLM feature inventory, the use cases and the device inventory written; SRS-RI-v0.1 written with 171 requirements; ADR-001 to ADR-006 accepted; the workspace scaffold built: 14 crates, `rustinfer-core`, the `rustinfer` command, CI, every mandatory file; 37 tests green, clippy and rustdoc clean |

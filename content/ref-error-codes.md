@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 33fadd0 2026-11-12. A failure leaves the command as one line on
+`src/error.rs` at commit 2d75c5d 2026-11-12. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -50,7 +50,34 @@ and component.
 | `rustinfer-compiler` | `compiler` | `NotImplemented` | `not_implemented` |
 | `rustinfer-frontend` | `frontend` | `NotImplemented` | `not_implemented` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
-| `rustinfer-mir` | `mir` | `NotImplemented` | `not_implemented` |
+| `rustinfer-mir` | `mir` | `Malformed` | `delegated` |
+| `rustinfer-mir` | `mir` | `TooLarge` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnsupportedVersion` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownOperator` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnsupportedOperator` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownDtype` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownDimension` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownEncoding` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidName` | `delegated` |
+| `rustinfer-mir` | `mir` | `DuplicateDefinition` | `delegated` |
+| `rustinfer-mir` | `mir` | `DuplicateNode` | `delegated` |
+| `rustinfer-mir` | `mir` | `UndefinedInput` | `delegated` |
+| `rustinfer-mir` | `mir` | `UseBeforeDefinition` | `delegated` |
+| `rustinfer-mir` | `mir` | `UndefinedOutput` | `delegated` |
+| `rustinfer-mir` | `mir` | `Cycle` | `delegated` |
+| `rustinfer-mir` | `mir` | `Arity` | `delegated` |
+| `rustinfer-mir` | `mir` | `DtypeMismatch` | `delegated` |
+| `rustinfer-mir` | `mir` | `NestedFusion` | `delegated` |
+| `rustinfer-mir` | `mir` | `MissingKvGroup` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownKvGroup` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidKvGroup` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnknownFunction` | `delegated` |
+| `rustinfer-mir` | `mir` | `NoFunctions` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidShape` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidEncoding` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidProfile` | `delegated` |
+| `rustinfer-mir` | `mir` | `NonFiniteAttribute` | `delegated` |
+| `rustinfer-mir` | `mir` | `UnsupportedFeature` | `unsupported` |
 | `rustinfer-planner` | `planner` | `NotImplemented` | `not_implemented` |
 | `rustinfer-runtime` | `runtime` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target` | `target` | `NotImplemented` | `not_implemented` |

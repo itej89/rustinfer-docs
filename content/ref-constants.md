@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-33fadd0 2026-11-12. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 16
+2d75c5d 2026-11-12. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 31
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -30,3 +30,18 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `LOG_FIELD_COMPONENT` | `&str` | `"component"` | Prefix of every log line's component field and of structured error lines. |
 | `ERROR_FIELD_CODE` | `&str` | `"error"` | Field name carrying the error code in a structured error line. |
 | `ERROR_FIELD_DETAIL` | `&str` | `"detail"` | Field name carrying the human-readable detail in a structured error line. |
+| `MODEL_IR_FORMAT_VERSION` | `u32` | `1` | Model IR document format version this build writes (RI-MIR-008). Versioned independently of `ARTIFACT_FORMAT_VERSION`. |
+| `MODEL_IR_SUPPORTED_VERSIONS` | `&[u32]` | `&[MODEL_IR_FORMAT_VERSION]` | Model IR document versions the reader accepts (RI-MIR-008). |
+| `MODEL_IR_FUNCTION_PREFILL` | `&str` | `"prefill"` | Name of the prefill function of a Model IR document (RI-MIR-009). |
+| `MODEL_IR_FUNCTION_DECODE` | `&str` | `"decode"` | Name of the decode function of a Model IR document (RI-MIR-009). |
+| `MODEL_IR_FUNCTION_NAMES` | `&[&str]` | `&[MODEL_IR_FUNCTION_PREFILL, MODEL_IR_FUNCTION_DECODE]` | Function names a Model IR document may define in this release (RI-MIR-009). |
+| `MODEL_IR_FUNCTION_NAMES_R3` | `&[&str]` | `&["draft", "adapter"]` | Function names the specification reserves for Release 3 (RI-MIR-009). |
+| `MODEL_IR_MAX_DOCUMENT_BYTES` | `usize` | `64 * 1024 * 1024` | Upper bound on the byte length of a Model IR JSON document the reader parses; checked before parsing (RI-SEC-003). |
+| `MODEL_IR_MAX_FUNCTIONS` | `usize` | `8` | Upper bound on the functions of one Model IR document. |
+| `MODEL_IR_MAX_NODES_PER_FUNCTION` | `usize` | `65_536` | Upper bound on the nodes of one Model IR function. |
+| `MODEL_IR_MAX_WEIGHTS` | `usize` | `65_536` | Upper bound on the weights of one Model IR document. |
+| `MODEL_IR_MAX_NODE_INPUTS` | `usize` | `16` | Upper bound on the inputs of one Model IR node. |
+| `MODEL_IR_MAX_NODE_OUTPUTS` | `usize` | `8` | Upper bound on the outputs of one Model IR node. |
+| `MODEL_IR_MAX_SHAPE_RANK` | `usize` | `8` | Upper bound on the rank of a Model IR tensor shape. |
+| `MODEL_IR_MAX_NAME_LENGTH` | `usize` | `256` | Upper bound on the length in bytes of a Model IR tensor or node name. |
+| `MODEL_IR_MAX_KV_GROUPS` | `usize` | `1` | KV groups a Model IR document may define in this release (RI-MIR-010, R1). |

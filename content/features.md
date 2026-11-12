@@ -31,7 +31,7 @@ branch carries, and that branch is not merged.
 | Frontend | LLaMA from HF | RI-FE-001 to -003 | R1 | Planned R1, #6 |
 | Frontend | weight streaming, Model IR JSON input, FP8 import | RI-FE-004, -006, -008 | R2 | Not started |
 | Frontend | MoE and MLA families, AWQ, GPTQ, MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started |
-| Model IR | typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version | RI-MIR-001 to -008 | R1 | Planned R1, #3 |
+| Model IR | typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version, named functions, KV groups, encodings | RI-MIR-001 to -011 | R1 | <span class="state-ok">done</span> — PR #19 merged 2026-11-12 |
 | Graph compiler | logged pass pipeline, shape inference, fusion against the catalog, bf16 and fp8 precision, kernel selection, arena planning, Plan, layouts, determinism, matrix refusal | RI-GC-001 to -009, -014 | R1 | Planned R1, #10 |
 | Graph compiler | tensor parallel sharding, mixed iteration sub-plan | RI-GC-010, -007 | R2 | Not started |
 | Graph compiler | expert parallel, LoRA points, speculative verification sub-plan | RI-GC-011 to -013 | R3 | Not started |
