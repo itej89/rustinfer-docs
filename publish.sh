@@ -1,8 +1,11 @@
 #!/bin/sh
-# Build the site and publish it to Codeberg Pages.
-# Codeberg serves the `pages` branch of a public repository at
-# https://<user>.codeberg.page/<repo>/ ; this script rebuilds out/,
-# writes its contents as one commit on an orphan `pages` branch and pushes it.
+# Build the site and publish it to GitHub Pages.
+# GitHub Pages serves the `pages` branch of this repository (root path) at
+# https://itej89.github.io/rustinfer-docs/ ; this script rebuilds out/,
+# writes its contents as one commit on an orphan `pages` branch and pushes it
+# to `origin` (github.com/itej89/rustinfer-docs). The `.nojekyll` file keeps
+# Jekyll from skipping files whose names start with an underscore.
+# Moved from Codeberg Pages on 2026-11-12 (ADR-008).
 set -eu
 cd "$(dirname "$0")"
 .venv/bin/python build.py
@@ -25,4 +28,4 @@ git worktree add --quiet --detach "$work"
 )
 git worktree remove --force "$work"
 git branch -D -q pages-build
-echo "published $rev to https://itej89.codeberg.page/rustinfer-docs/"
+echo "published $rev to https://itej89.github.io/rustinfer-docs/"

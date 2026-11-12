@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-2d75c5d 2026-11-12. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 31
+678b084 2026-11-12. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 62
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -21,7 +21,7 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_MAGIC` | `[u8; 4]` | `*b"RIE\0"` | Magic bytes at offset zero of every artifact (ADR-002, RI-ART-001). |
 | `ARTIFACT_EXTENSION` | `&str` | `"rie"` | File extension of an artifact. |
 | `ARTIFACT_FORMAT_VERSION` | `u16` | `1` | Artifact format version this build writes and the newest it reads (RI-ART-006). |
-| `ARTIFACT_WEIGHT_ALIGNMENT` | `u64` | `4096` | Alignment of the weight section so it can be memory-mapped (RI-ART-005). |
+| `ARTIFACT_KERNELS_ALIGNMENT` | `u32` | `4096` | Alignment of the `kernels` section so its code objects can be memory-mapped (RI-ART-013); also the largest alignment the reader accepts. The `weights` section is a manifest and needs no page alignment (RI-ART-012). |
 | `DEFAULT_KV_BLOCK_SIZE` | `u32` | `32` | Default KV cache block size in tokens; a power of two (RI-KVC-001). |
 | `DEFAULT_KV_MEMORY_FRACTION` | `f32` | `0.9` | Default fraction of free device memory given to the KV pool (RI-KVC-003). |
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
@@ -45,3 +45,44 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `MODEL_IR_MAX_SHAPE_RANK` | `usize` | `8` | Upper bound on the rank of a Model IR tensor shape. |
 | `MODEL_IR_MAX_NAME_LENGTH` | `usize` | `256` | Upper bound on the length in bytes of a Model IR tensor or node name. |
 | `MODEL_IR_MAX_KV_GROUPS` | `usize` | `1` | KV groups a Model IR document may define in this release (RI-MIR-010, R1). |
+| `ARTIFACT_SUPPORTED_VERSIONS` | `&[u16]` | `&[ARTIFACT_FORMAT_VERSION]` | Artifact format versions the reader accepts (RI-ART-006). |
+| `ARTIFACT_OFFSET_VERSION` | `usize` | `4` | Byte offset of `format_version` in the artifact header (ADR-002). |
+| `ARTIFACT_OFFSET_HEADER_LENGTH` | `usize` | `6` | Byte offset of `header_length` in the artifact header (ADR-002). |
+| `ARTIFACT_OFFSET_TARGET` | `usize` | `8` | Byte offset of the NUL-padded target id in the artifact header (ADR-002). |
+| `ARTIFACT_OFFSET_PRODUCER` | `usize` | `40` | Byte offset of the NUL-padded producer version in the artifact header (ADR-002). |
+| `ARTIFACT_OFFSET_HASH` | `usize` | `72` | Byte offset of the SHA-256 of every byte after the header (ADR-002). |
+| `ARTIFACT_OFFSET_SECTION_COUNT` | `usize` | `104` | Byte offset of `section_count` in the artifact header (ADR-002). |
+| `ARTIFACT_HEADER_FIXED_BYTES` | `usize` | `112` | Bytes of the fixed artifact header before the section table (ADR-002). |
+| `ARTIFACT_HEADER_STRING_BYTES` | `usize` | `32` | Bytes of each NUL-padded string field of the artifact header (ADR-002). |
+| `ARTIFACT_HASH_BYTES` | `usize` | `32` | Bytes of a SHA-256 digest (RI-ART-001). |
+| `ARTIFACT_SECTION_NAME_BYTES` | `usize` | `16` | Bytes of the NUL-padded name in a section table entry (ADR-002). |
+| `ARTIFACT_SECTION_ENTRY_BYTES` | `usize` | `40` | Bytes of one section table entry: name, offset, length, alignment, reserved (ADR-002). |
+| `ARTIFACT_SECTION_MODEL_IR` | `&str` | `"model_ir"` | Name of the artifact section holding the Model IR document (RI-ART-002). |
+| `ARTIFACT_SECTION_PLAN` | `&str` | `"plan"` | Name of the artifact section holding one Plan per function (RI-ART-002). |
+| `ARTIFACT_SECTION_PROFILE` | `&str` | `"profile"` | Name of the artifact section holding the profile bounds (RI-ART-009). |
+| `ARTIFACT_SECTION_METADATA` | `&str` | `"metadata"` | Name of the artifact section holding the build metadata (RI-ART-008). |
+| `ARTIFACT_SECTION_CATALOG` | `&str` | `"catalog"` | Name of the artifact section holding the catalog copy (RI-ART-010). |
+| `ARTIFACT_SECTION_KERNELS` | `&str` | `"kernels"` | Name of the artifact section holding code objects and Kernel IR (RI-ART-013). |
+| `ARTIFACT_SECTION_WEIGHTS` | `&str` | `"weights"` | Name of the artifact section holding the weight manifest (RI-ART-012). |
+| `ARTIFACT_SECTION_TOPOLOGY` | `&str` | `"topology"` | Name of the reserved topology section (RI-PLN-005). |
+| `ARTIFACT_SECTION_PLACEMENT` | `&str` | `"placement"` | Name of the reserved placement section (RI-PLN-005). |
+| `ARTIFACT_SECTION_NAMES` | `&[&str]` | `&[
+    ARTIFACT_SECTION_MODEL_IR,
+    ARTIFACT_SECTION_PLAN,
+    ARTIFACT_SECTION_PROFILE,
+    ARTIFACT_SECTION_METADATA,
+    ARTIFACT_SECTION_CATALOG,
+    ARTIFACT_SECTION_KERNELS,
+    ARTIFACT_SECTION_WEIGHTS,
+    ARTIFACT_SECTION_TOPOLOGY,
+    ARTIFACT_SECTION_PLACEMENT,
+]` | The sections of a format version 1 artifact, in file order (RI-ART-002). |
+| `ARTIFACT_MAX_SECTIONS` | `usize` | `16` | Upper bound on the section count the reader accepts, checked before the table is sized (RI-SEC-002). Room for the sections later releases append. |
+| `ARTIFACT_SECTION_ALIGNMENT` | `u32` | `64` | Alignment of every artifact section other than `kernels` (RI-ART-002). |
+| `ARTIFACT_MAX_FILE_BYTES` | `u64` | `256 * 1024 * 1024` | Upper bound on the byte length of an artifact file, checked before it is read into memory (RI-SEC-002). The artifact holds no weights (RI-ART-012). |
+| `ARTIFACT_MAX_JSON_SECTION_BYTES` | `usize` | `64 * 1024 * 1024` | Upper bound on the byte length of one JSON section of an artifact, checked before parsing (RI-SEC-003). |
+| `ARTIFACT_MAX_KERNELS` | `usize` | `65_536` | Upper bound on the kernels of one artifact (RI-SEC-003). |
+| `ARTIFACT_MAX_CATALOG_ENTRIES` | `usize` | `65_536` | Upper bound on the catalog entries copied into one artifact (RI-SEC-003). |
+| `ARTIFACT_MAX_RANKS_PER_WEIGHT` | `usize` | `65_536` | Upper bound on the ranks listed for one weight of the manifest (RI-SEC-003). |
+| `ARTIFACT_MAX_STRING_LENGTH` | `usize` | `1024` | Upper bound on the byte length of a name, path or version string inside an artifact section (RI-SEC-003). |
+| `ARTIFACT_TMP_SUFFIX` | `&str` | `"tmp"` | Suffix of the writer's temporary file: `<out>.tmp-<pid>` (RI-ART-004). |

@@ -3,7 +3,7 @@ title: Decisions and retracted conclusions
 navtitle: Decisions
 section: Trackers
 order: 3
-summary: The six ADRs and the owner's decisions the SRS and ADRs record, each with its reason and date; the conclusions this site reached while reading and then had to retract.
+summary: ADR-001 to ADR-008 and the owner's decisions the SRS and ADRs record, each with its reason and date; the conclusions this site reached while reading and then had to retract.
 ---
 
 # Decisions and retracted conclusions
@@ -11,7 +11,7 @@ summary: The six ADRs and the owner's decisions the SRS and ADRs record, each wi
 A decision is recorded here when the tree states it: in an ADR, in the SRS
 changelog or constraints, or in a planning document. The reason column is the
 tree's, paraphrased. Every decision below is dated 2026-11-10, the day the
-project was specified; the column is kept so later rows can differ.
+project was specified, except ADR-008 of 2026-11-12, the move to GitHub.
 
 ## Architecture decision records
 
@@ -20,10 +20,11 @@ project was specified; the column is kept so later rows can differ.
 | ADR-001 | Rust, stable, edition 2021, one workspace; SWG-001's Python and C++ rules mapped to `tracing`, `thiserror`, workspace lints, `cargo llvm-cov`, `cargo deny` and `cargo audit`; `unsafe` only in `ffi` modules with `// SAFETY:` and a CI count | memory safety at the FFI boundary with GPU runtimes, zero-cost abstractions on the inference path, one static binary | Decided 2026-11-10 |
 | ADR-002 | One `.rie` file: fixed header with magic, version, target, producer, SHA-256 and a section table; small sections as canonical JSON; a weight manifest in place of weight bytes (amended 2026-11-11: the checkpoint is never copied, RI-ART-012); a reader that validates everything before exposing a byte; a writer that streams to a temp file, hashes last, `fsync`s and renames | the TensorRT engine's property of no inference-time decisions, plus inspectable without a GPU, integrity-checked, never half-written, memory-mappable, versioned | Decided 2026-11-10 |
 | ADR-003 | One `Target` trait composed of `Catalog` (device-free), `Device` and `Launcher`; a backend is one crate, one registry entry, one lowering | the compiler must select kernels without a device, the runtime must launch them, and a RISC-V backend must be addable without touching compiler, planner or runtime | Decided 2026-11-10; revised the same day to remove kernel providers after ADR-005 |
-| ADR-004 | Codeberg hosting with the standard's GitHub rules mapped to Forgejo; `.github/` paths kept; root `CODEOWNERS` symlink; `cargo audit` and `cargo outdated` in place of Renovate; Codeberg runner labels | Forgejo has the same concepts with different file locations and no enforced CODEOWNERS on the free tier | Decided 2026-11-10; runner labels added 2026-11-11 |
+| ADR-004 | Codeberg hosting with the standard's GitHub rules mapped to Forgejo; `.github/` paths kept; root `CODEOWNERS` symlink; `cargo audit` and `cargo outdated` in place of Renovate; Codeberg runner labels | Forgejo has the same concepts with different file locations and no enforced CODEOWNERS on the free tier | Decided 2026-11-10; runner labels added 2026-11-11; **superseded** by ADR-008 on 2026-11-12 |
 | ADR-005 | Three representations (Model IR, Kernel IR, Plan) and no other interface; kernels as Rust generators lowered through MLIR to ROCDL and SPIR-V and through an own lowering to RISC-V; a fixed catalog plus one fuser; no kernel library, vendor BLAS or Python | a vendor library ties the engine to one vendor's cadence and leaves RISC-V without a path; Python reintroduces the host overhead the incumbents removed; Apple's stack shows the shape that scales across heterogeneous hardware | Decided 2026-11-10 |
 | ADR-006 | The artifact is a cache: `build` writes it, `run` and `serve` build it on first load, `--require-prebuilt` forbids building; placement cached and pinnable the same way | TensorRT-LLM dropped its mandatory build in 1.2 and vLLM and SGLang compile on first load; keep the artifact's properties, not the obligation | Decided 2026-11-10 |
 | ADR-007 | How the pinned MLIR and LLVM are obtained for CI and developers, and the self-hosted runner that links them (OI-009) | `melior` needs one pinned version; a hosted runner's ten minutes cannot build it | **Open**; written by #7 |
+| ADR-008 | Hosting on GitHub: the code moves to `github.com/itej89/rustinfer` and this site to `github.com/itej89/rustinfer-docs` with GitHub Pages; issues #1 to #18 recreated with their numbers and dependencies, the migrated PRs #16 and #17 recorded as issues of the same number; SWG-001's GitHub rules apply as written, `.github/` paths native, CODEOWNERS enforced by GitHub; CI on `ubuntu-latest` with SHA-pinned actions and `upload-artifact` v4; the Codeberg pull requests and Actions runs stay behind as history; supersedes ADR-004 | Codeberg's July 2026 terms amendment bans repositories that mostly consist of AI-written code, which this one is; GitHub is the host SWG-001 names, so the Forgejo mappings of ADR-004 are no longer needed | Decided 2026-11-12; the ADR is in the hosting pull request, not yet on `main` at `678b084` |
 
 ## Decisions the owner made
 
@@ -59,7 +60,7 @@ closed; kept for one cycle so the next reader knows they were real.
 |---|---|
 | ADR-002 listed six sections (`plan`, `graph`, `profile`, `metadata`, `kernels`, `weights`) under older `RI-ENG` and `RI-CMP` ids while RI-ART-002 lists nine plus `lora_slots` | 2026-11-11: ADR-002 corrected on `docs/1-srs-rustinfer` to the nine R1 sections plus `lora_slots`, citing RI-ART, RI-GC and RI-PLN ids |
 | No `LICENSE` file although the manifest and README said MIT | 2026-11-11: `LICENSE` (MIT) added at `082df51` |
-| CI actions referenced by tag, no `timeout-minutes`, no `permissions` | 2026-11-11: full-SHA pins, `permissions: contents: read`, `timeout-minutes: 10`, Codeberg runner labels; recorded in ADR-004 |
+| CI actions referenced by tag, no `timeout-minutes`, no `permissions` | 2026-11-11: full-SHA pins, `permissions: contents: read`, `timeout-minutes: 10`, Codeberg runner labels; recorded in ADR-004, the labels retired by ADR-008 |
 
 ## Retracted conclusions
 

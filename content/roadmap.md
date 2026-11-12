@@ -71,9 +71,11 @@ now runs on `codeberg-medium` within its ten-minute limit, with the actions
 pinned to full commit SHAs, `permissions: contents: read` and
 `timeout-minutes: 10`, and the two tools the jobs install are prebuilt
 binaries so they fit; ADR-004 records the labels and that the LLVM-linking
-steps will not fit a hosted runner at all.
+steps will not fit a hosted runner at all. Since the move to GitHub on
+2026-11-12 (ADR-008) the jobs run on `ubuntu-latest` again, the label the
+workflow first asked for ([build steps](build-steps.html)).
 
-**Three more were Codeberg's own rules.** Once the repository was public,
+**Three more were Codeberg's own rules**, and they went with Codeberg. Once the repository was public,
 the hosted runners answered, and runs 3 to 6 each failed one step further
 along: short action names resolve against `data.forgejo.org`, which mirrors
 only `actions/*`; `cargo-deny` reads version-less workspace path
@@ -108,11 +110,13 @@ the crate but not part of the document, because ADR-002 stores it as its own
 artifact section; and "quantized tensors carry an encoding" is enforced as
 an encoding present exactly when the dtype is fp8.
 
-## 3. Artifact (#4), target abstraction and CPU reference (#5), LLaMA frontend (#6) — #4 and #5 in progress
+## 3. Artifact (#4), target abstraction and CPU reference (#5), LLaMA frontend (#6) — #4 done 2026-11-12, #5 in progress
 
-On 2026-11-12 the artifact (#4) and the target abstraction (#5) are being
-prepared, each on its own branch; the [issue tracker](issues.html) marks
-them in progress once the branches are on Codeberg.
+The artifact (#4) merged into `main` as 678b084 on 2026-11-12 (Codeberg PR
+#21, the last before the move): the crate `rustinfer-artifact` with the
+`.rie` header, the section table, the content hash, the verifying reader and
+the atomic writer, and issue #4 is closed. The target abstraction (#5) is on
+its branch on GitHub; the [issue tracker](issues.html) marks it in progress.
 
 Three steps that need only the Model IR and can run in parallel. The
 `.rie` reader and writer with the bounded, hash-last protocol of ADR-002
@@ -199,6 +203,7 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
+| 2026-11-12 | Moved from Codeberg to GitHub after Codeberg's terms change on AI-written code: the code at [`github.com/itej89/rustinfer`](https://github.com/itej89/rustinfer) (private), issues #1 to #18 recreated with their numbers and dependencies, the migrated PRs #16 and #17 recorded as issues #16 and #17, the Codeberg pull requests and Actions runs 1 to 11 kept on the [issue tracker](issues.html) as history, GitHub Actions run 1 on `main`; ADR-008 (hosting on GitHub, superseding ADR-004) and the CI retarget to `ubuntu-latest` with `upload-artifact` v4 in the hosting pull request. This site moved to [`github.com/itej89/rustinfer-docs`](https://github.com/itej89/rustinfer-docs) and GitHub Pages at <https://itej89.github.io/rustinfer-docs/>, its tracker page now read through `gh api`. Before the move, Codeberg PR #21 merged the `.rie` artifact crate (#4) as 678b084; generated pages from 678b084 |
 | 2026-11-12 | PRs #16 and #17 merged into `main` (1c7a008, 33fadd0) shortly after midnight; CI run 9 green on `main`. Issue #3 implemented on `feat/3-model-ir`: the `rustinfer-mir` crate with the document, functions, KV groups, the operator registry, the validator, canonical JSON and the bounded reader, `serde` and `serde_json` added as pinned dependencies, the `MODEL_IR_*` constants in `rustinfer-core`, the JSON schema in `docs/api/model-ir.md`, sequence diagram §4 and the API changelog; CI run 10 green; PR #19 merged as 2d75c5d, issue #3 closed. 201 workspace tests, 95.50 percent line coverage. #4, #5 and #15 started. This site refreshed: generated pages from 2d75c5d, the Model IR described from the code on the design page |
 | 2026-11-11 | The tracker created on Codeberg: Epic #1, issues #2 to #15 with dependencies linked, labels, milestone `R1 — foundation`. PR #16 (SRS, `docs/1-srs-rustinfer` → `main`) and PR #17 (scaffold, stacked on #16) opened. The post-coding gate for #2 passed with three findings fixed (`refactor(scaffold)`, `e91e002`). CI retargeted from `ubuntu-latest` to Codeberg's `codeberg-medium` runners with full-SHA pins, permissions and timeouts, after the first two runs were cancelled unanswered; ADR-004 updated. ADR-002 corrected to the SRS's section list. `LICENSE` added (`082df51`). This documentation site written and published locally, with its [progress](progress.html) page counted from the trackers. Repository made public so Codeberg's hosted runners serve it; runs 3 to 6 fixed one Codeberg rule each (ADR-004); run 7 green on `cc3e293`, PR #17 checklist steps 10d and 13e filled . Weights left the artifact (RI-ART-012) and Sluice (#18) became the weight streamer. SRS v0.2 after a review against vLLM V1, SGLang and Apple's stack: named functions over one weight set, KV groups, the cache key beyond tokens, device-resident request state, enumerated buckets with graph capture for any sub-plan, compression encodings in the IR; reserved interfaces in OI-012 |
 | 2026-11-10 | The TensorRT-LLM feature inventory, the use cases and the device inventory written; SRS-RI-v0.1 written with 171 requirements; ADR-001 to ADR-006 accepted; the workspace scaffold built: 14 crates, `rustinfer-core`, the `rustinfer` command, CI, every mandatory file; 37 tests green, clippy and rustdoc clean |

@@ -10,7 +10,8 @@ summary: SWG-001 as the tree adopts it; the gates every change passes, the branc
 Read from `CONTRIBUTING.md`, ADR-001, ADR-004, `Cargo.toml`, `clippy.toml`,
 `.github/` and `scripts/ci/` at commit `082df51`. The standard is SWG-001,
 Software Development Guidelines v4.0 of 2026-10-03, as adapted for Rust by
-ADR-001 and for Codeberg by ADR-004; `CONTRIBUTING.md` says it is the
+ADR-001 and for the host by ADR-004, superseded on 2026-11-12 by ADR-008
+(GitHub); `CONTRIBUTING.md` says it is the
 checklist and the standard and the ADRs are the authority.
 
 ## The gates
@@ -31,21 +32,29 @@ logging audit, external boundary integrity, schema versioning, first test
 run, rebase, integration tests, refactoring, linter, final test run,
 artifact verification, deployment audit, and two reviewer sign-offs.
 
-## Hosting on Codeberg
+## Hosting
 
-ADR-004 maps the standard's GitHub-specific rules: Forgejo issues, milestones
-and labels with the same `Closes #N` workflow; the workflow stays at
-`.github/workflows/ci.yml` because Forgejo Actions reads that path;
-`.github/CODEOWNERS` is canonical with a root `CODEOWNERS` symlink so
-Forgejo's reviewer suggestion finds it, with approvals enforced by branch
-protection rather than the file; Renovate is unavailable on the free tier so
-`cargo audit` and `cargo outdated` run in CI instead; repository secrets keep
-their names; `runs-on: ubuntu-latest` becomes Codeberg's own runner label
-`codeberg-medium`, with every job under its ten-minute limit and tools
-installed as pinned prebuilt binaries, and the ADR notes that the issues
-linking LLVM will need a self-hosted Forgejo runner (added 2026-11-11, see
-[build steps](build-steps.html)). The GitHub mirror created the same day is
-not a source of truth.
+On 2026-11-12 the project moved to GitHub (`github.com/itej89/rustinfer`)
+because Codeberg's July 2026 terms amendment bans repositories that mostly
+consist of AI-written code. ADR-008, in the hosting pull request, records
+it and supersedes ADR-004: SWG-001's GitHub rules now apply as written,
+GitHub issues, milestones and labels with the same `Closes #N` workflow and
+the issue numbers kept from Codeberg; `.github/workflows/ci.yml`,
+`.github/CODEOWNERS` and the PR template at their native paths with
+approvals enforced by GitHub; `cargo audit` and `cargo outdated` stay in CI;
+the jobs run on `ubuntu-latest` with the actions pinned by full SHA and
+`actions/upload-artifact` v4 ([build steps](build-steps.html)). The
+checkout at `678b084` still carries ADR-004's mapping; the pull request
+replaces it.
+
+Until the move ADR-004 mapped the standard to Forgejo: the same workflow
+path because Forgejo Actions reads it; a root `CODEOWNERS` symlink so
+Forgejo's reviewer suggestion found the file, with approvals by branch
+protection since the free tier does not enforce it; Renovate unavailable, so
+`cargo audit` and `cargo outdated` in CI; `runs-on: codeberg-medium` under a
+ten-minute limit with tools installed as pinned prebuilt binaries; and the
+note that the issues linking LLVM will need a self-hosted runner, which
+still holds (ADR-007, OI-009).
 
 ## Design rules and what enforces each
 

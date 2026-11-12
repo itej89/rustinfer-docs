@@ -30,7 +30,7 @@ development host; with it, every new shell needs the `export` line.
 ## Build and test
 
 ```sh
-git clone git@codeberg.org:itej89/rustinfer.git
+git clone git@github.com:itej89/rustinfer.git
 cd rustinfer
 cargo build
 cargo test --workspace

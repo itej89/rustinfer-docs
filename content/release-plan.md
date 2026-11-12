@@ -37,7 +37,7 @@ The topology planner's interfaces exist in R1; its implementation is R2.
 
 ## Release 1 sequence
 
-From the Epic. The numbers are Codeberg issue numbers; the Epic is #1.
+From the Epic. The numbers are GitHub issue numbers, kept from Codeberg; the Epic is #1.
 
 ```text
 #2 scaffold

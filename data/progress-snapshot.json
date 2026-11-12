@@ -1,5 +1,6 @@
 {
- "fetched_at": "2026-11-12T06:35:05+00:00",
+ "fetched_at": "2026-11-12T19:29:48+00:00",
+ "source": "github",
  "issues": [
   {
    "number": 1,
@@ -40,8 +41,8 @@
   {
    "number": 4,
    "title": "Artifact format: `.rie` header, section table, hash, bounded reader, writer",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
@@ -203,6 +204,28 @@
    ]
   },
   {
+   "number": 16,
+   "title": "Record of migrated PR #16: docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning",
+   "state": "closed",
+   "closed_at": "2026-11-12",
+   "labels": [
+    "docs"
+   ],
+   "milestone": null,
+   "blocked_by": []
+  },
+  {
+   "number": 17,
+   "title": "Record of migrated PR #17: feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files",
+   "state": "closed",
+   "closed_at": "2026-11-12",
+   "labels": [
+    "feature"
+   ],
+   "milestone": null,
+   "blocked_by": []
+  },
+  {
    "number": 18,
    "title": "Sluice: stream checkpoint weights into device memory from the weight manifest",
    "state": "open",
@@ -217,170 +240,32 @@
    ]
   }
  ],
- "pulls": [
-  {
-   "number": 16,
-   "title": "docs: SRS-RI-v0.1, ADR-001 to ADR-006 and Release 1 planning",
-   "state": "closed",
-   "head": "docs/1-srs-rustinfer",
-   "base": "main",
-   "merged": true,
-   "merged_at": "2026-11-12",
-   "mergeable": true,
-   "created_at": "2026-11-11"
-  },
-  {
-   "number": 17,
-   "title": "feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files",
-   "state": "closed",
-   "head": "feat/2-project-scaffold",
-   "base": "main",
-   "merged": true,
-   "merged_at": "2026-11-12",
-   "mergeable": true,
-   "created_at": "2026-11-11"
-  },
-  {
-   "number": 19,
-   "title": "feat(mir): Model IR, the typed graph every frontend lowers to (#3)",
-   "state": "closed",
-   "head": "feat/3-model-ir",
-   "base": "main",
-   "merged": true,
-   "merged_at": "2026-11-12",
-   "mergeable": true,
-   "created_at": "2026-11-12"
-  }
- ],
+ "pulls": [],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 13,
-   "closed": 3
+   "open": 12,
+   "closed": 4
   }
  ],
  "runs": [
   {
-   "id": 8535408,
-   "title": "Merge pull request 'feat(mir): Model IR, the typed graph every frontend lowers to (#3)' (#19) from feat/3-model-ir into main",
-   "status": "waiting",
+   "id": 1,
+   "title": "Merge pull request 'feat(artifact): the .rie engine artifact, verifyi…",
+   "status": "queued",
    "conclusion": null,
    "event": "push",
    "ref": "main",
-   "sha": "2d75c5d",
-   "created": "2026-11-12T07:28",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/11"
-  },
-  {
-   "id": 8531904,
-   "title": "test(mir): the boundary refusal is logged once at error in key=value form",
-   "status": "success",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#19",
-   "sha": "75d987f",
-   "created": "2026-11-12T04:16",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/10"
-  },
-  {
-   "id": 8530545,
-   "title": "Merge pull request 'feat(scaffold): workspace, core foundation, rustinfer command, CI and mandatory files' (#17) from feat/2-project-scaffold into main",
-   "status": "success",
-   "conclusion": null,
-   "event": "push",
-   "ref": "main",
-   "sha": "33fadd0",
-   "created": "2026-11-12T03:14",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/9"
-  },
-  {
-   "id": 8528970,
-   "title": "docs(planning): add #18 Sluice to the Epic's task list and sequence",
-   "status": "success",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "0c918f6",
-   "created": "2026-11-12T02:16",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/8"
-  },
-  {
-   "id": 8512737,
-   "title": "fix(ci): pin upload-artifact to the v3 line Forgejo supports",
-   "status": "success",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "cc3e293",
-   "created": "2026-11-11T14:30",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/7"
-  },
-  {
-   "id": 8512650,
-   "title": "fix(ci): upload artifacts with Forgejo's upload-artifact fork",
-   "status": "failure",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "d380d0a",
-   "created": "2026-11-11T14:24",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/6"
-  },
-  {
-   "id": 8512542,
-   "title": "fix(ci): make cargo-deny accept path-only workspace dependencies",
-   "status": "failure",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "b252ea6",
-   "created": "2026-11-11T14:18",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/5"
-  },
-  {
-   "id": 8512392,
-   "title": "fix(ci): qualify GitHub-only actions with their full URL",
-   "status": "failure",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "ac68ff1",
-   "created": "2026-11-11T14:13",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/4"
-  },
-  {
-   "id": 8503584,
-   "title": "chore: add the MIT licence text declared in Cargo.toml",
-   "status": "failure",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "082df51",
-   "created": "2026-11-11T06:45",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/3"
-  },
-  {
-   "id": 8503554,
-   "title": "ci: run on Codeberg hosted runners within their limits",
-   "status": "cancelled",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "c65fa29",
-   "created": "2026-11-11T06:42",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/2"
-  },
-  {
-   "id": 8503533,
-   "title": "ci: trigger the first pipeline run after enabling Actions",
-   "status": "cancelled",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "#17",
-   "sha": "db6d252",
-   "created": "2026-11-11T06:40",
-   "url": "https://codeberg.org/itej89/rustinfer/actions/runs/1"
+   "sha": "678b084",
+   "created": "2026-11-12T19:24",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43289795339"
   }
+ ],
+ "branches": [
+  "feat/15-planner-interfaces",
+  "feat/5-target-and-cpu-reference",
+  "infra/github-hosting",
+  "main"
  ]
 }

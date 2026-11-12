@@ -31,18 +31,19 @@ progress** means a branch exists and is not merged. **Planned** means an
 approved-for-draft requirement and an issue exist. **Not started** means
 only the requirement exists. The numbers behind this table, issues
 closed, pull requests, the latest CI run, tests and coverage, are on the
-[progress](progress.html) page, generated from Codeberg and the tree; the
+[progress](progress.html) page, generated from GitHub and the tree; the
 steps in order are the [roadmap](roadmap.html).
 
 | Area | State |
 |---|---|
 | Specification: SRS-RI-v0.1 at version 0.2, 186 requirements, 28 groups, release tags R1 to R4 | <span class="state-ok">done</span> — status Approved 2026-11-11, PR #16 merged into `main` 2026-11-12; each requirement stays Draft until its issue closes ([requirements](ref-requirements.html)) |
-| Decisions: ADR-001 to ADR-006 | <span class="state-ok">done</span> ([decisions](decisions.html)) |
+| Decisions: ADR-001 to ADR-006, ADR-008 | <span class="state-ok">done</span> — ADR-008 (hosting on GitHub) is in the hosting pull request, not yet on `main` ([decisions](decisions.html)) |
 | Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-ok">done</span> — PR #17 merged into `main` 2026-11-12 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-ok">done</span> — PR #17 merged; tested ([design](design.html)) |
 | The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-ok">done</span> — PR #17 merged; every subcommand answers `not_implemented` after validation until #11 and #14 ([getting started](getting-started.html)) |
 | Model IR: `rustinfer-mir`, the typed graph with one weight set, named functions, KV groups, twenty operators, validator and canonical JSON | <span class="state-ok">done</span> — PR #19 merged into `main` 2026-11-12, issue #3 closed; 201 workspace tests, 95.5 percent line coverage in the PR's checklist ([design](design.html)) |
-| Artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #4 to #15 and #18; #4, #5 and #15 are being prepared on 2026-11-12 and show as in progress once their branches are on Codeberg ([issues](issues.html)) |
+| Artifact: `rustinfer-artifact`, the `.rie` header, section table, content hash, verifying reader and atomic writer | <span class="state-ok">done</span> — Codeberg PR #21 merged into `main` as 678b084 on 2026-11-12, issue #4 closed ([artifact](artifact.html)) |
+| Targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #5 to #15 and #18; #5 and #15 are in progress on their branches on GitHub ([issues](issues.html)) |
 | Any model running on any device | <span class="state-no">not started</span> ([supported models](supported-models.html)) |
 | Documentation in the tree: six diagrams, entry points, observability, feature matrix, API changelog, the Model IR JSON schema | <span class="state-ok">done</span> — PRs #17 and #19 merged ([design diagrams](design-diagrams.html)) |
 
@@ -50,12 +51,12 @@ steps in order are the [roadmap](roadmap.html).
 
 | What | Where |
 |---|---|
-| Repository | `codeberg.org/itej89/rustinfer`, public; `main` holds the approved SRS v0.2, ADR-001 to ADR-006, the fourteen-crate workspace and the Model IR crate since 2026-11-12 (PRs #16, #17 and #19 merged) |
-| Tracker | Codeberg issues #1 (Epic, Release 1) and #2 to #15 and #18 with dependencies linked, milestone `R1 — foundation`; #2 and #3 closed; PRs #16 (SRS), #17 (scaffold) and #19 (Model IR) merged 2026-11-12; CI green on Codeberg's hosted runners since run 7 ([issues](issues.html)) |
+| Repository | [`github.com/itej89/rustinfer`](https://github.com/itej89/rustinfer), private, since the move from Codeberg on 2026-11-12 (ADR-008); `main` at 678b084 holds the approved SRS v0.2, ADR-001 to ADR-006, the fourteen-crate workspace, the Model IR and the artifact crate (Codeberg PRs #16, #17, #19 and #21 merged before the move). This site: [`github.com/itej89/rustinfer-docs`](https://github.com/itej89/rustinfer-docs), published at <https://itej89.github.io/rustinfer-docs/> |
+| Tracker | [GitHub issues](https://github.com/itej89/rustinfer/issues) #1 (Epic, Release 1) and #2 to #15 and #18, numbers kept from Codeberg, dependencies linked, milestone `R1 — foundation`; #2, #3 and #4 closed; PRs #16 (SRS), #17 (scaffold), #19 (Model IR) and #21 (artifact) merged on Codeberg before the move; CI on GitHub Actions from run 1 of 2026-11-12, the Codeberg runs 1 to 11 left behind ([issues](issues.html)) |
 | Specification | `docs/SRS-RI-v0.1.md` |
-| Decisions | `docs/adr/ADR-001` to `ADR-006` |
+| Decisions | `docs/adr/ADR-001` to `ADR-006`; ADR-008 in the hosting pull request |
 | Planning | `docs/planning/`: the TensorRT-LLM feature inventory, 24 use cases, the device inventory, the issue drafts |
-| Rules | `CONTRIBUTING.md`, SWG-001 v4.0 as adapted by ADR-001 and ADR-004 |
+| Rules | `CONTRIBUTING.md`, SWG-001 v4.0 as adapted by ADR-001 and, since the move, ADR-008 (ADR-004 until 2026-11-12) |
 
 ## The shape it is built into
 

@@ -22,12 +22,15 @@ Then open <http://localhost:8080>. `./serve.sh` does the last step.
 
 ## Publishing
 
-The site is served by Codeberg Pages at
-<https://itej89.codeberg.page/rustinfer-docs/> from the `pages` branch of
-this repository. `./publish.sh` rebuilds `out/`, checks the links, writes the
-result as a single commit on an orphan `pages` branch and force-pushes it;
-`main` keeps the sources only. Run it after every content change you want
-visible.
+The site is served by GitHub Pages at
+<https://itej89.github.io/rustinfer-docs/> from the `pages` branch of
+this repository (`github.com/itej89/rustinfer-docs`, root path, with a
+`.nojekyll` file so underscore-prefixed files are served). `./publish.sh`
+rebuilds `out/`, checks the links, writes the result as a single commit on an
+orphan `pages` branch and force-pushes it to `origin`; `main` keeps the
+sources only. Run it after every content change you want visible. The site
+moved from Codeberg Pages on 2026-11-12 together with the project
+(ADR-008); the `codeberg` remote is kept for history and is not pushed to.
 
 ## Where the content comes from
 
@@ -46,7 +49,7 @@ regenerated, not edited; each carries a comment saying so:
 | `ref-error-codes.md` | `gen_errors.py` | every crate's `src/error.rs` |
 | `ref-crates.md` | `gen_crates.py` | `Cargo.toml` and each crate's manifest |
 | `design-diagrams.md` | `gen_diagrams.py` | `docs/uml/*.md` |
-| `issues.md` | `gen_progress.py` | Codeberg's issues, pull requests, milestones and Actions runs, live when `~/.ssh/rustinfer.token` exists (sent only as the Authorization header), else `data/progress-snapshot.json`; the tree for tests and lines |
+| `issues.md` | `gen_progress.py` | GitHub's issues, pull requests, milestones, branches and Actions runs for `itej89/rustinfer`, read live through `gh api` when `gh` is authenticated, else `data/progress-snapshot.json`; the tree for tests and lines |
 
     for s in scripts/reference/gen_*.py; do .venv/bin/python "$s"; done
     .venv/bin/python build.py

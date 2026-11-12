@@ -74,37 +74,31 @@ Every action is pinned to a full commit SHA with the tag in a comment, as
 SWG-001 §11 asks (`actions/checkout` v4, `dtolnay/rust-toolchain` stable of
 2026-11, `taiki-e/install-action` v2 installing `cargo-deny` 0.20.2,
 `cargo-audit` 0.23.0 and `cargo-llvm-cov` 0.9.1, `actions/upload-artifact`
-v3.2.2). Forgejo Actions on Codeberg reads this path (ADR-004). The first
-green run, run 7 of 2026-11-11, took about five and a half minutes for the
-four jobs in sequence.
+v3.2.2). The first green run, run 7 of 2026-11-11 on Codeberg, took about
+five and a half minutes for the four jobs in sequence.
 
-Three Codeberg rules, learned from runs 3 to 6 and recorded in ADR-004:
+### GitHub Actions
 
-| rule | symptom when broken |
+What changed and why: on 2026-11-12 the project moved from Codeberg to
+GitHub because Codeberg's July 2026 terms amendment bans repositories that
+mostly consist of AI-written code (ADR-008, superseding ADR-004). GitHub
+Actions reads the same `.github/workflows/ci.yml`; the hosting pull request
+in the code repository retargets the jobs, and until it merges the checkout
+at `678b084` still names Codeberg's runner label and the v3 upload action.
+
+| on GitHub | detail |
 |---|---|
-| A short `uses: owner/repo@sha` is resolved against `data.forgejo.org`, which mirrors only `actions/*`; every other action carries its full `https://github.com/` URL | *Set up job* fails with `repository not found` |
-| `cargo-deny` reads a version-less `path =` workspace dependency as `*`; the crates are private, so `deny.toml` sets `allow-wildcard-paths = true` | `error[wildcard]` for every workspace crate |
-| `actions/upload-artifact` v4 (and Forgejo's fork of it) refuses any host but github.com; Forgejo's artifact service implements the v3 protocol | `not currently supported on GHES` |
+| Runners | GitHub's hosted `ubuntu-latest`, the label the workflow asked for on 2026-11-10 before Codeberg's labels replaced it; no label time limit, the jobs keep `timeout-minutes: 10` |
+| Actions | pinned by full commit SHA with the tag in a comment, as before; the `https://github.com/` prefix Forgejo needed is dropped, short `owner/repo@sha` names resolve on github.com |
+| Artifacts | `actions/upload-artifact` v4, the version Forgejo's artifact service refused |
+| Runs | GitHub's run numbers restart at 1 on 2026-11-12; the Codeberg runs 1 to 11 did not move ([issues](issues.html)) |
+| Still needed | a self-hosted runner for the issues that link LLVM (#7 onward), to be decided in ADR-007 with the LLVM pinning (OI-009); `deny.toml` keeps `allow-wildcard-paths = true`, which is `cargo-deny`'s reading of version-less path dependencies, not the host's |
 
-### Runners
-
-Codeberg's hosted runners answer only their own labels, so every job runs on
-`codeberg-medium`, and they serve only public repositories under a free
-licence, so the repository was made public on 2026-11-11 (it is MIT).
-ADR-004 records the labels and the reason the tools are prebuilt: each job
-must fit the label's time limit.
-
-| label | CPU | RAM | limit |
-|---|---|---|---|
-| `codeberg-tiny` | 1 | 2 GB | 2 min |
-| `codeberg-small` | 2 | 4 GB | 5 min |
-| `codeberg-medium` | 4 | 8 GB | 10 min |
-
-Each label has a `-lazy` variant; the default image is
-`ghcr.io/catthehacker/ubuntu:act-latest`. ADR-004 also states that the
-issues that link LLVM (#7 onward) will not fit ten minutes on a hosted runner
-and will need a self-hosted Forgejo runner, to be decided in ADR-007 together
-with the LLVM pinning (OI-009).
+The three Codeberg rules learned from runs 3 to 6 and recorded in ADR-004
+(short action names resolving against `data.forgejo.org`, which mirrors only
+`actions/*`; `cargo-deny`'s wildcard reading; `upload-artifact` v4 refusing
+any host but github.com) are history now; the [roadmap](roadmap.html) keeps
+the account.
 
 ## Coverage
 

@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 2d75c5d 2026-11-12. A failure leaves the command as one line on
+`src/error.rs` at commit 678b084 2026-11-12. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -36,7 +36,30 @@ and component.
 
 | crate | component | variant | code |
 |---|---|---|---|
+| `rustinfer-artifact` | `artifact` | `Io` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `Busy` | `io` |
+| `rustinfer-artifact` | `artifact` | `TooLarge` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `Truncated` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `BadMagic` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `UnsupportedVersion` | `unsupported` |
+| `rustinfer-artifact` | `artifact` | `BadHeaderLength` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `BadHeaderField` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `WrongSectionCount` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `UnknownSection` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `SectionOrder` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `SectionOutOfFile` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `SectionsOverlap` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `BadSectionEntry` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `HashMismatch` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `MalformedSection` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `ModelIr` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `InvalidKernel` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `InvalidField` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `Inconsistent` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `DuplicateCatalogKey` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `OutsideProfile` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `NotImplemented` | `not_implemented` |
+| `rustinfer-artifact` | `artifact` | `CheckpointMismatch` | `artifact` |
 | `rustinfer-cli` | `cli` | `Usage` | `usage` |
 | `rustinfer-cli` | `cli` | `PathNotFound` | `not_found` |
 | `rustinfer-cli` | `cli` | `NotAFile` | `delegated` |
