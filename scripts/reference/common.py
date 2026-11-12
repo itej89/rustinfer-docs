@@ -100,10 +100,29 @@ def srs_meta():
 
 
 # -------------------------------------------------------------- the tests
-def _comments(src):
-    """The comment text of a Rust source: line comments (`//`, `///`, `//!`)
-    and block comments. String literals are not searched."""
-    return "\n".join(re.findall(r"//[^\n]*", src) + re.findall(r"/\*.*?\*/", src, re.S))
+# A comment that says the feature it cites is reserved for a later release:
+# its citation is evidence that the id is known, not that it is implemented.
+RESERVED = re.compile(r"reserved|not_implemented|not implemented|refused as R[23]|later release", re.I)
+
+
+def _comment_blocks(src):
+    """The comments of a Rust source as blocks: consecutive `//`, `///` or `//!`
+    lines (a doc comment block) form one block, a trailing comment on a code
+    line is its own, and each `/* ... */` is one. String literals are not searched."""
+    out, cur = [], []
+    for line in src.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("//"):
+            cur.append(stripped)
+            continue
+        if cur:
+            out.append("\n".join(cur))
+            cur = []
+        if "//" in line:
+            out.append(line[line.index("//"):])
+    if cur:
+        out.append("\n".join(cur))
+    return out + re.findall(r"/\*.*?\*/", src, re.S)
 
 
 def _cfg_test_modules(src):
@@ -119,10 +138,13 @@ def _cfg_test_modules(src):
 
 
 def test_citations():
-    """{requirement id: sorted list of 'crate/tests/file.rs'} for every id a
-    test cites in a comment: the integration tests under crates/*/tests and
-    the `#[cfg(test)]` modules under crates/*/src."""
-    found = {}
+    """{requirement id: {"tests": [...], "reserved": [...]}} for every id a test
+    cites in a comment: the integration tests under crates/*/tests and the
+    `#[cfg(test)]` modules under crates/*/src, as 'crate/tests/file.rs'.
+    A file is under `reserved` when every comment block in it that cites the
+    id also says the feature is reserved (RESERVED); such a citation does not
+    make the id implemented. A file with one plain citation is under `tests`."""
+    plain, reserved = {}, {}
     crates = RUSTINFER / "crates"
     for path in sorted(crates.rglob("*.rs")):
         rel = path.relative_to(crates).as_posix()
@@ -131,14 +153,18 @@ def test_citations():
             continue
         src = path.read_text(encoding="utf-8", errors="replace")
         if parts[1] == "tests":
-            hay = _comments(src)
+            blocks = _comment_blocks(src)
         elif parts[1] == "src":
-            hay = "\n".join(_comments(b) for b in _cfg_test_modules(src))
+            blocks = [b for body in _cfg_test_modules(src) for b in _comment_blocks(body)]
         else:
             continue
-        for rid in set(REQ_ID.findall(hay)):
-            found.setdefault(rid, set()).add(rel)
-    return {k: sorted(v) for k, v in found.items()}
+        for block in blocks:
+            bucket = reserved if RESERVED.search(block) else plain
+            for rid in set(REQ_ID.findall(block)):
+                bucket.setdefault(rid, set()).add(rel)
+    return {rid: {"tests": sorted(plain.get(rid, set())),
+                  "reserved": sorted(reserved.get(rid, set()) - plain.get(rid, set()))}
+            for rid in set(plain) | set(reserved)}
 
 
 # ------------------------------------------------------------------ GitHub
@@ -292,7 +318,9 @@ def requirement_states(reqs, state, citations):
 
     `disagree` names the fact the other source does not share: tests cite
     an id the Epic assigns to an open issue (or to none), or a closed
-    issue carries an id no test cites."""
+    issue carries an id no test cites. `reserved` lists the files whose
+    only citations say the feature is reserved for a later release; they
+    are shown but count for nothing."""
     assigned = {}
     for i in state["issues"]:
         for rid in i.get("requirements", []):
@@ -300,7 +328,8 @@ def requirement_states(reqs, state, citations):
     out = {}
     for r in reqs:
         rid = r["id"]
-        tests = citations.get(rid, [])
+        cited = citations.get(rid, {"tests": [], "reserved": []})
+        tests, reserved = cited["tests"], cited["reserved"]
         closed = [i for i in assigned.get(rid, []) if i["state"] == "closed"]
         opened = [i for i in assigned.get(rid, []) if i["state"] != "closed"]
         active = [i for i in opened if not i["derived_status"].startswith("Not started")]
@@ -317,7 +346,7 @@ def requirement_states(reqs, state, citations):
                         if opened else "the Epic's checklist does not assign it to any issue")
         elif closed and not tests:
             disagree = "no test cites it"
-        out[rid] = {"state": st, "sources": sources, "tests": tests,
+        out[rid] = {"state": st, "sources": sources, "tests": tests, "reserved": reserved,
                     "closed_issues": [i["number"] for i in closed],
                     "open_issues": [(i["number"], i["derived_status"]) for i in opened],
                     "disagree": disagree,

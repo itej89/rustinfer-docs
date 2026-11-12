@@ -8,7 +8,7 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Git
 # Issue tracker
 
 **As of 2026-11-12.** The tracker state is read live from GitHub
-(fetched 2026-11-12 21:54 UTC, kept in `data/progress-snapshot.json`); the
+(fetched 2026-11-12 21:56 UTC, kept in `data/progress-snapshot.json`); the
 counts of requirements, tests and lines are read from the rustinfer tree at commit f6d01ec 2026-11-12.
 Coverage is not measured here: it is the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
