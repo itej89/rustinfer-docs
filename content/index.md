@@ -38,7 +38,7 @@ steps in order are the [roadmap](roadmap.html).
 |---|---|
 | Specification: SRS-RI-v0.1, 171 requirements, 27 groups, release tags R1 to R4 | <span class="state-ok">done</span>, status Draft until approved ([requirements](ref-requirements.html)) |
 | Decisions: ADR-001 to ADR-006 | <span class="state-ok">done</span> ([decisions](decisions.html)) |
-| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-yes">done</span> — PR #17 merged into `main` 2026-11-11 ([crates](ref-crates.html)) |
+| Workspace: 14 crates, dependency direction fixed, lints as design rules | <span class="state-ok">done</span> — PR #17 merged into `main` 2026-11-11 ([crates](ref-crates.html)) |
 | `rustinfer-core`: constants, settings, structured errors, `key=value` logging, version manifest | <span class="state-part">in progress</span> — same branch; tested ([design](design.html)) |
 | The `rustinfer` command: six subcommands parsed, paths validated, one error line on failure | <span class="state-part">in progress</span> — every subcommand answers `not_implemented` after validation ([getting started](getting-started.html)) |
 | Model IR, artifact, targets, frontend, compilers, runtime, planner | <span class="state-no">not started</span> — issues #3 to #15 and #18 ([issues](issues.html)) |
