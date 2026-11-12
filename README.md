@@ -1,6 +1,6 @@
 # rustinfer, read from the tree
 
-Documentation for rustinfer, the ahead-of-time inference engine for AMD
+Documentation for rustinfer, the compiled inference engine for AMD
 Instinct GPUs and RISC-V accelerators written in Rust. The pages were written
 by reading the repository at one commit (the SRS, the ADRs, the planning
 documents, the UML diagrams and the crates) and are meant to be the map of

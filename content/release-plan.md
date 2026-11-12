@@ -15,7 +15,7 @@ counting each requirement under the first release it names.
 
 | release | name in the SRS | requirements | what it proves (from the use-case map) |
 |---|---|---|---|
-| R1 | foundation | 90 | the AOT engine exists end to end on one GPU and on the CPU reference: UC-01, 02, 03, 04, 20 (slot), 21, 22, 23 |
+| R1 | foundation | 90 | the compiled engine exists end to end on one GPU and on the CPU reference: UC-01, 02, 03, 04, 20 (slot), 21, 22, 23 |
 | R2 | production serving | 44 | production single-node serving characteristics: UC-05 to UC-13 (TP), 24 |
 | R3 | industry-standard feature set | 33 | parity with the TensorRT-LLM functions a serving stack needs: UC-13 (EP), 14, 15, 16, 17, 18 |
 | R4 | beyond | 4 | scale-out and breadth: UC-19, Helios racks, multi-node, DPU-resident functions, mesh lowering |

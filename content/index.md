@@ -7,8 +7,9 @@ summary: The inference engine for AMD Instinct and RISC-V accelerators, read fro
 
 # rustinfer
 
-rustinfer is an ahead-of-time inference engine for AMD Instinct GPUs and
-RISC-V accelerators, written in Rust. Its specification says the mission is to
+rustinfer is a compiled inference engine for AMD Instinct GPUs and RISC-V
+accelerators, written in Rust: the model is compiled once per target into a
+semi-static artifact that is a cache, never an obligation. Its specification says the mission is to
 be the engine the industry standardises on for those two families, by owning
 the whole path from model file to machine code: a model is lowered into a
 **Model IR**, compiled for one named target into an **engine artifact** whose

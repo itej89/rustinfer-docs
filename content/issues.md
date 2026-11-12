@@ -8,8 +8,8 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Cod
 # Issue tracker
 
 **As of 2026-11-11.** The tracker state is read live from Codeberg
-(fetched 2026-11-11 13:39 UTC, kept in `data/progress-snapshot.json`); the
-counts of requirements, tests and lines are read from the rustinfer tree at commit cc3e293 2026-11-11.
+(fetched 2026-11-12 00:53 UTC, kept in `data/progress-snapshot.json`); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit c0bd8f3 2026-11-11.
 Coverage is not measured here: it is the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
 
@@ -20,10 +20,10 @@ below with every other tracker on the site; the [roadmap](roadmap.html) is the s
 | Release 1 issues closed | `░░░░░░░░░░ 0/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 0 closed, 15 open |
 | Pull requests | 0 merged, 2 open | #16 `docs/1-srs-rustinfer` → `main` (open), #17 `feat/2-project-scaffold` → `docs/1-srs-rustinfer` (open) |
 | Latest CI run | run 8512737 (#17, `cc3e293`): **success**, 2026-11-11 14:30 | Forgejo Actions on Codeberg; the recent runs are listed below |
-| SRS requirements implemented | `░░░░░░░░░░ 0/171` | a requirement is implemented when the issue that carries it is closed; by SRS status today: Draft 171; by release: R1 90, R2 44, R3 33, R4 4 |
-| Tests | 40 | `#[test]` functions across 14 crates |
+| SRS requirements implemented | `░░░░░░░░░░ 0/174` | a requirement is implemented when the issue that carries it is closed; by SRS status today: Draft 174; by release: R1 92, R2 45, R3 33, R4 4 |
+| Tests | 0 | `#[test]` functions across 1 crates |
 | Line coverage | 89.15% | from the coverage block of PR #17's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`), 2026-11-11; the CI gate is 80 percent |
-| Rust | 2,233 lines in 54 files | `crates/**/*.rs`, tests and build scripts included |
+| Rust | 8 lines in 1 files | `crates/**/*.rs`, tests and build scripts included |
 
 ## Release 1 issues
 
