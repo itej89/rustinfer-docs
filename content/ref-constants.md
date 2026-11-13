@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-f6d01ec 2026-11-12. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 91
+7913427 2026-11-12. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 130
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -116,3 +116,42 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `CPU_DEVICE_DEFAULT_MEMORY_BYTES` | `u64` | `16 * 1024 * 1024 * 1024` | Default memory budget of the CPU reference device, in bytes; allocations beyond it fail like a device out of memory. |
 | `CPU_KERNEL_ID_PREFIX` | `&str` | `"cpu."` | Prefix of every CPU reference kernel id: `cpu.<operator>`. |
 | `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |
+| `ENV_STAGING_BYTES` | `&str` | `"RUSTINFER_STAGING_BYTES"` | Environment variable bounding the host staging memory of the weight streamer, in bytes (RI-WST-002). |
+| `DEFAULT_STAGING_BYTES` | `u64` | `1024 * 1024 * 1024` | The staging budget when `ENV_STAGING_BYTES` is unset: 1 GiB (RI-WST-002). |
+| `STAGING_MIN_BYTES` | `u64` | `64 * 1024` | Smallest staging budget accepted; below it a chunk could not hold one row of a small weight and the pipeline would degenerate to one element per read. |
+| `SLUICE_STAGING_CHUNKS` | `u64` | `4` | Staging chunks in flight: the depth of the host pool, of the device scratch ring and the capacity of every bounded channel between the read, copy and transform stages (RI-WST-004). The chunk size is the budget divided by this count. |
+| `SAFETENSORS_HEADER_LENGTH_BYTES` | `usize` | `8` | Bytes of the little-endian header length that starts a safetensors file. |
+| `SAFETENSORS_MAX_HEADER_BYTES` | `u64` | `100_000_000` | Upper bound on a safetensors header, checked before the header is allocated or read (RI-SEC-003); the format's own limit of 100 MB. |
+| `SAFETENSORS_MAX_TENSORS` | `usize` | `65_536` | Upper bound on the tensors of one safetensors header (RI-SEC-003). |
+| `SAFETENSORS_MAX_TENSOR_NAME_LENGTH` | `usize` | `ARTIFACT_MAX_STRING_LENGTH` | Upper bound on the byte length of a tensor name in a safetensors header. |
+| `SAFETENSORS_METADATA_KEY` | `&str` | `"__metadata__"` | The key of the free-form metadata object a safetensors header may carry. |
+| `CHECKPOINT_CONFIG_FILE` | `&str` | `"config.json"` | The model configuration file of a checkpoint, hashed into the identity (RI-ART-008). |
+| `CHECKPOINT_MAX_CONFIG_BYTES` | `u64` | `16 * 1024 * 1024` | Upper bound on `config.json`, checked before it is read (RI-SEC-003). |
+| `WEIGHT_LAYOUT_ROW_MAJOR` | `&str` | `"row_major"` | The only source layout the weight streamer accepts in this release. |
+| `WEIGHT_TRANSFORM_IDENTITY` | `&str` | `"identity"` | Manifest transform leaving the source layout unchanged (RI-GC-008). |
+| `WEIGHT_TRANSFORM_TRANSPOSE` | `&str` | `"transpose"` | Manifest transform turning a rank-2 row-major tensor into its transpose. |
+| `WEIGHT_TRANSFORM_PAD` | `&str` | `"pad"` | Manifest transform zero-padding a rank-2 tensor: `pad:<rows>x<cols>`. |
+| `WEIGHT_TRANSFORM_ARGUMENT_SEPARATOR` | `&str` | `":"` | Separator between a transform name and its arguments: `pad:64x128`. |
+| `WEIGHT_TRANSFORM_SHAPE_SEPARATOR` | `&str` | `"x"` | Separator between the row and column arguments of `pad`: `64x128`. |
+| `CHECKPOINT_ROOT_SELF` | `&str` | `"."` | Checkpoint root the frontend records in the weight manifest: the artifact's own directory, overridden by `--weights <dir>` (RI-ART-012). |
+| `SAFETENSORS_EXTENSION` | `&str` | `"safetensors"` | File extension of a safetensors shard. |
+| `FRONTEND_MAX_SHARDS` | `usize` | `4096` | Upper bound on the safetensors shards of one checkpoint directory. |
+| `FRONTEND_MAX_LAYERS` | `u64` | `1024` | Upper bound on `num_hidden_layers` of a checkpoint. |
+| `FRONTEND_MAX_DIMENSION` | `u64` | `1 << 24` | Upper bound on any dimension of a checkpoint configuration (hidden size, heads, intermediate size, vocabulary, positions). |
+| `FRONTEND_KV_GROUP` | `&str` | `"main"` | Name of the one KV group of a document the frontend emits (RI-MIR-010, R1). |
+| `RANK_SINGLE` | `u32` | `0` | The rank of a single-rank build (RI-ART-005, R1). |
+| `CHECKPOINT_INDEX_FILE` | `&str` | `"model.safetensors.index.json"` | Name of the shard index of a Hugging Face checkpoint: its `weight_map` names the shard that holds each tensor (RI-FE-004). |
+| `CHECKPOINT_MAX_INDEX_BYTES` | `u64` | `64 * 1024 * 1024` | Upper bound on the byte length of the shard index, checked before it is read (RI-SEC-003). |
+| `KC_PINNED_LLVM_MAJOR` | `u32` | `23` | LLVM major version the kernel compiler is pinned to (ADR-007, RI-KC-011). |
+| `KIR_DIALECT_NAME` | `&str` | `"kir"` | Name of the Kernel IR dialect (RI-KC-002, ADR-005). |
+| `KIR_MEMORY_SPACE_GLOBAL` | `u32` | `1` | MLIR memory space of a global buffer in the Kernel IR; the AMDGPU global address space, so the AMD lowering is a direct mapping (RI-KC-002). |
+| `KIR_MEMORY_SPACE_SHARED` | `u32` | `3` | MLIR memory space of a shared (work-group local, LDS) buffer in the Kernel IR. |
+| `KIR_MAX_RANK` | `usize` | `2` | Upper bound on the rank of a Kernel IR tile, buffer or mask. |
+| `KIR_MAX_DIMENSION` | `u64` | `1 << 20` | Upper bound on one dimension of a Kernel IR tile or buffer. |
+| `KIR_MAX_NAME_LENGTH` | `usize` | `128` | Upper bound on the byte length of a kernel name. |
+| `KIR_MAX_BUFFERS` | `usize` | `64` | Upper bound on the buffers (function arguments) of one kernel. |
+| `KIR_MAX_OPERATIONS` | `usize` | `65_536` | Upper bound on the operations of one kernel, loops included. |
+| `KIR_MAX_LOOP_DEPTH` | `usize` | `8` | Upper bound on loop nesting in one kernel. |
+| `KIR_MAX_TEXT_BYTES` | `usize` | `16 * 1024 * 1024` | Upper bound on the byte length of a Kernel IR text entering the MLIR parser; checked before parsing (RI-SEC-003). |
+| `KIR_MAX_DIAGNOSTICS` | `usize` | `16` | Upper bound on the MLIR diagnostics kept for one structured error. |
+| `KIR_MAX_DIAGNOSTIC_BYTES` | `usize` | `1024` | Upper bound on the byte length of one captured MLIR diagnostic. |

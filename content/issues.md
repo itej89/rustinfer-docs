@@ -8,8 +8,8 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Git
 # Issue tracker
 
 **As of 2026-11-12.** The tracker state is read live from GitHub
-(fetched 2026-11-12 21:59 UTC, kept in `data/progress-snapshot.json`); the
-counts of requirements, tests and lines are read from the rustinfer tree at commit f6d01ec 2026-11-12.
+(fetched 2026-11-13 01:54 UTC, kept in `data/progress-snapshot.json`); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit 7913427 2026-11-12.
 Coverage is not measured here: it is the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
 The project moved from Codeberg to [github.com/itej89/rustinfer](https://github.com/itej89/rustinfer) on 2026-11-12 (ADR-008,
@@ -20,13 +20,13 @@ runs did not move and are listed below as history.
 
 | measure | state | note |
 |---|---|---|
-| Release 1 issues closed | `████░░░░░░ 5/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 9 closed, 11 open |
-| Pull requests on GitHub | 4 merged, 0 open | [#19](https://github.com/itej89/rustinfer/pull/19) `infra/github-hosting` → `main` (merged), [#20](https://github.com/itej89/rustinfer/pull/20) `feat/15-planner-interfaces` → `main` (merged), [#21](https://github.com/itej89/rustinfer/pull/21) `feat/5-target-and-cpu-reference` → `main` (merged), [#22](https://github.com/itej89/rustinfer/pull/22) `docs/readme-docs-link` → `main` (merged); four more were merged on Codeberg before the move, see below |
-| Latest CI run | [run 10](https://github.com/itej89/rustinfer/actions/runs/43311967409) (main, `f6d01ec`): **success**, 2026-11-12 21:36 | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
-| SRS requirements implemented | `███░░░░░░░ 51/186` | a requirement is implemented when a test on `main` cites its id (51) or the Epic's checklist assigns it to a closed issue (#3, #4, #5, #15; 24), both for 24; 2 implemented in part (plain and reserved-feature citations), 0 in progress, 133 planned; the derivation per id is on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 186; by release: R1 105, R2 44, R3 33, R4 4 |
-| Tests | 523 | `#[test]` functions across 14 crates |
+| Release 1 issues closed | `█████░░░░░ 7/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 15 closed, 11 open |
+| Pull requests on GitHub | 8 merged, 0 open | [#19](https://github.com/itej89/rustinfer/pull/19) `infra/github-hosting` → `main` (merged), [#20](https://github.com/itej89/rustinfer/pull/20) `feat/15-planner-interfaces` → `main` (merged), [#21](https://github.com/itej89/rustinfer/pull/21) `feat/5-target-and-cpu-reference` → `main` (merged), [#22](https://github.com/itej89/rustinfer/pull/22) `docs/readme-docs-link` → `main` (merged), [#23](https://github.com/itej89/rustinfer/pull/23) `feat/18-sluice-weight-streamer` → `main` (merged), [#24](https://github.com/itej89/rustinfer/pull/24) `feat/6-frontend-llama` → `main` (merged), [#25](https://github.com/itej89/rustinfer/pull/25) `feat/7-kernel-ir-and-mlir-link` → `main` (merged), [#28](https://github.com/itej89/rustinfer/pull/28) `docs/27-srs-v0.3` → `main` (merged); four more were merged on Codeberg before the move, see below |
+| Latest CI run | [run 26](https://github.com/itej89/rustinfer/actions/runs/43348119649) (main, `7913427`): **in_progress**, 2026-11-13 01:52 | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
+| SRS requirements implemented | `████░░░░░░ 69/187` | a requirement is implemented when a test on `main` cites its id (69) or the Epic's checklist assigns it to a closed issue (#3, #4, #5, #6, #7, #15; 30), both for 30; 2 implemented in part (plain and reserved-feature citations), 0 in progress, 116 planned; the derivation per id is on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 187; by release: R1 107, R2 43, R3 33, R4 4 |
+| Tests | 716 | `#[test]` functions across 15 crates |
 | Line coverage | 96.44% | from the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12; the CI gate is 80 percent |
-| Rust | 25,869 lines in 159 files | `crates/**/*.rs`, tests and build scripts included |
+| Rust | 40,336 lines in 218 files | `crates/**/*.rs`, tests and build scripts included |
 
 ## Release 1 issues
 
@@ -43,12 +43,12 @@ open issue in dependency order whose blockers are all closed. Bodies are drafted
 | R1-3 | [Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip](https://github.com/itej89/rustinfer/issues/3) | #2 | Done 2026-11-12 | Codeberg PR #19 `feat/3-model-ir` merged 2026-11-12, before the move (not GitHub PR #19) |
 | R1-4 | [Artifact format: `.rie` header, section table, hash, bounded reader, writer](https://github.com/itej89/rustinfer/issues/4) | #3 | Done 2026-11-12 | Codeberg PR #21 `feat/4-artifact-format` merged 2026-11-12, before the move (not GitHub PR #21) |
 | R1-5 | [Target abstraction and CPU reference target](https://github.com/itej89/rustinfer/issues/5) | #3 | Done 2026-11-12 | branch `feat/5-target-and-cpu-reference`; [PR #21](https://github.com/itej89/rustinfer/pull/21) → `main`, opened 2026-11-12, merged 2026-11-12 |
-| R1-6 | [Frontend: LLaMA family from a Hugging Face checkpoint](https://github.com/itej89/rustinfer/issues/6) | #3 | **Not started** | — |
-| R1-7 | [Kernel IR dialect and the MLIR/LLVM link](https://github.com/itej89/rustinfer/issues/7) | #2 | Not started | writes ADR-007 (OI-009); needs a self-hosted runner for LLVM |
-| R1-8 | [AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS](https://github.com/itej89/rustinfer/issues/8) | #7 | Not started; waits on #7 | — |
+| R1-6 | [Frontend: LLaMA family from a Hugging Face checkpoint](https://github.com/itej89/rustinfer/issues/6) | #3 | Done 2026-11-12 | branch `feat/6-frontend-llama`; [PR #24](https://github.com/itej89/rustinfer/pull/24) → `main`, opened 2026-11-12, merged 2026-11-13 |
+| R1-7 | [Kernel IR dialect and the MLIR/LLVM link](https://github.com/itej89/rustinfer/issues/7) | #2 | Done 2026-11-13 | branch `feat/7-kernel-ir-and-mlir-link`; [PR #25](https://github.com/itej89/rustinfer/pull/25) → `main`, opened 2026-11-12, merged 2026-11-13; writes ADR-007 (OI-009); needs a self-hosted runner for LLVM |
+| R1-8 | [AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS](https://github.com/itej89/rustinfer/issues/8) | #7 | **Not started** | — |
 | R1-9 | [R1 kernel generators, catalog and autotuner (`tune` command)](https://github.com/itej89/rustinfer/issues/9) | #5, #8 | Not started; waits on #8 | needs an MI300X or MI355X on the bench (OI-008) |
 | R1-10 | [Graph compiler: pass pipeline from Model IR to Plan](https://github.com/itej89/rustinfer/issues/10) | #3, #5, #9 | Not started; waits on #9 | — |
-| R1-11 | [`build` and `inspect` commands](https://github.com/itej89/rustinfer/issues/11) | #4, #6, #10 | Not started; waits on #6, #10 | — |
+| R1-11 | [`build` and `inspect` commands](https://github.com/itej89/rustinfer/issues/11) | #4, #6, #10 | Not started; waits on #10 | — |
 | R1-12 | [ROCm target: HIP binding behind one FFI module](https://github.com/itej89/rustinfer/issues/12) | #5 | Not started | needs an MI300X or MI355X on the bench (OI-008) |
 | R1-13 | [Executor: static batch, KV block pool, sampler](https://github.com/itej89/rustinfer/issues/13) | #10, #12, #18 | Not started; waits on #10, #12, #18 | — |
 | R1-14 | [`run` command end to end](https://github.com/itej89/rustinfer/issues/14) | #11, #13 | Not started; waits on #11, #13 | closes the Epic's acceptance criteria |
@@ -69,6 +69,10 @@ their numbers with Codeberg PR #19 (Model IR) and #21 (artifact) and are differe
 | PR-20 | [feat(planner): topology model, placement interfaces and the single-device planner (#15)](https://github.com/itej89/rustinfer/pull/20) | a reviewer's sign-off | Merged 2026-11-12 | `feat/15-planner-interfaces` → `main`; mergeable |
 | PR-21 | [feat(target): Target trait family, architecture registry and the CPU reference target (#5)](https://github.com/itej89/rustinfer/pull/21) | a reviewer's sign-off | Merged 2026-11-12 | `feat/5-target-and-cpu-reference` → `main`; mergeable |
 | PR-22 | [docs(readme): link the documentation site](https://github.com/itej89/rustinfer/pull/22) | a reviewer's sign-off | Merged 2026-11-12 | `docs/readme-docs-link` → `main`; mergeable |
+| PR-23 | [feat(sluice): stream checkpoint weights into device memory from the weight manifest (#18)](https://github.com/itej89/rustinfer/pull/23) | a reviewer's sign-off | Merged 2026-11-12 | `feat/18-sluice-weight-streamer` → `main`; mergeable |
+| PR-24 | [feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)](https://github.com/itej89/rustinfer/pull/24) | a reviewer's sign-off | Merged 2026-11-13 | `feat/6-frontend-llama` → `main`; mergeable |
+| PR-25 | [feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)](https://github.com/itej89/rustinfer/pull/25) | a reviewer's sign-off | Merged 2026-11-13 | `feat/7-kernel-ir-and-mlir-link` → `main`; mergeable |
+| PR-28 | [docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)](https://github.com/itej89/rustinfer/pull/28) | a reviewer's sign-off | Merged 2026-11-13 | `docs/27-srs-v0.3` → `main`; mergeable |
 | PR-16 | SRS v0.2 and ADR-001 to ADR-006 | a reviewer's sign-off | Merged 2026-11-12 | `docs/1-srs-rustinfer` → `main`; merged on Codeberg before the move; the branch did not move |
 | PR-17 | Project scaffold: workspace, core, CLI, CI, mandatory files (#2) | a reviewer's sign-off | Merged 2026-11-12 | `feat/2-project-scaffold` → `main`; merged on Codeberg before the move; the branch did not move |
 | PR-19 | Model IR: typed graph, validator, canonical JSON (#3) | a reviewer's sign-off | Merged 2026-11-12 | `feat/3-model-ir` → `main`; merged on Codeberg before the move; the branch did not move |
@@ -85,23 +89,29 @@ to 11 green on Codeberg PRs #17 and #19 and `main`, did not move and is gone wit
 
 | run | for | commit | event | state | when |
 |---|---|---|---|---|---|
-| [10](https://github.com/itej89/rustinfer/actions/runs/43311967409) | main | `f6d01ec` | push | **success** | 2026-11-12 21:36 |
-| [9](https://github.com/itej89/rustinfer/actions/runs/43311429219) | docs/readme-docs-link | `452f44a` | pull_request | **success** | 2026-11-12 21:33 |
-| [8](https://github.com/itej89/rustinfer/actions/runs/43310924889) | main | `f039b4d` | push | **success** | 2026-11-12 21:30 |
-| [7](https://github.com/itej89/rustinfer/actions/runs/43307816222) | feat/5-target-and-cpu-reference | `6e018f2` | pull_request | **success** | 2026-11-12 21:11 |
-| [6](https://github.com/itej89/rustinfer/actions/runs/43307265059) | main | `d886a3c` | push | **success** | 2026-11-12 21:08 |
-| [5](https://github.com/itej89/rustinfer/actions/runs/43292497018) | feat/5-target-and-cpu-reference | `2e3bf7f` | pull_request | **success** | 2026-11-12 19:40 |
-| [4](https://github.com/itej89/rustinfer/actions/runs/43292453581) | feat/15-planner-interfaces | `b668521` | pull_request | **success** | 2026-11-12 19:39 |
-| [3](https://github.com/itej89/rustinfer/actions/runs/43292064455) | main | `9d448ce` | push | **success** | 2026-11-12 19:37 |
-| [2](https://github.com/itej89/rustinfer/actions/runs/43290907945) | infra/github-hosting | `13de986` | pull_request | **success** | 2026-11-12 19:30 |
-| [1](https://github.com/itej89/rustinfer/actions/runs/43289795339) | main | `678b084` | push | **queued** | 2026-11-12 19:24 |
+| [26](https://github.com/itej89/rustinfer/actions/runs/43348119649) | main | `7913427` | push | **in_progress** | 2026-11-13 01:52 |
+| [25](https://github.com/itej89/rustinfer/actions/runs/43348075496) | main | `ad51bce` | push | **cancelled** | 2026-11-13 01:52 |
+| [24](https://github.com/itej89/rustinfer/actions/runs/43345027672) | feat/7-kernel-ir-and-mlir-link | `2384762` | pull_request | **success** | 2026-11-13 01:27 |
+| [23](https://github.com/itej89/rustinfer/actions/runs/43344874359) | docs/27-srs-v0.3 | `e25e74b` | pull_request | **success** | 2026-11-13 01:25 |
+| [22](https://github.com/itej89/rustinfer/actions/runs/43344533043) | main | `84449e7` | push | **success** | 2026-11-13 01:23 |
+| [21](https://github.com/itej89/rustinfer/actions/runs/43344167243) | docs/27-srs-v0.3 | `85e940d` | pull_request | **success** | 2026-11-13 01:20 |
+| [20](https://github.com/itej89/rustinfer/actions/runs/43343573088) | feat/7-kernel-ir-and-mlir-link | `ab1d387` | pull_request | **success** | 2026-11-13 01:15 |
+| [19](https://github.com/itej89/rustinfer/actions/runs/43331297918) | feat/7-kernel-ir-and-mlir-link | `c361103` | pull_request | **success** | 2026-11-12 23:43 |
+| [18](https://github.com/itej89/rustinfer/actions/runs/43330905571) | feat/6-frontend-llama | `074f588` | pull_request | **success** | 2026-11-12 23:41 |
+| [17](https://github.com/itej89/rustinfer/actions/runs/43328672617) | feat/6-frontend-llama | `e1e94ed` | pull_request | **success** | 2026-11-12 23:25 |
+| [16](https://github.com/itej89/rustinfer/actions/runs/43322259159) | main | `add4752` | push | **success** | 2026-11-12 22:41 |
+| [15](https://github.com/itej89/rustinfer/actions/runs/43319355628) | feat/7-kernel-ir-and-mlir-link | `e90d068` | pull_request | **success** | 2026-11-12 22:22 |
 
 ## Branches on GitHub
 
 | branch | holds |
 |---|---|
+| [`docs/27-srs-v0.3`](https://github.com/itej89/rustinfer/tree/docs/27-srs-v0.3) | see its issue |
 | [`docs/readme-docs-link`](https://github.com/itej89/rustinfer/tree/docs/readme-docs-link) | the README's link to this site, GitHub PR #22 |
 | [`feat/15-planner-interfaces`](https://github.com/itej89/rustinfer/tree/feat/15-planner-interfaces) | the planner's topology model, placement and `Planner` trait (#15), merged as GitHub PR #20 (d886a3c) |
+| [`feat/18-sluice-weight-streamer`](https://github.com/itej89/rustinfer/tree/feat/18-sluice-weight-streamer) | see its issue |
 | [`feat/5-target-and-cpu-reference`](https://github.com/itej89/rustinfer/tree/feat/5-target-and-cpu-reference) | the `Target` trait family, the registry and the CPU reference target (#5), merged as GitHub PR #21 (f039b4d) |
+| [`feat/6-frontend-llama`](https://github.com/itej89/rustinfer/tree/feat/6-frontend-llama) | see its issue |
+| [`feat/7-kernel-ir-and-mlir-link`](https://github.com/itej89/rustinfer/tree/feat/7-kernel-ir-and-mlir-link) | see its issue |
 | [`infra/github-hosting`](https://github.com/itej89/rustinfer/tree/infra/github-hosting) | ADR-008 and the CI retarget to GitHub, merged as GitHub PR #19 (9d448ce) |
 | [`main`](https://github.com/itej89/rustinfer/tree/main) | the approved SRS v0.2, ADR-001 to ADR-006 and ADR-008, the fourteen-crate workspace, the Model IR, the artifact crate, the planner interfaces and the target abstraction with the CPU reference (Codeberg PRs #16, #17, #19, #21; GitHub PRs #19, #20, #21) |

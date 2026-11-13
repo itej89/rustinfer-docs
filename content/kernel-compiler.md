@@ -1,16 +1,20 @@
 ---
 title: Kernel compiler
 section: Compiler
-order: 2
+order: 3
 summary: The route from a Rust generator to a device binary; the tile-level Kernel IR, the AMD, SPIR-V and RISC-V lowerings, the fixed catalog plus one fuser, the autotuner, and the CPU reference as the oracle.
 ---
 
 # Kernel compiler
 
-Read from ADR-005, SRS §3.2.5 (`RI-KC`), §3.2.10 (`RI-RV`), §2.6 and §4 at
-commit `082df51`. The `rustinfer-kc` crate is an error type; issues #7, #8
-and #9 implement this page in that order. Nothing described here has been
-compiled, lowered or measured.
+Read from ADR-005, ADR-007, SRS §3.2.5 (`RI-KC`), §3.2.10 (`RI-RV`), §2.6
+and §4, `docs/api/kernel-ir.md` and `crates/rustinfer-kc/src/` at commit
+`7913427`. GitHub PR #25 merged into `main` as ad51bce on 2026-11-12 and
+closed issue #7: the `kir` dialect, the typed builder and, behind a Cargo
+feature, the in-process link to a pinned MLIR and LLVM 23 that verifies a
+kernel, lowers it for the host and translates it to LLVM IR. No generator,
+no device lowering, no code object, catalog entry or autotuner exists yet;
+those are #8 and #9. Nothing here has been run on a GPU.
 
 ## The route
 
@@ -26,8 +30,10 @@ Rust generator (parameter struct) ──builder──▶ Kernel IR (MLIR dialect
 ```
 
 No external process at any step: MLIR and LLVM are linked as libraries
-through the `melior` crate at one pinned version and `lld` is linked for
-code objects (RI-KC-008). The target's own module loader takes the result.
+through the `melior` crate at one pinned version, LLVM 23 (ADR-007), and
+`lld` is to be linked for code objects (RI-KC-008, #8). Of the route, the
+Kernel IR and its host lowering to LLVM IR are in the code; the three device
+lowerings are not. The target's own module loader takes the result.
 The SRS's §3.1.3 names the dialects linked: `gpu`, `amdgpu`, `rocdl`,
 `spirv`, `vector`, `llvm`, with the AMDGPU, RISC-V and SPIR-V back ends.
 
@@ -50,13 +56,112 @@ speculative verification. One fusion generator composes chains of
 elementwise and reduction ops into a single kernel, and the SRS forbids a
 general-purpose fusion compiler (RI-KC-010, R2).
 
-## The Kernel IR
+## The Kernel IR (in the code since PR #25)
 
-An MLIR dialect at tile level with explicit layouts: tiles, memory spaces
-(global, shared, register), barriers, a matrix-multiply op, masked loads and
-stores, reductions and structured control flow. Thread identity does not
-appear (RI-KC-002). The reason recorded is retargetability: a tile IR lowers
-to SIMT (AMD), vector (RVV) and mesh (Tensix) devices; a thread IR does not.
+An MLIR dialect named `kir` at tile level with explicit layouts. Thread
+identity does not appear (RI-KC-002): no operation produces or takes a
+thread, lane, wave or block id, and how a tile is spread over threads is the
+lowering's decision. The reason recorded is retargetability: a tile IR
+lowers to SIMT (AMD), vector (RVV) and mesh (Tensix) devices; a thread IR
+does not. A kernel is one `func.func` in a `module`; its arguments are
+buffers, its values tiles and indices, its control flow `scf.for`.
+
+| concept | MLIR form |
+|---|---|
+| tile | `vector<RxT>` or `vector<RxCxT>`, rank 1 or 2 |
+| buffer | `memref<…, 1>` global or `memref<…, 3>` shared, static shapes |
+| mask | `vector<…xi1>` of the tile's shape |
+| element types | `bf16`, `f16`, `f32`, `f8E4M3FN`, `f8E5M2`, `f8E4M3FNUZ`, `i32`, `i8` |
+
+The six operations are `kir.tile_load` and `kir.tile_store` (with a layout,
+`row_major` or `col_major`, and an optional mask; masked lanes read as zero
+and are not written), `kir.make_mask`, `kir.mma` (`c + a × b`, the
+accumulator type is the result type), `kir.reduce` (`sum` or `max` along one
+axis) and `kir.barrier`. Elementwise arithmetic is `arith` on vectors. The
+text form is MLIR's canonical generic form; `docs/api/kernel-ir.md` in the
+tree is the reference for the text kept beside each binary in an artifact
+(RI-ART-013).
+
+**The operation table is the single source of truth.** The operations are a
+Rust table in `crates/rustinfer-kc/src/dialect/`; the dialect MLIR loads is
+IRDL text generated from it at context creation (`irdl_definition`), so no
+C++ TableGen is built in the repository (ADR-007 point 6), and the verifier
+MLIR runs on every kernel is the one derived from that table.
+
+**The builder.** `KernelBuilder` is the one way a generator emits Kernel IR
+(RI-KC-001): `new(name, argument buffer types)`, then `index`, `tile_load`,
+`tile_store`, `make_mask`, `mma`, `reduce`, `add`, `barrier` and
+`for_loop`, then `finish`, which returns a `KernelModule` whose `to_mlir`
+is the canonical text. It checks what IRDL cannot (shapes and element types
+agree, indices match the buffer rank, a mask matches its tile, a value is
+used only in its scope) and needs no MLIR, so it works in every build.
+
+**The MLIR link.** With the feature on, `KernelContext` (one per thread,
+`!Send + !Sync`, MLIR's own thread pool disabled) offers `verify` (parse
+with unregistered dialects disallowed, verify, print the canonical text
+back), `lower_to_llvm_dialect` and `translate_to_llvm_ir`. Lowering rewrites
+each `kir` operation into the standard `vector` and `arith` dialects and
+then runs a flavour's pass pipeline; the one flavour today is `Host`, whose
+barrier is erased and whose pipeline is `convert-scf-to-cf`,
+`convert-vector-to-llvm`, `finalize-memref-to-llvm`, `convert-func-to-llvm`,
+`convert-arith-to-llvm`, `convert-cf-to-llvm`, `reconcile-unrealized-casts`.
+The flavour's two methods, the barrier lowering and the pipeline, are the
+seam the AMD lowering (#8) fills with a `gpu.barrier` or `rocdl.barrier`
+and the `rocdl` passes. Every output is byte-identical for the same text,
+flavour and LLVM version, across contexts and threads (RI-KC-011). Text
+entering the context is bounded by `KIR_MAX_TEXT_BYTES`; a refusal is
+`error=invalid component=kc` naming the stage (`dialect`, `parse`, `lower`,
+`translate`) with at most `KIR_MAX_DIAGNOSTICS` captured diagnostics. The
+context re-checks the LLVM major against `LLVMGetVersion` when it is
+created.
+
+**The feature flag.** The link sits behind the Cargo feature `mlir` of
+`rustinfer-kc`, re-exported by `rustinfer-cli` as `kc`, both off by
+default, so the workspace builds and every non-MLIR test passes on a host
+without LLVM (RI-NFR-016). Without it `require_link` and the CLI answer
+`not_implemented`: `tune` fails with `error=not_implemented component=kc`
+naming the `kc` feature. `unsafe` is allowed in one more module,
+`crates/rustinfer-kc/src/mlir/`, and the CI budget moved from 0 to 5 blocks
+(ADR-007 point 7). The feature's build dependencies need rustc 1.89, so the
+workspace MSRV is 1.89 and an `msrv` CI job checks `--all-features` on that
+toolchain.
+
+## Installing LLVM 23 locally
+
+ADR-007 pins LLVM **major 23, release line 23.1**, from `apt.llvm.org`
+(suite `llvm-toolchain-<codename>-23`; `noble` on Ubuntu 24.04), bound
+through `melior` 0.29.1 and `mlir-sys` 230.0.2 and linked statically, so the
+binary loads no LLVM shared object. The Ubuntu archive's MLIR is LLVM 18,
+which predates gfx950, and the LLVM release tarballs ship no MLIR, so
+neither will do.
+
+**With sudo**, run the script CI runs. It verifies the `apt.llvm.org` key
+fingerprint, adds the suite for the host's codename and installs
+`llvm-23-dev`, `libmlir-23-dev`, `mlir-23-tools`, `libpolly-23-dev` and
+`libclang-23-dev` at the exact version pinned per codename:
+
+```sh
+scripts/ci/install_llvm.sh
+cargo test --workspace --all-features
+```
+
+`.cargo/config.toml` points `MLIR_SYS_230_PREFIX` and `TABLEGEN_230_PREFIX`
+at `/usr/lib/llvm-23`, where the packages install.
+
+**Without sudo**, download the same packages (`apt-get download` or `curl`
+from the pool) and extract each with `dpkg-deb -x <package>.deb <dir>`, then
+point the two variables at the extracted prefix; the environment wins over
+`.cargo/config.toml`, and `llvm-config` is relocatable:
+
+```sh
+export MLIR_SYS_230_PREFIX=<dir>/usr/lib/llvm-23
+export TABLEGEN_230_PREFIX=<dir>/usr/lib/llvm-23
+cargo test -p rustinfer-kc --features mlir
+```
+
+`apt.llvm.org` keeps only the latest build per suite, so the pinned version
+strings go stale when it rebuilds; a bump changes `VERSIONS` in the script
+and ADR-007 in one PR. Statically linked test binaries are about 240 MB each.
 
 ## The AMD lowering
 
@@ -116,9 +221,12 @@ that `inspect` prints (RI-KC-012).
 
 ## What is unresolved
 
-OI-009: `melior` needs a pinned MLIR and LLVM and building them in CI is
-slow; the SRS's §1.4 names LLVM 22, and the recorded resolution is a vendored
-prebuilt with a recorded hash. The issue draft for #7 says an ADR-007 will
-record it; no ADR-007 exists at `082df51`. OI-008: autotuning needs a gfx950
-host. OI-003: no RISC-V accelerator is on the bench. See
-[open issues](open-issues.html).
+OI-009, how the pinned MLIR and LLVM are obtained, is resolved by ADR-007
+(above). Still open after it: code-object emission (the `llc` equivalent
+through the LLVM C API and `lld` as a library, with a byte-identical
+rebuild), moved from #7 to #8 by the PR #25 review, which adds
+`liblld-23-dev` to the install script; a hash-pinned mirror of the LLVM 23
+packages if `apt.llvm.org` ever becomes a problem; an LLVM 23 build for
+RISC-V hosts (R3). OI-008: autotuning needs a gfx950 host. OI-003: no
+RISC-V accelerator is on the bench. See [open issues](open-issues.html) and
+[decisions](decisions.html).

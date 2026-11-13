@@ -1,7 +1,7 @@
 ---
 title: Graph compiler
 section: Compiler
-order: 1
+order: 2
 summary: The pass pipeline from Model IR to Plan: shape inference under a profile, fusion against the catalog, precision, kernel selection with no fallback, layouts, arena planning and deterministic emission.
 ---
 

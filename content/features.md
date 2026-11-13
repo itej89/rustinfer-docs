@@ -28,14 +28,14 @@ artifact, the planner interfaces and the targets, all on `main`.
 | CLI | build on first load into the cache | RI-CLI-003 | R1 | Planned R1, #11 |
 | CLI | `bench` with TTFT, TPOT, ITL percentiles | RI-CLI-008 | R2 | Not started |
 | CLI | `serve` with YAML config and `--set` | RI-CLI-009 | R3 | Not started |
-| Frontend | LLaMA from HF | RI-FE-001 to -003 | R1 | Planned R1, #6 |
+| Frontend | LLaMA family (`llama`, `mistral`, `qwen2`, `qwen3`) from HF | RI-FE-001 to -003 | R1 | <span class="state-ok">done</span> — GitHub PR #24 merged 2026-11-12; Qwen3 QK norm and `llama3` RoPE scaling refused until #26 and #27 ([frontend](frontend.html)) |
 | Frontend | weight streaming, Model IR JSON input, FP8 import | RI-FE-004, -006, -008 | R2 | Not started |
 | Frontend | MoE and MLA families, AWQ, GPTQ, MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started |
 | Model IR | typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version, named functions, KV groups, encodings | RI-MIR-001 to -011 | R1 | <span class="state-ok">done</span> — PR #19 merged 2026-11-12 |
 | Graph compiler | logged pass pipeline, shape inference, fusion against the catalog, bf16 and fp8 precision, kernel selection, arena planning, Plan, layouts, determinism, matrix refusal | RI-GC-001 to -009, -014 | R1 | Planned R1, #10 |
 | Graph compiler | tensor parallel sharding, mixed iteration sub-plan | RI-GC-010, -007 | R2 | Not started |
 | Graph compiler | expert parallel, LoRA points, speculative verification sub-plan | RI-GC-011 to -013 | R3 | Not started |
-| Kernel compiler | Rust generators, tile-level MLIR dialect, in-process LLVM and `lld`, determinism | RI-KC-001, -002, -008, -011 | R1 | Planned R1, #7 |
+| Kernel compiler | Rust generators, tile-level MLIR dialect, in-process LLVM and `lld`, determinism | RI-KC-001, -002, -008, -011 | R1 | <span class="state-part">in part</span> — the `kir` dialect, builder and in-process LLVM 23 link to LLVM IR in GitHub PR #25 (2026-11-12); `lld` and code objects move to #8, generators to #9 |
 | Kernel compiler | AMD lowering with MFMA, LDS, bounds-checked loads | RI-KC-003 | R1 | Planned R1, #8 |
 | Kernel compiler | R1 generator set, autotuner, CPU validation, validated-hardware records | RI-KC-005 to -007, -013 | R1 | Planned R1, #9 |
 | Kernel compiler | SPIR-V lowering, elementwise fuser, resource reports | RI-KC-004, -010, -012 | R2 | Not started |
@@ -47,6 +47,8 @@ artifact, the planner interfaces and the targets, all on `main`.
 | Planner | DPU-resident serving functions | RI-PLN-006 | R4 | Not started |
 | Artifact | header, sections, verifying reader, atomic writer, alignment, versions, metadata | RI-ART-001 to -006, -008 | R1 | <span class="state-ok">done</span> — Codeberg PR #21 merged 2026-11-12 |
 | Artifact | one artifact per rank | RI-ART-007 | R2 | Not started |
+| Artifact | per-tensor digest in the manifest, per-section versions (SRS v0.3) | RI-ART-005, -014 | R1 | <span class="state-no">specified in the SRS</span> — code with #27 ([artifact](artifact.html)) |
+| Sluice | weight streaming from the manifest: byte-range reads, bounded staging, device-side transforms, overlap, verification | RI-WST-001 to -005 | R1 | <span class="state-ok">done</span> — GitHub PR #23 merged 2026-11-12 ([Sluice](sluice.html)) |
 | Targets | architecture strings, the `Target` trait, CPU reference operators, one-crate backends, stub targets that fail with `catalog empty` | RI-TGT-001 to -004, RI-RV-001, -002 | R1 | <span class="state-ok">done</span> — GitHub PR #21 merged 2026-11-12 |
 | Targets | device graph capture; CPU collectives | RI-TGT-005, -003 | R2 | <span class="state-part">in progress</span> — `capture` and `replay` exist, eager on the CPU; collectives not started |
 | ROCm | HIP binding, typed errors, `gcnArchName` check, module loading with resource checks, `unsafe` confined to `ffi` | RI-ROC-001 to -005 | R1 | Planned R1, #12 |

@@ -20,19 +20,20 @@ when the ADR or decision it asks for lands.
 | OI-001 | Generated kernels against hand-tuned ones. Triton and FlyDSL show a tile-level IR with explicit layouts reaches a large fraction of hand-written GEMM and attention performance on gfx950; the remainder is what AITER's assembly holds. | Open | RI-NFR-003, RI-NFR-006, RI-KC-009 | measure after the R1 generator set; decide on the assembly generator path |
 | OI-002 | Shape buckets and cost interpolation | Open | RI-GC-005, RI-KC-006 | start with padded-M buckets as AITER's tables use; revisit with data |
 | OI-003 | RISC-V bench hardware. No RISC-V accelerator is on the bench; the lowering paths are chosen from documentation. | Deferred | RI-RV-001 to -004, RI-KC-004 | acquire a Tenstorrent p150 and a SpacemiT K3 board before R3 |
-| OI-004 | Safetensors parsing: crate or in-tree | Open | RI-FE-002, RI-SEC-003 | an ADR through the new-dep process |
+| OI-004 | Safetensors parsing: crate or in-tree | Open in the SRS; in-tree in the code | RI-FE-002, RI-SEC-003 | an ADR through the new-dep process; the frontend (PR #24) and Sluice (PR #23) each parse the headers in Rust, in-tree, under shared bounds |
 | OI-005 | Multi-rank artifact layout | Open | RI-ART-007, RI-DIST-001 | an ADR before R2; one file per rank provisionally |
 | OI-006 | Grammar backend for guided decoding | Open | RI-SMP-006 | an ADR before R3; a Rust-native backend preferred over an FFI |
 | OI-007 | Tokenizer | Open | RI-SRV-003, RI-CLI-006 | new-dep evaluation of the `tokenizers` crate before R2 |
 | OI-008 | Reference hardware. Autotuning and the baselines need a gfx950 host with vLLM and AITER. | Open; only the owner can rent the node | RI-KC-006, RI-NFR-003, RI-NFR-004, RI-NFR-006 | rent an MI355X node for R1 autotuning and the R2 acceptance run |
-| OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | **Open**; blocks #7 | RI-KC-003, RI-NFR-012, RI-NFR-016 | ADR-005 names the version; a vendored prebuilt with a recorded hash. The draft of issue #7 assigns this to an ADR-007 |
+| OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | Decided 2026-11-12 by ADR-007 | RI-KC-003, RI-NFR-012, RI-NFR-016 | LLVM 23.1 packages from `apt.llvm.org`, `melior` 0.29.1, static link, installed in CI by `scripts/ci/install_llvm.sh` ([kernel compiler](kernel-compiler.html)) |
 | OI-010 | DPU agent ISA and deployment | Deferred | RI-PLN-006 | after a DPU is on the bench |
 | OI-011 | Tensix mesh lowering: whether the mesh path targets TT-MLIR's dialects or emits its own kernels for the Tensix cores | Deferred | RI-KC-004, RI-RV-001 | decide with a Blackhole card in hand |
+| OI-013 | Implicit launch operands: the paged KV operators take the KV cache pools as operands that are not in the Model IR node; the CPU launcher appends them at launch | Open (SRS v0.3) | RI-MIR-004, RI-TGT-002, RI-TGT-003, RI-GC-006, RI-KVC-001 | a column of the operator registry every target reads, with the seam work of #27; a requirement in the SRS version that adds the second launcher |
 
 ## Which ones gate Release 1
 
-OI-009 gates issue #7 and everything on the kernel-compiler path (#8, #9,
-#10, #11, #13, #14). OI-008 gates #9's autotuning and #12's hardware
+OI-009 gated issue #7 and everything on the kernel-compiler path until
+ADR-007 resolved it on 2026-11-12. OI-008 gates #9's autotuning and #12's hardware
 validation, and with them the Epic's acceptance criteria. OI-002 is decided
 provisionally and does not block. The rest are R2 or later, or deferred.
 

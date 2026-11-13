@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit f6d01ec 2026-11-12. A failure leaves the command as one line on
+`src/error.rs` at commit 7913427 2026-11-12. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -72,7 +72,35 @@ and component.
 | `rustinfer-cli` | `cli` | `KernelCompiler` | `delegated` |
 | `rustinfer-cli` | `cli` | `Target` | `delegated` |
 | `rustinfer-compiler` | `compiler` | `NotImplemented` | `not_implemented` |
+| `rustinfer-frontend` | `frontend` | `Io` | `io` |
+| `rustinfer-frontend` | `frontend` | `TooLarge` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `MalformedConfig` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `MissingField` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `InvalidField` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `UnsupportedModelType` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `UnsupportedValue` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `LaterRelease` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `MalformedHeader` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `InvalidTensor` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `UnsupportedDtype` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `DuplicateTensor` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `MissingTensor` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `UnexpectedTensor` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `ShapeMismatch` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `MixedDtype` | `unsupported` |
+| `rustinfer-frontend` | `frontend` | `NoShards` | `not_found` |
+| `rustinfer-frontend` | `frontend` | `ArchitectureMismatch` | `internal` |
+| `rustinfer-frontend` | `frontend` | `Mir` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `NotImplemented` | `not_implemented` |
+| `rustinfer-kc` | `kc` | `InvalidName` | `delegated` |
+| `rustinfer-kc` | `kc` | `InvalidType` | `delegated` |
+| `rustinfer-kc` | `kc` | `UnknownValue` | `delegated` |
+| `rustinfer-kc` | `kc` | `ValueOutOfScope` | `delegated` |
+| `rustinfer-kc` | `kc` | `TypeMismatch` | `delegated` |
+| `rustinfer-kc` | `kc` | `ShapeMismatch` | `delegated` |
+| `rustinfer-kc` | `kc` | `TooLarge` | `delegated` |
+| `rustinfer-kc` | `kc` | `Mlir` | `invalid` |
+| `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
 | `rustinfer-mir` | `mir` | `Malformed` | `delegated` |
 | `rustinfer-mir` | `mir` | `TooLarge` | `delegated` |
@@ -119,6 +147,23 @@ and component.
 | `rustinfer-planner` | `planner` | `Model` | `delegated` |
 | `rustinfer-planner` | `planner` | `NotImplemented` | `not_implemented` |
 | `rustinfer-runtime` | `runtime` | `NotImplemented` | `not_implemented` |
+| `rustinfer-sluice` | `sluice` | `Io` | `io` |
+| `rustinfer-sluice` | `sluice` | `InvalidPath` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `TooLarge` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `MalformedHeader` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `InvalidHeaderField` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `Identity` | `artifact` |
+| `rustinfer-sluice` | `sluice` | `FileUnrecorded` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `TensorMissing` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `HeaderMismatch` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `UnsupportedLayout` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `UnknownTransform` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `InvalidTransform` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `InvalidStagingBudget` | `config` |
+| `rustinfer-sluice` | `sluice` | `Device` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `PipelineClosed` | `internal` |
+| `rustinfer-sluice` | `sluice` | `DigestMissing` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `DigestMismatch` | `delegated` |
 | `rustinfer-target` | `target` | `CatalogEmpty` | `delegated` |
 | `rustinfer-target` | `target` | `NoKernel` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownArchitecture` | `delegated` |

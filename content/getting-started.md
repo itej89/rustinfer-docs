@@ -109,6 +109,7 @@ the library crate `rustinfer-mir`, which no subcommand calls yet; the
 artifact (#4), the planner interfaces (#15) and the target abstraction with
 the CPU reference (#5) followed the same day, and `build` and `tune` now
 resolve `--target` through the registry before answering `not_implemented`;
-the next things are Sluice (#18), the LLaMA frontend (#6) and the Kernel IR
-(#7); `build` and `inspect` become real with #11 and `run` with #14. The order and blockers are on the
+Sluice (#18), the LLaMA-family frontend (#6) and the Kernel IR (#7) merged
+later that day, again as libraries no subcommand calls; next are the AMD
+lowering (#8) and the #27 fixes; `build` and `inspect` become real with #11 and `run` with #14. The order and blockers are on the
 [issue tracker](issues.html).

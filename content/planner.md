@@ -9,8 +9,8 @@ summary: The pass that places weights, KV tiers, phases and serving functions ac
 # The topology planner
 
 Read from SRS §3.2.6 (`RI-PLN`), §2.1, ADR-006,
-`docs/planning/datacenter-device-inventory.md` §9, `crates/rustinfer-planner/src/`
-and `docs/api/topology.md` at commit `f039b4d`. GitHub PR #20 merged into
+`docs/planning/datacenter-device-inventory.md` §9, `crates/rustinfer-planner/src/`,
+`docs/api/topology.md`, SRS v0.3 and ADR-009 at commit `7913427`. GitHub PR #20 merged into
 `main` as d886a3c on 2026-11-12 and closed issue #15: the crate holds the
 R1 interfaces, the topology model and the single-device planner, and
 discovery and the cost-model planner answer `not_implemented` until
@@ -24,8 +24,10 @@ Goal 5 of the SRS: a planner that places weights, KV tiers, phases and
 serving-stack functions across GPUs, host CPUs, DPUs, DRAM, CXL and NVMe
 from a discovered topology. In the Apple analogy of §2.1 it is Core ML's
 scheduler across heterogeneous units. The Model IR gives it somewhere to
-write: every tensor carries a placement slot (memory tier) and every node a
-device slot, empty after the frontend and filled by the planner (RI-MIR-005).
+write: every tensor carries a placement slot and every node a device slot,
+empty after the frontend and filled by the planner (RI-MIR-005). In the code
+a placement slot is a memory-tier kind; SRS v0.3 changes it to a device
+index, a tier index and a shard spec ([below](#placement-v2-specified-in-the-srs)).
 
 ## The topology model (R1)
 
@@ -79,6 +81,33 @@ document is left as it was. `CostModelPlanner::plan` and `discover()` exist
 and answer `not_implemented` naming RI-PLN-003 and RI-PLN-002. Every type
 is `Send + Sync`; the PR's tests share one planner and topology across four
 threads.
+
+## Placement v2, specified in the SRS
+
+ADR-009 and SRS v0.3 (PR #28, 2026-11-12) amend the placement contract. A
+tier kind cannot say which device's memory holds a tensor: on an eight-GPU
+node every GPU has an `hbm` tier, and a two-socket host has two `dram`
+tiers on different NUMA nodes. The topology already names each tier by
+index, so the planner was throwing that away. Nor could a slot say that a
+tensor is one shard of a tensor-parallel split. The change is made now,
+while every shipped slot is empty, because the graph compiler (#10) and the
+executor (#13) are about to start reading slots, and changing them later
+would mean migrating every pinned artifact.
+
+| | in the code at `7913427` | specified in SRS v0.3 (RI-MIR-005, RI-PLN-003, RI-PLN-005) |
+|---|---|---|
+| tensor placement slot | a tier kind (`hbm`, `dram`, `cxl`, `nvme`) | a device index into the topology's devices, a memory-tier index among that device's or the host's tiers, and optionally a shard spec: `split` (axis, number of shards, shard index) or `replicated` |
+| node device slot | a device index | a device index (unchanged) |
+| Model IR version | `ir_version` 1 | `ir_version` 2; a version 1 document is accepted only when every slot is empty (every frontend output) and read as version 2; a filled version 1 slot is refused naming the first tensor or node, because it must be re-planned |
+| `placement` section | a tier kind per tensor, `placement_version` 1 | the slot in the RI-MIR-005 form, `placement_version` 2; a pinned section parsed and validated against the pinned topology at load |
+| single-device planner | every tensor in the device's local tier kind | device `n`, tier `devices[n].local_tier`, no shard: R1 behaviour unchanged |
+| validation | a placement entry must name a tensor or node of the document | every index checked against the topology's device and tier counts, and a shard index against the shard count and the tensor's rank, before use, refused naming the tensor (RI-SEC-002, RI-SEC-003) |
+
+State: <span class="state-no">specified in the SRS</span>, code not yet.
+ADR-009 says the types, the reader, the single-device planner, the
+`model-ir.md` and `topology.md` schemas and the API changelog change in a
+later PR of #27. The SRS tags the slot form, `ir_version` 2 and the
+single-device fill R1, and filled shard specs R2.
 
 ## Discovery and placement (R2 and beyond)
 

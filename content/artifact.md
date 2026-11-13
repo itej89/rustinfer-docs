@@ -8,14 +8,18 @@ summary: The .rie engine file from ADR-002 and the artifact requirements; header
 
 # The artifact
 
-Read from ADR-002, SRS §3.2.7 (`RI-ART`), RI-SEC-002, RI-PLN-005 and
-`constants.rs` at commit `082df51`, when the `rustinfer-artifact` crate was
-an error type. The crate is in the code since Codeberg PR #21 merged into
-`main` as 678b084 on 2026-11-12 (issue #4): the fixed header, the section
-table with nine sections, the content hash, the verifying reader and the
-atomic writer under format version 1, with the layout the code writes in
-`docs/api/artifact.md` in the tree. This page still describes the format
-from ADR-002 and the SRS; no `build` writes an artifact yet (#11).
+Read from ADR-002, ADR-009, SRS §3.2.7 (`RI-ART`) at v0.3, RI-SEC-002,
+RI-SEC-004, RI-PLN-005, `constants.rs` and `crates/rustinfer-artifact/src/`
+at commit `7913427`. The crate is in the code since Codeberg PR #21 merged
+into `main` as 678b084 on 2026-11-12 (issue #4): the fixed header, the
+section table with nine sections, the content hash, the verifying reader and
+the atomic writer under format version 1, with the layout the code writes in
+`docs/api/artifact.md` in the tree. Since then the [frontend](frontend.html)
+produces the weight manifest and the checkpoint identity (PR #24) and
+[Sluice](sluice.html) consumes them (PR #23); no `build` writes an artifact
+yet (#11). SRS v0.3 (PR #28) changed four clauses of this contract, and the
+code has not caught up with all of them: the
+[v0.3 section](#the-v03-contract-changes) below says which part is where.
 
 ## Why a single file
 
@@ -51,10 +55,10 @@ From ADR-002, little-endian throughout:
 | `model_ir` | the Model IR document as canonical JSON: the weight set as tensor descriptors (name, dtype, shape, encoding, placement slot), the named functions and the KV groups; never a weight byte | sorted keys, compact, exact integers (RI-MIR-007); the document and its writer and reader exist in `rustinfer-mir` since PR #19 ([design](design.html)), the section around them is #4 |
 | `plan` | the Plan as canonical JSON | deterministic key order (RI-GC-009) |
 | `profile` | `min`, `opt`, `max` per dynamic dimension | |
-| `metadata` | build options, producer, `rustc` and LLVM versions, catalog version, input hashes, origin (`build` or first load), timestamp | RI-ART-008, RI-SEC-004 |
+| `metadata` | build options, producer, `rustc` and LLVM versions, catalog version, the checkpoint identity (SHA-256 of `config.json`, each weight file's size and header hash), origin (`build` or first load), timestamp | RI-ART-008, RI-SEC-004 (v0.3) |
 | `catalog` | the kernel entries the Plan references | |
 | `kernels` | concatenated code objects with an index JSON at the start | |
-| `weights` | the **weight manifest**, canonical JSON: the checkpoint's format and root, and per weight id the source shard, tensor name, dtype, shape, source layout, byte range, target layout, transform and the ranks that need it; never a weight byte | RI-ART-005, RI-ART-012; read by [Sluice](sluice.html) |
+| `weights` | the **weight manifest**, canonical JSON: the checkpoint's format and root, and per weight id the source shard, tensor name, dtype, shape, source layout, byte range, target layout, transform and the ranks that need it, and from SRS v0.3 an optional per-tensor SHA-256; never a weight byte | RI-ART-005, RI-ART-012; written by the [frontend](frontend.html), read by [Sluice](sluice.html) |
 | `topology`, `placement` | empty at build unless pinned | reserved from R1 for format stability (RI-PLN-005) |
 | `lora_slots` | adapter application points | from R3 (RI-ART-002) |
 
@@ -103,6 +107,27 @@ never copies it (RI-ART-012). Three things follow:
 - `metadata` records the checkpoint's identity as hashes of `config.json`,
   the shard headers and the file sizes; `run` refuses a checkpoint that
   differs, and `--verify-weights` opts into a full per-tensor hash check.
+  SRS v0.3 makes this the whole build-time input identity (RI-SEC-004): no
+  build hashes a whole weight file, and weight content is hashed only per
+  tensor, under `--hash-weights` or `--verify-weights`.
+
+## The v0.3 contract changes
+
+SRS v0.3 of 2026-11-12 (PR #28, change request #27, ADR-009) amended the
+artifact's contract before the graph compiler and the executor start
+reading it. Each change is marked by where it stands at `7913427`:
+*specified in the SRS* means the clause is approved and the code still
+follows v0.2; *in the code* means a test on `main` exercises it.
+
+| change | requirement | state |
+|---|---|---|
+| The build-time input identity is the checkpoint identity: SHA-256 of `config.json`, each weight file's size and header hash; no whole-file hashing | RI-SEC-004, RI-ART-008 | <span class="state-ok">in the code</span> — `CheckpointIdentity` and `FileIdentity` in `metadata.rs`, produced by the frontend and verified by Sluice; the reworded clause matches what PR #24 already did |
+| An optional per-tensor SHA-256 in each weight manifest entry, recorded by `build --hash-weights` or a first-load build under `--verify-weights`; a digest that is not 64 hex digits refused naming the weight; a build without the flag opens no weight byte range | RI-ART-005, RI-CLI-002, RI-WST-005 | <span class="state-no">specified in the SRS</span> — `WeightEntry` has no digest field; Sluice's `verify_weights` takes the digests as a separate map |
+| Every JSON section carries its own top-level version (`ir_version` for `model_ir`, `<section>_version` otherwise), read against a listed set and refused naming the section and the version | RI-ART-014 (new) | <span class="state-part">partly in the code</span> — `model_ir` (`ir_version` 1), `topology` and `placement` (`topology_version`, `placement_version` 1) carry one; `plan`, `profile`, `metadata`, `catalog` and `weights` do not, and #27 notes the section set is fixed in five places |
+| The `placement` section records each tensor's slot as a device index, a tier index and an optional shard spec, under `placement_version` 2 with Model IR `ir_version` 2; a pinned section is parsed and validated against the pinned topology at load | RI-PLN-005, RI-MIR-005, ADR-009 | <span class="state-no">specified in the SRS</span> — the code writes `placement_version` 1 with a tier kind per tensor, and pinned `topology` and `placement` bytes are never parsed (a #27 defect); see the [planner](planner.html) |
+
+The code changes land in the later PRs of #27, which is open with four
+pull requests coming.
 
 ## Costs the ADR records
 

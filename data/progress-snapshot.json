@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-12T21:59:19+00:00",
+ "fetched_at": "2026-11-13T01:54:20+00:00",
  "source": "github",
  "issues": [
   {
@@ -107,8 +107,8 @@
   {
    "number": 6,
    "title": "Frontend: LLaMA family from a Hugging Face checkpoint",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-12",
    "labels": [
     "feature"
    ],
@@ -121,14 +121,14 @@
     "RI-FE-002",
     "RI-FE-003"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/6-frontend-llama",
+   "derived_status": "Done 2026-11-12"
   },
   {
    "number": 7,
    "title": "Kernel IR dialect and the MLIR/LLVM link",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-13",
    "labels": [
     "feature",
     "infra"
@@ -142,8 +142,8 @@
     "RI-KC-008",
     "RI-KC-011"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/7-kernel-ir-and-mlir-link",
+   "derived_status": "Done 2026-11-13"
   },
   {
    "number": 8,
@@ -382,8 +382,38 @@
     "RI-WST-005",
     "RI-ART-012"
    ],
+   "branch": "feat/18-sluice-weight-streamer",
+   "derived_status": "In progress"
+  },
+  {
+   "number": 26,
+   "title": "Model IR: per-head rmsnorm attribute for Qwen3 QK norm",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    6
+   ],
+   "requirements": [],
    "branch": null,
    "derived_status": "Not started"
+  },
+  {
+   "number": 27,
+   "title": "Tech debt: conformance and extension-seam findings of 2026-11-12",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "tech-debt"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [],
+   "requirements": [],
+   "branch": "docs/27-srs-v0.3",
+   "derived_status": "In progress"
   }
  ],
  "pulls": [
@@ -434,6 +464,54 @@
    "mergeable": true,
    "created_at": "2026-11-12",
    "url": "https://github.com/itej89/rustinfer/pull/22"
+  },
+  {
+   "number": 23,
+   "title": "feat(sluice): stream checkpoint weights into device memory from the weight manifest (#18)",
+   "state": "closed",
+   "head": "feat/18-sluice-weight-streamer",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-12",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/23"
+  },
+  {
+   "number": 24,
+   "title": "feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)",
+   "state": "closed",
+   "head": "feat/6-frontend-llama",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/24"
+  },
+  {
+   "number": 25,
+   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
+   "state": "closed",
+   "head": "feat/7-kernel-ir-and-mlir-link",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-12",
+   "url": "https://github.com/itej89/rustinfer/pull/25"
+  },
+  {
+   "number": 28,
+   "title": "docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)",
+   "state": "closed",
+   "head": "docs/27-srs-v0.3",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/28"
   }
  ],
  "milestones": [
@@ -441,125 +519,151 @@
    "title": "R1 — foundation",
    "state": "open",
    "open": 11,
-   "closed": 9
+   "closed": 15
   }
  ],
  "runs": [
   {
-   "id": 10,
-   "title": "Merge pull request #22 from itej89/docs/readme-docs-link",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "f6d01ec",
-   "created": "2026-11-12T21:36",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43311967409"
-  },
-  {
-   "id": 9,
-   "title": "docs(readme): link the documentation site",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/readme-docs-link",
-   "sha": "452f44a",
-   "created": "2026-11-12T21:33",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43311429219"
-  },
-  {
-   "id": 8,
-   "title": "Merge pull request #21 from itej89/feat/5-target-and-cpu-reference",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "f039b4d",
-   "created": "2026-11-12T21:30",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43310924889"
-  },
-  {
-   "id": 7,
-   "title": "feat(target): Target trait family, architecture registry and the CPU reference target (#5)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/5-target-and-cpu-reference",
-   "sha": "6e018f2",
-   "created": "2026-11-12T21:11",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43307816222"
-  },
-  {
-   "id": 6,
-   "title": "Merge pull request #20 from itej89/feat/15-planner-interfaces",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "d886a3c",
-   "created": "2026-11-12T21:08",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43307265059"
-  },
-  {
-   "id": 5,
-   "title": "feat(target): Target trait family, architecture registry and the CPU reference target (#5)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/5-target-and-cpu-reference",
-   "sha": "2e3bf7f",
-   "created": "2026-11-12T19:40",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43292497018"
-  },
-  {
-   "id": 4,
-   "title": "feat(planner): topology model, placement interfaces and the single-device planner (#15)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/15-planner-interfaces",
-   "sha": "b668521",
-   "created": "2026-11-12T19:39",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43292453581"
-  },
-  {
-   "id": 3,
-   "title": "Merge pull request #19 from itej89/infra/github-hosting",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "9d448ce",
-   "created": "2026-11-12T19:37",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43292064455"
-  },
-  {
-   "id": 2,
-   "title": "ci: move hosting to GitHub (ADR-008)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "infra/github-hosting",
-   "sha": "13de986",
-   "created": "2026-11-12T19:30",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43290907945"
-  },
-  {
-   "id": 1,
-   "title": "Merge pull request 'feat(artifact): the .rie engine artifact, verifyi…",
-   "status": "queued",
+   "id": 26,
+   "title": "Merge pull request #28 from itej89/docs/27-srs-v0.3",
+   "status": "in_progress",
    "conclusion": null,
    "event": "push",
    "ref": "main",
-   "sha": "678b084",
-   "created": "2026-11-12T19:24",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43289795339"
+   "sha": "7913427",
+   "created": "2026-11-13T01:52",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43348119649"
+  },
+  {
+   "id": 25,
+   "title": "Merge pull request #25 from itej89/feat/7-kernel-ir-and-mlir-link",
+   "status": "completed",
+   "conclusion": "cancelled",
+   "event": "push",
+   "ref": "main",
+   "sha": "ad51bce",
+   "created": "2026-11-13T01:52",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43348075496"
+  },
+  {
+   "id": 24,
+   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/7-kernel-ir-and-mlir-link",
+   "sha": "2384762",
+   "created": "2026-11-13T01:27",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43345027672"
+  },
+  {
+   "id": 23,
+   "title": "docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/27-srs-v0.3",
+   "sha": "e25e74b",
+   "created": "2026-11-13T01:25",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43344874359"
+  },
+  {
+   "id": 22,
+   "title": "Merge pull request #24 from itej89/feat/6-frontend-llama",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "84449e7",
+   "created": "2026-11-13T01:23",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43344533043"
+  },
+  {
+   "id": 21,
+   "title": "docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/27-srs-v0.3",
+   "sha": "85e940d",
+   "created": "2026-11-13T01:20",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43344167243"
+  },
+  {
+   "id": 20,
+   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/7-kernel-ir-and-mlir-link",
+   "sha": "ab1d387",
+   "created": "2026-11-13T01:15",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43343573088"
+  },
+  {
+   "id": 19,
+   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/7-kernel-ir-and-mlir-link",
+   "sha": "c361103",
+   "created": "2026-11-12T23:43",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43331297918"
+  },
+  {
+   "id": 18,
+   "title": "feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/6-frontend-llama",
+   "sha": "074f588",
+   "created": "2026-11-12T23:41",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43330905571"
+  },
+  {
+   "id": 17,
+   "title": "feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/6-frontend-llama",
+   "sha": "e1e94ed",
+   "created": "2026-11-12T23:25",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43328672617"
+  },
+  {
+   "id": 16,
+   "title": "Merge pull request #23 from itej89/feat/18-sluice-weight-streamer",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "add4752",
+   "created": "2026-11-12T22:41",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43322259159"
+  },
+  {
+   "id": 15,
+   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/7-kernel-ir-and-mlir-link",
+   "sha": "e90d068",
+   "created": "2026-11-12T22:22",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43319355628"
   }
  ],
  "branches": [
+  "docs/27-srs-v0.3",
   "docs/readme-docs-link",
   "feat/15-planner-interfaces",
+  "feat/18-sluice-weight-streamer",
   "feat/5-target-and-cpu-reference",
+  "feat/6-frontend-llama",
+  "feat/7-kernel-ir-and-mlir-link",
   "infra/github-hosting",
   "main"
  ]
