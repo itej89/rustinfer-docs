@@ -63,7 +63,7 @@ def source_branch():
         return "unknown"
 
 SECTIONS = ["Overview", "Design", "Compiler", "Runtime", "Hardware",
-            "Development", "Trackers", "Reference"]
+            "Development", "Trackers", "Reference", "Standards"]
 
 MD = dict(
     extensions=["extra", "tables", "fenced_code", "codehilite", "toc",

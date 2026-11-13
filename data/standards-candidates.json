@@ -1,0 +1,526 @@
+{
+ "note": "Curated by hand from the rustinfer tree (code, Cargo.toml, docs/adr, docs/api, docs/planning, the SRS clause texts) at commit b21ae62. Each candidate is a standard the code or the plan already depends on that SRS-RI-v0.1 section 1.4 does not reference. It becomes tracked only after an SRS amendment adds a 1.4 row and a requirement cites it. Versions marked 'to confirm' are suggestions, not decisions. 'aliases' are the regular expressions gen_standards.py uses to report where the SRS text already names the standard.",
+ "candidates": [
+  {
+   "id": "IEEE-754",
+   "title": "IEEE Std 754-2019, IEEE Standard for Floating-Point Arithmetic",
+   "version": "754-2019",
+   "date": "2019-07-22",
+   "url": "https://standards.ieee.org/ieee/754/6210/",
+   "cite": [
+    "RI-MIR-003",
+    "RI-TGT-003"
+   ],
+   "release": "R1",
+   "why": "fp16 (binary16) and fp32 (binary32) semantics, round-to-nearest-even and NaN/Inf rules of the CPU reference conversions; bf16 is binary32 with the low 16 mantissa bits dropped and should be defined against it.",
+   "aliases": [
+    "IEEE[- ]?754",
+    "binary16",
+    "binary32"
+   ],
+   "evidence": [
+    "crates/rustinfer-mir/src/dtype.rs:18 (IEEE half)",
+    "crates/rustinfer-mir/src/dtype.rs:21 (IEEE single)",
+    "crates/rustinfer-target/src/numeric.rs:12 (bf16 round to nearest even)",
+    "crates/rustinfer-target/src/numeric.rs:33 (IEEE-style Inf/NaN encoding)"
+   ]
+  },
+  {
+   "id": "OCP-OFP8",
+   "title": "OCP 8-bit Floating Point Specification (OFP8)",
+   "version": "Revision 1.0",
+   "date": "2023-12-01",
+   "url": "https://www.opencompute.org/documents/ocp-8-bit-floating-point-specification-ofp8-revision-1-0-2023-12-01-pdf-1",
+   "cite": [
+    "RI-MIR-003",
+    "RI-KC-003",
+    "RI-KVC-008",
+    "RI-CLI-002"
+   ],
+   "release": "R1",
+   "why": "The SRS names 'OCP e4m3' (RI-MIR-003) and fp8 KV storage without a reference; the kernel compiler also maps E5M2, which the SRS does not list.",
+   "aliases": [
+    "OFP8",
+    "OCP 8-bit",
+    "OCP e4m3",
+    "OCP fp8"
+   ],
+   "evidence": [
+    "crates/rustinfer-mir/src/dtype.rs:24 (OCP 8-bit float E4M3)",
+    "crates/rustinfer-target/src/numeric.rs:2 (fp8 e4m3 (OCP) conversions)",
+    "crates/rustinfer-kc/src/mlir/lower.rs:23 (F8E4M3Fn)",
+    "crates/rustinfer-kc/src/mlir/lower.rs:24 (F8E5M2)",
+    "docs/planning/issues/08-amd-lowering.md:9 (OCP fp8 on gfx950)"
+   ]
+  },
+  {
+   "id": "AMD-FNUZ",
+   "title": "AMD Instinct MI300 (CDNA3) Instruction Set Architecture Reference Guide: FP8 E4M3 FNUZ (with LLVM APFloat Float8E4M3FNUZ as the executable definition)",
+   "version": "as published, to confirm",
+   "date": "2024",
+   "url": "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/instruction-set-architectures/amd-instinct-mi300-cdna3-instruction-set-architecture.pdf",
+   "cite": [
+    "RI-MIR-003",
+    "RI-KC-003",
+    "RI-KVC-008"
+   ],
+   "release": "R1",
+   "why": "gfx942 fp8 is the FNUZ variant (bias 8, max 240, the negative-zero pattern is the only NaN); the SRS names 'FNUZ e4m3' with no definition.",
+   "aliases": [
+    "FNUZ",
+    "fnuz"
+   ],
+   "evidence": [
+    "crates/rustinfer-mir/src/dtype.rs:27 (AMD FNUZ, gfx942)",
+    "crates/rustinfer-target/src/numeric.rs:20 (E4M3FNUZ NaN is the negative-zero pattern)",
+    "crates/rustinfer-target/tests/numeric.rs:25 (bias 8)",
+    "crates/rustinfer-kc/src/mlir/lower.rs:25 (F8E4M3Fnuz)"
+   ]
+  },
+  {
+   "id": "SAFETENSORS",
+   "title": "safetensors file format (Hugging Face)",
+   "version": "release tag to pin at amendment, to confirm",
+   "date": "",
+   "url": "https://github.com/huggingface/safetensors",
+   "cite": [
+    "RI-FE-004",
+    "RI-ART-005",
+    "RI-ART-008",
+    "RI-SEC-003",
+    "RI-SEC-004",
+    "RI-WST-005"
+   ],
+   "release": "R1",
+   "why": "The checkpoint shard layout (8-byte little-endian header length, JSON header of dtype/shape/data_offsets, tiling rule) and its dtype names (F8_E4M3, BF16, ...) are parsed by the one shared header reader.",
+   "aliases": [
+    "safetensors"
+   ],
+   "evidence": [
+    "crates/rustinfer-artifact/src/safetensors.rs:1 (the one header reader; layout and tiling rule)",
+    "crates/rustinfer-sluice/src/safetensors.rs:1",
+    "crates/rustinfer-sluice/tests/common/mod.rs:75 (F8_E4M3 dtype name)",
+    "docs/SRS-RI-v0.1.md:292 (section 3.1.3 HF checkpoint)"
+   ]
+  },
+  {
+   "id": "HF-CONFIG",
+   "title": "Hugging Face Transformers model configuration (config.json, generation_config.json)",
+   "version": "Transformers release to pin, to confirm",
+   "date": "",
+   "url": "https://huggingface.co/docs/transformers/main_classes/configuration",
+   "cite": [
+    "RI-FE-001",
+    "RI-FE-003",
+    "RI-FE-004",
+    "RI-ART-008",
+    "RI-SEC-003"
+   ],
+   "release": "R1",
+   "why": "model_type, the architecture fields and quantization_config are read from config.json; their names and meanings are Transformers conventions.",
+   "aliases": [
+    "\\bconfig\\.json",
+    "\\bgeneration_config\\.json"
+   ],
+   "evidence": [
+    "crates/rustinfer-frontend/src/config.rs:1 (config.json bounded parse and model_type registry)",
+    "crates/rustinfer-sluice/src/checkpoint.rs:65 (hash of config.json)",
+    "docs/SRS-RI-v0.1.md:292"
+   ]
+  },
+  {
+   "id": "HF-TOKENIZER",
+   "title": "Hugging Face Tokenizers serialization (tokenizer.json) and chat templates",
+   "version": "tokenizers release to pin, to confirm",
+   "date": "",
+   "url": "https://github.com/huggingface/tokenizers",
+   "cite": [
+    "RI-CLI-006",
+    "RI-SRV-003"
+   ],
+   "release": "R2",
+   "why": "RI-SRV-003 requires a tokenizer compatible with HF tokenizer.json; RI-CLI-006 adds text prompts through the tokenizer in R2.",
+   "aliases": [
+    "tokenizer\\.json",
+    "tokenizer files",
+    "chat template"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:292 (tokenizer files in the HF checkpoint contract)",
+    "crates/rustinfer-frontend/tests/lower.rs:122 (fixture writes tokenizer.json)"
+   ]
+  },
+  {
+   "id": "PEFT",
+   "title": "Hugging Face PEFT LoRA adapter layout (adapter_config.json plus safetensors)",
+   "version": "PEFT release to pin, to confirm",
+   "date": "",
+   "url": "https://github.com/huggingface/peft",
+   "cite": [
+    "RI-FE-007",
+    "RI-SEC-003"
+   ],
+   "release": "R3",
+   "why": "Section 3.1.3 names the PEFT layout as the LoRA adapter input contract; no requirement cites a version.",
+   "aliases": [
+    "PEFT",
+    "adapter_config\\.json"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:293 (LoRA adapter: PEFT layout)"
+   ]
+  },
+  {
+   "id": "AMDGPU-ABI",
+   "title": "LLVM User Guide for AMDGPU Backend (AMDGPUUsage): ELF code objects and the AMDHSA ABI",
+   "version": "the code object version LLVM 23 emits by default (V5 or V6), to confirm and record",
+   "date": "",
+   "url": "https://llvm.org/docs/AMDGPUUsage.html",
+   "cite": [
+    "RI-ROC-004",
+    "RI-ART-013",
+    "RI-SEC-001"
+   ],
+   "release": "R1",
+   "why": "The artifact carries AMD HSA code objects that are loaded with the HIP module loader and checked (LDS, registers) against the device; their format and kernel descriptor are this document.",
+   "aliases": [
+    "AMDGPUUsage",
+    "code object"
+   ],
+   "evidence": [
+    "crates/rustinfer-core/src/kernel.rs:14 (an AMD HSA code object, RI-ROC-004)",
+    "crates/rustinfer-artifact/src/kernels.rs:1 (kernels section of code objects)",
+    "crates/rustinfer-target/tests/launch.rs:725 (code object for another architecture refused)"
+   ]
+  },
+  {
+   "id": "HIP",
+   "title": "HIP Runtime API Reference (ROCm)",
+   "version": "ROCm 7.0 to 7.2",
+   "date": "",
+   "url": "https://rocm.docs.amd.com/projects/HIP/en/latest/reference/hip_runtime_api_reference.html",
+   "cite": [
+    "RI-ROC-002",
+    "RI-ROC-004",
+    "RI-SEC-001",
+    "RI-PLN-002"
+   ],
+   "release": "R1",
+   "why": "Section 2.4 pins ROCm 7.0 to 7.2 and 3.1.3 lists the HIP runtime as an interface (memory, streams, events, modules, launches, graphs) but 1.4 has no row.",
+   "aliases": [
+    "\\bHIP\\b"
+   ],
+   "evidence": [
+    "crates/rustinfer-target-rocm/src/lib.rs:1 (the HIP runtime binding)",
+    "crates/rustinfer-target-rocm/Cargo.toml:24 (rocm feature links the HIP runtime)",
+    "docs/adr/ADR-005-three-representations-and-own-kernel-compiler.md:54",
+    "docs/SRS-RI-v0.1.md:234"
+   ]
+  },
+  {
+   "id": "RCCL",
+   "title": "ROCm Communication Collectives Library (RCCL) API (NCCL-compatible)",
+   "version": "ROCm 7.0 to 7.2",
+   "date": "",
+   "url": "https://rocm.docs.amd.com/projects/rccl/en/latest/",
+   "cite": [
+    "RI-ROC-006",
+    "RI-DIST-001",
+    "RI-SEC-001"
+   ],
+   "release": "R2",
+   "why": "All-reduce, all-gather, reduce-scatter and all-to-all go through RCCL (3.1.3); RI-SEC-001 allows loading it.",
+   "aliases": [
+    "RCCL"
+   ],
+   "evidence": [
+    "docs/adr/ADR-005-three-representations-and-own-kernel-compiler.md:54 (only HIP runtime and RCCL are loaded)",
+    "docs/planning/datacenter-device-inventory.md:84 (RCCL over XGMI)",
+    "docs/uml/component-diagram.md:78",
+    "docs/SRS-RI-v0.1.md:297"
+   ]
+  },
+  {
+   "id": "LLVM",
+   "title": "LLVM (AMDGPU, RISC-V and SPIR-V back ends; lld as a library)",
+   "version": "LLVM 23 (23.1.x; mlir-sys 230, melior 0.29.1)",
+   "date": "",
+   "url": "https://releases.llvm.org/",
+   "cite": [
+    "RI-KC-003",
+    "RI-KC-004",
+    "RI-KC-011",
+    "RI-CLI-005",
+    "RI-ART-008"
+   ],
+   "release": "R1",
+   "why": "ADR-007 pins LLVM major 23; section 1.4 has only the MLIR row, and that row still says LLVM 22. The amendment should add LLVM and correct the MLIR row's version to 23.",
+   "aliases": [
+    "\\bLLVM\\b"
+   ],
+   "evidence": [
+    "Cargo.toml:58 (melior =0.29.1)",
+    "Cargo.toml:59 (mlir-sys =230.0.2)",
+    "crates/rustinfer-core/src/config/constants.rs:404 (KC_PINNED_LLVM_MAJOR = 23)",
+    "docs/adr/ADR-007-pinned-llvm-and-mlir-link.md:27",
+    "crates/rustinfer-kc/src/mlir/raw.rs:16 (linked LLVM version)"
+   ]
+  },
+  {
+   "id": "SPIR-V",
+   "title": "Khronos SPIR-V Specification (unified)",
+   "version": "1.6",
+   "date": "",
+   "url": "https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html",
+   "cite": [
+    "RI-KC-004",
+    "RI-RV-001"
+   ],
+   "release": "R2",
+   "why": "The spirv-vulkan target emits SPIR-V modules through MLIR's spirv dialect (R1 stub, R2 lowering).",
+   "aliases": [
+    "SPIR-V",
+    "spirv"
+   ],
+   "evidence": [
+    "crates/rustinfer-target-spirv-vulkan/src/lib.rs:1",
+    "crates/rustinfer-core/src/kernel.rs:16 (a SPIR-V module)",
+    "crates/rustinfer-target/tests/error_contract.rs:62 (BinaryFormat::SpirV)"
+   ]
+  },
+  {
+   "id": "VULKAN",
+   "title": "Khronos Vulkan API Specification",
+   "version": "not stated anywhere in the tree; set with the spirv-vulkan lowering",
+   "date": "",
+   "url": "https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html",
+   "cite": [
+    "RI-KC-004",
+    "RI-RV-001"
+   ],
+   "release": "R2",
+   "why": "Section 3.1.2 names Vulkan as the runtime of SPIR-V devices (Imagination GPU on SpacemiT K3).",
+   "aliases": [
+    "Vulkan"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:286 (Vulkan for SPIR-V devices)",
+    "crates/rustinfer-target-spirv-vulkan/src/lib.rs:1"
+   ]
+  },
+  {
+   "id": "RVV-1.0",
+   "title": "RISC-V \"V\" Vector Extension",
+   "version": "1.0 (ratified)",
+   "date": "2021-11",
+   "url": "https://github.com/riscv/riscv-isa-manual",
+   "cite": [
+    "RI-RV-004",
+    "RI-KC-004"
+   ],
+   "release": "R3",
+   "why": "RI-RV-004 already says 'SHALL target RVV 1.0' in its clause; section 1.4 has no row for it.",
+   "aliases": [
+    "RVV"
+   ],
+   "evidence": [
+    "crates/rustinfer-target-riscv-vector/src/lib.rs:1 (RVV lowering)",
+    "crates/rustinfer-core/src/kernel.rs:18 (RISC-V ELF object)",
+    "docs/planning/datacenter-device-inventory.md:19 (RVA23, RVV 1.0)",
+    "docs/SRS-RI-v0.1.md:1248"
+   ]
+  },
+  {
+   "id": "FIPS-180-4",
+   "title": "FIPS PUB 180-4, Secure Hash Standard (SHA-256)",
+   "version": "180-4",
+   "date": "2015-08",
+   "url": "https://csrc.nist.gov/pubs/fips/180-4/upd1/final",
+   "cite": [
+    "RI-ART-001",
+    "RI-ART-005",
+    "RI-ART-008",
+    "RI-SEC-004",
+    "RI-WST-005"
+   ],
+   "release": "R1",
+   "why": "The artifact content hash, the per-tensor digests and the checkpoint identity are SHA-256.",
+   "aliases": [
+    "SHA-256",
+    "FIPS 180"
+   ],
+   "evidence": [
+    "crates/rustinfer-artifact/src/hash.rs:1",
+    "Cargo.toml:52 (sha2 =0.10.9)",
+    "docs/adr/ADR-002-engine-artifact-format.md:35 (sha256 in the header)"
+   ]
+  },
+  {
+   "id": "RFC-8259",
+   "title": "RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format",
+   "version": "RFC 8259 (STD 90)",
+   "date": "2017-12",
+   "url": "https://www.rfc-editor.org/rfc/rfc8259",
+   "cite": [
+    "RI-ART-014",
+    "RI-MIR-007",
+    "RI-GC-009",
+    "RI-SEC-003",
+    "RI-FE-001",
+    "RI-SRV-005"
+   ],
+   "release": "R1",
+   "why": "Every small artifact section, the Model IR document, config.json and the safetensors header are JSON; the canonical form (sorted keys, compact, exact integers) is a profile of it and should say so.",
+   "aliases": [
+    "RFC 8259",
+    "\\bJSON\\b"
+   ],
+   "evidence": [
+    "crates/rustinfer-artifact/src/json.rs:1 (canonical JSON of the sections)",
+    "crates/rustinfer-frontend/src/config.rs:15 (serde_json)",
+    "Cargo.toml:51 (serde_json =1.0.154)"
+   ]
+  },
+  {
+   "id": "ISO-8601",
+   "title": "ISO 8601-1:2019, Date and time representations (profile: RFC 3339 UTC with milliseconds)",
+   "version": "ISO 8601-1:2019",
+   "date": "2019-02",
+   "url": "https://www.iso.org/standard/70907.html",
+   "cite": [
+    "RI-CLI-011",
+    "RI-ART-008"
+   ],
+   "release": "R1",
+   "why": "RI-CLI-011 requires ISO-8601 timestamps in every log line and the metadata timestamp is checked as ISO-8601 UTC; the clause names the standard without a 1.4 row.",
+   "aliases": [
+    "ISO-?8601",
+    "RFC 3339"
+   ],
+   "evidence": [
+    "crates/rustinfer-core/src/logging.rs:4 (ts=<ISO-8601>)",
+    "crates/rustinfer-core/src/logging.rs:148",
+    "crates/rustinfer-artifact/src/metadata.rs:50 (YYYY-MM-DDTHH:MM:SS.mmmZ)"
+   ]
+  },
+  {
+   "id": "PROM-TEXT",
+   "title": "Prometheus text-based exposition format",
+   "version": "0.0.4",
+   "date": "",
+   "url": "https://prometheus.io/docs/instrumenting/exposition_formats/",
+   "cite": [
+    "RI-OBS-001",
+    "RI-SRV-002"
+   ],
+   "release": "R2",
+   "why": "Section 3.1.3 lists metrics out as Prometheus text exposition; RI-SRV-002 exposes /prometheus/metrics and RI-OBS-001 defines the metric names.",
+   "aliases": [
+    "[Pp]rometheus"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:300",
+    "docs/planning/use-cases.md:22 (UC-11, exported as Prometheus)"
+   ]
+  },
+  {
+   "id": "OPENAI-API",
+   "title": "OpenAI API reference: Chat Completions, Completions and Models (openai-openapi)",
+   "version": "openai-openapi at a dated commit, to confirm",
+   "date": "",
+   "url": "https://platform.openai.com/docs/api-reference/chat",
+   "cite": [
+    "RI-SRV-001",
+    "RI-CLI-009"
+   ],
+   "release": "R3",
+   "why": "RI-SRV-001 requires OpenAI-compatible shapes for /v1/chat/completions, /v1/completions and /v1/models; 'compatible' needs a pinned schema.",
+   "aliases": [
+    "OpenAI"
+   ],
+   "evidence": [
+    "crates/rustinfer-cli/src/cli.rs:36 (serve an OpenAI-compatible HTTP API)",
+    "docs/planning/use-cases.md:29 (UC-18)",
+    "docs/SRS-RI-v0.1.md:279"
+   ]
+  },
+  {
+   "id": "RFC-9110",
+   "title": "RFC 9110 HTTP Semantics and RFC 9112 HTTP/1.1",
+   "version": "RFC 9110, RFC 9112",
+   "date": "2022-06",
+   "url": "https://www.rfc-editor.org/rfc/rfc9110",
+   "cite": [
+    "RI-SRV-001",
+    "RI-SRV-002",
+    "RI-SRV-005"
+   ],
+   "release": "R3",
+   "why": "Section 3.1.4 fixes HTTP/1.1; RI-SRV-005 assigns status codes 400, 429 and 503.",
+   "aliases": [
+    "HTTP/1\\.1",
+    "RFC 911[0-2]"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:305 (HTTP/1.1 with SSE)"
+   ]
+  },
+  {
+   "id": "SSE",
+   "title": "WHATWG HTML Living Standard, Server-sent events",
+   "version": "living standard; pin a snapshot date",
+   "date": "",
+   "url": "https://html.spec.whatwg.org/multipage/server-sent-events.html",
+   "cite": [
+    "RI-SRV-001"
+   ],
+   "release": "R3",
+   "why": "Streaming responses use SSE (3.1.1, 3.1.4, RI-SRV-001).",
+   "aliases": [
+    "\\bSSE\\b",
+    "server-sent"
+   ],
+   "evidence": [
+    "docs/SRS-RI-v0.1.md:279",
+    "docs/SRS-RI-v0.1.md:305"
+   ]
+  }
+ ],
+ "rejected": [
+  {
+   "id": "SEMVER",
+   "title": "Semantic Versioning 2.0.0",
+   "reason": "Not used: the artifact and Model IR versions are integers (ARTIFACT_FORMAT_VERSION, MODEL_IR_FORMAT_VERSION in crates/rustinfer-core/src/config/constants.rs:25,71) and docs/api/CHANGELOG.md:6 uses vMAJOR.MINOR with BREAKING marks; the crate version is Cargo's and publish = false."
+  },
+  {
+   "id": "NCCL",
+   "title": "NVIDIA NCCL API",
+   "reason": "No NVIDIA target; RCCL's NCCL-compatible API is the dependency and is listed as RCCL."
+  },
+  {
+   "id": "CXL",
+   "title": "Compute Express Link specification",
+   "reason": "The planner only names CXL as a memory tier and link kind (crates/rustinfer-planner/src/topology.rs:90, crates/rustinfer-mir/src/tensor.rs:19); discovery (RI-PLN-002, R2) reads the OS, and no CXL protocol or register interface is implemented or planned."
+  },
+  {
+   "id": "RDMA-VERBS",
+   "title": "InfiniBand/RoCE verbs (rdma-core)",
+   "reason": "Only planning prose (docs/planning/datacenter-device-inventory.md:46) and RI-PLN-006 (R4) mention RDMA; no interface is chosen. Revisit with the R4 DPU work."
+  },
+  {
+   "id": "OTEL",
+   "title": "OpenTelemetry (OTLP)",
+   "reason": "No requirement; docs/observability.md:12 says no OTLP export before multi-node (R4)."
+  },
+  {
+   "id": "UALINK-UEC",
+   "title": "UALink 1.0/2.0 and Ultra Ethernet",
+   "reason": "Device inventory only (docs/planning/datacenter-device-inventory.md:65,77); reached through RCCL, no rustinfer interface; R4."
+  },
+  {
+   "id": "RFC-8785",
+   "title": "JSON Canonicalization Scheme",
+   "reason": "The canonical JSON of crates/rustinfer-artifact/src/json.rs:1 is rustinfer's own (sorted keys, compact, exact integers), not JCS; only needed if a third party must reproduce section hashes."
+  }
+ ]
+}
