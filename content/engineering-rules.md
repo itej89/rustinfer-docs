@@ -8,7 +8,8 @@ summary: SWG-001 as the tree adopts it; the gates every change passes, the branc
 # Engineering rules
 
 Read from `CONTRIBUTING.md`, ADR-001, ADR-004, `Cargo.toml`, `clippy.toml`,
-`.github/` and `scripts/ci/` at commit `082df51`. The standard is SWG-001,
+`.github/` and `scripts/ci/` at commit `082df51`; the requirement-tag rule from
+`docs/testing.md` at commit `04a2a26`. The standard is SWG-001,
 Software Development Guidelines v4.0 of 2026-10-03, as adapted for Rust by
 ADR-001 and for the host by ADR-004, superseded on 2026-11-12 by ADR-008
 (GitHub); `CONTRIBUTING.md` says it is the
@@ -31,6 +32,36 @@ design audit, coverage, performance, concurrency, security, exception and
 logging audit, external boundary integrity, schema versioning, first test
 run, rebase, integration tests, refactoring, linter, final test run,
 artifact verification, deployment audit, and two reviewer sign-offs.
+
+## Requirement tags in tests
+
+`docs/testing.md`, added with the retag of PR #29 (2026-11-13), sets how a
+test cites an SRS requirement, as the owner decided it in #27. Every test
+that cites a requirement does so in its doc comment with exactly one of
+three tags per requirement:
+
+| tag | when |
+|---|---|
+| `Verifies RI-X-NNN: <part>` | only when the clause is fully implemented in the code; the text after the colon names the part the test checks, so it is never a bare id |
+| `Groundwork for RI-X-NNN: <part>` | while the clause is not fully implemented |
+| `Reserved RI-X-NNN (R<n>)` | the test asserts a refusal of a later-release feature |
+
+A requirement counts as **implemented** only when it has at least one
+`Verifies` tag and no `Groundwork for` tag. A clause whose `Release:` line
+splits it (RI-TGT-003: R1 operators, R2 collectives) is fully implemented
+when every part of the current release is; its later-release refusals are
+`Reserved`. The PR that lands the last missing part turns every
+`Groundwork for` tag of that id into `Verifies`, and a PR that leaves a part
+missing keeps them all `Groundwork for`, so an id is never half counted. A
+test that checks no clause cites none and names the design document it
+checks instead (the concurrency diagram, SWG-001 §8.7). Several ids share
+one tag sentence per kind (`Verifies RI-MIR-002, RI-MIR-007: <part>`), and
+`//!` module headers may list the ids a file covers without being tags.
+
+This site derives every requirement's state from these tags and nothing
+else: implemented, partial (any `Groundwork for`), reserved only (only
+`Reserved`) or planned, on the [requirements](ref-requirements.html) page
+and in the [issue tracker](issues.html) headline.
 
 ## Hosting
 

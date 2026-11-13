@@ -15,11 +15,14 @@ the weights left the artifact ([artifact](artifact.html), RI-ART-012); the
 SRS specifies it as RI-WST-001 to RI-WST-005.
 
 Read from `crates/rustinfer-sluice/src/`, its tests, `docs/api/CHANGELOG.md`
-and SRS v0.3 at commit `7913427`. GitHub PR #23 merged into `main` as
+and SRS v0.3 at commit `04a2a26`. GitHub PR #23 merged into `main` as
 add4752 on 2026-11-12: the crate `rustinfer-sluice` with the API below,
 tested on the CPU reference target's device; 57 crate tests and a workspace
-of 587 in the PR's run. Issue #18 is still open on the tracker although its
-pull request merged. No executor calls Sluice yet (#13).
+of 587 in the PR's run. Issue #18 closed on 2026-11-13. The #27 pull
+requests of 2026-11-13 changed it twice: PR #29 counted the zero block in
+the staging budget, and PR #30 replaced its safetensors parser with the
+shared reader and moved the digests into the manifest. No executor calls
+Sluice yet (#13).
 
 ## What it takes and what it gives
 
@@ -43,7 +46,10 @@ before any weight byte is read: the checkpoint identity first (a differing
 `config.json` hash, shard size or header hash is refused with code
 `artifact`, RI-ART-012); then the safetensors header of every shard the
 rank needs, bounded and parsed as untrusted input (RI-SEC-001,
-RI-SEC-003); then, per needed weight, dtype, shape and byte range against
+RI-SEC-003) by `rustinfer_artifact::safetensors`, the one header reader the
+[frontend](frontend.html) also uses since PR #30 (Sluice's own copy was
+deleted; it now also refuses a gap in a shard's data region and a dtype this
+release does not read); then, per needed weight, dtype, shape and byte range against
 that header, refused naming the tensor and the field (RI-WST-005); then the
 transform and layout strings. Then:
 
@@ -87,17 +93,22 @@ The transform vocabulary accepted at load is `identity`, `transpose` (rank
 5. **Verification.** Header checks at `open`, always; the per-tensor digest
    check under `--verify-weights` (RI-WST-005).
 
-## Specified in the SRS, not yet in the code
+## The v0.3 digest, in part
 
 SRS v0.3 (#27) puts the per-tensor digest into the weight manifest as an
 optional SHA-256 field, recorded by `build --hash-weights` or by a
 first-load build under `--verify-weights`, and makes a manifest without
 digests a refusal under `--verify-weights` naming its first weight
-(RI-ART-005, RI-WST-005). In the code at `7913427` the manifest's
-`WeightEntry` has no digest field: `verify_weights` takes the expected
-digests as a separate `WeightDigests` map, and no `build` writes one yet.
-#27 also lists Sluice's zero block, allocated outside the staging pool, as a
-conformance defect of RI-WST-002.
+(RI-ART-005, RI-WST-005). Since PR #30 (2026-11-13) `WeightEntry.sha256` is
+an optional field, refused naming the weight when it is not 64 hex digits,
+and `Sluice::verify_weights(None)` compares against the manifest's digests
+and refuses the first needed weight without one; an external
+`WeightDigests` map is used only when passed. No `build` records a digest
+yet (#11), so both ids are tagged `Groundwork for` and count as partial on
+the [requirements](ref-requirements.html) page. PR #29 fixed the
+conformance defect #27 listed for RI-WST-002: the device zero block is
+sized to the largest padding region and its host zeros are staged through
+the pool, so they count in `staging_peak_bytes`.
 
 ## Why not the alternatives
 

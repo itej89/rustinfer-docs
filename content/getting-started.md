@@ -111,5 +111,5 @@ the CPU reference (#5) followed the same day, and `build` and `tune` now
 resolve `--target` through the registry before answering `not_implemented`;
 Sluice (#18), the LLaMA-family frontend (#6) and the Kernel IR (#7) merged
 later that day, again as libraries no subcommand calls; next are the AMD
-lowering (#8) and the #27 fixes; `build` and `inspect` become real with #11 and `run` with #14. The order and blockers are on the
+lowering (#8), the #27 fixes having merged on 2026-11-13; `build` and `inspect` become real with #11 and `run` with #14. The order and blockers are on the
 [issue tracker](issues.html).

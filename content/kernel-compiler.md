@@ -9,7 +9,7 @@ summary: The route from a Rust generator to a device binary; the tile-level Kern
 
 Read from ADR-005, ADR-007, SRS §3.2.5 (`RI-KC`), §3.2.10 (`RI-RV`), §2.6
 and §4, `docs/api/kernel-ir.md` and `crates/rustinfer-kc/src/` at commit
-`7913427`. GitHub PR #25 merged into `main` as ad51bce on 2026-11-12 and
+`04a2a26`. GitHub PR #25 merged into `main` as ad51bce on 2026-11-12 and
 closed issue #7: the `kir` dialect, the typed builder and, behind a Cargo
 feature, the in-process link to a pinned MLIR and LLVM 23 that verifies a
 kernel, lowers it for the host and translates it to LLVM IR. No generator,

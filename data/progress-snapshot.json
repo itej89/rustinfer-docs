@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-13T01:54:20+00:00",
+ "fetched_at": "2026-11-13T18:22:50+00:00",
  "source": "github",
  "issues": [
   {
@@ -364,8 +364,8 @@
   {
    "number": 18,
    "title": "Sluice: stream checkpoint weights into device memory from the weight manifest",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-13",
    "labels": [
     "feature"
    ],
@@ -383,7 +383,7 @@
     "RI-ART-012"
    ],
    "branch": "feat/18-sluice-weight-streamer",
-   "derived_status": "In progress"
+   "derived_status": "Done 2026-11-13"
   },
   {
    "number": 26,
@@ -404,8 +404,8 @@
   {
    "number": 27,
    "title": "Tech debt: conformance and extension-seam findings of 2026-11-12",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-13",
    "labels": [
     "tech-debt"
    ],
@@ -413,7 +413,146 @@
    "blocked_by": [],
    "requirements": [],
    "branch": "docs/27-srs-v0.3",
-   "derived_status": "In progress"
+   "derived_status": "Done 2026-11-13"
+  },
+  {
+   "number": 31,
+   "title": "Model IR: static RoPE frequency-table attribute so llama3, yarn and dynamic scaling lower",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": null,
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 34,
+   "title": "MXFP4 Model IR and CPU reference: fp4x2 and ue8m0 dtypes, MX encoding, OCP conversion oracle",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    3,
+    5
+   ],
+   "requirements": [
+    "RI-MIR-003",
+    "RI-MIR-011",
+    "RI-MIR-012",
+    "RI-TGT-003"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 35,
+   "title": "MXFP4 frontend: Quark and compressed-tensors dense checkpoints",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    34
+   ],
+   "requirements": [
+    "RI-FE-006"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 36,
+   "title": "MXFP4 precision pass: `build --precision mxfp4` by RTN",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    10,
+    34
+   ],
+   "requirements": [
+    "RI-GC-004",
+    "RI-CLI-002",
+    "RI-CLI-003"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 37,
+   "title": "KV cache dtypes: fp8 and MXFP4 with `--kv-dtype`",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    13,
+    34
+   ],
+   "requirements": [
+    "RI-KVC-001",
+    "RI-KVC-008",
+    "RI-MIR-010",
+    "RI-CLI-002"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 38,
+   "title": "MXFP4 AMD lowering: gfx950 scaled MFMA and gfx942 in-kernel dequantization",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    8,
+    9,
+    34
+   ],
+   "requirements": [
+    "RI-KC-003",
+    "RI-KC-005"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 39,
+   "title": "MXFP4 in the weight manifest and Sluice: packed weights streamed with their scales",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    34
+   ],
+   "requirements": [
+    "RI-ART-005",
+    "RI-WST-003",
+    "RI-WST-005"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
   }
  ],
  "pulls": [
@@ -512,159 +651,224 @@
    "mergeable": true,
    "created_at": "2026-11-13",
    "url": "https://github.com/itej89/rustinfer/pull/28"
+  },
+  {
+   "number": 29,
+   "title": "fix: conformance defects from the 2026-11-12 review (#27)",
+   "state": "closed",
+   "head": "fix/27-conformance",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/29"
+  },
+  {
+   "number": 30,
+   "title": "refactor: extension seams from the 2026-11-12 review (#27)",
+   "state": "closed",
+   "head": "refactor/27-seams",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/30"
+  },
+  {
+   "number": 32,
+   "title": "feat(mir,planner): placement names devices and tiers, ir_version 2, pinned placement checked at load (#27, ADR-009)",
+   "state": "closed",
+   "head": "feat/27-placement-v2",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/32"
+  },
+  {
+   "number": 33,
+   "title": "refactor(frontend): per-tensor dtype expectations (#27)",
+   "state": "closed",
+   "head": "refactor/27-frontend-dtypes",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-13",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/33"
+  },
+  {
+   "number": 40,
+   "title": "docs: GPU test request template and process",
+   "state": "open",
+   "head": "docs/gpu-test-template",
+   "base": "main",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-13",
+   "url": "https://github.com/itej89/rustinfer/pull/40"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 11,
-   "closed": 15
+   "open": 15,
+   "closed": 21
   }
  ],
  "runs": [
   {
-   "id": 26,
-   "title": "Merge pull request #28 from itej89/docs/27-srs-v0.3",
+   "id": 43,
+   "title": "docs: GPU test request template and process",
    "status": "in_progress",
    "conclusion": null,
-   "event": "push",
-   "ref": "main",
-   "sha": "7913427",
-   "created": "2026-11-13T01:52",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43348119649"
+   "event": "pull_request",
+   "ref": "docs/gpu-test-template",
+   "sha": "2d2b878",
+   "created": "2026-11-13T18:19",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43481577951"
   },
   {
-   "id": 25,
-   "title": "Merge pull request #25 from itej89/feat/7-kernel-ir-and-mlir-link",
+   "id": 42,
+   "title": "Merge pull request #33 from itej89/refactor/27-frontend-dtypes",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "04a2a26",
+   "created": "2026-11-13T18:14",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43480658630"
+  },
+  {
+   "id": 41,
+   "title": "refactor(frontend): per-tensor dtype expectations (#27)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "refactor/27-frontend-dtypes",
+   "sha": "db72416",
+   "created": "2026-11-13T17:23",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43472266705"
+  },
+  {
+   "id": 40,
+   "title": "Merge pull request #32 from itej89/feat/27-placement-v2",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "3df8c1b",
+   "created": "2026-11-13T17:17",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43471394977"
+  },
+  {
+   "id": 39,
+   "title": "feat(mir,planner): placement names devices and tiers, ir_version 2, pinned placement checked at load (#27, ADR-009)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/27-placement-v2",
+   "sha": "e53793c",
+   "created": "2026-11-13T16:33",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43463933015"
+  },
+  {
+   "id": 38,
+   "title": "feat(mir,planner): placement names devices and tiers, ir_version 2, pinned placement checked at load (#27, ADR-009)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/27-placement-v2",
+   "sha": "4df045d",
+   "created": "2026-11-13T16:23",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43462214555"
+  },
+  {
+   "id": 37,
+   "title": "feat(mir,planner): placement names devices and tiers, ir_version 2, pinned placement checked at load (#27, ADR-009)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/27-placement-v2",
+   "sha": "51c3dfa",
+   "created": "2026-11-13T16:01",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43458426768"
+  },
+  {
+   "id": 36,
+   "title": "Merge pull request #30 from itej89/refactor/27-seams",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "742c08f",
+   "created": "2026-11-13T15:51",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43456839393"
+  },
+  {
+   "id": 35,
+   "title": "refactor: extension seams from the 2026-11-12 review (#27)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "refactor/27-seams",
+   "sha": "21d6506",
+   "created": "2026-11-13T15:12",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43450305584"
+  },
+  {
+   "id": 34,
+   "title": "refactor: extension seams from the 2026-11-12 review (#27)",
    "status": "completed",
    "conclusion": "cancelled",
-   "event": "push",
-   "ref": "main",
-   "sha": "ad51bce",
-   "created": "2026-11-13T01:52",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43348075496"
-  },
-  {
-   "id": 24,
-   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
-   "status": "completed",
-   "conclusion": "success",
    "event": "pull_request",
-   "ref": "feat/7-kernel-ir-and-mlir-link",
-   "sha": "2384762",
-   "created": "2026-11-13T01:27",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43345027672"
+   "ref": "refactor/27-seams",
+   "sha": "be0b7ec",
+   "created": "2026-11-13T15:11",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43450051600"
   },
   {
-   "id": 23,
-   "title": "docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/27-srs-v0.3",
-   "sha": "e25e74b",
-   "created": "2026-11-13T01:25",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43344874359"
-  },
-  {
-   "id": 22,
-   "title": "Merge pull request #24 from itej89/feat/6-frontend-llama",
+   "id": 33,
+   "title": "Merge pull request #29 from itej89/fix/27-conformance",
    "status": "completed",
    "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "84449e7",
-   "created": "2026-11-13T01:23",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43344533043"
+   "sha": "35f0b3b",
+   "created": "2026-11-13T15:05",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43449083544"
   },
   {
-   "id": 21,
-   "title": "docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)",
+   "id": 32,
+   "title": "refactor: extension seams from the 2026-11-12 review (#27)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "docs/27-srs-v0.3",
-   "sha": "85e940d",
-   "created": "2026-11-13T01:20",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43344167243"
-  },
-  {
-   "id": 20,
-   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/7-kernel-ir-and-mlir-link",
-   "sha": "ab1d387",
-   "created": "2026-11-13T01:15",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43343573088"
-  },
-  {
-   "id": 19,
-   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/7-kernel-ir-and-mlir-link",
-   "sha": "c361103",
-   "created": "2026-11-12T23:43",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43331297918"
-  },
-  {
-   "id": 18,
-   "title": "feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/6-frontend-llama",
-   "sha": "074f588",
-   "created": "2026-11-12T23:41",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43330905571"
-  },
-  {
-   "id": 17,
-   "title": "feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/6-frontend-llama",
-   "sha": "e1e94ed",
-   "created": "2026-11-12T23:25",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43328672617"
-  },
-  {
-   "id": 16,
-   "title": "Merge pull request #23 from itej89/feat/18-sluice-weight-streamer",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "add4752",
-   "created": "2026-11-12T22:41",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43322259159"
-  },
-  {
-   "id": 15,
-   "title": "feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/7-kernel-ir-and-mlir-link",
-   "sha": "e90d068",
-   "created": "2026-11-12T22:22",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43319355628"
+   "ref": "refactor/27-seams",
+   "sha": "2a20de5",
+   "created": "2026-11-13T03:52",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43361858215"
   }
  ],
  "branches": [
   "docs/27-srs-v0.3",
+  "docs/gpu-test-template",
   "docs/readme-docs-link",
   "feat/15-planner-interfaces",
   "feat/18-sluice-weight-streamer",
+  "feat/27-placement-v2",
   "feat/5-target-and-cpu-reference",
   "feat/6-frontend-llama",
   "feat/7-kernel-ir-and-mlir-link",
+  "fix/27-conformance",
   "infra/github-hosting",
-  "main"
+  "main",
+  "refactor/27-frontend-dtypes",
+  "refactor/27-seams"
  ]
 }

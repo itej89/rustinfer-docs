@@ -21,9 +21,9 @@ the one binary validates its arguments, `build` and `tune` resolve their
 components have behaviour, all merged by 2026-11-12: the core, the Model IR,
 the artifact, the planner interfaces, the target abstraction with the CPU
 reference, Sluice, the LLaMA-family frontend and the Kernel IR with its
-MLIR link. The next steps are the AMD lowering (#8), now unblocked, and the
-tech-debt work of #27; the graph compiler (#10) waits on #9, which waits on
-#8.
+MLIR link. The tech-debt work of #27 merged on 2026-11-13 and closed it. The
+next step is the AMD lowering (#8), unblocked; the graph compiler (#10)
+waits on #9, which waits on #8.
 
 The [progress](progress.html) page is this roadmap's measure: every tracker
 on this site counted by state, the [issues](issues.html) first, then the
@@ -105,7 +105,8 @@ each a list of nodes in definition-before-use order; KV groups the attention
 nodes name; the twenty operators of RI-MIR-004 in one static registry of
 release, arity and dtype rules; a validator that refuses the first fault
 naming the function, the node and the field; canonical JSON (sorted keys,
-compact) that round-trips byte for byte under `ir_version` 1; and a bounded
+compact) that round-trips byte for byte, under `ir_version` 2 since PR #32
+(2026-11-13; an all-empty version 1 document still reads); and a bounded
 three-phase reader. PR #19 merged into `main` as 2d75c5d on 2026-11-12 with
 CI green on run 10; 201 workspace tests, 95.50 percent line coverage in the
 PR's checklist. The schema is `docs/api/model-ir.md` in the tree and the
@@ -139,10 +140,12 @@ shard index and the safetensors headers into a validated Model IR document,
 the weight manifest and the checkpoint identity, reading no weight byte;
 everything that differs between architectures sits behind the
 crate-internal `Architecture` trait and its `model_type` registry; the
-safetensors reader is in-tree Rust (OI-004). 86 frontend tests, 672 in the
+safetensors reader is in-tree Rust (OI-004), shared with Sluice in
+`rustinfer-artifact` since PR #30. 86 frontend tests, 672 in the
 workspace in the PR's checklist. What the Model IR cannot yet say is refused
-by name: Qwen3 QK norm (#26), `llama3`, `yarn` and `dynamic` RoPE scaling,
-sliding windows, mixed dtypes ([frontend](frontend.html)).
+by name: Qwen3 QK norm (#26), `llama3`, `yarn` and `dynamic` RoPE scaling
+(#31, R2), sliding windows; mixed dtypes were lifted by PR #33 on 2026-11-13,
+with a dtype expectation per tensor ([frontend](frontend.html)).
 
 ## 4. Kernel IR and the MLIR link (#7), AMD lowering (#8) — #7 **done, 2026-11-12**; #8 next
 
@@ -208,7 +211,8 @@ IR's slots, unblocked since #3 closed and off the critical path. GitHub PR
 `rustinfer-planner` with `Topology` (devices, memory tiers, links, offload
 engines) in and out of canonical JSON under `topology_version` 1,
 `Placement` (a tier per tensor, a device per node path, the strategy and
-explained decisions) under `placement_version` 1, the `Planner` trait,
+explained decisions) under `placement_version` 1 (2 since PR #32, a device,
+tier and shard per tensor), the `Planner` trait,
 `SingleDevicePlanner` refusing a model whose footprint at the profile's
 `max` exceeds the device's local tier, and `place`, the one call the rest of
 R1 makes; discovery and the cost-model planner answer `not_implemented`
@@ -225,27 +229,31 @@ ranges through a staging pool bounded by `RUSTINFER_STAGING_BYTES`, applies
 the `identity`, `transpose` and `pad` transforms on the device, overlaps
 reads, copies and transforms on three threads, and digests every needed
 tensor for `--verify-weights` ([Sluice](sluice.html)). 57 crate tests, 587
-in the workspace, 96.43 percent line coverage in the PR's run. Issue #18 is
-still open on the tracker; the PR did not close it.
+in the workspace, 96.43 percent line coverage in the PR's run. Issue #18
+closed on 2026-11-13.
 
-## 10. Conformance and seams (#27) — in progress
+## 10. Conformance and seams (#27) — **done, 2026-11-13**
 
 The reviews of 2026-11-12 (a seam audit of six crates and a conformance
 review of the 79 requirement ids cited on `main`) became change request
-#27, landing as several pull requests. The first, the SRS v0.3 amendment
+#27, landing as five pull requests. The first, the SRS v0.3 amendment
 with ADR-009, merged as GitHub PR #28 (7913427) on 2026-11-12:
 RI-SEC-004 cites the checkpoint identity, RI-MIR-005 makes the placement
 slot a device index, a tier index and a shard spec under `ir_version` 2,
 RI-ART-005 adds a per-tensor digest, RI-ART-014 gives every JSON section its
 own version, RI-FE-001 tags all four families R1 with the gaps named, and
-OI-013 puts implicit launch operands in the operator registry. Four pull
-requests are to follow with the code: twelve conformance defects (the CPU
-replay ignoring host-sync marks, the CLI usage line, `--out`
-writability, the version manifest's `llvm_version` and host triple, KV
-geometry in the Plan, error naming, `kernel_ir` optional in the target,
-Sluice's zero block, the CPU operator list, unparsed pinned sections, test
-retagging), the seam gaps, and placement v2 in the types, reader and
-planner ([decisions](decisions.html), [planner](planner.html)).
+OI-013 puts implicit launch operands in the operator registry. The code
+followed on 2026-11-13:
+
+| PR | merged | what |
+|---|---|---|
+| #29 conformance | 35f0b3b | the twelve conformance defects, each test-first: graph replay honours host-sync marks, the one-line CLI usage error, `--out` writability, `llvm_version` and the host triple in the version manifest, KV-group geometry and `plan_version` 2 in the Plan, error naming, a required `kernel_ir`, Sluice's zero block counted in the staging budget, the CPU operator list, pinned sections parsed at load (`check_pinned`), and the repository-wide retag under the new `docs/testing.md` rule ([engineering rules](engineering-rules.html)) |
+| #30 seams | 742c08f | artifact `format_version` 2 with a section table per version and a version in every JSON section; `BinaryFormat` in `rustinfer-core` and recorded per kernel; one shared safetensors reader in `rustinfer-artifact` for the frontend and Sluice; the manifest's optional digest; `KernelQuery` keyed on every operand dtype and the encoding; implicit operands as a registry column, resolving OI-013; no catch-all over operators ([artifact](artifact.html)) |
+| #32 placement v2 | 3df8c1b | Model IR `ir_version` 2 with device, tier and shard per slot, `placement_version` 2, the single-device planner emitting the new form, and the pinned placement checked against the pinned topology, including the reachability rule the owner set on 2026-11-13 (ADR-009) ([planner](planner.html)) |
+| #33 frontend dtypes | 04a2a26 | a dtype expectation per tensor and a dtype policy per architecture, so mixed fp8 and bf16 checkpoints can be declared ([frontend](frontend.html)) |
+
+#27 closed when PR #33 merged. The `llama3`, `yarn` and `dynamic` RoPE
+scaling it had listed moved to issue #31, because the SRS places it in R2.
 
 ## What comes next
 
@@ -269,7 +277,7 @@ and Release 4 (4). The [release plan](release-plan.html) has each.
 | ~~Planner interfaces (#15)~~ done 2026-11-12 (GitHub PR #20) | the Model IR's slots are filled; the artifact's `topology` and `placement` sections have a schema |
 | ~~Sluice (#18)~~ done 2026-11-12 (GitHub PR #23) | the executor has weights in device memory |
 | ~~Frontend (#6)~~ done 2026-11-12 (GitHub PR #24) | `build` has a Model IR and a weight manifest |
-| Placement v2 in the code (#27, ADR-009) | the graph compiler and the executor read slots |
+| ~~Placement v2 in the code (#27, ADR-009)~~ done 2026-11-13 (GitHub PR #32) | the graph compiler and the executor read slots |
 | Graph compiler (#10) | `build` produces an artifact |
 | Executor (#13) | `run` produces a token |
 
@@ -279,6 +287,7 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
+| 2026-11-13 | The #27 code merged into `main` on GitHub: PR #29 (35f0b3b) the conformance defects and `docs/testing.md`, the rule that a test tags a requirement `Verifies`, `Groundwork for` or `Reserved`; PR #30 (742c08f) the extension seams, artifact `format_version` 2 with per-section versions, `BinaryFormat`, the shared safetensors reader, OI-013 resolved; PR #32 (3df8c1b) placement v2, `ir_version` 2, the reachability rule, ADR-009 in the code; PR #33 (04a2a26) per-tensor frontend dtypes. Issues #18 and #27 closed; #31 (`llama3` RoPE scaling, R2) opened. A v0.4 SRS amendment moving MXFP4 to R1 is proposed, in review. This site refreshed: generated pages from 04a2a26, the requirement state derived from the test tags alone (39 implemented, 27 partial, 1 reserved only, 120 planned, where the earlier citation-and-Epic rule counted 69 implemented), the tag rule on the [engineering rules](engineering-rules.html) page |
 | 2026-11-12 | Four more pull requests merged into `main` on GitHub late in the day: PR #23 (add4752), issue #18: `rustinfer-sluice`, the weight streamer; PR #24 (84449e7), issue #6 closed: `rustinfer-frontend` for `llama`, `mistral`, `qwen2` and `qwen3` behind the `Architecture` trait and registry; PR #25 (ad51bce), issue #7 closed: the `kir` dialect, `KernelBuilder` and the in-process MLIR/LLVM 23 link behind the `mlir` feature, ADR-007, MSRV 1.89, the `msrv` CI job and `scripts/ci/install_llvm.sh`; PR #28 (7913427): SRS v0.3 and ADR-009 from the seam audit and conformance review (#27). Issues #26 (Qwen3 QK norm) and #27 (tech debt) opened. This site refreshed: generated pages from 7913427, a new [frontend](frontend.html) page, Sluice and the kernel compiler described from the code, the v0.3 contract changes on the artifact and planner pages marked specified versus in the code, ADR-007 and ADR-009 from their files |
 | 2026-11-12 | Three pull requests merged into `main` on GitHub in the evening: PR #19 (9d448ce) with ADR-008 and the CI retarget to `ubuntu-latest`, `upload-artifact` v4 and a concurrency group; PR #20 (d886a3c), issue #15: `rustinfer-planner` with the topology model, `Placement`, the `Planner` trait, `SingleDevicePlanner` and `place`, the `TOPOLOGY_*`, `PLACEMENT_*` and `PLANNER_*` constants, `docs/api/topology.md`; PR #21 (f039b4d), issue #5: `rustinfer-target` with the `Target`, `Catalog`, `Device` and `Launcher` traits, the `Registry`, the CPU reference target over every R1 operator in `f32`, the `numeric` conversions, the four backend stubs and the command's registry, `build` and `tune` resolving `--target` first; 527 workspace tests, 96.44 percent line coverage; CI runs 6 and 8 green on `main`. Issues #3, #4, #5 and #15 closed; Sluice (#18), the frontend (#6) and the Kernel IR (#7) started. This site refreshed: generated pages from f039b4d, the targets and the planner described from the code, ADR-008 from the file |
 | 2026-11-12 | Moved from Codeberg to GitHub after Codeberg's terms change on AI-written code: the code at [`github.com/itej89/rustinfer`](https://github.com/itej89/rustinfer) (private), issues #1 to #18 recreated with their numbers and dependencies, the migrated PRs #16 and #17 recorded as issues #16 and #17, the Codeberg pull requests and Actions runs 1 to 11 kept on the [issue tracker](issues.html) as history, GitHub Actions run 1 on `main`; ADR-008 (hosting on GitHub, superseding ADR-004) and the CI retarget to `ubuntu-latest` with `upload-artifact` v4 in the hosting pull request. This site moved to [`github.com/itej89/rustinfer-docs`](https://github.com/itej89/rustinfer-docs) and GitHub Pages at <https://itej89.github.io/rustinfer-docs/>, its tracker page now read through `gh api`. Before the move, Codeberg PR #21 merged the `.rie` artifact crate (#4) as 678b084; generated pages from 678b084 |

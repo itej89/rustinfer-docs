@@ -44,7 +44,7 @@ regenerated, not edited; each carries a comment saying so:
 
 | page | script | reads |
 |---|---|---|
-| `ref-requirements.md` | `gen_srs.py` | `docs/SRS-RI-v0.1.md`; the requirement ids cited by comments in `crates/*/tests/**/*.rs` and the `#[cfg(test)]` modules of `crates/*/src/**/*.rs`; the tracker state (live or `data/progress-snapshot.json`) for the Epic #1 checklist and the branches, from which each requirement's state (implemented, in progress, planned) is derived in `common.py`; the SRS's own status field is shown beside it |
+| `ref-requirements.md` | `gen_srs.py` | `docs/SRS-RI-v0.1.md`; the requirement tags (`Verifies`, `Groundwork for`, `Reserved`, the rule of the rustinfer repository's `docs/testing.md`) in the comments of `crates/*/tests/**/*.rs` and the `#[cfg(test)]` modules of `crates/*/src/**/*.rs`, from which each requirement's state (implemented, partial, reserved only, planned) is derived in `common.py`; the tracker state (live or `data/progress-snapshot.json`) for the Epic #1 checklist, shown beside it as information; the SRS's own status field |
 | `ref-constants.md` | `gen_constants.py` | `crates/rustinfer-core/src/config/constants.rs` |
 | `ref-error-codes.md` | `gen_errors.py` | every crate's `src/error.rs` |
 | `ref-crates.md` | `gen_crates.py` | `Cargo.toml` and each crate's manifest |

@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-7913427 2026-11-12. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 130
+04a2a26 2026-11-13. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 132
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -20,18 +20,22 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `DEFAULT_LOG_LEVEL` | `&str` | `"info"` | The default log level when `ENV_LOG_LEVEL` is unset. |
 | `ARTIFACT_MAGIC` | `[u8; 4]` | `*b"RIE\0"` | Magic bytes at offset zero of every artifact (ADR-002, RI-ART-001). |
 | `ARTIFACT_EXTENSION` | `&str` | `"rie"` | File extension of an artifact. |
-| `ARTIFACT_FORMAT_VERSION` | `u16` | `1` | Artifact format version this build writes and the newest it reads (RI-ART-006). |
+| `ARTIFACT_FORMAT_VERSION` | `u16` | `2` | Artifact format version this build writes and the newest it reads (RI-ART-006). |
 | `ARTIFACT_KERNELS_ALIGNMENT` | `u32` | `4096` | Alignment of the `kernels` section so its code objects can be memory-mapped (RI-ART-013); also the largest alignment the reader accepts. The `weights` section is a manifest and needs no page alignment (RI-ART-012). |
 | `DEFAULT_KV_BLOCK_SIZE` | `u32` | `32` | Default KV cache block size in tokens; a power of two (RI-KVC-001). |
 | `DEFAULT_KV_MEMORY_FRACTION` | `f32` | `0.9` | Default fraction of free device memory given to the KV pool (RI-KVC-003). |
+| `PLAN_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010), which no reader accepts. |
+| `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
 | `EXIT_CODE_FAILURE` | `i32` | `1` | Process exit code for a failure reported as a structured error (RI-CLI-001). |
 | `EXIT_CODE_USAGE` | `i32` | `2` | Process exit code for invalid command-line usage. |
+| `OUTPUT_WRITE_PROBE_PREFIX` | `&str` | `".rustinfer-write-probe-"` | File name prefix of the probe the CLI creates and removes in an output's parent directory to prove it writable (RI-CLI-012); `<pid>-<nanos>-<counter>` follows. |
 | `LOG_FIELD_COMPONENT` | `&str` | `"component"` | Prefix of every log line's component field and of structured error lines. |
 | `ERROR_FIELD_CODE` | `&str` | `"error"` | Field name carrying the error code in a structured error line. |
 | `ERROR_FIELD_DETAIL` | `&str` | `"detail"` | Field name carrying the human-readable detail in a structured error line. |
-| `MODEL_IR_FORMAT_VERSION` | `u32` | `1` | Model IR document format version this build writes (RI-MIR-008). Versioned independently of `ARTIFACT_FORMAT_VERSION`. |
-| `MODEL_IR_SUPPORTED_VERSIONS` | `&[u32]` | `&[MODEL_IR_FORMAT_VERSION]` | Model IR document versions the reader accepts (RI-MIR-008). |
+| `MODEL_IR_FORMAT_VERSION` | `u32` | `2` | Model IR document format version this build writes (RI-MIR-008). Versioned independently of `ARTIFACT_FORMAT_VERSION`. |
+| `MODEL_IR_SUPPORTED_VERSIONS` | `&[u32]` | `&[MODEL_IR_LEGACY_VERSION, MODEL_IR_FORMAT_VERSION]` | Model IR document versions the reader accepts (RI-MIR-008). |
+| `MODEL_IR_LEGACY_VERSION` | `u32` | `1` | The Model IR version whose placement slots name a tier kind; the reader upgrades it to `MODEL_IR_FORMAT_VERSION` (RI-MIR-005, ADR-009). |
 | `MODEL_IR_FUNCTION_PREFILL` | `&str` | `"prefill"` | Name of the prefill function of a Model IR document (RI-MIR-009). |
 | `MODEL_IR_FUNCTION_DECODE` | `&str` | `"decode"` | Name of the decode function of a Model IR document (RI-MIR-009). |
 | `MODEL_IR_FUNCTION_NAMES` | `&[&str]` | `&[MODEL_IR_FUNCTION_PREFILL, MODEL_IR_FUNCTION_DECODE]` | Function names a Model IR document may define in this release (RI-MIR-009). |
@@ -45,7 +49,6 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `MODEL_IR_MAX_SHAPE_RANK` | `usize` | `8` | Upper bound on the rank of a Model IR tensor shape. |
 | `MODEL_IR_MAX_NAME_LENGTH` | `usize` | `256` | Upper bound on the length in bytes of a Model IR tensor or node name. |
 | `MODEL_IR_MAX_KV_GROUPS` | `usize` | `1` | KV groups a Model IR document may define in this release (RI-MIR-010, R1). |
-| `ARTIFACT_SUPPORTED_VERSIONS` | `&[u16]` | `&[ARTIFACT_FORMAT_VERSION]` | Artifact format versions the reader accepts (RI-ART-006). |
 | `ARTIFACT_OFFSET_VERSION` | `usize` | `4` | Byte offset of `format_version` in the artifact header (ADR-002). |
 | `ARTIFACT_OFFSET_HEADER_LENGTH` | `usize` | `6` | Byte offset of `header_length` in the artifact header (ADR-002). |
 | `ARTIFACT_OFFSET_TARGET` | `usize` | `8` | Byte offset of the NUL-padded target id in the artifact header (ADR-002). |
@@ -66,17 +69,6 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_SECTION_WEIGHTS` | `&str` | `"weights"` | Name of the artifact section holding the weight manifest (RI-ART-012). |
 | `ARTIFACT_SECTION_TOPOLOGY` | `&str` | `"topology"` | Name of the reserved topology section (RI-PLN-005). |
 | `ARTIFACT_SECTION_PLACEMENT` | `&str` | `"placement"` | Name of the reserved placement section (RI-PLN-005). |
-| `ARTIFACT_SECTION_NAMES` | `&[&str]` | `&[
-    ARTIFACT_SECTION_MODEL_IR,
-    ARTIFACT_SECTION_PLAN,
-    ARTIFACT_SECTION_PROFILE,
-    ARTIFACT_SECTION_METADATA,
-    ARTIFACT_SECTION_CATALOG,
-    ARTIFACT_SECTION_KERNELS,
-    ARTIFACT_SECTION_WEIGHTS,
-    ARTIFACT_SECTION_TOPOLOGY,
-    ARTIFACT_SECTION_PLACEMENT,
-]` | The sections of a format version 1 artifact, in file order (RI-ART-002). |
 | `ARTIFACT_MAX_SECTIONS` | `usize` | `16` | Upper bound on the section count the reader accepts, checked before the table is sized (RI-SEC-002). Room for the sections later releases append. |
 | `ARTIFACT_SECTION_ALIGNMENT` | `u32` | `64` | Alignment of every artifact section other than `kernels` (RI-ART-002). |
 | `ARTIFACT_MAX_FILE_BYTES` | `u64` | `256 * 1024 * 1024` | Upper bound on the byte length of an artifact file, checked before it is read into memory (RI-SEC-002). The artifact holds no weights (RI-ART-012). |
@@ -88,7 +80,7 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_TMP_SUFFIX` | `&str` | `"tmp"` | Suffix of the writer's temporary file: `<out>.tmp-<pid>` (RI-ART-004). |
 | `TOPOLOGY_FORMAT_VERSION` | `u32` | `1` | Topology section format version this build writes (RI-PLN-001). Versioned independently of `ARTIFACT_FORMAT_VERSION` and `MODEL_IR_FORMAT_VERSION`. |
 | `TOPOLOGY_SUPPORTED_VERSIONS` | `&[u32]` | `&[TOPOLOGY_FORMAT_VERSION]` | Topology section versions the reader accepts (RI-PLN-001). |
-| `PLACEMENT_FORMAT_VERSION` | `u32` | `1` | Placement section format version this build writes (RI-PLN-005). |
+| `PLACEMENT_FORMAT_VERSION` | `u32` | `2` | Placement section format version this build writes (RI-PLN-005). |
 | `PLACEMENT_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLACEMENT_FORMAT_VERSION]` | Placement section versions the reader accepts (RI-PLN-005). |
 | `TOPOLOGY_MAX_DOCUMENT_BYTES` | `usize` | `4 * 1024 * 1024` | Upper bound on the byte length of a topology JSON text the reader parses; checked before parsing (RI-SEC-003). |
 | `TOPOLOGY_MAX_DEVICES` | `usize` | `1024` | Upper bound on the devices of one topology. |

@@ -32,20 +32,23 @@ retargets to SIMT, vector and mesh devices; a thread IR does not.
 ## The Model IR in the code
 
 Read from `crates/rustinfer-mir/src/` and `docs/api/model-ir.md` at
-`f039b4d`. Codeberg PR #19 merged into `main` as 2d75c5d on 2026-11-12 and
+`f039b4d`, with the #27 changes of 2026-11-13 (PRs #30 and #32) read at
+`04a2a26`. Codeberg PR #19 merged into `main` as 2d75c5d on 2026-11-12 and
 closed issue #3; the
 crate is the first component crate with behaviour, and its public API is
 the `pub use` list of `lib.rs`: `Document`, `Function`, `KvGroup`, `Node`,
 `Op` with its attribute structs, `OpKind` and the registry types, `Tensor`,
 `DType`, `Shape`, `Dim`, `DynamicDim`, `Profile`, `Encoding`,
-`PlacementSlot`, `MemoryTier`, `DeviceSlot`, `Limits` and `Error`.
+`PlacementSlot`, `Location`, `ShardSpec`, `MemoryTier`, `DeviceSlot`, `Limits` and `Error`.
 
 **The document.** `Document` holds `ir_version`, one weight set, the
 functions by name and the KV groups by name. A weight is a `Tensor`
 descriptor and nothing more: name, dtype, shape, an `encoding` present
-exactly when the dtype is fp8 (RI-MIR-011), and a `PlacementSlot` whose tier
-(`hbm`, `dram`, `cxl` or `nvme`) is empty until the planner fills it
-(RI-MIR-005). The document never holds a weight byte; the bytes are the
+exactly when the dtype is fp8 (RI-MIR-011), and a `PlacementSlot` whose
+`location` is empty until the planner fills it with a device index, a
+memory-tier index the device can use and an optional shard spec (RI-MIR-005,
+ADR-009; PR #32, 2026-11-13; before it the slot was a tier kind, `hbm`,
+`dram`, `cxl` or `nvme`). The document never holds a weight byte; the bytes are the
 weight manifest's and Sluice's business ([artifact](artifact.html),
 [Sluice](sluice.html)).
 
@@ -65,8 +68,13 @@ the node.
 
 **Operators.** The twenty operators of RI-MIR-004 are one static registry in
 `registry.rs`, an `OperatorSpec` of release, arity and dtype rules per
-operator, kept in `OpKind::ALL` order by a unit test; adding an operator is
-one row. Sixteen are accepted in R1, `fused` among them as the composition
+operator, kept in `OpKind::ALL` order by a unit test. Since PR #30 one
+`operators!` list generates `Op`, `OpKind`, `COUNT` and `ALL`, the two enums
+are no longer `#[non_exhaustive]` so a new operator fails to compile until
+every match handles it, and the registry has an `implicit_operands` column
+naming the operands a launcher adds beyond the node's arity (the KV cache
+pools of the paged operators), which resolved OI-013;
+`docs/api/model-ir.md` "Adding an operator" lists every place. Sixteen are accepted in R1, `fused` among them as the composition
 of its parts; `collective` (R2) and `moe_route`, `moe_experts` and
 `lora_apply` (R3) exist as variants and are refused with
 `error=unsupported` naming the node, the operator and the release.
@@ -83,7 +91,10 @@ following the [error contract](#the-error-contract).
 compact, exact integers, shortest round-trip reals, and empty slots and
 absent encodings as explicit `null`. `from_json(to_json(d)) == d` and
 `to_json(from_json(text)) == text` for any text the writer produced, under
-`ir_version` 1, the only version the reader accepts (RI-MIR-007, -008). The
+`ir_version` 2 since PR #32; the reader also accepts a version 1 document
+whose slots are all empty, reads it as version 2, and refuses a filled
+version 1 slot as `FilledLegacySlot` because it must be re-planned
+(RI-MIR-007, -008). The
 schema is `docs/api/model-ir.md` in the tree and the format has its own
 changelog line in `docs/api/CHANGELOG.md`.
 
@@ -152,7 +163,7 @@ of three capabilities is the `pub use` list of `lib.rs`:
 | trait | methods in the code | notes |
 |---|---|---|
 | `Target` | `architecture`, `catalog`, `devices`, `device(index)`, `launcher(index)` | `NoDevice` for an index the host does not have (RI-NFR-016) |
-| `Catalog` | `architecture`, `entries`, `select(query)` | device-free; `select` returns the cheapest entry matching operator, dtype, layout and bucket among those whose `Validation` names this architecture (RI-GC-005, RI-KC-013); `CatalogEmpty` naming the target when there are no entries (RI-RV-002), `NoKernel` naming the query when nothing matches |
+| `Catalog` | `architecture`, `entries`, `select(node, query)` | device-free; `select` returns the cheapest entry matching operator, every operand's dtype and the encoding (`KernelQuery.dtypes`, `encoding`, PR #30), layout and bucket among those whose `Validation` names this architecture (RI-GC-005, RI-KC-013); `CatalogEmpty` naming the target when there are no entries (RI-RV-002), `NoKernel` naming the query when nothing matches |
 | `Device` | `properties`, `alloc`, `free`, `create_stream`, `create_event`, `record`, `wait`, `copy_to_device`, `copy_to_host`, `copy_on_device`, `synchronize`, `synchronize_event`, `capture`, `replay`, `sync_counters`, `reset_sync_counters` | every method takes `&self`, a backend serialises its own state; `wait` makes a stream wait on the device without the host; the three host synchronisations are counted (`SyncCounters`) so a test can prove a path performs none (RI-RT-010); `capture` splits a sub-plan into graph segments at the host-synchronising launches, keyed by a batch bucket (RI-TGT-005, RI-GC-015) |
 | `Launcher` | `load(binary)`, `launch(launch, stream)` | executes one resolved `Launch` against bound buffers; refuses an unknown kernel, a mismatched operand, an unsupported dtype or a range outside a live buffer before any byte is read |
 
@@ -162,7 +173,8 @@ compiler `&dyn Catalog`, which is why `build` will run on any host. A
 `KernelEntry` is a kernel id, the operator, its dtypes, a layout, shape rules,
 a `KernelCost` (measured, or `Untuned`), an optional `Validation` record
 (architecture, driver version, date) and tuned parameters; a `KernelBinary`
-carries the bytes, their format and the Kernel IR beside them (RI-ART-013).
+carries the bytes, their `BinaryFormat` (in `rustinfer-core` since PR #30) and the
+Kernel IR beside them, required and refused when empty since PR #29 (RI-ART-013).
 A `Launch` is the kernel id, the operator, input and output `Operand`s (a
 buffer range with dtype and shape) and a `HostSync` mark; `segments` splits a
 launch list at the marks.

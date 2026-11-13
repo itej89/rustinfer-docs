@@ -1,6 +1,6 @@
 """Shared bits for the reference generators: where the rustinfer tree is, how
 to write a page header, the SRS parsed, the tracker state read from GitHub (or
-the snapshot), the requirement ids the tests cite, and the implementation state
+the snapshot), the requirement tags the tests carry, and the implementation state
 derived from them that the requirements and issues pages both report."""
 import datetime
 import json
@@ -100,29 +100,47 @@ def srs_meta():
 
 
 # -------------------------------------------------------------- the tests
-# A comment that says the feature it cites is reserved for a later release:
-# its citation is evidence that the id is known, not that it is implemented.
-RESERVED = re.compile(r"reserved|not_implemented|not implemented|refused as R[23]|later release", re.I)
+# The tag rule of the rustinfer repository's docs/testing.md (#27): a test's
+# comment cites a requirement with exactly one of three tags,
+#   `Verifies RI-X-NNN: <part>`       the clause is fully implemented,
+#   `Groundwork for RI-X-NNN: <part>` the clause is not fully implemented yet,
+#   `Reserved RI-X-NNN (R<n>)`        a later-release refusal is asserted,
+# and one tag sentence may name several ids (`Verifies RI-A-001, RI-A-002: ...`).
+# An id mentioned without a tag word (prose, `//!` module headers) is not a tag.
+TAG_KINDS = {"Verifies": "verifies", "Groundwork for": "groundwork", "Reserved": "reserved"}
+_ONE_ID = r"RI-[A-Z]+-\d{3}(?:\s*\([^)]*\))?"
+TAG = re.compile(r"\b(Verifies|Groundwork\s+for|Reserved)\s+(" + _ONE_ID
+                 + r"(?:\s*(?:,|and)\s*" + _ONE_ID + r")*)")
 
 
 def _comment_blocks(src):
-    """The comments of a Rust source as blocks: consecutive `//`, `///` or `//!`
-    lines (a doc comment block) form one block, a trailing comment on a code
-    line is its own, and each `/* ... */` is one. String literals are not searched."""
+    """The comments of a Rust source as blocks of text with the comment markers
+    removed: consecutive `//` or `///` lines form one block (a tag sentence may
+    wrap), a trailing comment on a code line is its own, and each `/* ... */`
+    is one. `//!` module headers are left out: they may list the ids a file
+    covers and are not tags. String literals are not searched."""
     out, cur = [], []
+
+    def flush():
+        if cur:
+            out.append(" ".join(cur))
+            cur.clear()
     for line in src.splitlines():
         stripped = line.strip()
-        if stripped.startswith("//"):
-            cur.append(stripped)
+        if stripped.startswith("//!"):
+            flush()
             continue
-        if cur:
-            out.append("\n".join(cur))
-            cur = []
+        if stripped.startswith("//"):
+            cur.append(stripped.lstrip("/").strip())
+            continue
+        flush()
         if "//" in line:
-            out.append(line[line.index("//"):])
-    if cur:
-        out.append("\n".join(cur))
-    return out + re.findall(r"/\*.*?\*/", src, re.S)
+            out.append(line[line.index("//"):].lstrip("/").strip())
+    flush()
+    for m in re.findall(r"/\*(.*?)\*/", src, re.S):
+        if not m.startswith("!"):
+            out.append(" ".join(l.strip().lstrip("*").strip() for l in m.splitlines()))
+    return out
 
 
 def _cfg_test_modules(src):
@@ -137,14 +155,23 @@ def _cfg_test_modules(src):
     return bodies
 
 
-def test_citations():
-    """{requirement id: {"tests": [...], "reserved": [...]}} for every id a test
-    cites in a comment: the integration tests under crates/*/tests and the
-    `#[cfg(test)]` modules under crates/*/src, as 'crate/tests/file.rs'.
-    A file is under `reserved` when every comment block in it that cites the
-    id also says the feature is reserved (RESERVED); such a citation does not
-    make the id implemented. A file with one plain citation is under `tests`."""
-    plain, reserved = {}, {}
+def tags_in(text):
+    """[(kind, id)] for every tag in a comment's text, kind one of
+    'verifies', 'groundwork', 'reserved'."""
+    found = []
+    for m in TAG.finditer(text):
+        kind = TAG_KINDS[re.sub(r"\s+", " ", m.group(1))]
+        ids = REQ_ID.findall(re.sub(r"\([^)]*\)", "", m.group(2)))
+        found += [(kind, rid) for rid in ids]
+    return found
+
+
+def test_tags():
+    """{requirement id: {"verifies": {file: n}, "groundwork": {file: n},
+    "reserved": {file: n}}}: how many tags of each kind each test file carries
+    for the id, over the integration tests under crates/*/tests and the
+    `#[cfg(test)]` modules under crates/*/src, files as 'crate/tests/file.rs'."""
+    found = {}
     crates = RUSTINFER / "crates"
     for path in sorted(crates.rglob("*.rs")):
         rel = path.relative_to(crates).as_posix()
@@ -159,12 +186,10 @@ def test_citations():
         else:
             continue
         for block in blocks:
-            bucket = reserved if RESERVED.search(block) else plain
-            for rid in set(REQ_ID.findall(block)):
-                bucket.setdefault(rid, set()).add(rel)
-    return {rid: {"tests": sorted(plain.get(rid, set())),
-                  "reserved": sorted(reserved.get(rid, set()) - plain.get(rid, set()))}
-            for rid in set(plain) | set(reserved)}
+            for kind, rid in tags_in(block):
+                files = found.setdefault(rid, {k: {} for k in TAG_KINDS.values()})[kind]
+                files[rel] = files.get(rel, 0) + 1
+    return found
 
 
 # ------------------------------------------------------------------ GitHub
@@ -302,28 +327,25 @@ def issue_status(state, n):
 
 
 # --------------------------------------------------------- derived states
-IMPLEMENTED, PARTIAL, IN_PROGRESS, PLANNED = "implemented", "partial", "in progress", "planned"
-BADGE = {IMPLEMENTED: "state-ok", PARTIAL: "state-part", IN_PROGRESS: "state-part", PLANNED: "state-no"}
-LABEL = {PARTIAL: "implemented in part"}
+IMPLEMENTED, PARTIAL, RESERVED_ONLY, PLANNED = "implemented", "partial", "reserved only", "planned"
+STATES = (IMPLEMENTED, PARTIAL, RESERVED_ONLY, PLANNED)
+BADGE = {IMPLEMENTED: "state-ok", PARTIAL: "state-part", RESERVED_ONLY: "state-no", PLANNED: "state-no"}
+NO_TAGS = {k: {} for k in TAG_KINDS.values()}
 
 
-def requirement_states(reqs, state, citations):
-    """{id: dict} for every SRS requirement, the state the site derives:
+def requirement_states(reqs, state, tags):
+    """{id: dict} for every SRS requirement, the state the site derives from the
+    test tags alone (docs/testing.md):
 
-    * implemented: a test in the tree cites the id in a comment (`tests`
-      lists the files), or the Epic's checklist assigns it to a closed issue
-      (`closed_issues`), or both; `sources` says which.
-    * partial: tests cite the id plainly in some files and as a reserved
-      feature in others (`tests` and `reserved`); not added to implemented.
-    * in progress: assigned to an open issue whose branch exists on GitHub
-      or whose pull request is open (`open_issues` with their status).
+    * implemented: at least one `Verifies` tag and no `Groundwork for` tag;
+    * partial: any `Groundwork for` tag (the clause is not fully implemented);
+    * reserved only: `Reserved` tags and no other;
     * planned: otherwise; `label` carries the SRS release tag.
 
-    `disagree` names the fact the other source does not share: tests cite
-    an id the Epic assigns to an open issue (or to none), or a closed
-    issue carries an id no test cites. `reserved` lists the files whose
-    only citations say the feature is reserved for a later release; they
-    are shown but count for nothing."""
+    `verifies`, `groundwork` and `reserved` map each test file to its tag count.
+    The issues the Epic's checklist assigns the id to (`closed_issues`,
+    `open_issues`) are shown beside the state as information; they do not
+    change it."""
     assigned = {}
     for i in state["issues"]:
         for rid in i.get("requirements", []):
@@ -331,31 +353,24 @@ def requirement_states(reqs, state, citations):
     out = {}
     for r in reqs:
         rid = r["id"]
-        cited = citations.get(rid, {"tests": [], "reserved": []})
-        tests, reserved = cited["tests"], cited["reserved"]
-        closed = [i for i in assigned.get(rid, []) if i["state"] == "closed"]
-        opened = [i for i in assigned.get(rid, []) if i["state"] != "closed"]
-        active = [i for i in opened if not i["derived_status"].startswith("Not started")]
-        sources = [s for s, ok in (("tests", bool(tests)), ("epic", bool(closed))) if ok]
-        if tests and reserved:
+        t = tags.get(rid, NO_TAGS)
+        if t["groundwork"]:
             st = PARTIAL
-        elif sources:
+        elif t["verifies"]:
             st = IMPLEMENTED
-        elif active:
-            st = IN_PROGRESS
+        elif t["reserved"]:
+            st = RESERVED_ONLY
         else:
             st = PLANNED
-        disagree = ""
-        if tests and not closed:
-            disagree = ("the Epic assigns it to open " + ", ".join(f"#{i['number']}" for i in opened)
-                        if opened else "the Epic's checklist does not assign it to any issue")
-        elif closed and not tests:
-            disagree = "no test cites it"
-        out[rid] = {"state": st, "sources": sources, "tests": tests, "reserved": reserved,
-                    "closed_issues": [i["number"] for i in closed],
-                    "open_issues": [(i["number"], i["derived_status"]) for i in opened],
-                    "disagree": disagree,
-                    "label": LABEL.get(st, st) if st != PLANNED else f"planned {r['tag']}".strip()}
+        label = {IMPLEMENTED: "implemented", PARTIAL: "partly implemented",
+                 RESERVED_ONLY: f"planned {r['tag']} (reserved only)",
+                 PLANNED: f"planned {r['tag']}"}[st]
+        out[rid] = {"state": st, "label": label, "tag": r["tag"],
+                    "verifies": t["verifies"], "groundwork": t["groundwork"], "reserved": t["reserved"],
+                    "counts": {k: sum(t[k].values()) for k in TAG_KINDS.values()},
+                    "closed_issues": [i["number"] for i in assigned.get(rid, []) if i["state"] == "closed"],
+                    "open_issues": [(i["number"], i["derived_status"]) for i in assigned.get(rid, [])
+                                    if i["state"] != "closed"]}
     return out
 
 
@@ -363,17 +378,8 @@ def badge(info):
     return f'<span class="{BADGE[info["state"]]}">{info["label"]}</span>'
 
 
-def state_counts(states):
-    """The headline numbers: implemented (and by which sources), partial, in progress, planned."""
-    vals = states.values()
-    done = [v for v in vals if v["state"] == IMPLEMENTED]
-    return {
-        "implemented": len(done),
-        "by_tests": sum(1 for v in done if "tests" in v["sources"]),
-        "by_epic": sum(1 for v in done if "epic" in v["sources"]),
-        "both": sum(1 for v in done if len(v["sources"]) == 2),
-        "partial": sum(1 for v in vals if v["state"] == PARTIAL),
-        "in_progress": sum(1 for v in vals if v["state"] == IN_PROGRESS),
-        "planned": sum(1 for v in vals if v["state"] == PLANNED),
-        "disagree": sorted(k for k, v in states.items() if v["disagree"]),
-    }
+def state_counts(states, release=None):
+    """The headline numbers, {state: count} over the four states, for every
+    requirement or for those whose first release is `release`."""
+    vals = [v for v in states.values() if release is None or v["tag"] == release]
+    return {st: sum(1 for v in vals if v["state"] == st) for st in STATES} | {"total": len(vals)}

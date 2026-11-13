@@ -8,7 +8,7 @@ summary: The eleven open issues of SRS §4 with their status, impact and recorde
 
 # Open issues and risks
 
-Read from SRS §4 at commit `082df51`. An open issue is a decision the SRS
+Read from SRS §4 at commit `082df51`; OI-013 updated from SRS v0.3 at commit `04a2a26`. An open issue is a decision the SRS
 could not make when it was written; each names the requirements it affects
 and the resolution it expects. **Open** means a decision is due before the
 release its requirements name; **Deferred** means it waits on hardware. The
@@ -20,7 +20,7 @@ when the ADR or decision it asks for lands.
 | OI-001 | Generated kernels against hand-tuned ones. Triton and FlyDSL show a tile-level IR with explicit layouts reaches a large fraction of hand-written GEMM and attention performance on gfx950; the remainder is what AITER's assembly holds. | Open | RI-NFR-003, RI-NFR-006, RI-KC-009 | measure after the R1 generator set; decide on the assembly generator path |
 | OI-002 | Shape buckets and cost interpolation | Open | RI-GC-005, RI-KC-006 | start with padded-M buckets as AITER's tables use; revisit with data |
 | OI-003 | RISC-V bench hardware. No RISC-V accelerator is on the bench; the lowering paths are chosen from documentation. | Deferred | RI-RV-001 to -004, RI-KC-004 | acquire a Tenstorrent p150 and a SpacemiT K3 board before R3 |
-| OI-004 | Safetensors parsing: crate or in-tree | Open in the SRS; in-tree in the code | RI-FE-002, RI-SEC-003 | an ADR through the new-dep process; the frontend (PR #24) and Sluice (PR #23) each parse the headers in Rust, in-tree, under shared bounds |
+| OI-004 | Safetensors parsing: crate or in-tree | Open in the SRS; in-tree in the code | RI-FE-002, RI-SEC-003 | an ADR through the new-dep process; the frontend (PR #24) and Sluice (PR #23) parsed the headers in Rust, in-tree; since PR #30 (2026-11-13) one shared reader, `rustinfer_artifact::safetensors`, serves both |
 | OI-005 | Multi-rank artifact layout | Open | RI-ART-007, RI-DIST-001 | an ADR before R2; one file per rank provisionally |
 | OI-006 | Grammar backend for guided decoding | Open | RI-SMP-006 | an ADR before R3; a Rust-native backend preferred over an FFI |
 | OI-007 | Tokenizer | Open | RI-SRV-003, RI-CLI-006 | new-dep evaluation of the `tokenizers` crate before R2 |
@@ -28,7 +28,7 @@ when the ADR or decision it asks for lands.
 | OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | Decided 2026-11-12 by ADR-007 | RI-KC-003, RI-NFR-012, RI-NFR-016 | LLVM 23.1 packages from `apt.llvm.org`, `melior` 0.29.1, static link, installed in CI by `scripts/ci/install_llvm.sh` ([kernel compiler](kernel-compiler.html)) |
 | OI-010 | DPU agent ISA and deployment | Deferred | RI-PLN-006 | after a DPU is on the bench |
 | OI-011 | Tensix mesh lowering: whether the mesh path targets TT-MLIR's dialects or emits its own kernels for the Tensix cores | Deferred | RI-KC-004, RI-RV-001 | decide with a Blackhole card in hand |
-| OI-013 | Implicit launch operands: the paged KV operators take the KV cache pools as operands that are not in the Model IR node; the CPU launcher appends them at launch | Open (SRS v0.3) | RI-MIR-004, RI-TGT-002, RI-TGT-003, RI-GC-006, RI-KVC-001 | a column of the operator registry every target reads, with the seam work of #27; a requirement in the SRS version that adds the second launcher |
+| OI-013 | Implicit launch operands: the paged KV operators take the KV cache pools as operands that are not in the Model IR node; the CPU launcher appended them at launch | Done 2026-11-12 (resolved in the SRS by PR #30, merged 2026-11-13) | RI-MIR-004, RI-TGT-002, RI-TGT-003, RI-GC-006, RI-KVC-001 | `OperatorSpec::implicit_operands` (`ImplicitOperands`, `ImplicitOperand::{KeyCache, ValueCache}`) is a column of the operator registry; the CPU launcher's operand counts are the node arity plus that column, with no operator-specific override left (PR #30, #27). The requirement is deferred to the SRS version that adds a second target launcher |
 
 ## Which ones gate Release 1
 

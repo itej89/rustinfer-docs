@@ -14,9 +14,10 @@ and Actions runs 1 to 11 did not move and are recorded here as history.
 GitHub's own pull requests start at #19 again, so GitHub PR #19 (hosting),
 #20 (planner) and #21 (target) are not the Codeberg PRs of the same number.
 
-A requirement counts as implemented when a test in the tree cites its id or
-the Epic's checklist assigns it to an issue that is closed, the same derivation
-the requirements page shows per id (common.requirement_states).
+A requirement counts as implemented when a test carries at least one
+`Verifies` tag for it and none carries a `Groundwork for` tag (the rule of the
+rustinfer repository's docs/testing.md), the same derivation the requirements
+page shows per id (common.requirement_states).
 """
 import datetime
 import re
@@ -24,7 +25,7 @@ import subprocess
 
 from common import (EPIC, REPO, RUSTINFER, SEQUENCE, WEB, branch_of, commit, header,
                     issue_status, requirement_states, srs_requirements,
-                    state_counts, test_citations, tracker_state, write)
+                    state_counts, test_tags, tracker_state, write)
 
 TODAY = datetime.date.today().isoformat()
 
@@ -65,11 +66,10 @@ rs_files = list((RUSTINFER / "crates").rglob("*.rs"))
 lines_rs = sum(len(p.read_text(encoding="utf-8", errors="replace").splitlines()) for p in rs_files)
 tests = sum(len(re.findall(r"#\[test\]", p.read_text(encoding="utf-8", errors="replace"))) for p in rs_files)
 reqs = srs_requirements()
-by_release = {r: sum(1 for q in reqs if q["tag"] == r) for r in ("R1", "R2", "R3", "R4")}
 by_status = {}
 for q in reqs:
     by_status[q["status"]] = by_status.get(q["status"], 0) + 1
-states = requirement_states(reqs, state, test_citations())
+states = requirement_states(reqs, state, test_tags())
 counts = state_counts(states)
 
 # ------------------------------------------------------------- derivations
@@ -130,7 +130,7 @@ runs did not move and are listed below as history.
 | Release 1 issues closed | `{bar(len(closed), len(SEQUENCE))}` | #2 to #15; the Epic #1 is not counted. Milestone `{milestone["title"] if milestone else "—"}`: {milestone["closed"] if milestone else 0} closed, {milestone["open"] if milestone else 0} open |
 | Pull requests on GitHub | {merged} merged, {open_prs} open | {", ".join(f"[#{p['number']}]({p.get('url', WEB + '/pull/' + str(p['number']))}) `{p['head']}` → `{p['base']}` ({'merged' if p['merged'] else p['state']})" for p in pulls) or "none yet"}; four more were merged on Codeberg before the move, see below |
 | Latest CI run | {ci_text} | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
-| SRS requirements implemented | `{bar(implemented, len(reqs))}` | a requirement is implemented when a test on `main` cites its id ({counts["by_tests"]}) or the Epic's checklist assigns it to a closed issue ({", ".join(f"#{n}" for n in closed if issues[n].get("requirements")) or "none"}; {counts["by_epic"]}), both for {counts["both"]}; {counts["partial"]} implemented in part (plain and reserved-feature citations), {counts["in_progress"]} in progress, {counts["planned"]} planned; the derivation per id is on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))}; by release: {", ".join(f"{k} {v}" for k, v in by_release.items())} |
+| SRS requirements implemented | `{bar(implemented, len(reqs))}` | by the tag rule of `docs/testing.md`: a requirement is implemented when a test carries a `Verifies` tag for it and no test a `Groundwork for` tag; {counts["implemented"]} implemented, {counts["partial"]} partial (a `Groundwork for` tag), {counts["reserved only"]} reserved only (only `Reserved` tags), {counts["planned"]} planned; by release: {"; ".join(f"{r} {c['implemented']}/{c['partial']}/{c['reserved only']}/{c['planned']} of {c['total']}" for r, c in ((r, state_counts(states, r)) for r in ("R1", "R2", "R3", "R4")))} (implemented/partial/reserved only/planned); the tags and files per id are on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))} |
 | Tests | {tests} | `#[test]` functions across {len(crates)} crates |
 | Line coverage | {COVERAGE[0]} | from {COVERAGE[1]}; the CI gate is 80 percent |
 | Rust | {lines_rs:,} lines in {len(rs_files)} files | `crates/**/*.rs`, tests and build scripts included |

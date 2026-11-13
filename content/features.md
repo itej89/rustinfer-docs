@@ -18,9 +18,9 @@ artifact, the planner interfaces and the targets, all on `main`.
 
 | component | feature | requirement | release | status |
 |---|---|---|---|---|
-| CLI | six subcommands, exit codes, one structured error line | RI-CLI-001 | R1 | <span class="state-part">in progress</span> — contract tested, behaviour pending |
-| CLI | path validation before any work | RI-CLI-012 | R1 | <span class="state-part">in progress</span> |
-| CLI | version manifest at start; `key=value` logs with ISO-8601, level, component | RI-CLI-010, -011 | R1 | <span class="state-part">in progress</span> |
+| CLI | six subcommands, exit codes, one structured error line | RI-CLI-001 | R1 | <span class="state-part">in progress</span> — contract tested and RI-CLI-001 implemented by the tag rule (the one-line usage error, PR #29); the subcommands' behaviour is pending |
+| CLI | path validation before any work | RI-CLI-012 | R1 | <span class="state-ok">done</span> — `--out` writability checked since PR #29 |
+| CLI | version manifest at start; `key=value` logs with ISO-8601, level, component | RI-CLI-010, -011 | R1 | <span class="state-ok">done</span> — `llvm_version` and the host triple in the manifest since PR #29 |
 | CLI | `--require-prebuilt` refusal | RI-CLI-004 | R1 | <span class="state-part">in progress</span> — the refusal exists, the build it refuses does not |
 | CLI | `build`, `inspect` | RI-CLI-002, -005 | R1 | Planned R1, #11 |
 | CLI | `run` with token ids | RI-CLI-006 | R1 | Planned R1, #14 |
@@ -28,9 +28,9 @@ artifact, the planner interfaces and the targets, all on `main`.
 | CLI | build on first load into the cache | RI-CLI-003 | R1 | Planned R1, #11 |
 | CLI | `bench` with TTFT, TPOT, ITL percentiles | RI-CLI-008 | R2 | Not started |
 | CLI | `serve` with YAML config and `--set` | RI-CLI-009 | R3 | Not started |
-| Frontend | LLaMA family (`llama`, `mistral`, `qwen2`, `qwen3`) from HF | RI-FE-001 to -003 | R1 | <span class="state-ok">done</span> — GitHub PR #24 merged 2026-11-12; Qwen3 QK norm and `llama3` RoPE scaling refused until #26 and #27 ([frontend](frontend.html)) |
+| Frontend | LLaMA family (`llama`, `mistral`, `qwen2`, `qwen3`) from HF | RI-FE-001 to -003 | R1 | <span class="state-ok">done</span> — GitHub PR #24 merged 2026-11-12; per-tensor dtypes since PR #33 (2026-11-13); Qwen3 QK norm and `llama3` RoPE scaling refused until #26 and #31 (R2) ([frontend](frontend.html)) |
 | Frontend | weight streaming, Model IR JSON input, FP8 import | RI-FE-004, -006, -008 | R2 | Not started |
-| Frontend | MoE and MLA families, AWQ, GPTQ, MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started |
+| Frontend | MoE and MLA families, AWQ, GPTQ, MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started — MXFP4 is tagged R3 here and R2 for the precision pass (RI-GC-004) in SRS v0.3 on `main`; an SRS v0.4 amendment moving MXFP4 to R1 is proposed, in review, and not decided. |
 | Model IR | typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version, named functions, KV groups, encodings | RI-MIR-001 to -011 | R1 | <span class="state-ok">done</span> — PR #19 merged 2026-11-12 |
 | Graph compiler | logged pass pipeline, shape inference, fusion against the catalog, bf16 and fp8 precision, kernel selection, arena planning, Plan, layouts, determinism, matrix refusal | RI-GC-001 to -009, -014 | R1 | Planned R1, #10 |
 | Graph compiler | tensor parallel sharding, mixed iteration sub-plan | RI-GC-010, -007 | R2 | Not started |
@@ -41,13 +41,13 @@ artifact, the planner interfaces and the targets, all on `main`.
 | Kernel compiler | SPIR-V lowering, elementwise fuser, resource reports | RI-KC-004, -010, -012 | R2 | Not started |
 | Kernel compiler | RISC-V vector lowering; MoE, MLA, LoRA, verification generators | RI-KC-004, -005 | R3 | Not started |
 | Kernel compiler | RISC-V mesh lowering; assembly generator for one hot kernel | RI-KC-004, -009 | R4 | Not started |
-| Planner | topology model, reserved artifact sections | RI-PLN-001, -005 | R1 | <span class="state-ok">done</span> — GitHub PR #20 merged 2026-11-12 |
+| Planner | topology model, reserved artifact sections, placement v2 checked at load | RI-PLN-001, -003, -005 | R1 | <span class="state-ok">done</span> — GitHub PR #20 merged 2026-11-12; placement v2 and `check_pinned` by PR #32 on 2026-11-13 ([planner](planner.html)) |
 | Planner | discovery, placement over GPU, host, DRAM, NVMe, RDMA; cached and pinnable | RI-PLN-002 to -004 | R2 | Not started |
 | Planner | CXL tier, expert placement | RI-PLN-003 | R3 | Not started |
 | Planner | DPU-resident serving functions | RI-PLN-006 | R4 | Not started |
 | Artifact | header, sections, verifying reader, atomic writer, alignment, versions, metadata | RI-ART-001 to -006, -008 | R1 | <span class="state-ok">done</span> — Codeberg PR #21 merged 2026-11-12 |
 | Artifact | one artifact per rank | RI-ART-007 | R2 | Not started |
-| Artifact | per-tensor digest in the manifest, per-section versions (SRS v0.3) | RI-ART-005, -014 | R1 | <span class="state-no">specified in the SRS</span> — code with #27 ([artifact](artifact.html)) |
+| Artifact | per-tensor digest in the manifest, per-section versions (SRS v0.3) | RI-ART-005, -014 | R1 | <span class="state-part">partly done</span> — per-section versions and `format_version` 2 by PR #30 (RI-ART-014 implemented); the digest field is in the manifest, recording it waits on `build` (RI-ART-005 partial) ([artifact](artifact.html)) |
 | Sluice | weight streaming from the manifest: byte-range reads, bounded staging, device-side transforms, overlap, verification | RI-WST-001 to -005 | R1 | <span class="state-ok">done</span> — GitHub PR #23 merged 2026-11-12 ([Sluice](sluice.html)) |
 | Targets | architecture strings, the `Target` trait, CPU reference operators, one-crate backends, stub targets that fail with `catalog empty` | RI-TGT-001 to -004, RI-RV-001, -002 | R1 | <span class="state-ok">done</span> — GitHub PR #21 merged 2026-11-12 |
 | Targets | device graph capture; CPU collectives | RI-TGT-005, -003 | R2 | <span class="state-part">in progress</span> — `capture` and `replay` exist, eager on the CPU; collectives not started |

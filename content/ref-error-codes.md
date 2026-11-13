@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 7913427 2026-11-12. A failure leaves the command as one line on
+`src/error.rs` at commit 04a2a26 2026-11-13. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -41,7 +41,7 @@ and component.
 | `rustinfer-artifact` | `artifact` | `TooLarge` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `Truncated` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `BadMagic` | `delegated` |
-| `rustinfer-artifact` | `artifact` | `UnsupportedVersion` | `unsupported` |
+| `rustinfer-artifact` | `artifact` | `UnsupportedVersion` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `BadHeaderLength` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `BadHeaderField` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `WrongSectionCount` | `delegated` |
@@ -52,6 +52,7 @@ and component.
 | `rustinfer-artifact` | `artifact` | `BadSectionEntry` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `HashMismatch` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `MalformedSection` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `UnsupportedSectionVersion` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `ModelIr` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `InvalidKernel` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `InvalidField` | `delegated` |
@@ -59,18 +60,20 @@ and component.
 | `rustinfer-artifact` | `artifact` | `DuplicateCatalogKey` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `OutsideProfile` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `NotImplemented` | `not_implemented` |
-| `rustinfer-artifact` | `artifact` | `CheckpointMismatch` | `artifact` |
+| `rustinfer-artifact` | `artifact` | `CheckpointMismatch` | `delegated` |
 | `rustinfer-cli` | `cli` | `Usage` | `usage` |
 | `rustinfer-cli` | `cli` | `PathNotFound` | `not_found` |
 | `rustinfer-cli` | `cli` | `NotAFile` | `delegated` |
 | `rustinfer-cli` | `cli` | `NotADirectory` | `delegated` |
-| `rustinfer-cli` | `cli` | `PrebuiltRequired` | `delegated` |
+| `rustinfer-cli` | `cli` | `NotWritable` | `delegated` |
+| `rustinfer-cli` | `cli` | `PrebuiltRequired` | `invalid` |
 | `rustinfer-cli` | `cli` | `Settings` | `delegated` |
 | `rustinfer-cli` | `cli` | `Compiler` | `delegated` |
 | `rustinfer-cli` | `cli` | `Artifact` | `delegated` |
 | `rustinfer-cli` | `cli` | `Runtime` | `delegated` |
 | `rustinfer-cli` | `cli` | `KernelCompiler` | `delegated` |
 | `rustinfer-cli` | `cli` | `Target` | `delegated` |
+| `rustinfer-cli` | `cli` | `Planner` | `delegated` |
 | `rustinfer-compiler` | `compiler` | `NotImplemented` | `not_implemented` |
 | `rustinfer-frontend` | `frontend` | `Io` | `io` |
 | `rustinfer-frontend` | `frontend` | `TooLarge` | `delegated` |
@@ -87,7 +90,8 @@ and component.
 | `rustinfer-frontend` | `frontend` | `MissingTensor` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `UnexpectedTensor` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `ShapeMismatch` | `delegated` |
-| `rustinfer-frontend` | `frontend` | `MixedDtype` | `unsupported` |
+| `rustinfer-frontend` | `frontend` | `MixedDtype` | `delegated` |
+| `rustinfer-frontend` | `frontend` | `DtypeMismatch` | `unsupported` |
 | `rustinfer-frontend` | `frontend` | `NoShards` | `not_found` |
 | `rustinfer-frontend` | `frontend` | `ArchitectureMismatch` | `internal` |
 | `rustinfer-frontend` | `frontend` | `Mir` | `delegated` |
@@ -127,15 +131,19 @@ and component.
 | `rustinfer-mir` | `mir` | `NoFunctions` | `delegated` |
 | `rustinfer-mir` | `mir` | `InvalidShape` | `delegated` |
 | `rustinfer-mir` | `mir` | `InvalidEncoding` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidPlacement` | `delegated` |
+| `rustinfer-mir` | `mir` | `FilledLegacySlot` | `unsupported` |
 | `rustinfer-mir` | `mir` | `InvalidProfile` | `delegated` |
 | `rustinfer-mir` | `mir` | `NonFiniteAttribute` | `delegated` |
-| `rustinfer-mir` | `mir` | `UnsupportedFeature` | `unsupported` |
+| `rustinfer-mir` | `mir` | `UnsupportedFeature` | `delegated` |
 | `rustinfer-planner` | `planner` | `Malformed` | `delegated` |
 | `rustinfer-planner` | `planner` | `TooLarge` | `delegated` |
 | `rustinfer-planner` | `planner` | `UnsupportedVersion` | `delegated` |
 | `rustinfer-planner` | `planner` | `InvalidField` | `delegated` |
 | `rustinfer-planner` | `planner` | `DuplicateName` | `delegated` |
 | `rustinfer-planner` | `planner` | `UnknownDevice` | `delegated` |
+| `rustinfer-planner` | `planner` | `OutsideTopology` | `delegated` |
+| `rustinfer-planner` | `planner` | `UnreachableTier` | `delegated` |
 | `rustinfer-planner` | `planner` | `NoDeviceForArchitecture` | `delegated` |
 | `rustinfer-planner` | `planner` | `CapacityExceeded` | `unsupported` |
 | `rustinfer-planner` | `planner` | `SizeOverflow` | `delegated` |
@@ -179,6 +187,7 @@ and component.
 | `rustinfer-target` | `target` | `UnknownEvent` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownKernel` | `delegated` |
 | `rustinfer-target` | `target` | `UnsupportedBinary` | `delegated` |
+| `rustinfer-target` | `target` | `MissingKernelIr` | `delegated` |
 | `rustinfer-target` | `target` | `OperandMismatch` | `delegated` |
 | `rustinfer-target` | `target` | `UnsupportedDtype` | `unsupported` |
 | `rustinfer-target` | `target` | `IndexOutOfRange` | `delegated` |

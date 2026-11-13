@@ -14,7 +14,7 @@ at commit `082df51`.
 [frontend](frontend.html) lowers four families into Model IR, a weight
 manifest and a checkpoint identity, but there is no graph compiler, build,
 ROCm target or executor to take the result to a token. The table below is
-the plan the SRS commits to (v0.3, at commit `7913427`), with the release
+the plan the SRS commits to (v0.3, at commit `04a2a26`), with the release
 each row names and its status today.
 
 ## Input format
@@ -25,17 +25,18 @@ tokenizer files (SRS §3.1.3). There is no intermediate checkpoint format, by
 decision: the feature inventory marks TensorRT-LLM's `convert_checkpoint` step
 as adopted without the intermediate. From R2 a model may also be given as a
 Model IR JSON document (RI-FE-008). Safetensors headers are parsed in Rust,
-in-tree, by the frontend and by Sluice (OI-004).
+in-tree, by one reader in `rustinfer-artifact` that the frontend and Sluice
+share since PR #30 (OI-004).
 
 ## Families by release
 
 | family | `model_type` | what the frontend reads | release | status |
 |---|---|---|---|---|
-| LLaMA | `llama` | layers, hidden size, attention and KV heads, intermediate size, vocabulary, RoPE parameters and scaling, norm epsilon, tied embeddings (RI-FE-001) | R1 | <span class="state-part">lowers to Model IR</span> — PR #24; `llama3` RoPE scaling (Llama 3.1 and later) refused until a frequency-table attribute (#27) |
+| LLaMA | `llama` | layers, hidden size, attention and KV heads, intermediate size, vocabulary, RoPE parameters and scaling, norm epsilon, tied embeddings (RI-FE-001) | R1 | <span class="state-part">lowers to Model IR</span> — PR #24; `llama3` RoPE scaling (Llama 3.1 and later) refused until a frequency-table attribute, issue #31 (R2) |
 | Mistral, Qwen2, Qwen3 | `mistral`, `qwen2`, `qwen3` | the same lowering, with biases, QK norm and sliding-window keys; R1 since SRS v0.3 (was R2) | R1 | <span class="state-part">mistral and qwen2 lower to Model IR</span> — PR #24; an active sliding window refused as R2; `qwen3` refused at QK norm until #26 |
 | MoE families: DeepSeek-V3 with MLA, Qwen MoE, GPT-OSS | | router, experts, shared experts, MLA latent projections (RI-FE-005) | R3 | <span class="state-no">not started</span> |
 | Pre-quantized checkpoints: FP8 per-tensor and block-scale | | imported with their scales; refused when the target has no catalog kernel for the scheme (RI-FE-006) | R2 | <span class="state-no">not started</span> |
-| Pre-quantized checkpoints: AWQ, GPTQ, MXFP4 | | as above | R3 | <span class="state-no">not started</span> |
+| Pre-quantized checkpoints: AWQ, GPTQ, MXFP4 | | as above | R3 | <span class="state-no">not started</span> — MXFP4 is tagged R3 here and R2 for the precision pass (RI-GC-004) in SRS v0.3 on `main`; an SRS v0.4 amendment moving MXFP4 to R1 is proposed, in review, and not decided. |
 | LoRA adapters, PEFT layout | | `adapter_config.json` plus safetensors, keyed by target module, rank checked against `max_lora_rank` (RI-FE-007) | R3 | <span class="state-no">not started</span> |
 | Model IR JSON as input | | accepted in place of an HF directory (RI-FE-008) | R2 | <span class="state-no">not started</span> |
 | Multimodal, encoder-decoder, Mamba and hybrid | | the feature inventory marks these *later*, after R4; no requirement exists | after R4 | <span class="state-no">not started</span> |

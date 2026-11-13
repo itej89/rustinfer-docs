@@ -10,7 +10,7 @@ summary: The pass that places weights, KV tiers, phases and serving functions ac
 
 Read from SRS §3.2.6 (`RI-PLN`), §2.1, ADR-006,
 `docs/planning/datacenter-device-inventory.md` §9, `crates/rustinfer-planner/src/`,
-`docs/api/topology.md`, SRS v0.3 and ADR-009 at commit `7913427`. GitHub PR #20 merged into
+`docs/api/topology.md`, SRS v0.3 and ADR-009 at commit `04a2a26`. GitHub PR #20 merged into
 `main` as d886a3c on 2026-11-12 and closed issue #15: the crate holds the
 R1 interfaces, the topology model and the single-device planner, and
 discovery and the cost-model planner answer `not_implemented` until
@@ -25,9 +25,10 @@ serving-stack functions across GPUs, host CPUs, DPUs, DRAM, CXL and NVMe
 from a discovered topology. In the Apple analogy of §2.1 it is Core ML's
 scheduler across heterogeneous units. The Model IR gives it somewhere to
 write: every tensor carries a placement slot and every node a device slot,
-empty after the frontend and filled by the planner (RI-MIR-005). In the code
-a placement slot is a memory-tier kind; SRS v0.3 changes it to a device
-index, a tier index and a shard spec ([below](#placement-v2-specified-in-the-srs)).
+empty after the frontend and filled by the planner (RI-MIR-005). Since PR #32
+(2026-11-13, ADR-009) a placement slot is a device index, a memory-tier index
+and an optional shard spec ([below](#placement-v2)); before it, the slot was
+a memory-tier kind.
 
 ## The topology model (R1)
 
@@ -56,11 +57,11 @@ stability"); the `build` that writes them is #11.
 
 ## Placement in the code
 
-A `Placement` is a tier per tensor name, a device index per node path
+A `Placement` is a `Location` (device, tier, shard) per tensor name, a device index per node path
 (`outer/part` for the part of a fused node), the `Strategy`
 (`single_device` in R1, `null` for the empty section) and a list of
 `Decision`s, each a subject, a choice and a reason in words (RI-PLN-003); it
-serialises the same way under `placement_version` 1. `Placement::apply`
+serialises the same way under `placement_version` 2 (PR #32; version 1, a tier kind per tensor, is refused). `Placement::apply`
 fills the Model IR's placement and device slots and refuses, naming the
 function and the tensor or node, when the placement lacks an entry or names
 one the document does not have; `Placement::check_filled` refuses a document
@@ -69,8 +70,8 @@ with any slot still empty (RI-MIR-005).
 The `Planner` trait is two methods: `name`, the strategy recorded in the log
 line, and `plan(document, profile, topology) -> Placement`, which fills
 nothing itself. `SingleDevicePlanner::new(index)` (or `for_architecture`,
-the first device with that string) puts every tensor in the device's local
-tier and every node on the device, and refuses with `capacity_exceeded`
+the first device with that string) puts every tensor on device `n` in tier
+`devices[n].local_tier` with no shard, and every node on the device, and refuses with `capacity_exceeded`
 naming the device, the tier, the required and the available bytes when the
 footprint at the profile's `max` (the weights plus the largest function's
 distinct inputs and outputs, each tensor once) exceeds the tier; KV blocks
@@ -82,32 +83,36 @@ and answer `not_implemented` naming RI-PLN-003 and RI-PLN-002. Every type
 is `Send + Sync`; the PR's tests share one planner and topology across four
 threads.
 
-## Placement v2, specified in the SRS
+## Placement v2
 
-ADR-009 and SRS v0.3 (PR #28, 2026-11-12) amend the placement contract. A
+ADR-009 and SRS v0.3 (PR #28, 2026-11-12) amended the placement contract, and
+GitHub PR #32 (merged as 3df8c1b on 2026-11-13, #27) put it in the code. A
 tier kind cannot say which device's memory holds a tensor: on an eight-GPU
 node every GPU has an `hbm` tier, and a two-socket host has two `dram`
 tiers on different NUMA nodes. The topology already names each tier by
 index, so the planner was throwing that away. Nor could a slot say that a
-tensor is one shard of a tensor-parallel split. The change is made now,
-while every shipped slot is empty, because the graph compiler (#10) and the
+tensor is one shard of a tensor-parallel split. The change was made while
+every shipped slot is empty, because the graph compiler (#10) and the
 executor (#13) are about to start reading slots, and changing them later
 would mean migrating every pinned artifact.
 
-| | in the code at `7913427` | specified in SRS v0.3 (RI-MIR-005, RI-PLN-003, RI-PLN-005) |
+| | before PR #32 | in the code at `04a2a26` (RI-MIR-005, RI-PLN-003, RI-PLN-005) |
 |---|---|---|
-| tensor placement slot | a tier kind (`hbm`, `dram`, `cxl`, `nvme`) | a device index into the topology's devices, a memory-tier index among that device's or the host's tiers, and optionally a shard spec: `split` (axis, number of shards, shard index) or `replicated` |
+| tensor placement slot | a tier kind (`hbm`, `dram`, `cxl`, `nvme`) | `PlacementSlot.location`: `{"location": null}` or a `Location` of a device index, a memory-tier index and a shard: `null`, `replicated` or `split` (axis, count, index) |
 | node device slot | a device index | a device index (unchanged) |
-| Model IR version | `ir_version` 1 | `ir_version` 2; a version 1 document is accepted only when every slot is empty (every frontend output) and read as version 2; a filled version 1 slot is refused naming the first tensor or node, because it must be re-planned |
-| `placement` section | a tier kind per tensor, `placement_version` 1 | the slot in the RI-MIR-005 form, `placement_version` 2; a pinned section parsed and validated against the pinned topology at load |
+| Model IR version | `ir_version` 1 | `ir_version` 2 (`MODEL_IR_FORMAT_VERSION`, accepted `[1, 2]`); a version 1 document is read as version 2 only when every slot is empty (every frontend output); a filled version 1 slot is refused as `FilledLegacySlot` naming the function and the tensor or node, because a tier kind cannot be mapped to a tier index without a topology |
+| `placement` section | a tier kind per tensor, `placement_version` 1 | the `Location` per tensor, `placement_version` 2 (accepted `[2]`); a pinned section is parsed and checked against the pinned topology at the CLI's artifact boundary by `check_pinned` (`error=invalid component=planner`) |
 | single-device planner | every tensor in the device's local tier kind | device `n`, tier `devices[n].local_tier`, no shard: R1 behaviour unchanged |
-| validation | a placement entry must name a tensor or node of the document | every index checked against the topology's device and tier counts, and a shard index against the shard count and the tensor's rank, before use, refused naming the tensor (RI-SEC-002, RI-SEC-003) |
+| validation | a placement entry must name a tensor or node of the document | `Placement::check_against(&Topology)`, run by `place` and `check_pinned`: a device or tier index outside the topology is `OutsideTopology`, a tier the device cannot use is `UnreachableTier`, a shard index not below the count or an axis outside the rank is `InvalidPlacement`, each `invalid` and naming the entry (RI-SEC-002, RI-SEC-003) |
 
-State: <span class="state-no">specified in the SRS</span>, code not yet.
-ADR-009 says the types, the reader, the single-device planner, the
-`model-ir.md` and `topology.md` schemas and the API changelog change in a
-later PR of #27. The SRS tags the slot form, `ir_version` 2 and the
-single-device fill R1, and filled shard specs R2.
+**The reachability rule.** The owner clarified RI-MIR-005 and ADR-009 on
+2026-11-13: a tier index t is one device d can use when t is
+`devices[d].local_tier` or d is listed in `memory_tiers[t].reachable_from`.
+`Topology::reaches(device, tier)` implements it. With it checked, every
+RI-MIR-005 test is tagged `Verifies`, and RI-MIR-005, RI-PLN-003 and
+RI-PLN-005 count as implemented under the tag rule
+([requirements](ref-requirements.html)); the R2 part of RI-MIR-005, shard
+specs filled by a planner, is later.
 
 ## Discovery and placement (R2 and beyond)
 
