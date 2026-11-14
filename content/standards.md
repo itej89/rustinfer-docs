@@ -41,7 +41,9 @@ and the **tracker** (the gaps). A gap is **open** when its status is *Open* or
 *Out of scope* gap, one the owner removed from the §1.4 scope (OCP OFP8's
 non-saturating mode, PR #50), is kept for the record and counted nowhere. The
 same counts feed the [issue tracker](issues.html#standards) and the
-[progress](progress.html#standards) page.
+[progress](progress.html#standards) page. The [standards diagram](architecture-diagram.html#c4-standards) of the
+architecture diagram places the same standards on the parts of rustinfer that
+implement them, and the *show standards* switch puts them on each C4 level.
 
 <div class="std-legend" aria-hidden="true">
   <span class="std-key std-ok">works</span>

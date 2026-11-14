@@ -1,0 +1,378 @@
+{
+ "commit": "8d58ad6",
+ "crates": {
+  "rustinfer-artifact": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir"
+   ],
+   "api": [
+    "Catalog",
+    "CatalogEntry",
+    "CatalogKey",
+    "FormatVersion",
+    "Header",
+    "SectionEntry",
+    "SectionName",
+    "SectionSpec",
+    "KernelEntry",
+    "Kernels",
+    "CheckpointIdentity",
+    "FileIdentity",
+    "Metadata",
+    "Origin",
+    "KvGroupGeometry",
+    "KvScales",
+    "Plan",
+    "PlanEntry",
+    "PlanSection",
+    "RawSections",
+    "Sections",
+    "ByteRange",
+    "CheckpointFormat",
+    "CheckpointRef",
+    "ScaleTensor",
+    "WeightEntry",
+    "WeightManifest",
+    "WeightQuantization",
+    "FirstLoadKey",
+    "Sha256",
+    "Limits",
+    "ShapeQuery",
+    "Artifact",
+    "BinaryFormat",
+    "Writer",
+    "safetensors"
+   ]
+  },
+  "rustinfer-cli": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir",
+    "rustinfer-kc",
+    "rustinfer-compiler",
+    "rustinfer-planner",
+    "rustinfer-artifact",
+    "rustinfer-target",
+    "rustinfer-target-rocm",
+    "rustinfer-target-riscv-vector",
+    "rustinfer-target-riscv-mesh",
+    "rustinfer-target-spirv-vulkan",
+    "rustinfer-frontend",
+    "rustinfer-runtime"
+   ],
+   "api": []
+  },
+  "rustinfer-compiler": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-artifact",
+    "rustinfer-target"
+   ],
+   "api": [
+    "kernel_to_artifact"
+   ]
+  },
+  "rustinfer-core": {
+   "deps": [],
+   "api": [
+    "config",
+    "error",
+    "kernel",
+    "logging",
+    "manifest"
+   ]
+  },
+  "rustinfer-frontend": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir",
+    "rustinfer-artifact"
+   ],
+   "api": [
+    "Biases",
+    "Family",
+    "Geometry",
+    "LlamaConfig",
+    "Rope",
+    "RopeScaling",
+    "ExpectedTensor",
+    "ModelConfig",
+    "lower",
+    "lower_with_limits",
+    "Lowered",
+    "parse_shard_header",
+    "read_shard_header",
+    "ShardHeader",
+    "TensorInfo",
+    "SUPPORTED_MODEL_TYPES",
+    "DtypeExpectation",
+    "Limits"
+   ]
+  },
+  "rustinfer-kc": {
+   "deps": [
+    "rustinfer-core"
+   ],
+   "api": [
+    "KernelBuilder",
+    "KernelModule",
+    "Value",
+    "irdl_definition",
+    "operations",
+    "Arity",
+    "AttributeSpec",
+    "AttributeValue",
+    "BarrierLowering",
+    "BufferType",
+    "Constraint",
+    "ElementType",
+    "Flavor",
+    "Layout",
+    "MemorySpace",
+    "OpKind",
+    "OpSpec",
+    "OperandSpec",
+    "ReduceKind",
+    "ResultSpec",
+    "TileType",
+    "link_status",
+    "require_link",
+    "LinkStatus",
+    "KernelContext"
+   ]
+  },
+  "rustinfer-mir": {
+   "deps": [
+    "rustinfer-core"
+   ],
+   "api": [
+    "Document",
+    "Function",
+    "KvGroup",
+    "KvStateKind",
+    "Encoding",
+    "EncodingKind",
+    "Granularity",
+    "LinearEncoding",
+    "MxEncoding",
+    "kv_encoding",
+    "kv_fp8_dtype",
+    "DeviceSlot",
+    "Node",
+    "ActivationAttrs",
+    "AttentionAttrs",
+    "DequantizeAttrs",
+    "EmbeddingAttrs",
+    "FusedAttrs",
+    "KvCacheWriteAttrs",
+    "LogitsHeadAttrs",
+    "MatmulAttrs",
+    "NormAttrs",
+    "Op",
+    "OpKind",
+    "QuantizeAttrs",
+    "ReservedAttrs",
+    "ResidualAddAttrs",
+    "RopeAttrs",
+    "SampleAttrs",
+    "Arity",
+    "DtypeRule",
+    "ImplicitOperand",
+    "ImplicitOperands",
+    "OperatorSpec",
+    "Release",
+    "Bounds",
+    "Dim",
+    "DynamicDim",
+    "Profile",
+    "Shape",
+    "Location",
+    "MemoryTier",
+    "PlacementSlot",
+    "ShardSpec",
+    "Tensor",
+    "DType",
+    "Limits"
+   ]
+  },
+  "rustinfer-planner": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir"
+   ],
+   "api": [
+    "Decision",
+    "NodeDevices",
+    "Placement",
+    "Strategy",
+    "discover",
+    "place",
+    "CostModelPlanner",
+    "Planner",
+    "SingleDevicePlanner",
+    "Adjacency",
+    "ComputeKind",
+    "Device",
+    "Link",
+    "MemoryTierSpec",
+    "OffloadEngine",
+    "Phase",
+    "Reach",
+    "ReachMechanism",
+    "ServingFunction",
+    "SharingScope",
+    "Topology",
+    "Limits",
+    "check_pinned"
+   ]
+  },
+  "rustinfer-runtime": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-artifact",
+    "rustinfer-target"
+   ],
+   "api": [
+    "kernel_from_artifact"
+   ]
+  },
+  "rustinfer-sluice": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir",
+    "rustinfer-artifact",
+    "rustinfer-target"
+   ],
+   "api": [
+    "DigestMismatch",
+    "HeaderField",
+    "HeaderMismatch",
+    "LoadedScale",
+    "LoadedWeight",
+    "LoadedWeights",
+    "LoadReport",
+    "WeightReport",
+    "Sluice",
+    "WeightDigests",
+    "Region",
+    "Regions",
+    "Run",
+    "Runs",
+    "Transform",
+    "read_counter",
+    "SluiceConfig"
+   ]
+  },
+  "rustinfer-target": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-mir"
+   ],
+   "api": [
+    "BinaryFormat",
+    "DtypeSupport",
+    "EmptyCatalog",
+    "KernelBinary",
+    "KernelCost",
+    "KernelEntry",
+    "KernelId",
+    "KernelQuery",
+    "Layout",
+    "OperandDtypes",
+    "ShapeDim",
+    "ShapeRule",
+    "Validation",
+    "Arena",
+    "Buffer",
+    "BufferId",
+    "BufferRange",
+    "DeviceProperties",
+    "EventId",
+    "StreamId",
+    "SyncCounters",
+    "segments",
+    "Bucket",
+    "Graph",
+    "HostSync",
+    "Launch",
+    "Operand",
+    "Segment",
+    "Registry",
+    "TargetEntry",
+    "Catalog",
+    "Device",
+    "Launcher",
+    "Target",
+    "CpuTarget",
+    "numeric",
+    "reference"
+   ]
+  },
+  "rustinfer-target-riscv-mesh": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-target"
+   ],
+   "api": [
+    "ARCHITECTURES",
+    "RiscvMeshTarget",
+    "entry"
+   ]
+  },
+  "rustinfer-target-riscv-vector": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-target"
+   ],
+   "api": [
+    "ARCHITECTURES",
+    "RiscvVectorTarget",
+    "entry"
+   ]
+  },
+  "rustinfer-target-rocm": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-target"
+   ],
+   "api": [
+    "ARCHITECTURES",
+    "RocmTarget",
+    "entry"
+   ]
+  },
+  "rustinfer-target-spirv-vulkan": {
+   "deps": [
+    "rustinfer-core",
+    "rustinfer-target"
+   ],
+   "api": [
+    "ARCHITECTURES",
+    "SpirvVulkanTarget",
+    "entry"
+   ]
+  }
+ },
+ "modules": {
+  "rustinfer-cli/src/cli.rs": [
+   "Cli",
+   "Command",
+   "BuildArgs",
+   "InspectArgs",
+   "RunArgs",
+   "TuneArgs",
+   "BenchArgs",
+   "ServeArgs"
+  ],
+  "rustinfer-cli/src/commands.rs": [
+   "dispatch"
+  ],
+  "rustinfer-cli/src/error.rs": [],
+  "rustinfer-cli/src/main.rs": [],
+  "rustinfer-cli/src/targets.rs": [
+   "registry",
+   "resolve"
+  ]
+ }
+}

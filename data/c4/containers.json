@@ -1,0 +1,28 @@
+{
+ "title": "Container diagram for rustinfer",
+ "intro": "The separately runnable or storing units inside rustinfer, and the stores and devices it touches. A container with components opens its component view.",
+ "containers": [
+  {"id": "c-cli", "name": "rustinfer CLI", "type": "Container", "tech": "Rust binary", "desc": "The one command: build, inspect, run, tune; bench from R2, serve from R3.", "issues": [2, 11, 14], "link": "#c4-components-cli"},
+  {"id": "c-lib", "name": "rustinfer library", "type": "Container", "tech": "Rust crates", "desc": "The engine as a library: compile a checkpoint, load an artifact, enqueue requests and await responses.", "issues": [3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18], "link": "#c4-components-library"},
+  {"id": "c-http", "name": "HTTP server", "type": "Container", "tech": "Rust, HTTP/1.1, SSE", "desc": "OpenAI-shaped completions over HTTP, with metrics for Prometheus.", "release": "R3"},
+  {"id": "c-device", "name": "GPU device boundary", "type": "Container", "tech": "HIP runtime, one FFI module", "desc": "Where host memory ends: device buffers, streams, events and the loaded code objects.", "issues": [12]}
+ ],
+ "stores": [
+  {"id": "s-artifact", "name": ".rie artifact", "type": "Data store", "tech": "file in RUSTINFER_CACHE_DIR", "desc": "A cache: the Plan, the kernels and the weight manifest, hashed and bound to the checkpoint's identity.", "issues": [4]},
+  {"id": "s-catalog", "name": "Tuning catalog", "type": "Data store", "tech": "file, per target", "desc": "The autotuner's measured choices, a cache independent of any artifact (RI-ART-010).", "issues": [4, 9]},
+  {"id": "s-checkpoint", "name": "Checkpoint directory", "type": "Data store", "tech": "safetensors, config.json", "desc": "The model as published; read in place.", "external": true}
+ ],
+ "people": ["p-builder", "p-operator", "p-client"],
+ "relations": [
+  {"id": "cr-builder", "from": "p-builder", "to": "c-cli", "label": "builds, inspects, tunes", "tech": "shell"},
+  {"id": "cr-operator", "from": "p-operator", "to": "c-cli", "label": "runs and serves", "tech": "shell"},
+  {"id": "cr-client-lib", "from": "p-client", "to": "c-lib", "label": "enqueues requests, awaits responses", "tech": "Rust API"},
+  {"id": "cr-client-http", "from": "p-client", "to": "c-http", "label": "sends completions requests", "tech": "HTTP, SSE", "release": "R3"},
+  {"id": "cr-cli-lib", "from": "c-cli", "to": "c-lib", "label": "calls", "tech": "Rust, in process"},
+  {"id": "cr-http-lib", "from": "c-http", "to": "c-lib", "label": "calls", "tech": "Rust, in process", "release": "R3"},
+  {"id": "cr-lib-ckpt", "from": "c-lib", "to": "s-checkpoint", "label": "reads headers and used ranges", "tech": "safetensors"},
+  {"id": "cr-lib-art", "from": "c-lib", "to": "s-artifact", "label": "writes once, reads and verifies on load", "tech": ".rie, SHA-256, JSON sections"},
+  {"id": "cr-lib-cat", "from": "c-lib", "to": "s-catalog", "label": "reads and records tuned kernels", "tech": "JSON"},
+  {"id": "cr-lib-dev", "from": "c-lib", "to": "c-device", "label": "streams weights, launches kernels", "tech": "Sluice, HIP copies"}
+ ]
+}

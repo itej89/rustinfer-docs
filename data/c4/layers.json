@@ -1,0 +1,278 @@
+{
+ "title": "The layers, read from the bottom",
+ "layers": [
+  {
+   "id": "interfaces",
+   "no": "5",
+   "name": "Interfaces",
+   "cls": "layer-3",
+   "note": "One binary, one library, later one server, over the same engine. The CLI is the only crate that names every backend; the library API is enqueue and await (RI-RT-003); the HTTP server is Release 3.",
+   "parts": [
+    {
+     "name": "CLI: build, inspect, run, tune",
+     "issues": [
+      2,
+      11,
+      14
+     ]
+    },
+    {
+     "name": "library API: enqueue, await",
+     "issues": [
+      13
+     ]
+    },
+    {
+     "name": "HTTP server",
+     "release": "R3"
+    }
+   ],
+   "issues": [
+    2,
+    11,
+    14
+   ]
+  },
+  {
+   "bound": "the library API: enqueue(Request) → RequestId and await_responses (RI-RT-003); every error structured with its component and code"
+  },
+  {
+   "id": "runtime",
+   "no": "4",
+   "name": "Runtime",
+   "cls": "layer-2",
+   "note": "Loads an artifact and streams the checkpoint's used byte ranges straight to device memory with Sluice, then runs the Plan: static batches first, a KV block pool, the sampler. The planner places the Model IR on the devices it discovered.",
+   "parts": [
+    {
+     "name": "Sluice weight streamer",
+     "issues": [
+      18,
+      39
+     ]
+    },
+    {
+     "name": "executor",
+     "issues": [
+      13
+     ]
+    },
+    {
+     "name": "scheduler",
+     "issues": [
+      13
+     ]
+    },
+    {
+     "name": "KV cache",
+     "issues": [
+      13,
+      37
+     ]
+    },
+    {
+     "name": "sampler",
+     "issues": [
+      13
+     ]
+    },
+    {
+     "name": "planner",
+     "issues": [
+      15
+     ]
+    }
+   ],
+   "issues": [
+    13,
+    15,
+    18,
+    39
+   ]
+  },
+  {
+   "bound": "the artifact, hashed and bound to the checkpoint identity; the reader refuses any failed check (RI-ART-003, RI-ART-012)"
+  },
+  {
+   "id": "compiler",
+   "no": "3",
+   "name": "Compiler",
+   "cls": "layer-1",
+   "note": "The frontend reads config.json and the shard headers, picks the family through the Architecture seam and emits Model IR, the weight manifest and the checkpoint identity. The graph compiler turns Model IR into a Plan under a profile; the result is written once as a .rie artifact into the cache.",
+   "parts": [
+    {
+     "name": "frontend (Architecture seam)",
+     "issues": [
+      6,
+      35
+     ]
+    },
+    {
+     "name": "Model IR",
+     "issues": [
+      3,
+      26,
+      34
+     ]
+    },
+    {
+     "name": "graph compiler",
+     "issues": [
+      10
+     ]
+    },
+    {
+     "name": "Plan",
+     "issues": [
+      4,
+      10
+     ]
+    },
+    {
+     "name": ".rie artifact cache",
+     "issues": [
+      4
+     ]
+    }
+   ],
+   "issues": [
+    3,
+    4,
+    6,
+    10
+   ]
+  },
+  {
+   "bound": "the Model IR document (RI-MIR-*), validated before any pass reads it; kernels are asked for by KernelQuery, never by name"
+  },
+  {
+   "id": "kernels",
+   "no": "2",
+   "name": "Kernels",
+   "cls": "layer-1",
+   "note": "Every kernel is generated, none is linked from a vendor library: Rust generators build Kernel IR, a dialect of MLIR, which lowers in process through the pinned LLVM 23 to ROCDL and AMDGPU code objects. The catalog records what each target offers; the autotuner measures the choices.",
+   "parts": [
+    {
+     "name": "Kernel IR dialect",
+     "issues": [
+      7
+     ]
+    },
+    {
+     "name": "generators",
+     "issues": [
+      9
+     ]
+    },
+    {
+     "name": "MLIR/LLVM 23 lowering → ROCDL, AMDGPU code objects",
+     "issues": [
+      8
+     ]
+    },
+    {
+     "name": "catalog",
+     "issues": [
+      9
+     ]
+    },
+    {
+     "name": "autotuner",
+     "issues": [
+      9
+     ]
+    }
+   ],
+   "issues": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "bound": "the Target traits; selection only through the CLI registry (RI-TGT-004)"
+  },
+  {
+   "id": "targets",
+   "no": "1",
+   "name": "Targets",
+   "cls": "layer-0",
+   "note": "Target, Device, Catalog and Launcher are the whole contract a backend implements. The CPU reference runs every R1 operator in f32 and is the oracle for the rest. ROCm/HIP is registered for gfx942 and gfx950 with an empty catalog until HIP is bound; riscv-vector, riscv-mesh and spirv-vulkan are registered stubs.",
+   "parts": [
+    {
+     "name": "Target · Device · Catalog · Launcher",
+     "issues": [
+      5
+     ]
+    },
+    {
+     "name": "CPU reference",
+     "issues": [
+      5,
+      34,
+      37
+     ]
+    },
+    {
+     "name": "ROCm/HIP",
+     "issues": [
+      12
+     ]
+    },
+    {
+     "name": "spirv-vulkan (stub)",
+     "release": "R2"
+    },
+    {
+     "name": "riscv-vector (stub)",
+     "release": "R3"
+    },
+    {
+     "name": "riscv-mesh (stub)",
+     "release": "R4"
+    }
+   ],
+   "issues": [
+    5,
+    12
+   ]
+  },
+  {
+   "bound": "HIP behind one FFI module; nothing else calls the driver (RI-ROC-001)"
+  },
+  {
+   "id": "hardware",
+   "no": "—",
+   "name": "Hardware",
+   "cls": "layer-hw",
+   "note": "AMD Instinct CDNA3 (gfx942: MI300X, MI308X, MI325X) and CDNA4 (gfx950: MI350X, MI355X) on ROCm 7.0 to 7.2; the host CPU, which compiles and runs the reference; RISC-V boards from Release 3. Nothing on this site was run on a GPU yet (#45 asks for the first test).",
+   "parts": [
+    {
+     "name": "AMD Instinct gfx942",
+     "issues": [
+      45
+     ]
+    },
+    {
+     "name": "AMD Instinct gfx950",
+     "issues": [
+      45
+     ]
+    },
+    {
+     "name": "host CPU",
+     "issues": [
+      5
+     ]
+    },
+    {
+     "name": "RISC-V boards",
+     "release": "R3"
+    }
+   ],
+   "issues": [
+    5,
+    45
+   ]
+  }
+ ]
+}

@@ -1,0 +1,68 @@
+{
+ "title": "Deployment diagram for rustinfer: Release 1, one node",
+ "intro": "Release 1 runs on one Linux host with its own Instinct GPUs; nothing is distributed and nothing is a service yet. The checkpoint stays where it was downloaded; the artifact cache holds only what the build produced.",
+ "nodes": [
+  {
+   "name": "Linux host",
+   "tech": "x86_64, ROCm 7.0 to 7.2",
+   "children": [
+    {
+     "name": "rustinfer CLI",
+     "tech": "Rust binary, LLVM 23 linked in process",
+     "ref": "c-cli"
+    },
+    {
+     "name": "Checkpoint directory",
+     "tech": "local disk: safetensors, config.json",
+     "ref": "s-checkpoint",
+     "store": true
+    },
+    {
+     "name": "Artifact cache",
+     "tech": "$RUSTINFER_CACHE_DIR, else $XDG_CACHE_HOME/rustinfer or ~/.cache/rustinfer",
+     "ref": "s-artifact",
+     "store": true
+    },
+    {
+     "name": "Tuning catalog",
+     "tech": "file per target, beside the cache",
+     "ref": "s-catalog",
+     "store": true
+    },
+    {
+     "name": "ROCm stack",
+     "tech": "amdgpu kernel driver, libamdhip64",
+     "ref": "c-device"
+    },
+    {
+     "name": "AMD Instinct GPUs",
+     "tech": "MI300X (gfx942) or MI355X (gfx950), up to 8, Infinity Fabric",
+     "ref": "x-gpu",
+     "hw": true
+    }
+   ],
+   "lede": "Everything Release 1 needs, on one machine: the binary, the files it reads and writes, and the GPUs behind ROCm."
+  },
+  {
+   "name": "CI runners",
+   "tech": "GitHub Actions; gpu-test runners on request",
+   "children": [
+    {
+     "name": "cargo build, clippy, test, llvm-cov",
+     "tech": "CPU runners",
+     "issues": [
+      2
+     ]
+    },
+    {
+     "name": "GPU tests",
+     "tech": "a gfx942 and a gfx950 host",
+     "issues": [
+      45
+     ]
+    }
+   ],
+   "lede": "Where every change is built and tested; the GPU tests run on request on hosts with the hardware."
+  }
+ ]
+}

@@ -1,0 +1,334 @@
+{
+ "views": [
+  {
+   "id": "library",
+   "container": "c-lib",
+   "title": "Component diagram for rustinfer: the library",
+   "intro": "Each component is one crate under crates/. The bands are computed from the [dependencies] tables of each Cargo.toml on main: a crate sits one band above the highest crate it depends on, so every dependency points down."
+  },
+  {
+   "id": "cli",
+   "container": "c-cli",
+   "title": "Component diagram for rustinfer: the CLI binary",
+   "intro": "The binary is the crate rustinfer-cli: four modules over the library. It is the only crate that names every backend, so a target is selected only through its registry (RI-TGT-004)."
+  }
+ ],
+ "components": [
+  {
+   "id": "cli-main",
+   "view": "cli",
+   "module": "main.rs",
+   "layer": "interfaces",
+   "name": "main",
+   "desc": "Startup: settings from the environment, logging, the version manifest line, then dispatch.",
+   "types": [
+    "main",
+    "COMPONENT"
+   ],
+   "issues": [
+    2
+   ],
+   "uses": [
+    "rustinfer-core"
+   ]
+  },
+  {
+   "id": "cli-commands",
+   "view": "cli",
+   "module": "commands.rs",
+   "layer": "interfaces",
+   "name": "commands",
+   "desc": "Dispatch: build, inspect, run, tune, bench, serve. Those whose issues are open answer NotImplemented.",
+   "types": [
+    "dispatch",
+    "LoadOptions"
+   ],
+   "issues": [
+    11,
+    14
+   ],
+   "uses": [
+    "rustinfer-compiler",
+    "rustinfer-runtime",
+    "rustinfer-artifact",
+    "rustinfer-kc",
+    "rustinfer-frontend"
+   ],
+   "page": "getting-started.html"
+  },
+  {
+   "id": "cli-targets",
+   "view": "cli",
+   "module": "targets.rs",
+   "layer": "interfaces",
+   "name": "targets",
+   "desc": "The architecture registry: every backend's entry, and target selection by architecture string.",
+   "types": [
+    "registry",
+    "resolve"
+   ],
+   "issues": [
+    5
+   ],
+   "uses": [
+    "rustinfer-target",
+    "rustinfer-target-rocm",
+    "rustinfer-target-riscv-vector",
+    "rustinfer-target-riscv-mesh",
+    "rustinfer-target-spirv-vulkan"
+   ]
+  },
+  {
+   "id": "cli-cli",
+   "view": "cli",
+   "module": "cli.rs",
+   "layer": "interfaces",
+   "name": "cli",
+   "desc": "Arguments, exit codes, --format json|text; results on stdout, diagnostics on stderr.",
+   "types": [
+    "Cli",
+    "Command",
+    "BuildArgs",
+    "RunArgs",
+    "ServeArgs"
+   ],
+   "issues": [
+    2
+   ],
+   "uses": [
+    "rustinfer-core"
+   ]
+  },
+  {
+   "id": "cli-error",
+   "view": "cli",
+   "module": "error.rs",
+   "layer": "interfaces",
+   "name": "error",
+   "desc": "One structured error per command, each carrying its component and code.",
+   "types": [
+    "Error"
+   ],
+   "issues": [
+    2
+   ],
+   "uses": [
+    "rustinfer-core"
+   ]
+  },
+  {
+   "id": "rustinfer-runtime",
+   "view": "library",
+   "layer": "runtime",
+   "desc": "Executor, scheduler, KV cache and sampler. Today the kernel record read from an artifact.",
+   "types": [
+    "kernel_from_artifact"
+   ],
+   "issues": [
+    13
+   ],
+   "page": "runtime.html"
+  },
+  {
+   "id": "rustinfer-sluice",
+   "view": "library",
+   "layer": "runtime",
+   "desc": "The weight streamer: checkpoint byte ranges to device memory, with the layout transform on the way.",
+   "types": [
+    "Sluice",
+    "SluiceConfig",
+    "LoadedWeights",
+    "Transform"
+   ],
+   "issues": [
+    18,
+    39
+   ],
+   "page": "sluice.html"
+  },
+  {
+   "id": "rustinfer-planner",
+   "view": "library",
+   "layer": "runtime",
+   "desc": "Topology, discovery and placement of a Model IR document on devices.",
+   "types": [
+    "Topology",
+    "Planner",
+    "SingleDevicePlanner",
+    "Placement"
+   ],
+   "issues": [
+    15
+   ],
+   "page": "planner.html"
+  },
+  {
+   "id": "rustinfer-frontend",
+   "view": "library",
+   "layer": "compiler",
+   "desc": "A Hugging Face checkpoint to Model IR, the weight manifest and the checkpoint identity; one Architecture per family (the seam).",
+   "types": [
+    "ModelConfig",
+    "LlamaConfig",
+    "lower",
+    "Lowered"
+   ],
+   "issues": [
+    6,
+    35
+   ],
+   "page": "frontend.html"
+  },
+  {
+   "id": "rustinfer-compiler",
+   "view": "library",
+   "layer": "compiler",
+   "desc": "The graph compiler: the pass pipeline from Model IR to a Plan under a profile.",
+   "types": [
+    "kernel_to_artifact"
+   ],
+   "issues": [
+    10
+   ],
+   "page": "graph-compiler.html"
+  },
+  {
+   "id": "rustinfer-artifact",
+   "view": "library",
+   "layer": "compiler",
+   "desc": "The .rie format: header, section table, SHA-256, bounded reader, atomic writer, weight manifest.",
+   "types": [
+    "Artifact",
+    "Writer",
+    "Plan",
+    "Metadata",
+    "CheckpointIdentity",
+    "Catalog"
+   ],
+   "issues": [
+    4
+   ],
+   "page": "artifact.html"
+  },
+  {
+   "id": "rustinfer-mir",
+   "view": "library",
+   "layer": "compiler",
+   "desc": "Model IR: the typed SSA graph, shapes, dtypes and encodings, its validator and canonical JSON.",
+   "types": [
+    "Document",
+    "Node",
+    "Tensor",
+    "DType",
+    "Shape",
+    "MxEncoding"
+   ],
+   "issues": [
+    3,
+    26,
+    34
+   ],
+   "page": "design.html"
+  },
+  {
+   "id": "rustinfer-kc",
+   "view": "library",
+   "layer": "kernels",
+   "desc": "The kernel compiler: the Kernel IR dialect, its builder and the in-process MLIR/LLVM 23 link; generators and the autotuner to come.",
+   "types": [
+    "KernelBuilder",
+    "KernelModule",
+    "KernelContext",
+    "OpSpec"
+   ],
+   "issues": [
+    7,
+    8,
+    9
+   ],
+   "page": "kernel-compiler.html"
+  },
+  {
+   "id": "rustinfer-target",
+   "view": "library",
+   "layer": "targets",
+   "desc": "The Target, Catalog, Device and Launcher traits, the registry entry, and the cpu module: the f32 reference every backend is checked against.",
+   "types": [
+    "Target",
+    "Device",
+    "Catalog",
+    "Launcher",
+    "CpuTarget",
+    "Registry"
+   ],
+   "issues": [
+    5,
+    34,
+    37
+   ],
+   "page": "hardware.html"
+  },
+  {
+   "id": "rustinfer-target-rocm",
+   "view": "library",
+   "layer": "targets",
+   "desc": "The ROCm backend for gfx942 and gfx950; a registered stub until HIP is bound behind one FFI module.",
+   "types": [
+    "RocmTarget"
+   ],
+   "issues": [
+    12
+   ],
+   "page": "hardware.html"
+  },
+  {
+   "id": "rustinfer-target-spirv-vulkan",
+   "view": "library",
+   "layer": "targets",
+   "desc": "SPIR-V modules for Vulkan compute; a registered stub.",
+   "types": [
+    "SpirvVulkanTarget"
+   ],
+   "release": "R2",
+   "stub": true
+  },
+  {
+   "id": "rustinfer-target-riscv-vector",
+   "view": "library",
+   "layer": "targets",
+   "desc": "RVV 1.0 vector cores; a registered stub.",
+   "types": [
+    "RiscvVectorTarget"
+   ],
+   "release": "R3",
+   "stub": true
+  },
+  {
+   "id": "rustinfer-target-riscv-mesh",
+   "view": "library",
+   "layer": "targets",
+   "desc": "RISC-V mesh accelerators; a registered stub.",
+   "types": [
+    "RiscvMeshTarget"
+   ],
+   "release": "R4",
+   "stub": true
+  },
+  {
+   "id": "rustinfer-core",
+   "view": "library",
+   "layer": "foundation",
+   "desc": "Constants, settings, structured errors, key=value logging, the version manifest.",
+   "types": [
+    "Settings",
+    "ErrorCode",
+    "ManifestEntry",
+    "KvDtype"
+   ],
+   "issues": [
+    2
+   ],
+   "page": "design.html"
+  }
+ ]
+}

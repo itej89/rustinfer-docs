@@ -15,9 +15,10 @@ Pages live in content/ as Markdown with a small header:
     summary: One sentence for the index card.
     ---
 
-Fenced ```mermaid blocks are rendered in the browser by mermaid.js; the
-diagrams are copied from the rustinfer checkout's docs/uml/ by the reference
-generators, so they cannot drift from the tree without a rebuild showing it.
+No diagram is rendered by a script library: the UML diagrams are drawn as
+HTML by scripts/reference/gen_diagrams.py from the Mermaid source in the
+rustinfer checkout's docs/uml/, and the architecture diagram by c4.py from
+data/c4/; a page that still holds a ```mermaid fence stops the build.
 
     ./build.py            build into out/
     ./build.py --serve    build, then serve on http://localhost:8080
@@ -35,6 +36,7 @@ import sys
 import markdown
 import subprocess
 
+import c4
 import progress
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -162,13 +164,13 @@ def nav_html(pages, current):
     return "\n".join(out)
 
 
-def lift_mermaid(body):
-    """A fenced ```mermaid block becomes <pre class="mermaid"> for mermaid.js,
-    kept out of the Markdown converter so it is neither highlighted nor
-    escaped twice."""
-    return re.sub(r"```mermaid\n(.*?)```",
-                  lambda m: '<pre class="mermaid">' + html.escape(m.group(1)) + "</pre>",
-                  body, flags=re.S)
+def refuse_mermaid(page):
+    """The site renders no Mermaid: every diagram is drawn as HTML, the UML
+    ones by scripts/reference/gen_diagrams.py from the tree's Mermaid source.
+    A fence left on a page would show as raw text, so the build stops."""
+    if re.search(r"^```mermaid", page["text"], re.M):
+        sys.exit(f"build: content/{page['slug']}.md holds a ```mermaid block; the site draws no Mermaid "
+                 "(regenerate design-diagrams.md with scripts/reference/gen_diagrams.py)")
 
 
 def render(pages, page, template):
@@ -177,8 +179,12 @@ def render(pages, page, template):
     body = re.sub(r"\[\[([a-z0-9-]+)\]\]",
                   lambda m: f'<a href="{m.group(1)}.html"><code>{m.group(1)}</code></a>',
                   page["text"])
-    body = lift_mermaid(body)
+    refuse_mermaid(page)
     content = md.convert(body)
+    if "<!-- c4 -->" in content:
+        views, asof = c4.render()
+        content = content.replace("<p><!-- c4 --></p>", views).replace("<!-- c4 -->", views)
+        content = content.replace("{{c4-date}}", html.escape(asof))
     up = "../" * page["url"].count("/")
     heads = re.findall(r'<h2[^>]*id="([^"]+)"[^>]*>(.*?)</h2>', content, re.S)
     toc_items = "".join(

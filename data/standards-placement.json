@@ -1,0 +1,390 @@
+{
+ "_about": "Where each mandatory standard applies in the C4 model of the architecture diagram: one row per (standard, level, element), on the most specific element at each level. The single source of the standards chips at every level and of the Standards diagram; the build fails if a mandatory standard in data/standards/ is placed nowhere, or an element id does not exist in data/c4/.",
+ "placements": [
+  {
+   "standard": "SAFETENSORS",
+   "level": "context",
+   "element": "r-checkpoint"
+  },
+  {
+   "standard": "SAFETENSORS",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "SAFETENSORS",
+   "level": "container",
+   "element": "cr-lib-ckpt"
+  },
+  {
+   "standard": "SAFETENSORS",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "SAFETENSORS",
+   "level": "component",
+   "element": "rustinfer-sluice"
+  },
+  {
+   "standard": "SAFETENSORS",
+   "level": "component",
+   "element": "rustinfer-artifact"
+  },
+  {
+   "standard": "HF-CONFIG",
+   "level": "context",
+   "element": "r-checkpoint"
+  },
+  {
+   "standard": "HF-CONFIG",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "HF-CONFIG",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "QUARK",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "QUARK",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "QUARK",
+   "level": "component",
+   "element": "rustinfer-sluice"
+  },
+  {
+   "standard": "CT",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "CT",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "HF-TOKENIZER",
+   "level": "context",
+   "element": "r-checkpoint"
+  },
+  {
+   "standard": "HF-TOKENIZER",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "HF-TOKENIZER",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "PEFT",
+   "level": "container",
+   "element": "s-checkpoint"
+  },
+  {
+   "standard": "PEFT",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "HIP",
+   "level": "context",
+   "element": "x-gpu"
+  },
+  {
+   "standard": "HIP",
+   "level": "context",
+   "element": "r-gpu"
+  },
+  {
+   "standard": "HIP",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "HIP",
+   "level": "container",
+   "element": "cr-lib-dev"
+  },
+  {
+   "standard": "HIP",
+   "level": "component",
+   "element": "rustinfer-target-rocm"
+  },
+  {
+   "standard": "AMDGPU-ABI",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "AMDGPU-ABI",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "AMDGPU-ABI",
+   "level": "component",
+   "element": "rustinfer-target-rocm"
+  },
+  {
+   "standard": "RCCL",
+   "level": "context",
+   "element": "x-gpu"
+  },
+  {
+   "standard": "RCCL",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "RCCL",
+   "level": "component",
+   "element": "rustinfer-target-rocm"
+  },
+  {
+   "standard": "LLVM",
+   "level": "context",
+   "element": "x-llvm"
+  },
+  {
+   "standard": "LLVM",
+   "level": "context",
+   "element": "r-llvm"
+  },
+  {
+   "standard": "LLVM",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "MLIR",
+   "level": "context",
+   "element": "x-llvm"
+  },
+  {
+   "standard": "MLIR",
+   "level": "context",
+   "element": "r-llvm"
+  },
+  {
+   "standard": "MLIR",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "IEEE-754",
+   "level": "component",
+   "element": "rustinfer-mir"
+  },
+  {
+   "standard": "IEEE-754",
+   "level": "component",
+   "element": "rustinfer-target"
+  },
+  {
+   "standard": "OCP-OFP8",
+   "level": "component",
+   "element": "rustinfer-mir"
+  },
+  {
+   "standard": "OCP-OFP8",
+   "level": "component",
+   "element": "rustinfer-target"
+  },
+  {
+   "standard": "OCP-OFP8",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "AMD-FNUZ",
+   "level": "component",
+   "element": "rustinfer-mir"
+  },
+  {
+   "standard": "AMD-FNUZ",
+   "level": "component",
+   "element": "rustinfer-target"
+  },
+  {
+   "standard": "AMD-FNUZ",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "OCP-MX",
+   "level": "component",
+   "element": "rustinfer-mir"
+  },
+  {
+   "standard": "OCP-MX",
+   "level": "component",
+   "element": "rustinfer-target"
+  },
+  {
+   "standard": "OCP-MX",
+   "level": "component",
+   "element": "rustinfer-sluice"
+  },
+  {
+   "standard": "FIPS-180-4",
+   "level": "container",
+   "element": "s-artifact"
+  },
+  {
+   "standard": "FIPS-180-4",
+   "level": "container",
+   "element": "cr-lib-art"
+  },
+  {
+   "standard": "FIPS-180-4",
+   "level": "component",
+   "element": "rustinfer-artifact"
+  },
+  {
+   "standard": "FIPS-180-4",
+   "level": "component",
+   "element": "rustinfer-sluice"
+  },
+  {
+   "standard": "FIPS-180-4",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "RFC-8259",
+   "level": "container",
+   "element": "s-artifact"
+  },
+  {
+   "standard": "RFC-8259",
+   "level": "container",
+   "element": "s-catalog"
+  },
+  {
+   "standard": "RFC-8259",
+   "level": "component",
+   "element": "rustinfer-mir"
+  },
+  {
+   "standard": "RFC-8259",
+   "level": "component",
+   "element": "rustinfer-artifact"
+  },
+  {
+   "standard": "RFC-8259",
+   "level": "component",
+   "element": "rustinfer-frontend"
+  },
+  {
+   "standard": "ISO-8601",
+   "level": "container",
+   "element": "s-artifact"
+  },
+  {
+   "standard": "ISO-8601",
+   "level": "component",
+   "element": "rustinfer-core"
+  },
+  {
+   "standard": "ISO-8601",
+   "level": "component",
+   "element": "rustinfer-artifact"
+  },
+  {
+   "standard": "SPIR-V",
+   "level": "component",
+   "element": "rustinfer-target-spirv-vulkan"
+  },
+  {
+   "standard": "VULKAN",
+   "level": "component",
+   "element": "rustinfer-target-spirv-vulkan"
+  },
+  {
+   "standard": "RVV-1.0",
+   "level": "context",
+   "element": "x-riscv"
+  },
+  {
+   "standard": "RVV-1.0",
+   "level": "context",
+   "element": "r-riscv"
+  },
+  {
+   "standard": "RVV-1.0",
+   "level": "component",
+   "element": "rustinfer-target-riscv-vector"
+  },
+  {
+   "standard": "OPENAI-API",
+   "level": "context",
+   "element": "r-client"
+  },
+  {
+   "standard": "OPENAI-API",
+   "level": "container",
+   "element": "c-http"
+  },
+  {
+   "standard": "OPENAI-API",
+   "level": "container",
+   "element": "cr-client-http"
+  },
+  {
+   "standard": "RFC-9110",
+   "level": "context",
+   "element": "r-client"
+  },
+  {
+   "standard": "RFC-9110",
+   "level": "context",
+   "element": "r-prometheus"
+  },
+  {
+   "standard": "RFC-9110",
+   "level": "container",
+   "element": "c-http"
+  },
+  {
+   "standard": "RFC-9110",
+   "level": "container",
+   "element": "cr-client-http"
+  },
+  {
+   "standard": "SSE",
+   "level": "context",
+   "element": "r-client"
+  },
+  {
+   "standard": "SSE",
+   "level": "container",
+   "element": "c-http"
+  },
+  {
+   "standard": "SSE",
+   "level": "container",
+   "element": "cr-client-http"
+  },
+  {
+   "standard": "PROM-TEXT",
+   "level": "context",
+   "element": "r-prometheus"
+  },
+  {
+   "standard": "PROM-TEXT",
+   "level": "container",
+   "element": "c-http"
+  }
+ ]
+}

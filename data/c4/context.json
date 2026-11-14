@@ -1,0 +1,33 @@
+{
+ "title": "System Context diagram for rustinfer",
+ "intro": "rustinfer and the people and systems around it. The people are the SRS user classes that touch the product (SRS §2.3); kernel and backend authors work on the source, not with the system, and are left out.",
+ "people": [
+  {"id": "p-builder", "name": "Builder", "desc": "Produces and inspects artifacts, chooses profiles and precision, runs the autotuner."},
+  {"id": "p-operator", "name": "Operator", "desc": "Runs the executor or the server; reads metrics and health."},
+  {"id": "p-client", "name": "Client", "desc": "Sends requests through the library, the CLI or HTTP."},
+  {"id": "p-ci", "name": "CI", "desc": "Builds, lints and tests on every change; autotunes on hardware runners.", "automated": true}
+ ],
+ "system": {"id": "sys-rustinfer", "name": "rustinfer", "type": "Software system",
+   "desc": "Compiles a Hugging Face checkpoint into a hashed engine artifact for one target, then loads it, streams the weights to the device and serves tokens.",
+   "issues": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18], "link": "#c4-containers"},
+ "externals": [
+  {"id": "x-checkpoint", "name": "Hugging Face checkpoint directory", "type": "External data", "tech": "safetensors shards, config.json", "desc": "The model's weights and configuration, read in place and never copied into the artifact."},
+  {"id": "x-gpu", "name": "ROCm driver and AMD GPU", "type": "External system", "tech": "amdgpu, HIP runtime, Instinct gfx942/gfx950", "desc": "Holds the weights and runs the generated kernels."},
+  {"id": "x-cpu", "name": "Host CPU", "type": "External system", "tech": "Linux x86_64", "desc": "Runs the compiler and the CPU reference target every GPU result is checked against."},
+  {"id": "x-llvm", "name": "LLVM 23 toolchain", "type": "External system", "tech": "MLIR, AMDGPU backend, lld; linked in process", "desc": "Lowers Kernel IR to AMDGPU code objects (ADR-007)."},
+  {"id": "x-prometheus", "name": "Prometheus", "type": "External system", "tech": "HTTP scrape", "desc": "Scrapes the server's metrics.", "release": "R3"},
+  {"id": "x-riscv", "name": "RISC-V boards", "type": "External system", "tech": "RVV 1.0, mesh accelerators", "desc": "Later targets: vector cores first, then meshes.", "release": "R3"}
+ ],
+ "relations": [
+  {"id": "r-builder", "from": "p-builder", "to": "sys-rustinfer", "label": "builds, inspects and tunes artifacts", "tech": "rustinfer build / inspect / tune"},
+  {"id": "r-operator", "from": "p-operator", "to": "sys-rustinfer", "label": "runs and serves a model; reads health", "tech": "rustinfer run / serve"},
+  {"id": "r-client", "from": "p-client", "to": "sys-rustinfer", "label": "sends requests, receives tokens", "tech": "library enqueue/await; HTTP and SSE from R3"},
+  {"id": "r-ci", "from": "p-ci", "to": "sys-rustinfer", "label": "builds and tests every change; autotunes", "tech": "cargo, GitHub Actions, gpu-test runners"},
+  {"id": "r-checkpoint", "from": "sys-rustinfer", "to": "x-checkpoint", "label": "reads the configuration, the shard headers and the used byte ranges", "tech": "safetensors, config.json"},
+  {"id": "r-gpu", "from": "sys-rustinfer", "to": "x-gpu", "label": "streams weights, loads code objects, launches kernels", "tech": "HIP"},
+  {"id": "r-cpu", "from": "sys-rustinfer", "to": "x-cpu", "label": "compiles; runs the reference target", "tech": "Rust, in process"},
+  {"id": "r-llvm", "from": "sys-rustinfer", "to": "x-llvm", "label": "lowers kernels to code objects", "tech": "MLIR C API, LLVM 23"},
+  {"id": "r-prometheus", "from": "x-prometheus", "to": "sys-rustinfer", "label": "scrapes metrics", "tech": "Prometheus text over HTTP", "release": "R3"},
+  {"id": "r-riscv", "from": "sys-rustinfer", "to": "x-riscv", "label": "compiles for and launches on", "tech": "RVV 1.0 lowering", "release": "R3"}
+ ]
+}

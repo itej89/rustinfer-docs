@@ -104,7 +104,8 @@ properties kept.
 <li><a href="roadmap.html"><span class="card-title">Roadmap</span><span class="card-note">The steps to Release 1 in order, dated as they close, with the defects met on the way.</span></a></li>
 <li><a href="progress.html"><span class="card-title">Progress</span><span class="card-note">Issues closed, PRs, CI, requirements, tests, coverage: the roadmap's measure.</span></a></li>
 <li><a href="design.html"><span class="card-title">Design</span><span class="card-note">The three representations, the crates, the error contract, logging, settings and constants.</span></a></li>
-<li><a href="design-diagrams.html"><span class="card-title">Design diagrams</span><span class="card-note">The six UML diagrams the tree keeps, rendered as committed.</span></a></li>
+<li><a href="architecture-diagram.html"><span class="card-title">Architecture diagram</span><span class="card-note">rustinfer in the C4 model, context to code, with the layers, the standards, build-then-run and the deployment; every chip derived.</span></a></li>
+<li><a href="design-diagrams.html"><span class="card-title">Design diagrams</span><span class="card-note">The six UML diagrams the tree keeps, drawn as cards and numbered steps from their source.</span></a></li>
 <li><a href="features.html"><span class="card-title">Features</span><span class="card-note">Every feature with its release and its status today.</span></a></li>
 <li><a href="supported-models.html"><span class="card-title">Supported models</span><span class="card-note">What will run in each release; nothing runs today.</span></a></li>
 <li><a href="frontend.html"><span class="card-title">Frontend</span><span class="card-note">The LLaMA family into Model IR; the Architecture seam; the R1 gaps.</span></a></li>
@@ -121,7 +122,7 @@ properties kept.
 ## Reading order
 
 Start with the **roadmap** and its measure, **progress**, then **design** for the three representations and the rules the
-compiler enforces, then the **diagrams**. **Features** and **supported
+compiler enforces, then the **architecture diagram** and the **design diagrams**. **Features** and **supported
 models** say what each release delivers and what exists today. **Compiler**
 takes the frontend, the graph compiler and the kernel compiler in turn; **Runtime** covers
 the executor, Sluice, the artifact cache and the planner. **Hardware** lists the

@@ -1,0 +1,115 @@
+{
+ "title": "Dynamic diagram for rustinfer: build, then the first run",
+ "intro": "What happens between `rustinfer build` and the first token, numbered in order across containers and components. Each step's chip is its component's state; the steps whose code is not written yet are the Release 1 issues still open.",
+ "steps": [
+  {
+   "from": "Builder",
+   "to": "rustinfer CLI",
+   "what": "rustinfer build <checkpoint> --target gfx950",
+   "tech": "shell",
+   "ref": "cli-commands",
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-frontend",
+   "to": "Checkpoint directory",
+   "what": "reads config.json and every shard header; picks the Architecture; emits Model IR, the weight manifest and the checkpoint identity",
+   "tech": "safetensors, JSON",
+   "ref": "rustinfer-frontend",
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-mir",
+   "to": "rustinfer-mir",
+   "what": "validates the Model IR document: shapes, dtypes, encodings, operator arity",
+   "tech": "in process",
+   "ref": "rustinfer-mir",
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-compiler",
+   "to": "rustinfer-planner",
+   "what": "runs the pass pipeline to a Plan under the profile; the planner places it on the discovered devices",
+   "tech": "in process",
+   "ref": "rustinfer-compiler",
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-compiler",
+   "to": "rustinfer-kc",
+   "what": "asks for each kernel by KernelQuery; generators build Kernel IR, tuned entries come from the catalog",
+   "tech": "in process",
+   "ref": "rustinfer-kc",
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-kc",
+   "to": "LLVM 23 toolchain",
+   "what": "lowers Kernel IR to ROCDL and links an AMDGPU code object per kernel",
+   "tech": "MLIR C API, lld",
+   "ref": "rustinfer-kc",
+   "issue": 8,
+   "phase": "build"
+  },
+  {
+   "from": "rustinfer-artifact",
+   "to": ".rie artifact",
+   "what": "writes the Plan, the kernels and the manifest; hashes last; fsync and rename into the cache",
+   "tech": ".rie, SHA-256",
+   "ref": "rustinfer-artifact",
+   "phase": "build"
+  },
+  {
+   "from": "Operator",
+   "to": "rustinfer CLI",
+   "what": "rustinfer run <dir>",
+   "tech": "shell",
+   "ref": "cli-commands",
+   "issue": 14,
+   "phase": "run"
+  },
+  {
+   "from": "rustinfer-artifact",
+   "to": ".rie artifact",
+   "what": "reads and verifies magic, bounds, hash, target and the checkpoint identity; any failure refuses the load",
+   "tech": ".rie, SHA-256",
+   "ref": "rustinfer-artifact",
+   "phase": "run"
+  },
+  {
+   "from": "rustinfer-sluice",
+   "to": "GPU device boundary",
+   "what": "streams the used byte ranges of the checkpoint into device memory, transforming the layout on the way",
+   "tech": "pread, HIP copies",
+   "ref": "rustinfer-sluice",
+   "phase": "run"
+  },
+  {
+   "from": "rustinfer-runtime",
+   "to": "GPU device boundary",
+   "what": "loads the code objects, launches the Plan, samples a token",
+   "tech": "HIP",
+   "ref": "rustinfer-runtime",
+   "phase": "run"
+  },
+  {
+   "from": "rustinfer CLI",
+   "to": "Operator",
+   "what": "prints the tokens; a client of the library awaits the same responses",
+   "tech": "stdout",
+   "ref": "cli-commands",
+   "issue": 14,
+   "phase": "run"
+  }
+ ],
+ "phases": {
+  "build": {
+   "title": "Build: rustinfer build",
+   "lede": "From the checkpoint to a verified artifact in the cache; nothing here needs a GPU."
+  },
+  "run": {
+   "title": "First run: rustinfer run",
+   "lede": "From the artifact to the first token: verify, stream the weights, launch."
+  }
+ }
+}

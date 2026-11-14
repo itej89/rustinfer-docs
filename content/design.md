@@ -10,7 +10,7 @@ summary: The three representations, the fourteen crates and the direction their 
 Read from ADR-001, ADR-003, ADR-005, SRS §2, `docs/uml/component-diagram.md`,
 `Cargo.toml`, `crates/rustinfer-core/`, `crates/rustinfer-mir/`,
 `crates/rustinfer-target/`, `crates/rustinfer-planner/` and
-`crates/rustinfer-cli/src/targets.rs` at commit `f039b4d`. The diagrams themselves are on [design diagrams](design-diagrams.html).
+`crates/rustinfer-cli/src/targets.rs` at commit `f039b4d`. The system as a whole is drawn on the [architecture diagram](architecture-diagram.html), in the C4 model from its context down to its code, with the layer stack, the standards, the build-then-run sequence and the deployment; the tree's own UML diagrams are on [design diagrams](design-diagrams.html).
 
 ## Three representations
 
