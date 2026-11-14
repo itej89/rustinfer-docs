@@ -33,10 +33,11 @@ share since PR #30 (OI-004).
 | family | `model_type` | what the frontend reads | release | status |
 |---|---|---|---|---|
 | LLaMA | `llama` | layers, hidden size, attention and KV heads, intermediate size, vocabulary, RoPE parameters and scaling, norm epsilon, tied embeddings (RI-FE-001) | R1 | <span class="state-part">lowers to Model IR</span> — PR #24; `llama3` RoPE scaling (Llama 3.1 and later) refused until a frequency-table attribute, issue #31 (R2) |
-| Mistral, Qwen2, Qwen3 | `mistral`, `qwen2`, `qwen3` | the same lowering, with biases, QK norm and sliding-window keys; R1 since SRS v0.3 (was R2) | R1 | <span class="state-part">mistral and qwen2 lower to Model IR</span> — PR #24; an active sliding window refused as R2; `qwen3` refused at QK norm until #26 |
+| Mistral, Qwen2, Qwen3 | `mistral`, `qwen2`, `qwen3` | the same lowering, with biases, QK norm and sliding-window keys; R1 since SRS v0.3 (was R2) | R1 | <span class="state-part">mistral and qwen2 lower to Model IR</span> — PR #24; an active sliding window refused as R2; `qwen3` lowers with its QK norm since PR #42 (#26) |
 | MoE families: DeepSeek-V3 with MLA, Qwen MoE, GPT-OSS | | router, experts, shared experts, MLA latent projections (RI-FE-005) | R3 | <span class="state-no">not started</span> |
 | Pre-quantized checkpoints: FP8 per-tensor and block-scale | | imported with their scales; refused when the target has no catalog kernel for the scheme (RI-FE-006) | R2 | <span class="state-no">not started</span> |
-| Pre-quantized checkpoints: AWQ, GPTQ, MXFP4 | | as above | R3 | <span class="state-no">not started</span> — MXFP4 is tagged R3 here and R2 for the precision pass (RI-GC-004) in SRS v0.3 on `main`; an SRS v0.4 amendment moving MXFP4 to R1 is proposed, in review, and not decided. |
+| Pre-quantized checkpoints: dense MXFP4 from AMD Quark and compressed-tensors | `quantization_config` | the producer's scheme, exclusions and algorithms, the packed `U8` data and `ue8m0` scales of each projection, and the checkpoint's fp8 KV scales (RI-FE-006) | R1 | <span class="state-part">lowers to Model IR</span> — GitHub PR #49 (8c7d47e, #35), moved to R1 by SRS v0.4 (ADR-010); W4A4-calibrated checkpoints run with bf16 activations and the deviation is logged; no build or GPU kernel yet (#36, #38) |
+| Pre-quantized checkpoints: AWQ, GPTQ, gpt-oss MXFP4 | | as above | R3 | <span class="state-no">not started</span> — refused naming the field and the release |
 | LoRA adapters, PEFT layout | | `adapter_config.json` plus safetensors, keyed by target module, rank checked against `max_lora_rank` (RI-FE-007) | R3 | <span class="state-no">not started</span> |
 | Model IR JSON as input | | accepted in place of an HF directory (RI-FE-008) | R2 | <span class="state-no">not started</span> |
 | Multimodal, encoder-decoder, Mamba and hybrid | | the feature inventory marks these *later*, after R4; no requirement exists | after R4 | <span class="state-no">not started</span> |
@@ -61,5 +62,7 @@ mismatch is wrong output, not an error.
 ## Precision per release
 
 The formats follow the AMD matrix cores (RI-MIR-003, RI-GC-004): bf16, fp16,
-fp32 and fp8 (OCP e4m3 on gfx950, FNUZ e4m3 on gfx942) in R1; int8, fp4x2
-and e8m0 scales plus an FP8 KV cache in R2; int4 weight-only in R3.
+fp32, fp8 (OCP e4m3 on gfx950, FNUZ e4m3 on gfx942), MXFP4 (`fp4x2` with
+`ue8m0` scales, SRS v0.4) and the fp8, MXFP4 and bf16 KV cache in R1, plus
+OCP E5M2 (`fp8_e5m2`, SRS v0.4.6, PR #55), which only `quantize` and
+`dequantize` take; int8 in R2; int4 weight-only in R3.

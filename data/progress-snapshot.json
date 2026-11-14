@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-14T03:14:37+00:00",
+ "fetched_at": "2026-11-14T04:27:57+00:00",
  "source": "github",
  "issues": [
   {
@@ -454,8 +454,8 @@
   {
    "number": 35,
    "title": "MXFP4 frontend: Quark and compressed-tensors dense checkpoints",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-14",
    "labels": [
     "feature"
    ],
@@ -467,7 +467,7 @@
     "RI-FE-006"
    ],
    "branch": "feat/35-mxfp4-checkpoints",
-   "derived_status": "In review 2026-11-13"
+   "derived_status": "Done 2026-11-14"
   },
   {
    "number": 36,
@@ -579,8 +579,22 @@
    "milestone": "R1 — foundation",
    "blocked_by": [],
    "requirements": [],
-   "branch": "fix/51-standards-defects",
+   "branch": "fix/51-e5m2-partial-rotary",
    "derived_status": "In progress"
+  },
+  {
+   "number": 54,
+   "title": "Tests required on GPU hardware (owner's queue)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
   }
  ],
  "pulls": [
@@ -827,11 +841,11 @@
   {
    "number": 49,
    "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "state": "open",
+   "state": "closed",
    "head": "feat/35-mxfp4-checkpoints",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-14",
    "mergeable": true,
    "created_at": "2026-11-13",
    "url": "https://github.com/itej89/rustinfer/pull/49"
@@ -863,156 +877,180 @@
   {
    "number": 53,
    "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
-   "state": "open",
+   "state": "closed",
    "head": "docs/srs-build-reads-weights",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-14",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/53"
+  },
+  {
+   "number": 55,
+   "title": "fix: refuse partial_rotary_factor ≠ 1.0 (HFC-5); add OCP E5M2 (fp8_e5m2) with CPU reference (#51)",
+   "state": "closed",
+   "head": "fix/51-e5m2-partial-rotary",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-14",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/55"
+  },
+  {
+   "number": 56,
+   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
+   "state": "open",
+   "head": "docs/uml-close-fences",
    "base": "main",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
    "created_at": "2026-11-14",
-   "url": "https://github.com/itej89/rustinfer/pull/53"
+   "url": "https://github.com/itej89/rustinfer/pull/56"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 17,
-   "closed": 33
+   "open": 16,
+   "closed": 37
   }
  ],
  "runs": [
   {
-   "id": 81,
-   "title": "Merge pull request #52 from itej89/fix/51-standards-defects",
+   "id": 93,
+   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/uml-close-fences",
+   "sha": "be831c5",
+   "created": "2026-11-14T04:19",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43556108310"
+  },
+  {
+   "id": 92,
+   "title": "Merge pull request #49 from itej89/feat/35-mxfp4-checkpoints",
    "status": "completed",
    "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "b99720a",
-   "created": "2026-11-14T03:06",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43549897715"
+   "sha": "8c7d47e",
+   "created": "2026-11-14T04:19",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43556032360"
   },
   {
-   "id": 80,
-   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
-   "status": "in_progress",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "docs/srs-build-reads-weights",
-   "sha": "4726543",
-   "created": "2026-11-14T03:06",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43549851439"
-  },
-  {
-   "id": 79,
+   "id": 91,
    "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "fd03bc1",
-   "created": "2026-11-14T02:49",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43548397394"
+   "sha": "2491c56",
+   "created": "2026-11-14T04:08",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43555102083"
   },
   {
-   "id": 78,
-   "title": "Merge pull request #50 from itej89/docs/srs-standards-conformance",
+   "id": 90,
+   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
    "status": "completed",
    "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "48c2820",
-   "created": "2026-11-14T02:42",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43547816832"
+   "event": "pull_request",
+   "ref": "docs/uml-close-fences",
+   "sha": "e8c9fa8",
+   "created": "2026-11-14T04:06",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43555006868"
   },
   {
-   "id": 77,
-   "title": "Merge pull request #48 from itej89/feat/37-kv-dtypes",
+   "id": 89,
+   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
    "status": "completed",
    "conclusion": "cancelled",
+   "event": "pull_request",
+   "ref": "docs/uml-close-fences",
+   "sha": "05ae20b",
+   "created": "2026-11-14T04:06",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43554993050"
+  },
+  {
+   "id": 88,
+   "title": "Merge pull request #53 from itej89/docs/srs-build-reads-weights",
+   "status": "completed",
+   "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "e218b8a",
-   "created": "2026-11-14T02:42",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43547760971"
+   "sha": "8d58ad6",
+   "created": "2026-11-14T03:59",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43554364783"
   },
   {
-   "id": 76,
+   "id": 87,
    "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "5d2411a",
-   "created": "2026-11-14T02:35",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43547186293"
+   "sha": "380d7a3",
+   "created": "2026-11-14T03:55",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43554054333"
   },
   {
-   "id": 75,
-   "title": "fix: standards audit defects on main (#51)",
+   "id": 86,
+   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "fix/51-standards-defects",
-   "sha": "a1374bd",
-   "created": "2026-11-14T02:17",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43545482271"
+   "ref": "docs/srs-build-reads-weights",
+   "sha": "c635ce7",
+   "created": "2026-11-14T03:51",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43553756452"
   },
   {
-   "id": 74,
+   "id": 85,
+   "title": "Merge pull request #55 from itej89/fix/51-e5m2-partial-rotary",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "6a18042",
+   "created": "2026-11-14T03:49",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43553600779"
+  },
+  {
+   "id": 84,
+   "title": "fix: refuse partial_rotary_factor ≠ 1.0 (HFC-5); add OCP E5M2 (fp8_e5m2) with CPU reference (#51)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "fix/51-e5m2-partial-rotary",
+   "sha": "b3e8fa7",
+   "created": "2026-11-14T03:35",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43552416395"
+  },
+  {
+   "id": 83,
+   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/srs-build-reads-weights",
+   "sha": "a07e16e",
+   "created": "2026-11-14T03:20",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43551082108"
+  },
+  {
+   "id": 82,
    "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "a35421c",
-   "created": "2026-11-14T02:12",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43544966583"
-  },
-  {
-   "id": 73,
-   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/8-amd-lowering",
-   "sha": "821a57e",
-   "created": "2026-11-14T02:02",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43544000372"
-  },
-  {
-   "id": 72,
-   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "c17c203",
-   "created": "2026-11-14T02:00",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43543884969"
-  },
-  {
-   "id": 71,
-   "title": "docs(srs): mark each standard mandatory or informative",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-standards-conformance",
-   "sha": "af90f49",
-   "created": "2026-11-14T01:58",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43543695615"
-  },
-  {
-   "id": 70,
-   "title": "feat: KV cache dtypes bf16, fp8 and MXFP4 with --kv-dtype (#37)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/37-kv-dtypes",
-   "sha": "874b50b",
-   "created": "2026-11-14T01:55",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43543389976"
+   "sha": "afe2140",
+   "created": "2026-11-14T03:14",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43550624432"
   }
  ],
  "branches": [
@@ -1023,6 +1061,7 @@
   "docs/srs-standards",
   "docs/srs-standards-conformance",
   "docs/srs-v0.4-mxfp4",
+  "docs/uml-close-fences",
   "feat/15-planner-interfaces",
   "feat/18-sluice-weight-streamer",
   "feat/26-grouped-rmsnorm",
@@ -1036,6 +1075,7 @@
   "feat/7-kernel-ir-and-mlir-link",
   "feat/8-amd-lowering",
   "fix/27-conformance",
+  "fix/51-e5m2-partial-rotary",
   "fix/51-standards-defects",
   "infra/github-hosting",
   "main",

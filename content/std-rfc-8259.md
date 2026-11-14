@@ -18,16 +18,18 @@ request bodies).
 
 **Implementation:** `serde_json` 1.0.154 with its default features and
 `float_roundtrip` (`Cargo.toml:54`, since PR #52), no `preserve_order`. On origin/main
-(`b99720a`):
+(`8c7d47e`):
 
 - the Model IR's canonical writer and bounded reader,
   `crates/rustinfer-mir/src/json.rs:87-91` and `:122-134`, with non-finite reals
   refused before writing (`crates/rustinfer-mir/src/validate.rs:592`);
 - the artifact's JSON sections, `crates/rustinfer-artifact/src/json.rs:88-98`
   (`to_canonical`) and `:101-116` (`from_canonical`: size bound, UTF-8 check,
-  version field, typed parse);
-- the inputs: `config.json` (`crates/rustinfer-frontend/src/lowering.rs:173-174`,
-  `src/config.rs:92`) and the safetensors header, parsed by a reader that refuses a
+  version field, typed parse); the metadata section is version 2 since PR #53
+  and #49, adding the checkpoint identity's `used_ranges`
+  (`crates/rustinfer-artifact/src/metadata.rs:108-131`);
+- the inputs: `config.json` (`crates/rustinfer-frontend/src/lowering.rs:202-221`,
+  `src/config.rs:121`) and the safetensors header, parsed by a reader that refuses a
   repeated key (`crates/rustinfer-artifact/src/safetensors.rs:577`,
   `src/unique_json.rs:24`).
 
@@ -38,7 +40,7 @@ https://www.rfc-editor.org/rfc/rfc8259). Free.
 | | |
 |---|---|
 | Pages | [requirements](std-rfc-8259-requirements.html) · [audit](std-rfc-8259-audit.html) · [tracker](std-rfc-8259-tracker.html) |
-| Audited | 2026-11-13, by reading origin/main and its tests, and a round-trip probe of `serde_json` 1.0.154; re-read at `b99720a` after PR #52 |
+| Audited | 2026-11-13 on `ccf02b3` with a round-trip probe of `serde_json` 1.0.154, re-read at `b99720a` after PR #52; re-audited 2026-11-14 on origin/main `8c7d47e` (metadata version 2, used ranges) |
 | JSON text written and read | conforms (§2 to §10) |
 | Canonical profile | conforms: reals read back bit for bit since PR #52 (`float_roundtrip`) |
 | Open gaps | 0 (JSON-1 and JSON-2 fixed in `b99720a`) |

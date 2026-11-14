@@ -10,7 +10,11 @@ summary: Gaps between rustinfer's MXFP4 implementation and OCP MX v1.1.
 # OCP MX v1.1.0 tracker
 
 Gaps found by the [audit](std-ocp-mx-audit.html) of 2026-11-13, re-audited
-against `origin/main` `b99720a` the same day after PR #48 merged. None is a
+against `origin/main` `b99720a` the same day after PR #48 merged, and on
+2026-11-14 against `8c7d47e` after PRs #55, #53 and #49. PR #49 (checkpoint
+MXFP4 import, checkpoint fp8 KV scales) closes no MX gap and opens none: it
+imports stored MXFP4 bytes and does not convert, and its KV scales are fp8
+scales, not MX. None is a
 wrong value: the CPU reference conforms. Each is an R1 path that must apply
 the reference's rule and is not fully on `origin/main` yet.
 

@@ -4,7 +4,7 @@ navtitle: Requirements
 section: Standards
 group: "Number formats / OCP OFP8 Revision 1.1"
 order: 21
-summary: What OFP8 Revision 1.1 requires of the E4M3 encoding and of conversion to it, the parts in rustinfer's scope.
+summary: What OFP8 Revision 1.1 requires of the E4M3 and E5M2 encodings and of conversion to them, the parts in rustinfer's scope.
 ---
 
 # OCP OFP8 Revision 1.1 requirements
@@ -14,10 +14,12 @@ Specification (OFP8), Revision 1.1*, effective June 22, 2026). Sections
 cited are those of that document. Scope (SRS §1.4 on `origin/main` since
 v0.4.3, PR #50): "the E4M3 and E5M2 encodings with saturating conversion
 (roundTiesToEven) only; the non-saturating mode of Revision 1.1 section 5.2.1
-is out of scope" (owner decision 2026-11-13). The items below are those of
-E4M3, the format every requirement uses; no SRS requirement converts to or
-from E5M2, which appears on `origin/main` only as a Kernel IR element type
-(see the audit).
+is out of scope" (owner decision 2026-11-13). OFP8-R1 to R11 are those of
+E4M3, the format of RI-MIR-003's `fp8`, RI-CLI-002, RI-KC-003 and
+RI-KVC-008. OFP8-R12 to R18 are those of E5M2, which RI-MIR-003 adds as the
+dtype `fp8_e5m2` since SRS v0.4.6 (PR #55, issue #51, owner decision
+2026-11-13: implement E5M2); no kernel, KV dtype or checkpoint dtype of R1
+reads it.
 
 The specification defines formats and conversion only. §4 puts out of scope
 conversion between OFP8 and other 8-bit formats or integers, arithmetic, and
@@ -53,3 +55,24 @@ since v0.4.3 (PR #50, owner decision 2026-11-13) its Scope phrase is
 its saturating mode only, and the non-saturating halves of R8 and R9 are out
 of scope: rustinfer claims conformance to saturating conversion, a documented
 deviation from §5.2.1's "requires ... saturating and non-saturating modes".
+
+## The E5M2 encoding (§3, §4.2, §5.1, Tables 1 and 2)
+
+| item | requirement | section |
+|---|---|---|
+| OFP8-R12 | "E5M2: An OFP8 format with 1 sign bit, 5 biased exponent bits, 2 mantissa bits, and an exponent bias of 15." emax 15, emin −14. | §3, §4.2, Table 1 |
+| OFP8-R13 | The value formulas of OFP8-R2 with bias 15 and m = 2: a normal value is (−1)^S × 2^(E−15) × (1 + M/4), a subnormal (E = 0, M > 0) (−1)^S × 2^−14 × (M/4). | §5.1 |
+| OFP8-R14 | "The E5M2 format represents infinities and NaNs. Interpretation of the three mantissa values for NaNs is not defined." Infinities S.11111.00; NaN S.11111.{01, 10, 11}; zeros S.00000.00; max normal S.11110.11 = ±57,344; min normal S.00001.00 = ±2^−14; max subnormal S.00000.11 = ±0.75 × 2^−14; min subnormal S.00000.01 = ±2^−16. | §5.1, Table 2 |
+
+## Conversion to E5M2 (§5.2.1, Table 3, Appendix A)
+
+| item | requirement | section |
+|---|---|---|
+| OFP8-R15 | OFP8-R4 and R5 for an E5M2 destination: conversion from binary32, binary16 and bfloat16 with Round-to-Nearest-Ties-to-Even. | §5.2.1 |
+| OFP8-R16 | "Conversion from a NaN produces an implementation-defined OFP8 NaN"; ±Inf gives ±max_E5M2 in saturating mode (±Inf in non-saturating mode, out of scope). | §5.2.1, Table 3 |
+| OFP8-R17 | A value that rounded to E5M2 precision exceeds 57,344 gives "the max normal OFP8 magnitude" in saturating mode (an infinity in non-saturating mode, out of scope); otherwise the rounded value, the sign of the source preserved. | §5.2.1, Table 3 |
+| OFP8-R18 | "The maximum finite magnitude (57,344) has an odd mantissa LSB in its binary representation (S.11110.11). Therefore, a value with 1/2 an ULP greater (61,440) rounds up resulting in overflow (or saturation)": 57,344 < x < 61,440 rounds to 57,344, and 61,440 saturates to it. | Appendix A |
+
+The saturating-only scope of OFP8-R6 applies to E5M2 as to E4M3: SRS
+RI-MIR-003 (v0.4.6) requires conversion to `fp8_e5m2` to "saturate: a value
+whose rounded magnitude exceeds 57344, and ±Inf, give ±57344".

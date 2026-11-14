@@ -13,12 +13,13 @@ summary: The compressed-tensors mxfp4-pack-quantized checkpoint format (llm-comp
 RI-FE-006. The SRS pins "0.13.0 or later" (0.13.0 tagged 2025-12-16).
 **Conformance:** mandatory from **R1** (RI-FE-006, ADR-010).
 
-**Implementation:** none on origin/main `b99720a`: `quantization_config` is
-not read and a compressed-tensors checkpoint is refused through its tensor
-dtypes. The safetensors reader and Sluice on main already handle its `U8`
-tensors (PR #47, merged). The import is in **PR #49**
-(`feat/35-mxfp4-checkpoints`, head `fd03bc1`, audited at `de19390`, issue #35):
-`crates/rustinfer-frontend/src/quant/ct.rs` and `quant/pattern.rs`.
+**Implementation:** on origin/main since PR #49 (issue #35, merge
+`8c7d47e`): `crates/rustinfer-frontend/src/quant/ct.rs` (the
+`quantization_config` fields), `quant/pattern.rs` (`ignore`, names, classes
+and `re:`), `src/mapping.rs` (`weight_packed` as `fp4x2`, `weight_scale` as
+`ue8m0`) and `src/kv_scales.rs` (`k_scale` and `v_scale` into the fp8 KV
+group's `KvScales`). The safetensors reader and Sluice handle its `U8`
+tensors (PR #47).
 
 **Source:** compressed-tensors, https://github.com/vllm-project/compressed-tensors
 at tag `0.13.0` (commit 797d3019ef68): `config/base.py`, `config/format.py`,
@@ -34,7 +35,7 @@ fields. Local copies: `specs/model-formats/ct-0.13.0-*`.
 | | |
 |---|---|
 | Pages | [requirements](std-ct-requirements.html) · [audit](std-ct-audit.html) · [tracker](std-ct-tracker.html) |
-| Audited | 2026-11-13, by reading the compressed-tensors source, origin/main (`b99720a`) and PR #49 (`de19390`) |
-| On main | nothing imported; every requirement is missing or pending PR #49 |
-| PR #49 | format, presets, tensors, nibble order and scale bias read as compressed-tensors writes them |
-| `ignore` | PR #49 at `de19390` matched globs and skipped class names, where compressed-tensors matches exact names, `re:` and class names; head `fd03bc1` claims the compressed-tensors rules |
+| Audited | 2026-11-14, by reading the compressed-tensors source and origin/main `8c7d47e` (after PR #49); first audited 2026-11-13 on `b99720a` and PR #49 at `de19390` |
+| Result | every item conforms; state **works** |
+| `ignore` | exact names, module classes and `re:` as compressed-tensors' `is_match`; no globs |
+| Open gaps | 0 |

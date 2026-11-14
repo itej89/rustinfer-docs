@@ -123,7 +123,12 @@ never copies it (RI-ART-012). Three things follow:
   differs, and `--verify-weights` opts into a full per-tensor hash check.
   SRS v0.3 makes this the whole build-time input identity (RI-SEC-004): no
   build hashes a whole weight file, and weight content is hashed only per
-  tensor, under `--hash-weights` or `--verify-weights`.
+  tensor, under `--hash-weights` or `--verify-weights`. SRS v0.4.7 (PR #53,
+  ADR-002's second amendment) lets the build read weights and adds
+  `used_ranges` to the identity: file, tensor, byte range and SHA-256 of
+  every weight range the build used, under `metadata_version` 2; Sluice
+  re-reads and re-hashes each at load and refuses a mismatch naming the
+  tensor. PR #49 records the checkpoint's KV scales this way.
 
 ## The v0.3 contract changes
 

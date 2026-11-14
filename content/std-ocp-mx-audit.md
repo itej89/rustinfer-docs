@@ -4,14 +4,19 @@ navtitle: Audit
 section: Standards
 group: "Number formats / OCP MX v1.1.0"
 order: 42
-summary: The 2026-11-13 audit of rustinfer's MXFP4 types and conversion against OCP MX v1.1; the Model IR and the CPU reference oracle conform, the paths that apply it are pending.
+summary: The 2026-11-14 audit of rustinfer's MXFP4 types, conversion and checkpoint import against OCP MX v1.1 on 8c7d47e; the Model IR, the CPU reference oracle and the checkpoint import conform, the build and GPU paths are pending.
 ---
 
 # OCP MX v1.1.0 audit
 
-**Audit of 2026-11-13**, against the [requirements](std-ocp-mx-requirements.html);
-re-audited the same day against `origin/main` `b99720a`, after PR #48 (KV
-dtypes, with MXFP4 KV) merged.
+**Audit of 2026-11-14** on `origin/main` `8c7d47e`, against the
+[requirements](std-ocp-mx-requirements.html), after PRs #55 (`6a18042`),
+#53 (`8d58ad6`) and #49 (`8c7d47e`: Quark and compressed-tensors MXFP4
+checkpoint import, checkpoint KV scales) merged. None of them changes
+`reference/mx.rs`, `mir/src/mx.rs` or their tests, so MX-R1 to MX-R13 stand
+as read; the checkpoint path is new (see below). History: first audited
+2026-11-13 on `ccf02b3`, re-audited the same day on `b99720a` after PR #48
+(KV dtypes, with MXFP4 KV).
 
 **Method.** Read the specification text (`pdftotext -layout` of
 `specs/number-formats/ocp-mx-v1.1.0.pdf`), §3 to §6.3. Read `origin/main` at
@@ -75,10 +80,55 @@ the dot products are outside the scope.
   MXFP8 is not in the Scope phrase. If it were claimed, §5.3.1 would require
   both the SAT and NONSAT FP8 modes; rustinfer has the saturating mode only,
   and OCP-OFP8 is scoped to it (OFP8-1, out of scope since PR #50).
-- Checkpoint import (PR #49, issue #35) reads Quark and compressed-tensors
-  MXFP4 tensors as `fp4x2` and `ue8m0`; that is the QUARK and CT standards.
-  `test_quark_compressed_tensors_convention_hand_built` (`tests/mx.rs:535`)
-  decodes a hand-built tensor; OI-014 (Quark's own unpacking) is still open.
+- How a Quark or compressed-tensors `quantization_config` is read is the
+  QUARK and CT standards; the MX side of that import is below.
+
+## MXFP4 checkpoint import (PR #49, merged `8c7d47e`)
+
+The frontend now imports dense Quark and compressed-tensors MXFP4
+checkpoints (issue #35) into the MX types this audit checks, rather than
+converting them, so the §6.3 conversion is not exercised: the stored bytes
+are taken as E2M1 codes and UE8M0 scales.
+
+- Each MXFP4 projection becomes an `fp4x2` weight of its logical shape with
+  the `mx` encoding, block size `MX_BLOCK_SIZE` (32), along the innermost
+  axis, with `ue8m0` scales (`crates/rustinfer-frontend/src/dtypes.rs:120-139`,
+  `src/mapping.rs:268-295`); the packed data must be `U8` with the innermost
+  axis halved, or `F4` in values, and the scales `U8` or `F8_E8M0` with the
+  block axis divided by 32, else refused naming the tensor (`mapping.rs:297-322`,
+  axis check `:159-161`). The Model IR's own `mx` check (MX-R2) still applies.
+- The weight's `config.json` fields must name MXFP4 exactly as MX-R2 does:
+  Quark `fp4`, `per_group`, `group_size` 32, `ch_axis` −1, `scale_format`
+  `e8m0` (`src/quant/quark.rs:110-139`); compressed-tensors 4-bit float
+  weights in groups of 32 with `uint8` scales (`src/quant/ct.rs:160-189`).
+- Nibble order: low nibble first, the even element in bits 3..0, as
+  RI-MIR-003 states and the CPU reference packs (`reference/mx.rs:305-339`).
+  OI-014 is closed by SRS v0.4.8 (`docs/SRS-RI-v0.1.md:27`, `:2091-2100`): Quark's
+  `Pack_fp4.pack` and `Pack_fp4.unpack` fix that order. The frontend tests
+  decode each fixture's bytes through a line-for-line port of
+  `Pack_fp4.unpack` and through the CPU reference `mx_dequantize`, and
+  require the values written, bit for bit, for both producers and four
+  families (`check_mx_weights`, `crates/rustinfer-frontend/tests/mxfp4.rs:71-104`;
+  `test_quark_fixture_of_each_family_lowers_to_mx_weights` `:111`, `Verifies
+  RI-MIR-003`; `test_compressed_tensors_fixture_of_each_family_lowers_to_mx_weights`
+  `:125`). `test_quark_compressed_tensors_convention_hand_built`
+  (`crates/rustinfer-target/tests/mx.rs:535`) still decodes a hand-built tensor.
+  No real checkpoint was decoded.
+- Bad shapes and dtypes are refused naming the tensor:
+  `test_bad_mx_tensors_are_refused_naming_the_tensor` (`tests/mxfp4.rs:587`),
+  `test_packed_u8_shape_mismatch_is_refused_naming_the_tensor`
+  (`tests/mxfp4_review.rs:162`); `F4` and `F8_E8M0` headers lower like `U8`
+  (`tests/mxfp4.rs:716`).
+
+**KV scales.** The checkpoint KV scales of PR #49 are fp8 per-layer scales,
+not MX: `apply_kv_scales` fills only an fp8 KV group's `KvScales` and leaves
+a group without `fp8_scales` untouched
+(`crates/rustinfer-frontend/src/kv_scales.rs:102-121`). An MXFP4 KV group
+still computes its UE8M0 block scales at the cache write (below);
+`test_without_scales_or_fp8_the_geometry_is_unchanged`
+(`crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs:102`) checks that a
+`--kv-dtype mxfp4` geometry records no fp8 scales from a checkpoint that has
+them. No MX item is affected.
 
 ## MXFP4 KV cache (PR #48, merged `e218b8a`)
 
@@ -109,7 +159,9 @@ Recorded as MX-1 to MX-3.
 ## Result
 
 Every in-scope item conforms in the Model IR and the CPU reference, the
-oracle the other targets are checked against, and since PR #48 the MXFP4 KV
-CPU reference applies it. The paths that must apply the same rule at build
+oracle the other targets are checked against; since PR #48 the MXFP4 KV
+CPU reference applies it, and since PR #49 (`8c7d47e`) checkpoint MXFP4
+weights import into the same `fp4x2`, `ue8m0` and `mx` types, low nibble
+first (OI-014 closed, SRS v0.4.8). The paths that must apply the same rule at build
 time (MX-1), in the GPU KV kernels (MX-2) and in kernels (MX-3) are not on
 `origin/main`. **Partial**, for the R1 coverage, not for any wrong value.

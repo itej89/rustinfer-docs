@@ -26,11 +26,11 @@ Face directory and returns a `Lowered` value with four parts:
 |---|---|
 | `document` | the validated Model IR `Document`: one weight set, the functions `prefill` and `decode`, one paged KV group named `main` (RI-FE-001, RI-MIR-009, RI-MIR-010) |
 | `manifest` | the weight manifest: every Model IR weight mapped to its shard, tensor name, dtype, shape and byte range, with `root "."`, `source_layout` and `target_layout` `row_major`, `transform` `identity` and `ranks [0]` (RI-FE-002, RI-ART-005); the graph compiler later sets the target layout and transform per weight (#10) |
-| `identity` | the checkpoint identity a load must match: the SHA-256 of `config.json` and each shard's size and header hash (RI-ART-008, RI-ART-012) |
+| `identity` | the checkpoint identity a load must match: the SHA-256 of `config.json`, each shard's size and header hash, and since SRS v0.4.7 (PR #53, PR #49) the file, tensor, byte range and SHA-256 of every weight range the build read and used, today a checkpoint's KV scale tensors (RI-ART-008, RI-ART-012) |
 | `config` | the typed `ModelConfig` the document was built from |
 
 Only `config.json`, `model.safetensors.index.json` when present and the
-safetensors headers are read, never a weight byte (RI-FE-004). All three are
+safetensors headers are read, plus, since SRS v0.4.7 allowed the build to read weights (RI-FE-004, PR #53), the few bytes of a checkpoint's KV scale tensors, each recorded as a used range of the identity (PR #49). All three are
 untrusted input, bounded by size before they are read and parsed into typed
 structures, and every refusal names the field or tensor (RI-SEC-003). With
 an index, only the shards its `weight_map` names are read, so a
@@ -118,6 +118,7 @@ approximated (RI-FE-001 v0.3, issue #6):
 | Qwen3 QK norm (`q_norm`, `k_norm`, a per-head `rmsnorm`) | refused as R2: the R1 `rmsnorm` normalises over the whole last dimension, so lowering it would be silently wrong | #26, a per-head attribute on `rmsnorm`; the `qwen3` fixture then gets a golden graph |
 | `llama3`, `yarn` and `dynamic` RoPE scaling | parsed, then refused: `rope_scaling type … (Model IR v1 carries linear scaling only)`; this rejects Llama 3.1 and later | issue [#31](https://github.com/itej89/rustinfer/issues/31) (open, R2): a static frequency-table attribute on `rope` (RI-MIR-004), computed by the frontend from `rope_scaling`, read by the CPU reference kernel; moved out of #27 because the SRS places it in R2 |
 | An active sliding window (Mistral's `sliding_window`, Qwen's under `use_sliding_window`) | refused as R2 (RI-MIR-010 window groups) | R2 |
+| `partial_rotary_factor` other than 1 (rotating part of the head) | refused naming the field, at top level or inside `rope_parameters` (HF-CONFIG HFC-5, PR #55, 6a18042) | no release schedules it; the R1 `rope` rotates the whole head |
 | ~~One dtype per checkpoint~~ | lifted by PR #33 (2026-11-13): each `ExpectedTensor` carries its own dtype expectation, so an architecture can declare a mixed fp8 and bf16 checkpoint (the unit tests' `test_mixed` architecture lowers one end to end). The LLaMA family still expects every tensor in the compute dtype (`bf16`, `fp16` or `fp32`) and defers `fp8_e4m3` and `fp8_e4m3fnuz` weights to R2 as a pre-quantized checkpoint (RI-FE-006, tagged `Groundwork for`); a mismatch is `DtypeMismatch` naming the tensor, the expected and the found dtype | done; pre-quantized checkpoints are R2 (RI-FE-006) |
 
 Supported families by release are on [supported models](supported-models.html);

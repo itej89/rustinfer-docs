@@ -9,7 +9,8 @@ summary: Gaps between rustinfer's JSON and RFC 8259 with its canonical profile; 
 
 # RFC 8259 tracker
 
-From the [audit](std-rfc-8259-audit.html) of 2026-11-13. Both rows were raised in
+From the [audit](std-rfc-8259-audit.html) of 2026-11-13, re-audited against
+`origin/main` `8c7d47e` on 2026-11-14 (metadata version 2, used ranges: no new gap). Both rows were raised in
 issue #51 and closed by PR #52 (merge `b99720a`).
 
 | id | gap | required by | status | notes |

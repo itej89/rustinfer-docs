@@ -4,13 +4,16 @@ navtitle: Audit
 section: Standards
 group: "Data and integrity / RFC 8259"
 order: 22
-summary: The 2026-11-13 audit of rustinfer's JSON against RFC 8259, re-read at b99720a: the text and the canonical profile conform; reals read back bit for bit since #52.
+summary: The audit of rustinfer's JSON against RFC 8259, re-audited 2026-11-14 at 8c7d47e: the text and the canonical profile conform, the used ranges of metadata version 2 included.
 ---
 
 # RFC 8259 audit
 
-**Audit of 2026-11-13**, against the [requirements](std-rfc-8259-requirements.html);
-re-audited the same day on origin/main `b99720a` after PR #52 (issue #51) merged.
+**Re-audit of 2026-11-14**, against the [requirements](std-rfc-8259-requirements.html),
+on origin/main `8c7d47e`, after PR #53 (`8d58ad6`, SRS v0.4.7) and PR #49
+(`8c7d47e`) added the checkpoint identity's `used_ranges` to the metadata section,
+now `metadata_version` 2. History: first audit 2026-11-13 on `ccf02b3`; re-audited
+the same day on `b99720a` after PR #52 (issue #51).
 
 **Method.** Read the JSON writers and readers on origin/main (`b99720a`; first
 reading at `ccf02b3`) and their tests; listed the `serde_json` features the workspace enables
@@ -36,7 +39,9 @@ was run.
 | P1 sorted keys, compact | **conforms** | `serde_json::Value` maps are B-tree maps without `preserve_order`; `crates/rustinfer-mir/tests/json_roundtrip.rs:37` (`Verifies RI-MIR-007`), `crates/rustinfer-mir/tests/functions.rs:146` |
 | P2 exact numerics | **conforms** | integers are exact. Reals are written in shortest round-trip form and, since PR #52, read back correctly rounded: the workspace `serde_json` enables `float_roundtrip` (`Cargo.toml:54`). Before it, the first probe found 593,094 of 2,000,000 random bit patterns read back as a different `f64` (first case `394301.33835633675` read as `394301.3383563367`). `crates/rustinfer-mir/tests/json_roundtrip.rs:229` round-trips 100,000 seeded reals of every magnitude and sign, subnormals and edge cases, bit for bit; `:253` round-trips the probe's first failure through `Document::to_json` and `from_json` (both `Verifies RI-MIR-007`). JSON-1 closed |
 | P3 byte-identical sections | **conforms** for serialisation | `crates/rustinfer-artifact/tests/roundtrip.rs:64` and `:75` (`Groundwork for RI-GC-009`: deterministic compilation itself is #10) |
+| P4 used ranges in the metadata section | **conforms** | Since `8c7d47e` the checkpoint identity carries `used_ranges`, each `{file, tensor, byte_range: {offset, length}, sha256}` (`crates/rustinfer-artifact/src/metadata.rs:108-131`), every struct `deny_unknown_fields`, the digest as 64 lowercase hex digits (`crates/rustinfer-artifact/src/hash.rs:41-63`), offsets and lengths as exact `u64` integers (see J9). An empty list is omitted (`skip_serializing_if`, `metadata.rs:114-116`), so an artifact that used no weight byte writes the same identity text as before apart from the version; the section is `metadata_version` 2, and a reader accepts 1 and 2, version 1 read as no used ranges (`crates/rustinfer-core/src/config/constants.rs:96-100`, `crates/rustinfer-artifact/src/json.rs:60-65`). The ranges are bounded in count and string length and checked against the recorded file size after the typed parse (`check_used_ranges`, `metadata.rs:245-286`). `test_used_ranges_round_trip_in_metadata_version_2` (`crates/rustinfer-artifact/tests/used_ranges.rs:32`) writes, reads back equal and finds `"metadata_version":2` and `"used_ranges"` in the canonical text; `test_used_range_outside_its_file_is_refused_naming_the_tensor` (`:50`); both `Verifies RI-ART-008` |
 
 **Result.** JSON text conforms to RFC 8259, and the canonical profile conforms since
 PR #52 (`b99720a`) made reals exact on reading (P2) and pinned the escaping with tests
-(J4); state *works*. No gap is open.
+(J4). The used ranges of metadata version 2 (PRs #53 and #49) are written and read
+through the same canonical path and conform (P4); state *works*. No gap is open.

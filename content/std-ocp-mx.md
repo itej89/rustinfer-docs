@@ -31,9 +31,13 @@ oracle). RI-KC-003 and RI-KVC-008 apply RI-MIR-012 in kernels.
   E4M3 elements (MXFP8), outside the scope.
 - MXFP4 KV storage, CPU reference (PR #48, issue #37): the cache write
   quantizes with `mx_quantize_block` (`crates/rustinfer-target/src/reference/kv.rs:287-298`).
-- Pending: build-time quantization (issue #36), checkpoint import (PR #49,
-  issue #35), GPU KV kernels, in-kernel dequantization and `--activations`
-  quantization on gfx950 and gfx942 (issue #38).
+- Checkpoint import (PR #49, issue #35, merged `8c7d47e`): Quark and
+  compressed-tensors MXFP4 weights become `fp4x2` weights with the `mx`
+  encoding and `ue8m0` scales (`crates/rustinfer-frontend/src/mapping.rs:268-322`,
+  `src/dtypes.rs:120-139`), low nibble first; OI-014 is closed (SRS v0.4.8).
+- Pending: build-time quantization (issue #36), GPU KV kernels, in-kernel
+  dequantization and `--activations` quantization on gfx950 and gfx942
+  (issue #38).
 
 **Conformance:** mandatory from **R1**.
 
@@ -47,6 +51,6 @@ Downloaded 2026-11-13. Version 1.1 renames E8M0 to UE8M0 and updates the
 |---|---|
 | Pages | [requirements](std-ocp-mx-requirements.html) · [audit](std-ocp-mx-audit.html) · [tracker](std-ocp-mx-tracker.html) |
 | Conformance | mandatory R1 (RI-MIR-003, RI-MIR-011, RI-MIR-012) |
-| Audited | 2026-11-13, by reading `origin/main` `ccf02b3`, its tests and the golden file against the specification text; re-audited at `b99720a` after PR #48 |
-| Result | the Model IR and the CPU reference oracle conform on every in-scope item, checked by an independent integer-only golden generator; the MXFP4 KV CPU reference applies it (PR #48); the build, GPU KV and kernel paths are not on `origin/main` yet |
+| Audited | 2026-11-13, by reading `origin/main` `ccf02b3`, its tests and the golden file against the specification text; re-audited at `b99720a` after PR #48, and on 2026-11-14 at `8c7d47e` after PRs #55, #53 and #49 |
+| Result | the Model IR and the CPU reference oracle conform on every in-scope item, checked by an independent integer-only golden generator; the MXFP4 KV CPU reference applies it (PR #48); checkpoint MXFP4 weights import into the same types (PR #49); the build, GPU KV and kernel paths are not on `origin/main` yet |
 | Open gaps | 3 |

@@ -13,7 +13,7 @@
   {
    "from": "rustinfer-frontend",
    "to": "Checkpoint directory",
-   "what": "reads config.json and every shard header; picks the Architecture; emits Model IR, the weight manifest and the checkpoint identity",
+   "what": "reads config.json, every shard header and the weight byte ranges it uses (a checkpoint's KV scales); picks the Architecture; emits Model IR, the weight manifest and the checkpoint identity",
    "tech": "safetensors, JSON",
    "ref": "rustinfer-frontend",
    "phase": "build"

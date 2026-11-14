@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-b99720a 2026-11-13. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 147
+8c7d47e 2026-11-13. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 156
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -36,6 +36,8 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
 | `WEIGHTS_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `weights` section, written in its `weights_version` field. Version 2 adds the optional `quantization` record of an MXFP4 weight (RI-ART-005 v0.4); a version 1 manifest is a version 2 manifest without it (RI-ART-014). |
 | `WEIGHTS_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, WEIGHTS_SECTION_VERSION]` | The `weights_version` values a reader accepts (RI-ART-006): version 1 reads as version 2 without any quantization record. |
+| `METADATA_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `metadata` section, written in its `metadata_version` field. Version 2 adds the checkpoint identity's `used_ranges`: the digests of the weight bytes the build read and used (RI-ART-008 as amended); a version 1 section is a version 2 section without any (RI-ART-014). |
+| `METADATA_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, METADATA_SECTION_VERSION]` | The `metadata_version` values a reader accepts: version 1 reads as version 2 with no used ranges. |
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
 | `EXIT_CODE_FAILURE` | `i32` | `1` | Process exit code for a failure reported as a structured error (RI-CLI-001). |
 | `EXIT_CODE_USAGE` | `i32` | `2` | Process exit code for invalid command-line usage. |
@@ -145,6 +147,13 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `FRONTEND_MAX_SHARDS` | `usize` | `4096` | Upper bound on the safetensors shards of one checkpoint directory. |
 | `FRONTEND_MAX_LAYERS` | `u64` | `1024` | Upper bound on `num_hidden_layers` of a checkpoint. |
 | `FRONTEND_MAX_DIMENSION` | `u64` | `1 << 24` | Upper bound on any dimension of a checkpoint configuration (hidden size, heads, intermediate size, vocabulary, positions). |
+| `FRONTEND_MAX_QUANT_ENTRIES` | `usize` | `65_536` | Upper bound on the entries of one list of a checkpoint's `quantization_config` (`exclude`, `ignore`, `layer_quant_config`, `config_groups`, `targets`), checked before any entry is read (RI-FE-006, RI-SEC-003). |
+| `FRONTEND_MAX_QUANT_PATTERN_BYTES` | `usize` | `1024` | Upper bound on the byte length of one `exclude` or `ignore` entry of a checkpoint's `quantization_config`, the `re:` prefix included (RI-SEC-003). |
+| `FRONTEND_MAX_QUANT_PATTERNS` | `usize` | `1024` | Upper bound on the entries of one exclusion list (`exclude`, `ignore`) of a checkpoint's `quantization_config`, checked before any entry is compiled (RI-SEC-003). |
+| `FRONTEND_MAX_QUANT_REGEX_BYTES` | `usize` | `64 * 1024` | Upper bound on the compiled size in bytes of one `re:` or glob entry of a checkpoint's `quantization_config`, the `regex` crate's `size_limit` (RI-SEC-003). |
+| `FRONTEND_MAX_QUANT_DFA_BYTES` | `usize` | `64 * 1024` | Upper bound on the lazy DFA cache in bytes of one such entry, the `regex` crate's `dfa_size_limit` (RI-SEC-003). |
+| `FRONTEND_MAX_QUANT_REGEX_TOTAL_BYTES` | `usize` | `16 * 1024 * 1024` | Upper bound on the bytes the compiled entries of one exclusion list may take together, each counted at its two limits above: 16 MiB, so at most 128 compiled entries (RI-SEC-003). |
+| `QUANT_REGEX_PREFIX` | `&str` | `"re:"` | Prefix of a regular-expression entry of a Quark `exclude` or a compressed-tensors `ignore` list (RI-FE-006). |
 | `FRONTEND_KV_GROUP` | `&str` | `"main"` | Name of the one KV group of a document the frontend emits (RI-MIR-010, R1). |
 | `RANK_SINGLE` | `u32` | `0` | The rank of a single-rank build (RI-ART-005, R1). |
 | `CHECKPOINT_INDEX_FILE` | `&str` | `"model.safetensors.index.json"` | Name of the shard index of a Hugging Face checkpoint: its `weight_map` names the shard that holds each tensor (RI-FE-004). |

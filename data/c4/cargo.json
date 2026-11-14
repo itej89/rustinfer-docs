@@ -1,5 +1,5 @@
 {
- "commit": "8d58ad6",
+ "commit": "8c7d47e",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -21,6 +21,7 @@
     "FileIdentity",
     "Metadata",
     "Origin",
+    "UsedRange",
     "KvGroupGeometry",
     "KvScales",
     "Plan",
@@ -98,9 +99,15 @@
     "RopeScaling",
     "ExpectedTensor",
     "ModelConfig",
+    "apply_kv_scales",
+    "KvScalePair",
+    "KvScaleTensors",
     "lower",
     "lower_with_limits",
     "Lowered",
+    "Mxfp4Checkpoint",
+    "Mxfp4Source",
+    "Quantization",
     "parse_shard_header",
     "read_shard_header",
     "ShardHeader",

@@ -6,8 +6,8 @@
   "conformance": "mandatory R1",
   "state": "works",
   "assessed": true,
-  "audit_date": "2026-11-13",
-  "gaps_open": 0,
-  "gaps_total": 1,
+  "audit_date": "2026-11-14",
+  "gaps_open": 1,
+  "gaps_total": 2,
   "spec_source": "downloaded"
 }
