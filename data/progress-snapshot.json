@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-14T04:27:57+00:00",
+ "fetched_at": "2026-11-14T14:05:28+00:00",
  "source": "github",
  "issues": [
   {
@@ -901,25 +901,70 @@
   {
    "number": 56,
    "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
-   "state": "open",
+   "state": "closed",
    "head": "docs/uml-close-fences",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-14",
    "mergeable": true,
    "created_at": "2026-11-14",
    "url": "https://github.com/itej89/rustinfer/pull/56"
+  },
+  {
+   "number": 57,
+   "title": "fix: U8 as raw bytes, exact used-range digests, empty tensors (#51 SHA256-2, ST-3, ST-4)",
+   "state": "closed",
+   "head": "fix/51-used-range-u8-empty",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-14",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/57"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 16,
-   "closed": 37
+   "open": 15,
+   "closed": 39
   }
  ],
  "runs": [
+  {
+   "id": 96,
+   "title": "Merge pull request #57 from itej89/fix/51-used-range-u8-empty",
+   "status": "in_progress",
+   "conclusion": null,
+   "event": "push",
+   "ref": "main",
+   "sha": "99c1ec7",
+   "created": "2026-11-14T13:59",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43602511505"
+  },
+  {
+   "id": 95,
+   "title": "fix: U8 as raw bytes, exact used-range digests, empty tensors (#51 SHA256-2, ST-3, ST-4)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "fix/51-used-range-u8-empty",
+   "sha": "f5b921a",
+   "created": "2026-11-14T05:01",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43559450351"
+  },
+  {
+   "id": 94,
+   "title": "Merge pull request #56 from itej89/docs/uml-close-fences",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "ce44f24",
+   "created": "2026-11-14T04:43",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43558065470"
+  },
   {
    "id": 93,
    "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
@@ -1018,39 +1063,6 @@
    "sha": "6a18042",
    "created": "2026-11-14T03:49",
    "url": "https://github.com/itej89/rustinfer/actions/runs/43553600779"
-  },
-  {
-   "id": 84,
-   "title": "fix: refuse partial_rotary_factor ≠ 1.0 (HFC-5); add OCP E5M2 (fp8_e5m2) with CPU reference (#51)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "fix/51-e5m2-partial-rotary",
-   "sha": "b3e8fa7",
-   "created": "2026-11-14T03:35",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43552416395"
-  },
-  {
-   "id": 83,
-   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-build-reads-weights",
-   "sha": "a07e16e",
-   "created": "2026-11-14T03:20",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43551082108"
-  },
-  {
-   "id": 82,
-   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "afe2140",
-   "created": "2026-11-14T03:14",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43550624432"
   }
  ],
  "branches": [
@@ -1077,6 +1089,7 @@
   "fix/27-conformance",
   "fix/51-e5m2-partial-rotary",
   "fix/51-standards-defects",
+  "fix/51-used-range-u8-empty",
   "infra/github-hosting",
   "main",
   "refactor/27-frontend-dtypes",

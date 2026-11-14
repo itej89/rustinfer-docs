@@ -20,8 +20,9 @@ copied around it and a link to the block in the tree:
 
 No view holds more than MAX_BOXES cards or MAX_STEPS steps: a larger diagram
 is split into several views, each with its own title. Anything the parser
-does not recognise stops the script (exit 1) rather than being dropped, and
-build.py refuses a page that still holds a Mermaid fence.
+does not recognise stops the script (exit 1) rather than being dropped, as
+does a ```mermaid block not closed before the next heading (file and line
+named), and build.py refuses a page that still holds a Mermaid fence.
 """
 import html
 import re
@@ -601,29 +602,33 @@ def present(kind, body, section, counter, base_line, splits):
     return "".join(out)
 
 
-def close_fences(body):
-    """A ```mermaid fence the next heading reaches first is closed before it."""
-    out, inside, fixed = [], False, 0
-    for line in body.split("\n"):
+def check_fences(kind, text):
+    """Stop the build on a ```mermaid fence that is not closed before the next
+    heading or the end of the file, naming the file and the line it opens on."""
+    inside = None
+    for i, line in enumerate(text.split("\n"), 1):
         if line.startswith("```mermaid"):
-            inside = True
+            if inside:
+                break
+            inside = i
         elif inside and line.startswith("```"):
-            inside = False
+            inside = None
         elif inside and line.startswith("#"):
-            out += ["```", ""]
-            inside, fixed = False, fixed + 1
-        out.append(line)
-    return "\n".join(out), fixed
+            break
+    if inside:
+        sys.exit(f"gen_diagrams: docs/uml/{kind}-diagram.md line {inside}: "
+                 "Mermaid block opened here is not closed")
 
 
 out = header("Design diagrams", "Design", 3,
              "The six UML diagrams the tree keeps under docs/uml, drawn as cards, numbered steps "
              "and states from their Mermaid source, with the date and pull request each was last updated by.",
              script="gen_diagrams.py")
-page, counter, splits, unclosed = "", [0], [], 0
+page, counter, splits = "", [0], []
 for kind in ORDER:
     p = UML / f"{kind}-diagram.md"
     text = p.read_text(encoding="utf-8")
+    check_fences(kind, text)
     head = re.match(r"<!--\n(.*?)\n-->", text, re.S)
     meta = dict(l.split(": ", 1) for l in head.group(1).splitlines() if ": " in l) if head else {}
     body = text[head.end():] if head else text
@@ -631,8 +636,6 @@ for kind in ORDER:
     body = re.sub(r"^> Last updated:.*\n", "", body, flags=re.M)
     body = re.sub(r"^---\n", "", body, flags=re.M)
     body = re.sub(r"^## ", "### ", body, flags=re.M)
-    body, fixed = close_fences(body)
-    unclosed += fixed
     title = re.search(r"^# rustinfer — (.*)$", text, re.M)
     name = title.group(1) if title else kind.title()
 
@@ -662,8 +665,5 @@ behind them yet; the [design](design.html) page says which do. The
 model, down to these class diagrams.
 
 """
-if unclosed:
-    out += (f"The source leaves {unclosed} Mermaid fence{'s' if unclosed > 1 else ''} open before the next "
-            "heading; the parser closes each there and reads the block as it stands.\n\n")
 write("design-diagrams.md", out + page)
 print(f"{counter[0]} diagrams; split: " + ("; ".join(splits) or "none"))

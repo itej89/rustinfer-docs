@@ -1,5 +1,5 @@
 {
- "commit": "8c7d47e",
+ "commit": "99c1ec7",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -111,6 +111,7 @@
     "parse_shard_header",
     "read_shard_header",
     "ShardHeader",
+    "StoredDtype",
     "TensorInfo",
     "SUPPORTED_MODEL_TYPES",
     "DtypeExpectation",

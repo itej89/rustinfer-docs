@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 8c7d47e 2026-11-13. A failure leaves the command as one line on
+`src/error.rs` at commit 99c1ec7 2026-11-14. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
