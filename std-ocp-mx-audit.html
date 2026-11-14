@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;OCP MX v1.1.0 audit&quot; — rustinfer</title>
+<meta name="description" content="The 2026-11-14 audit of rustinfer&#x27;s MXFP4 types, conversion and checkpoint import against OCP MX v1.1 on 8c7d47e; the Model IR, the CPU reference oracle and the checkpoint import conform, the build and GPU paths are pending.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub" open><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html" class="here">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="ocp-mx-v110-audit">OCP MX v1.1.0 audit</h1>
+<p><strong>Audit of 2026-11-14</strong> on <code>origin/main</code> <code>8c7d47e</code>, against the
+<a href="std-ocp-mx-requirements.html">requirements</a>, after PRs #55 (<code>6a18042</code>),</p>
+<h1 id="53-8d58ad6-and-49-8c7d47e-quark-and-compressed-tensors-mxfp4">53 (<code>8d58ad6</code>) and #49 (<code>8c7d47e</code>: Quark and compressed-tensors MXFP4</h1>
+<p>checkpoint import, checkpoint KV scales) merged. None of them changes
+<code>reference/mx.rs</code>, <code>mir/src/mx.rs</code> or their tests, so MX-R1 to MX-R13 stand
+as read; the checkpoint path is new (see below). History: first audited
+2026-11-13 on <code>ccf02b3</code>, re-audited the same day on <code>b99720a</code> after PR #48
+(KV dtypes, with MXFP4 KV).</p>
+<p><strong>Method.</strong> Read the specification text (<code>pdftotext -layout</code> of
+<code>specs/number-formats/ocp-mx-v1.1.0.pdf</code>), §3 to §6.3. Read <code>origin/main</code> at
+<code>b99720a</code>: <code>crates/rustinfer-target/src/reference/mx.rs</code>,
+<code>crates/rustinfer-mir/src/dtype.rs</code>, <code>crates/rustinfer-mir/src/mx.rs</code>, the
+tests <code>crates/rustinfer-target/tests/mx.rs</code> and <code>crates/rustinfer-mir/tests/mx.rs</code>,
+the golden file <code>crates/rustinfer-target/tests/data/mx_golden.txt</code> and its
+generator <code>crates/rustinfer-target/tests/mx_golden/mod.rs</code>, and the MXFP4 KV
+path of PR #48 (<code>crates/rustinfer-mir/src/kv.rs</code>,
+<code>crates/rustinfer-target/src/reference/kv.rs</code>, their tests). Worked the
+Equation 4 thresholds by hand: for E2M1 (one mantissa bit) a significand
+rounds up to 2 exactly from 1.75, a tie that goes to the even 10.0; for E4M3
+1.8125 is a tie that goes to the even 1.75, anything above it and below
+1.9375 rounds to 1.875, and 1.9375 itself carries to 2. Read SRS v0.4.3 on <code>origin/main</code> and the file lists of open PRs</p>
+<h1 id="44-and-49-no-tests-were-run">44 and #49. No tests were run.</h1>
+<p><strong>Test tags.</strong> The E2M1 decode, UE8M0 decode, <code>fp4x2</code> packing and storage
+tests carry <code>Verifies RI-MIR-003</code>. The conversion tests and the golden file
+carry <code>Groundwork for RI-MIR-012</code>, and the <code>mx</code> encoding checks <code>Groundwork for
+RI-MIR-011</code>: by the rule of <code>docs/testing.md</code> those clauses count as not
+implemented until their build-time and kernel parts land (#36, #38). The
+module header of <code>tests/mx.rs</code> says so (<code>:5-10</code>). The assertions themselves
+bind the CPU reference and are the evidence below.</p>
+<p><strong>The independent check.</strong> The golden generator shares no code with
+<code>reference/mx.rs</code> and uses no floating-point arithmetic: it decomposes each
+<code>f32</code> from its bits, builds the E2M1 and E4M3 grids from their bit fields
+(<code>mx_golden/mod.rs:53-94</code>), and applies §6.3 with Equation 4 on integers
+(<code>:1-18</code>). <code>test_golden_file_is_the_independent_generator_output</code>
+(<code>tests/mx.rs:306</code>) requires the committed file to be its output, and
+<code>test_golden_blocks_quantize_bit_exactly</code> (<code>tests/mx.rs:320</code>) requires the
+reference to reproduce all 51 blocks (25 E2M1, 26 E4M3) bit for bit.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>requirement</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MX-R1</td>
+<td>X NaN gives NaN everywhere; otherwise X·P_i; beyond Float32 implementation-defined</td>
+<td>conforms</td>
+<td><code>mx_dequantize_block</code> multiplies by the decoded scale, NaN for 0xFF (<code>mx.rs:297-303</code>, <code>:225-227</code>). <code>test_nan_or_inf_block_has_nan_scale_and_dequantizes_to_nan</code> (<code>tests/mx.rs:235</code>); beyond the range rustinfer gives ±Inf, <code>test_dequantize_beyond_the_f32_range_is_infinite</code> (<code>tests/mx.rs:276</code>)</td>
+</tr>
+<tr>
+<td>MX-R2</td>
+<td>MXFP4: E2M1, k = 32, UE8M0</td>
+<td>conforms</td>
+<td><code>MX_BLOCK</code> 32 (<code>mx.rs:33</code>, from <code>constants.rs:171</code>), <code>test_block_constants_agree</code> (<code>mx.rs:565</code>); the Model IR refuses another block size, scale dtype or element dtype, or an axis not a multiple of 32 (<code>mir/src/mx.rs:52-86</code>): <code>tests/mx.rs</code> of <code>rustinfer-mir</code>, <code>:192</code>, <code>:204</code>, <code>:216</code>, <code>:225</code></td>
+</tr>
+<tr>
+<td>MX-R3</td>
+<td>E2M1 table, subnormals</td>
+<td>conforms</td>
+<td><code>E2M1_VALUES</code> and <code>e2m1_to_f32</code> (<code>mx.rs:69</code>, <code>:188-197</code>); the dtype doc (<code>dtype.rs:30-35</code>). <code>test_e2m1_decodes_all_sixteen_codes</code> (<code>tests/mx.rs:116</code>, Verifies RI-MIR-003): 0x1 is the subnormal 0.5, 0x8 is −0. The golden grid derives the same values from the bit fields</td>
+</tr>
+<tr>
+<td>MX-R4</td>
+<td>roundTiesToEven to FP4</td>
+<td>conforms</td>
+<td><code>e2m1_magnitude</code> counts the exact midpoints below the value and moves an odd code at a tie to the even one (<code>mx.rs:211-221</code>). <code>test_e2m1_rounds_every_midpoint_tie_to_even</code> (<code>tests/mx.rs:144</code>), <code>test_e2m1_rounds_one_ulp_either_side_of_every_midpoint</code> (<code>:154</code>); golden <code>e2m1 midpoints_positive</code>, <code>midpoints_negative</code>, <code>midpoints_scale_2^-3</code></td>
+</tr>
+<tr>
+<td>MX-R5</td>
+<td>clamp to ±6 keeping the sign, Infs included</td>
+<td>conforms</td>
+<td>above the last midpoint the code is 7 (<code>mx.rs:214-215</code>), the sign kept (<code>:207-208</code>). <code>test_e2m1_clamps_to_six_keeping_the_sign</code> (<code>tests/mx.rs:168</code>): 6⁺, 7, 8, 1e30, Inf, both signs</td>
+</tr>
+<tr>
+<td>MX-R6</td>
+<td>NaN implementation-defined</td>
+<td>conforms</td>
+<td>a NaN gives 0x0 (<code>mx.rs:204-206</code>); never reached in a block, whose NaN gives the NaN scale</td>
+</tr>
+<tr>
+<td>MX-R7</td>
+<td>UE8M0: bias 127, −127 to 127, NaN 0xFF</td>
+<td>conforms</td>
+<td><code>ue8m0_to_f32</code> (<code>mx.rs:225-231</code>), 2^−127 as the <code>f32</code> subnormal 0x00400000; the stored scale is clamped to −127..127 so it never reaches 0xFF (<code>:276-278</code>). <code>test_ue8m0_decodes_as_a_power_of_two_or_nan</code> (<code>tests/mx.rs:131</code>, all 256 codes); <code>test_stored_scale_clamps_at_both_ends</code> (<code>mx.rs:555</code>)</td>
+</tr>
+<tr>
+<td>MX-R8</td>
+<td>a conversion mechanism</td>
+<td>conforms</td>
+<td><code>mx_quantize_block</code> (<code>mx.rs:233-255</code>) and <code>mx_quantize</code> along any axis (<code>:423-446</code>). <code>test_mx_quantize_along_the_last_axis_matches_the_block_rule</code> (<code>tests/mx.rs:409</code>), <code>test_mx_quantize_along_a_strided_axis_round_trips_the_layout</code> (<code>:432</code>)</td>
+</tr>
+<tr>
+<td>MX-R9</td>
+<td>Equation 1: zero, NaN/Inf, above SFmax, below SFmin, SF(V)</td>
+<td>conforms</td>
+<td>NaN or Inf anywhere gives 0xFF (<code>mx.rs:236-241</code>), the same as an IEEE maximum that propagates NaN; all zero gives 0x7F (<code>:242-248</code>); SF from an exact <code>floor(log2 amax)</code>, subnormals included (<code>:257-261</code>, <code>:280-289</code>); clamp at both ends (<code>:276-278</code>): above SFmax rustinfer saturates, which §6.3 footnote 2 gives as an example. <code>test_all_zero_block_has_scale_one_and_zero_codes</code> (<code>tests/mx.rs:222</code>), <code>test_nan_or_inf_block_has_nan_scale_and_dequantizes_to_nan</code> (<code>:235</code>), <code>test_scale_clamps_at_minus_127_and_tops_out_at_126</code> (<code>:258</code>), <code>test_floor_log2_and_pow2_are_exact</code> (<code>mx.rs:572</code>); golden <code>scale_min_clamp</code>, <code>scale_max_reachable</code>, <code>all_zero</code>, <code>nan</code>, <code>nan_and_inf</code></td>
+</tr>
+<tr>
+<td>MX-R10</td>
+<td>Equation 4</td>
+<td>conforms</td>
+<td><code>exp_adj</code> rounds the significand to the element's mantissa width, ties to even, exact in <code>f64</code>, and tests the carry and the E4M3 1.875 case (<code>mx.rs:263-273</code>). <code>test_exp_adj_boundary_at_1_75_and_one_ulp_below</code> (<code>tests/mx.rs:190</code>, seven binades from 2^−100 to 2^126), <code>test_plain_floor_differs_on_the_1_75_boundary</code> (<code>:206</code>), <code>test_e4m3_exp_adj_boundaries</code> (<code>:289</code>); golden <code>exp_adj_at_1.75x2^2</code>, <code>exp_adj_below_1.75x2^2</code> and the ±2^−20 pair</td>
+</tr>
+<tr>
+<td>MX-R11</td>
+<td>P_i = V_i / X quantized, normals clamped with the sign; NaN-scale elements implementation-defined</td>
+<td>conforms</td>
+<td>each element is <code>v / 2^s</code> encoded (<code>mx.rs:249-254</code>), exact in <code>f32</code> as the module header argues (<code>:18-24</code>); a NaN-scale block's codes are 0x0 (<code>:237-240</code>). One permitted difference: in an all-zero block a −0 input gets code 0x0, not the 0x8 that step 2 would give; the value is equal, §6.3 is "should" with "other algorithms ... may", and RI-MIR-012 (2) requires 0x0</td>
+</tr>
+<tr>
+<td>MX-R12</td>
+<td>roundTiesToEven to the element</td>
+<td>conforms</td>
+<td>as MX-R4 for E2M1</td>
+</tr>
+<tr>
+<td>MX-R13</td>
+<td>±Inf gives a NaN scale</td>
+<td>conforms</td>
+<td><code>mx.rs:236</code> (<code>!is_finite</code>). Golden <code>pos_inf</code>, <code>neg_inf</code> for both element formats; <code>tests/mx.rs:238-239</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Additional checks.</strong> <code>test_dequantize_after_quantize_is_within_half_a_step</code>
+(<code>tests/mx.rs:348</code>) bounds the round-trip error on every finite golden
+block. <code>fp4x2</code> packing (low nibble first, <code>mx.rs:305-339</code>) is the SRS's
+layout choice, which §5.1 leaves open: <code>test_fp4x2_packs_low_nibble_first</code>
+(<code>tests/mx.rs:371</code>). The <code>mx</code> matmul reference (<code>mx.rs:486-507</code>) computes the
+§6.2 general dot product by dequantizing the weight and accumulating in <code>f32</code>;
+the dot products are outside the scope.</p>
+<h2 id="outside-the-scope-noted">Outside the scope, noted</h2>
+<ul>
+<li>The reference also converts with E4M3 elements (MXFP8, <code>MxElement::E4m3</code>).
+  MXFP8 is not in the Scope phrase. If it were claimed, §5.3.1 would require
+  both the SAT and NONSAT FP8 modes; rustinfer has the saturating mode only,
+  and OCP-OFP8 is scoped to it (OFP8-1, out of scope since PR #50).</li>
+<li>How a Quark or compressed-tensors <code>quantization_config</code> is read is the
+  QUARK and CT standards; the MX side of that import is below.</li>
+</ul>
+<h2 id="mxfp4-checkpoint-import-pr-49-merged-8c7d47e">MXFP4 checkpoint import (PR #49, merged <code>8c7d47e</code>)</h2>
+<p>The frontend now imports dense Quark and compressed-tensors MXFP4
+checkpoints (issue #35) into the MX types this audit checks, rather than
+converting them, so the §6.3 conversion is not exercised: the stored bytes
+are taken as E2M1 codes and UE8M0 scales.</p>
+<ul>
+<li>Each MXFP4 projection becomes an <code>fp4x2</code> weight of its logical shape with
+  the <code>mx</code> encoding, block size <code>MX_BLOCK_SIZE</code> (32), along the innermost
+  axis, with <code>ue8m0</code> scales (<code>crates/rustinfer-frontend/src/dtypes.rs:120-139</code>,
+  <code>src/mapping.rs:268-295</code>); the packed data must be <code>U8</code> with the innermost
+  axis halved, or <code>F4</code> in values, and the scales <code>U8</code> or <code>F8_E8M0</code> with the
+  block axis divided by 32, else refused naming the tensor (<code>mapping.rs:297-322</code>,
+  axis check <code>:159-161</code>). The Model IR's own <code>mx</code> check (MX-R2) still applies.</li>
+<li>The weight's <code>config.json</code> fields must name MXFP4 exactly as MX-R2 does:
+  Quark <code>fp4</code>, <code>per_group</code>, <code>group_size</code> 32, <code>ch_axis</code> −1, <code>scale_format</code>
+  <code>e8m0</code> (<code>src/quant/quark.rs:110-139</code>); compressed-tensors 4-bit float
+  weights in groups of 32 with <code>uint8</code> scales (<code>src/quant/ct.rs:160-189</code>).</li>
+<li>Nibble order: low nibble first, the even element in bits 3..0, as
+  RI-MIR-003 states and the CPU reference packs (<code>reference/mx.rs:305-339</code>).
+  OI-014 is closed by SRS v0.4.8 (<code>docs/SRS-RI-v0.1.md:27</code>, <code>:2091-2100</code>): Quark's
+  <code>Pack_fp4.pack</code> and <code>Pack_fp4.unpack</code> fix that order. The frontend tests
+  decode each fixture's bytes through a line-for-line port of
+  <code>Pack_fp4.unpack</code> and through the CPU reference <code>mx_dequantize</code>, and
+  require the values written, bit for bit, for both producers and four
+  families (<code>check_mx_weights</code>, <code>crates/rustinfer-frontend/tests/mxfp4.rs:71-104</code>;
+  <code>test_quark_fixture_of_each_family_lowers_to_mx_weights</code> <code>:111</code>, <code>Verifies
+  RI-MIR-003</code>; <code>test_compressed_tensors_fixture_of_each_family_lowers_to_mx_weights</code>
+  <code>:125</code>). <code>test_quark_compressed_tensors_convention_hand_built</code>
+  (<code>crates/rustinfer-target/tests/mx.rs:535</code>) still decodes a hand-built tensor.
+  No real checkpoint was decoded.</li>
+<li>Bad shapes and dtypes are refused naming the tensor:
+  <code>test_bad_mx_tensors_are_refused_naming_the_tensor</code> (<code>tests/mxfp4.rs:587</code>),
+  <code>test_packed_u8_shape_mismatch_is_refused_naming_the_tensor</code>
+  (<code>tests/mxfp4_review.rs:162</code>); <code>F4</code> and <code>F8_E8M0</code> headers lower like <code>U8</code>
+  (<code>tests/mxfp4.rs:716</code>).</li>
+</ul>
+<p><strong>KV scales.</strong> The checkpoint KV scales of PR #49 are fp8 per-layer scales,
+not MX: <code>apply_kv_scales</code> fills only an fp8 KV group's <code>KvScales</code> and leaves
+a group without <code>fp8_scales</code> untouched
+(<code>crates/rustinfer-frontend/src/kv_scales.rs:102-121</code>). An MXFP4 KV group
+still computes its UE8M0 block scales at the cache write (below);
+<code>test_without_scales_or_fp8_the_geometry_is_unchanged</code>
+(<code>crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs:102</code>) checks that a
+<code>--kv-dtype mxfp4</code> geometry records no fp8 scales from a checkpoint that has
+them. No MX item is affected.</p>
+<h2 id="mxfp4-kv-cache-pr-48-merged-e218b8a">MXFP4 KV cache (PR #48, merged <code>e218b8a</code>)</h2>
+<ul>
+<li>The Model IR gives an MXFP4 KV group <code>fp4x2</code> storage with the <code>mx</code> encoding
+  along <code>head_dim</code> and <code>ue8m0</code> scales (<code>crates/rustinfer-mir/src/kv.rs:31-45</code>,
+  <code>:52-56</code>), and refuses a <code>head_dim</code> not a multiple of 32
+  (<code>:147-150</code>; <code>crates/rustinfer-mir/tests/kv_dtypes.rs:122</code>).</li>
+<li>The CPU reference cache write applies §6.3 per 32-value block with E2M1
+  elements through <code>mx_quantize_block</code> (<code>crates/rustinfer-target/src/reference/kv.rs:287-298</code>),
+  stores the packed values then the UE8M0 scales, and reads back
+  <code>2^s × E2M1(code)</code> with <code>mx_dequantize_block</code> (<code>:353</code>). Being the same
+  function as the oracle, it inherits MX-R1 to MX-R13.
+  <code>test_cached_k_and_v_equal_the_oracle_conversion_bit_exactly</code>
+  (<code>crates/rustinfer-target/tests/kv.rs:212</code>) and
+  <code>test_attention_over_quantized_kv_equals_attention_over_the_oracle_values</code>
+  (<code>:290</code>), both <code>Groundwork for RI-KVC-008, RI-MIR-012</code>, check it.</li>
+</ul>
+<h2 id="requirements-of-the-srs-not-yet-on-originmain">Requirements of the SRS not yet on <code>origin/main</code></h2>
+<table>
+<thead>
+<tr>
+<th>SRS requirement</th>
+<th>what must apply §6.3</th>
+<th>where it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-GC-004, RI-CLI-002, RI-MIR-012</td>
+<td><code>build --precision mxfp4</code>: RTN quantization of weights at build, recorded as the load-time transform</td>
+<td>issue #36, no PR</td>
+</tr>
+<tr>
+<td>RI-KVC-008, RI-MIR-012</td>
+<td><code>--kv-dtype mxfp4</code>: the cache-write kernel computes each block's UE8M0 scale</td>
+<td>CPU reference merged (PR #48, <code>e218b8a</code>); GPU kernels issue #38</td>
+</tr>
+<tr>
+<td>RI-KC-003, RI-MIR-011, RI-MIR-012</td>
+<td>in-kernel MXFP4 dequantization on gfx950 and gfx942; in-kernel <code>mxfp4</code> activation quantization on gfx950</td>
+<td>issue #38, no PR (blocked by #8, PR #44)</td>
+</tr>
+</tbody>
+</table>
+<p>Recorded as MX-1 to MX-3.</p>
+<h2 id="result">Result</h2>
+<p>Every in-scope item conforms in the Model IR and the CPU reference, the
+oracle the other targets are checked against; since PR #48 the MXFP4 KV
+CPU reference applies it, and since PR #49 (<code>8c7d47e</code>) checkpoint MXFP4
+weights import into the same <code>fp4x2</code>, <code>ue8m0</code> and <code>mx</code> types, low nibble
+first (OI-014 closed, SRS v0.4.8). The paths that must apply the same rule at build
+time (MX-1), in the GPU KV kernels (MX-2) and in kernels (MX-3) are not on
+<code>origin/main</code>. <strong>Partial</strong>, for the R1 coverage, not for any wrong value.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#outside-the-scope-noted">Outside the scope, noted</a></li><li><a href="#mxfp4-checkpoint-import-pr-49-merged-8c7d47e">MXFP4 checkpoint import (PR #49, merged 8c7d47e)</a></li><li><a href="#mxfp4-kv-cache-pr-48-merged-e218b8a">MXFP4 KV cache (PR #48, merged e218b8a)</a></li><li><a href="#requirements-of-the-srs-not-yet-on-originmain">Requirements of the SRS not yet on origin/main</a></li><li><a href="#result">Result</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

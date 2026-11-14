@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started — rustinfer</title>
+<meta name="description" content="Install the toolchain, build and test the workspace, and run the rustinfer command; what each of its six subcommands does on 2026-11-10.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html" class="here">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="getting-started">Getting started</h1>
+<p>Read from <code>README.md</code>, <code>CONTRIBUTING.md</code>, <code>Cargo.toml</code> and
+<code>crates/rustinfer-cli/</code> at commit <code>082df51</code>. The full gate list is on
+<a href="build-steps.html">build steps</a>.</p>
+<h2 id="toolchain">Toolchain</h2>
+<p>The workspace declares <code>rust-version = "1.85"</code>, edition 2021, stable channel.
+No ROCm is needed to build or test: the ROCm backend sits behind the <code>rocm</code>
+feature of <code>rustinfer-target-rocm</code>, and the SRS requires every non-device test
+to pass on a host without ROCm (RI-NFR-016).</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">'=https'</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>https://sh.rustup.rs<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-y<span class="w"> </span>--no-modify-path<span class="w"> </span>--profile<span class="w"> </span>minimal
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/.cargo/bin:</span><span class="nv">$PATH</span><span class="s2">"</span><span class="w">     </span><span class="c1"># --no-modify-path leaves your shell files alone</span>
+rustup<span class="w"> </span>component<span class="w"> </span>add<span class="w"> </span>rustfmt<span class="w"> </span>clippy
+</code></pre></div>
+
+<p>The <code>--no-modify-path</code> form is how the toolchain was installed on the
+development host; with it, every new shell needs the <code>export</code> line.</p>
+<h2 id="build-and-test">Build and test</h2>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:itej89/rustinfer.git
+<span class="nb">cd</span><span class="w"> </span>rustinfer
+cargo<span class="w"> </span>build
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--workspace
+cargo<span class="w"> </span>clippy<span class="w"> </span>--workspace<span class="w"> </span>--all-targets<span class="w"> </span>--all-features<span class="w"> </span>--<span class="w"> </span>-D<span class="w"> </span>warnings
+cargo<span class="w"> </span>fmt<span class="w"> </span>--all<span class="w"> </span>--check
+target/debug/rustinfer<span class="w"> </span>--version
+</code></pre></div>
+
+<p><code>cargo build</code> compiles 14 crates and four pinned external dependencies (<code>clap</code>,
+<code>thiserror</code>, <code>tracing</code>, <code>tracing-subscriber</code>). The test count per crate is on
+the <a href="ref-crates.html">crates</a> page.</p>
+<h2 id="the-command">The command</h2>
+<p><code>rustinfer</code> has six subcommands, one per entry in SRS §3.2.1. On 2026-11-10
+every one of them parses its arguments, validates its paths at the boundary
+(RI-CLI-012: inputs must exist, outputs must have a writable parent, paths are
+canonicalised) and then returns the owning component's <code>not_implemented</code> error,
+because the components behind them are issues #3 to #15. That is by design:
+the command's contract is in place and tested before the behaviour.</p>
+<table>
+<thead>
+<tr>
+<th>subcommand</th>
+<th>arguments today</th>
+<th>what happens today</th>
+<th>arrives with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>build</code></td>
+<td><code>--model &lt;dir&gt; --target &lt;arch&gt; --out &lt;file&gt;</code></td>
+<td>model directory and output parent checked; <code>error=not_implemented component=compiler</code></td>
+<td>#11</td>
+</tr>
+<tr>
+<td><code>inspect</code></td>
+<td><code>&lt;artifact&gt;</code></td>
+<td>file checked; <code>error=not_implemented component=artifact</code></td>
+<td>#11</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td><code>&lt;artifact or dir&gt; [--require-prebuilt]</code></td>
+<td>path checked; a directory with <code>--require-prebuilt</code> is refused with <code>error=invalid component=cli</code> (RI-CLI-004); otherwise <code>component=runtime</code></td>
+<td>#14</td>
+</tr>
+<tr>
+<td><code>tune</code></td>
+<td><code>--target &lt;arch&gt;</code></td>
+<td><code>error=not_implemented component=kc</code></td>
+<td>#9</td>
+</tr>
+<tr>
+<td><code>bench</code></td>
+<td><code>--engine &lt;file&gt;</code></td>
+<td>file checked; <code>component=runtime</code></td>
+<td>R2 (RI-CLI-008)</td>
+</tr>
+<tr>
+<td><code>serve</code></td>
+<td><code>&lt;artifact or dir&gt; [--require-prebuilt]</code></td>
+<td>as <code>run</code></td>
+<td>R3 (RI-CLI-009)</td>
+</tr>
+</tbody>
+</table>
+<p>What is already real, and covered by the integration tests in
+<code>crates/rustinfer-cli/tests/cli.rs</code>:</p>
+<ul>
+<li><code>rustinfer --version</code> prints the name and version on stdout and exits 0.</li>
+<li>No subcommand, or a bad one, exits 2; any other failure exits 1
+  (constants <code>EXIT_CODE_USAGE</code>, <code>EXIT_CODE_FAILURE</code>).</li>
+<li>A failure is one line on stderr, <code>error=&lt;code&gt; component=&lt;name&gt; detail="&lt;text&gt;"</code>,
+  and stdout is empty. A missing file gives <code>error=not_found component=cli</code>.</li>
+<li>The first thing on stderr is the version manifest: one <code>info</code> line per entry
+  for the software, the <code>rustc</code> that built it, the host, and each direct
+  dependency with the version read from <code>Cargo.lock</code> at build time.</li>
+<li><code>RUSTINFER_LOG</code> selects the level (<code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>,
+  <code>trace</code>; default <code>info</code>); an invalid value is <code>error=config component=core</code>.
+  <code>RUSTINFER_CACHE_DIR</code> names the artifact cache, defaulting to
+  <code>$XDG_CACHE_HOME/rustinfer</code> or <code>$HOME/.cache/rustinfer</code>.</li>
+</ul>
+<p>A session with the binary built from <code>e91e002</code>, run for this page on the
+development host (the only thing on this site that was executed):</p>
+<div class="codehilite"><pre><span></span><code>$ target/debug/rustinfer inspect /nonexistent.rie
+ts=2026-11-11T05:34:31.420Z level=info component=manifest startup="version_manifest" kind="software" name="rustinfer-cli" version="0.1.0"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="toolchain" name="rustc" version="rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="host" name="linux" version="x86_64"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="dependency" name="clap" version="4.5.60"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="dependency" name="thiserror" version="2.0.17"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="dependency" name="tracing" version="0.1.41"
+ts=2026-11-11T05:34:31.421Z level=info component=manifest startup="version_manifest" kind="dependency" name="tracing-subscriber" version="0.3.20"
+ts=2026-11-11T05:34:31.421Z level=error component=cli msg="/nonexistent.rie: No such file or directory (os error 2)" code="not_found"
+error=not_found component=cli detail="/nonexistent.rie: No such file or directory (os error 2)"
+$ echo $?
+1
+$ target/debug/rustinfer run /tmp --require-prebuilt 2&gt;&amp;1 | tail -1
+error=invalid component=cli detail="/tmp is a model directory and --require-prebuilt forbids building"
+</code></pre></div>
+
+<p>The last line is the contract; the <code>error</code> log line above it is the same
+failure through <code>tracing</code>. The detail is the error type's <code>Display</code> string and
+may change; the <code>error=</code> and <code>component=</code> fields may not
+(<a href="ref-error-codes.html">error codes</a>).</p>
+<h2 id="what-to-do-next">What to do next</h2>
+<p>Nothing runs a model yet. The Model IR (issue #3) landed on 2026-11-12 as
+the library crate <code>rustinfer-mir</code>, which no subcommand calls yet; the
+artifact (#4), the planner interfaces (#15) and the target abstraction with
+the CPU reference (#5) followed the same day, and <code>build</code> and <code>tune</code> now
+resolve <code>--target</code> through the registry before answering <code>not_implemented</code>;
+Sluice (#18), the LLaMA-family frontend (#6) and the Kernel IR (#7) merged
+later that day, again as libraries no subcommand calls; next are the AMD
+lowering (#8), the #27 fixes having merged on 2026-11-13; <code>build</code> and <code>inspect</code> become real with #11 and <code>run</code> with #14. The order and blockers are on the
+<a href="issues.html">issue tracker</a>.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#toolchain">Toolchain</a></li><li><a href="#build-and-test">Build and test</a></li><li><a href="#the-command">The command</a></li><li><a href="#what-to-do-next">What to do next</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

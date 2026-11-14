@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The artifact — rustinfer</title>
+<meta name="description" content="The .rie engine file from ADR-002 and the artifact requirements; header, sections, hash, the verifying reader and the atomic writer, and the two places where the ADR and the SRS disagree.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html" class="here">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="the-artifact">The artifact</h1>
+<p>Read from ADR-002, ADR-009, SRS §3.2.7 (<code>RI-ART</code>) at v0.3, RI-SEC-002,
+RI-SEC-004, RI-PLN-005, <code>constants.rs</code> and <code>crates/rustinfer-artifact/src/</code>
+at commit <code>04a2a26</code>. The crate is in the code since Codeberg PR #21 merged
+into <code>main</code> as 678b084 on 2026-11-12 (issue #4): the fixed header, the
+section table with nine sections, the content hash, the verifying reader and
+the atomic writer, with the layout the code writes in <code>docs/api/artifact.md</code>
+in the tree. Since then the <a href="frontend.html">frontend</a> produces the weight
+manifest and the checkpoint identity (PR #24) and <a href="sluice.html">Sluice</a>
+consumes them (PR #23); no <code>build</code> writes an artifact yet (#11). SRS v0.3
+(PR #28) changed four clauses of this contract, and the #27 pull requests of
+2026-11-13 brought the code to three of them: PR #29 (conformance) versioned
+the <code>plan</code> section and checks a pinned placement at load, PR #30 (seams)
+moved the file to <strong>format version 2</strong> with a version in every JSON section,
+and PR #32 (placement v2) moved the <code>placement</code> section to version 2. The
+<a href="#the-v03-contract-changes">v0.3 section</a> below says which part is where.</p>
+<h2 id="why-a-single-file">Why a single file</h2>
+<p>ADR-002's context: a TensorRT engine is one file holding everything the
+runtime needs so that inference performs no compilation, selection or
+planning. rustinfer wants the same property plus four more: inspectable
+without the GPU, integrity-checked before use, never left half-written, and
+small, because it holds the engine and never the weights (the amendment of
+2026-11-11, below). The alternatives it rejected were a tar or zip
+container (no page alignment, hash semantics unclear), FlatBuffers or Cap'n
+Proto (a dependency for a format with a handful of sections) and safetensors
+for the whole file (no section typing, no kernel binaries).</p>
+<h2 id="the-header">The header</h2>
+<p>From ADR-002, little-endian throughout:</p>
+<table>
+<thead>
+<tr>
+<th>offset</th>
+<th>size</th>
+<th>field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>4</td>
+<td>magic <code>RIE\0</code> (<code>ARTIFACT_MAGIC</code> in constants)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+<td><code>format_version</code>, <code>2</code> since PR #30 (<code>ARTIFACT_FORMAT_VERSION</code>; the reader accepts <code>[2]</code> and refuses a version 1 file naming it)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+<td><code>header_length</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>32</td>
+<td>target id, NUL-padded ASCII, for example <code>gfx950</code></td>
+</tr>
+<tr>
+<td>40</td>
+<td>32</td>
+<td>producer version, NUL-padded ASCII, for example <code>rustinfer 0.1.0</code></td>
+</tr>
+<tr>
+<td>72</td>
+<td>32</td>
+<td>SHA-256 of every byte after the header</td>
+</tr>
+<tr>
+<td>104</td>
+<td>8</td>
+<td><code>section_count</code></td>
+</tr>
+<tr>
+<td>112</td>
+<td>…</td>
+<td>section table: <code>name[16]</code> NUL-padded, <code>offset u64</code>, <code>length u64</code>, <code>alignment u32</code>, pad <code>u32</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-sections">The sections</h2>
+<table>
+<thead>
+<tr>
+<th>section</th>
+<th>holds</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_ir</code></td>
+<td>the Model IR document as canonical JSON: the weight set as tensor descriptors (name, dtype, shape, encoding, placement slot), the named functions and the KV groups; never a weight byte</td>
+<td>sorted keys, compact, exact integers (RI-MIR-007); the document and its writer and reader exist in <code>rustinfer-mir</code> since PR #19 (<a href="design.html">design</a>), the section around them is #4</td>
+</tr>
+<tr>
+<td><code>plan</code></td>
+<td>the Plan as canonical JSON: one Plan per Model IR function and the geometry of every KV group (<code>kv_groups</code>, PR #29), cross-checked against the Model IR</td>
+<td>deterministic key order (RI-GC-009); <code>plan_version</code> 2</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td><code>min</code>, <code>opt</code>, <code>max</code> per dynamic dimension</td>
+<td></td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>build options, producer, <code>rustc</code> and LLVM versions, catalog version, the checkpoint identity (SHA-256 of <code>config.json</code>, each weight file's size and header hash), origin (<code>build</code> or first load), timestamp</td>
+<td>RI-ART-008, RI-SEC-004 (v0.3)</td>
+</tr>
+<tr>
+<td><code>catalog</code></td>
+<td>the kernel entries the Plan references</td>
+<td></td>
+</tr>
+<tr>
+<td><code>kernels</code></td>
+<td>concatenated code objects with an index JSON at the start; every entry carries its Kernel IR (refused when missing, PR #29) and its binary <code>format</code> (<code>native</code>, <code>hsa_code_object</code>, <code>spirv</code>, <code>riscv_elf</code>, PR #30)</td>
+<td><code>BinaryFormat</code> lives in <code>rustinfer_core::kernel</code>, re-exported by the artifact and target crates</td>
+</tr>
+<tr>
+<td><code>weights</code></td>
+<td>the <strong>weight manifest</strong>, canonical JSON: the checkpoint's format and root, and per weight id the source shard, tensor name, dtype, shape, source layout, byte range, target layout, transform and the ranks that need it, and from SRS v0.3 an optional per-tensor SHA-256; never a weight byte</td>
+<td>RI-ART-005, RI-ART-012; written by the <a href="frontend.html">frontend</a>, read by <a href="sluice.html">Sluice</a></td>
+</tr>
+<tr>
+<td><code>topology</code>, <code>placement</code></td>
+<td>empty at build unless pinned</td>
+<td>reserved from R1 for format stability (RI-PLN-005); opaque bytes to the artifact crate, versioned and checked by the planner (<code>topology_version</code> 1, <code>placement_version</code> 2)</td>
+</tr>
+<tr>
+<td><code>lora_slots</code></td>
+<td>adapter application points</td>
+<td>from R3 (RI-ART-002)</td>
+</tr>
+</tbody>
+</table>
+<p>Since PR #30 the list is a table per format version
+(<code>FormatVersion</code>, rows of name, alignment and required) rather than a fixed
+enum: the reader decodes a file with its own version's table, the writer
+uses the current one, and adding the R3 <code>lora_slots</code> section is one row and a
+version bump (<code>docs/api/artifact.md</code>, "Adding a section"). Every JSON
+section carries its own version: <code>ir_version</code> for <code>model_ir</code> (2, accepting
+an all-empty 1), <code>plan_version</code> 2, and <code>profile_version</code>,
+<code>metadata_version</code>, <code>catalog_version</code> and <code>weights_version</code> 1; a missing or
+unlisted one is refused as <code>UnsupportedSectionVersion</code> naming the section
+(RI-ART-014).</p>
+<p>ADR-002 and RI-ART-002 agree on this list: the ADR was corrected on
+2026-11-11 to name the nine Release 1 sections and the Release 3
+<code>lora_slots</code>, citing the RI-ART, RI-GC and RI-PLN ids, after the first
+reading for this site found it still carrying its pre-SRS six-section list
+(<a href="decisions.html">decisions</a>, resolved table).</p>
+<h2 id="the-reader">The reader</h2>
+<p>Order of checks, each named in the error when it fails (RI-ART-003): magic,
+version in the accepted set, header length, every section inside the file and
+non-overlapping (RI-SEC-002 requires every length to be bounded by the file
+size before any read), then the hash, and only then are sections exposed.
+<code>inspect</code> reads the header, the table and the JSON sections and never
+initialises a device (RI-CLI-005); the SRS budgets it at under one second for
+any artifact (RI-NFR-002). The accepted format versions are listed in code,
+and a bump must be recorded in <code>docs/api/CHANGELOG.md</code> with a migration note
+(RI-ART-006).</p>
+<h2 id="the-writer">The writer</h2>
+<p>The writer streams to <code>&lt;out&gt;.tmp-&lt;pid&gt;</code> in the destination directory, writes
+the hash last, calls <code>fsync</code>, and renames; an interrupted build leaves no
+file at the destination (RI-ART-004, RI-NFR-007). The same protocol serves
+<code>build</code> and the first-load path into the cache directory, which is why
+ADR-006 can require the two paths to produce identical artifacts.</p>
+<h2 id="why-the-weights-stay-out">Why the weights stay out</h2>
+<p>The first draft of ADR-002 bundled the weights, as a TensorRT engine does.
+On 2026-11-11 the owner struck that: a 2.4T-parameter checkpoint is near
+5 TB at bf16, sharded over dozens of ranks, and writing it a second time into
+an engine file is not practical on disk, in build time or for distribution.
+The artifact now references the checkpoint through the weight manifest and
+never copies it (RI-ART-012). Three things follow:</p>
+<ul>
+<li><code>build</code> reads only <code>config.json</code> and the safetensors headers, so its time
+  and disk use do not depend on model size, and a published prebuilt artifact
+  (RI-ART-011) is megabytes and carries no weight licence.</li>
+<li>The layout the kernels want is still produced, but at load, on the device,
+  one shard at a time, by <a href="sluice.html">Sluice</a>, the weight streamer
+  (RI-GC-008, RI-WST). A fine-tune of the same architecture reuses the
+  artifact unchanged.</li>
+<li><code>metadata</code> records the checkpoint's identity as hashes of <code>config.json</code>,
+  the shard headers and the file sizes; <code>run</code> refuses a checkpoint that
+  differs, and <code>--verify-weights</code> opts into a full per-tensor hash check.
+  SRS v0.3 makes this the whole build-time input identity (RI-SEC-004): no
+  build hashes a whole weight file, and weight content is hashed only per
+  tensor, under <code>--hash-weights</code> or <code>--verify-weights</code>. SRS v0.4.7 (PR #53,
+  ADR-002's second amendment) lets the build read weights and adds
+  <code>used_ranges</code> to the identity: file, tensor, byte range and SHA-256 of
+  every weight range the build used, under <code>metadata_version</code> 2; Sluice
+  re-reads and re-hashes each at load and refuses a mismatch naming the
+  tensor. PR #49 records the checkpoint's KV scales this way.</li>
+</ul>
+<h2 id="the-v03-contract-changes">The v0.3 contract changes</h2>
+<p>SRS v0.3 of 2026-11-12 (PR #28, change request #27, ADR-009) amended the
+artifact's contract before the graph compiler and the executor start
+reading it. Each change is marked by where it stands at <code>04a2a26</code>:
+<em>specified in the SRS</em> means the clause is approved and the code still
+follows v0.2; <em>in the code</em> means a test on <code>main</code> exercises it. The
+requirement states follow the tag rule (<a href="ref-requirements.html">requirements</a>).</p>
+<table>
+<thead>
+<tr>
+<th>change</th>
+<th>requirement</th>
+<th>state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The build-time input identity is the checkpoint identity: SHA-256 of <code>config.json</code>, each weight file's size and header hash; no whole-file hashing</td>
+<td>RI-SEC-004, RI-ART-008</td>
+<td><span class="state-ok">in the code</span> — <code>CheckpointIdentity</code> and <code>FileIdentity</code> in <code>metadata.rs</code>, produced by the frontend and verified by Sluice; the reworded clause matches what PR #24 already did</td>
+</tr>
+<tr>
+<td>An optional per-tensor SHA-256 in each weight manifest entry, recorded by <code>build --hash-weights</code> or a first-load build under <code>--verify-weights</code>; a digest that is not 64 hex digits refused naming the weight; a build without the flag opens no weight byte range</td>
+<td>RI-ART-005, RI-CLI-002, RI-WST-005</td>
+<td><span class="state-part">partly in the code</span> — PR #30: <code>WeightEntry.sha256: Option&lt;Sha256&gt;</code>, refused naming the weight when malformed, and <code>Sluice::verify_weights(None)</code> checks against the manifest's digests and refuses a needed weight without one; recording the digest needs <code>build</code>, so RI-ART-005 and RI-WST-005 are tagged <code>Groundwork for</code></td>
+</tr>
+<tr>
+<td>Every JSON section carries its own top-level version (<code>ir_version</code> for <code>model_ir</code>, <code>&lt;section&gt;_version</code> otherwise), read against a listed set and refused naming the section and the version</td>
+<td>RI-ART-014 (new), RI-ART-006</td>
+<td><span class="state-ok">in the code</span> — <code>plan_version</code> 2 (PR #29); <code>profile</code>, <code>metadata</code>, <code>catalog</code> and <code>weights</code> at 1 in one <code>SECTION_VERSIONS</code> table, and artifact <code>format_version</code> 2 because the layout changed (PR #30); <code>topology</code> and <code>placement</code> versions are checked by the planner</td>
+</tr>
+<tr>
+<td>The <code>placement</code> section records each tensor's slot as a device index, a tier index and an optional shard spec, under <code>placement_version</code> 2 with Model IR <code>ir_version</code> 2; a pinned section is parsed and validated against the pinned topology at load</td>
+<td>RI-PLN-005, RI-MIR-005, ADR-009</td>
+<td><span class="state-ok">in the code</span> — PR #32: <code>Location</code> (device, tier, shard) in the Model IR at <code>ir_version</code> 2, <code>placement_version</code> 2, and <code>check_pinned</code> at the CLI's artifact boundary refusing an index outside the topology or a tier the device cannot reach (<code>error=invalid component=planner</code>); the R2 part of RI-MIR-005, shard specs filled by a planner, is later; see the <a href="planner.html">planner</a></td>
+</tr>
+</tbody>
+</table>
+<p>Issue #27 closed on 2026-11-13 when PR #33 merged.</p>
+<h2 id="costs-the-adr-records">Costs the ADR records</h2>
+<p>First load pays the layout transform on the device, streamed per shard, so
+load time scales with weight size as every engine's does. JSON for the small
+sections is larger than a binary encoding but readable in any tool, and the
+ADR estimates the plan of a 70B model at a few megabytes.</p>
+<h2 id="multi-rank">Multi-rank</h2>
+<p>A tensor-parallel build produces one artifact per rank carrying <code>rank</code>,
+<code>world_size</code> and the parallel layout, and ranks from different builds are
+refused together (RI-ART-007, R2). Whether that stays one file per rank is
+open issue OI-005, provisionally yes.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#why-a-single-file">Why a single file</a></li><li><a href="#the-header">The header</a></li><li><a href="#the-sections">The sections</a></li><li><a href="#the-reader">The reader</a></li><li><a href="#the-writer">The writer</a></li><li><a href="#why-the-weights-stay-out">Why the weights stay out</a></li><li><a href="#the-v03-contract-changes">The v0.3 contract changes</a></li><li><a href="#costs-the-adr-records">Costs the ADR records</a></li><li><a href="#multi-rank">Multi-rank</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

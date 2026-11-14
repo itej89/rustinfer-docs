@@ -1,0 +1,2629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Requirements — rustinfer</title>
+<meta name="description" content="Every requirement of SRS-RI-v0.1 with its priority, release, the implementation state derived from the test tags, and the SRS&#x27;s own status field.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html" class="here">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <!-- Generated by scripts/reference/gen_srs.py from the rustinfer checkout; do not edit by hand. Regenerate with `.venv/bin/python scripts/reference/gen_srs.py`. -->
+<h1 id="requirements">Requirements</h1>
+<p>Generated from <code>docs/SRS-RI-v0.1.md</code> at commit 8c7d47e 2026-11-13: document version
+0.4.8, status <em>Approved</em> (the SRS header says so). 188 requirements
+in 28 groups. The <em>state</em> column is derived from the tags the tests carry
+(below); the <em>SRS status</em> column is the document's own field. The <em>release</em> column is
+the first release named; where a requirement is split across releases the full text is kept.</p>
+<h2 id="headline">Headline</h2>
+<p><strong>39 implemented, 31 partial, 1 reserved only,
+117 planned</strong> of 188. The tests on <code>main</code> carry 708 <code>Verifies</code>,
+318 <code>Groundwork for</code> and 13 <code>Reserved</code> tags.</p>
+<table>
+<thead>
+<tr>
+<th>release</th>
+<th>requirements</th>
+<th>implemented</th>
+<th>partial</th>
+<th>reserved only</th>
+<th>planned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>110</td>
+<td>39</td>
+<td>30</td>
+<td>0</td>
+<td>41</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>41</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>39</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>33</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>33</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>all</td>
+<td>188</td>
+<td>39</td>
+<td>31</td>
+<td>1</td>
+<td>117</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How the state is derived.</strong> By the tag rule of the rustinfer repository's
+<a href="https://github.com/itej89/rustinfer/blob/main/docs/testing.md"><code>docs/testing.md</code></a> (set in <a href="https://github.com/itej89/rustinfer/issues/27">#27</a>), a test
+cites a requirement in its doc comment with exactly one of three tags: <code>Verifies RI-X-NNN: &lt;part&gt;</code>
+only when the clause is fully implemented in the code, <code>Groundwork for RI-X-NNN: &lt;part&gt;</code> while it
+is not, and <code>Reserved RI-X-NNN (R&lt;n&gt;)</code> for a test asserting a later-release refusal. A requirement is
+<span class="state-ok">implemented</span> when it has at least one <code>Verifies</code> tag and no
+<code>Groundwork for</code> tag; <span class="state-part">partial</span> when it has any <code>Groundwork for</code> tag;
+<span class="state-no">reserved only</span> when it has only <code>Reserved</code> tags; and
+<span class="state-no">planned</span> otherwise, with its release. The tags are read from the comments
+of the integration tests under <code>crates/*/tests</code> and the <code>#[cfg(test)]</code> modules under <code>crates/*/src</code>;
+an id mentioned without a tag word (prose, a <code>//!</code> module header) never counts. The <em>tags</em> column gives
+the counts as Verifies / Groundwork for / Reserved and the <em>evidence</em> column the files, with the count
+per file where it is more than one.</p>
+<p>The Epic <a href="https://github.com/itej89/rustinfer/issues/1">#1</a> checklist's assignment of an id to an issue is shown in the evidence
+column as information and does not change the state: 39 ids are assigned to a
+closed issue, and 11 of them are not implemented by the tag rule
+(RI-FE-006, RI-MIR-011, RI-MIR-012, RI-KC-008, RI-KC-011, RI-ART-005, RI-ART-012, RI-TGT-004, RI-RV-002, RI-WST-003, RI-WST-005). The SRS's own status field, in the <em>SRS status</em> column,
+changes only when a release revises the document, so it is <em>Draft</em> for every requirement today
+(by SRS status: Draft 188) and is not what the
+<a href="progress.html">progress</a> page counts: that page reads the <em>state</em> column of each component table
+below, implemented as done, partial as progress, reserved only and planned as later. The tracker
+state is read live from GitHub
+(<code>data/progress-snapshot.json</code>, fetched 2026-11-14 04:27 UTC); the
+<a href="issues.html">issues</a> page computes its <em>SRS requirements implemented</em> headline from the same code.</p>
+<h2 id="321-cli">3.2.1 CLI</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-CLI-001</td>
+<td>The CLI SHALL expose <code>build</code>, <code>inspect</code>, <code>run</code>, <code>bench</code>, <code>serve</code> and <code>tune</code>, SHALL exit non-zero on failure, and SHALL print one structured error line (<code>error=&lt;code&gt; component=&lt;name&gt; detail=&lt;text&gt;</code>) to stderr on failure. <em>Rationale: One entry point; failures scriptable.</em></td>
+<td>Critical</td>
+<td>R1 (build, inspect, run, tune); R2 (bench); R3 (serve)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>21 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/error_contract.rs"><code>rustinfer-frontend/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/error_contract.rs"><code>rustinfer-kc/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/error_contract.rs"><code>rustinfer-mir/tests/error_contract.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/error_contract.rs"><code>rustinfer-planner/tests/error_contract.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/error_contract.rs"><code>rustinfer-sluice/tests/error_contract.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/error_contract.rs"><code>rustinfer-target/tests/error_contract.rs</code></a> ×2</td>
+</tr>
+<tr>
+<td>RI-CLI-002</td>
+<td><code>build --model &lt;dir&gt; --target &lt;arch&gt; --out &lt;file&gt; [--precision] [--profile] [--hash-weights] [--kv-dtype] [--activations] [--tp N] [--ep N] [--lora-max-rank R]</code> SHALL produce an artifact or fail without leaving a file at <code>&lt;out&gt;</code>; <code>--hash-weights</code> records the per-tensor digest of RI-ART-005. <code>--precision &lt;bf16 or fp8 or mxfp4&gt;</code> sets the format of the eligible matmul weights (RI-GC-004); absent, each weight keeps its imported quantization or source dtype; a value other than the format of an imported quantization SHALL be refused naming both. <code>--kv-dtype &lt;bf16 or fp8 or mxfp4&gt;</code> (default <code>bf16</code>) sets the KV storage dtype of RI-KVC-008; its help text SHALL state the MXFP4 accuracy caveat of RI-KVC-008 with its source. <code>--activations &lt;bf16 or mxfp8 or mxfp4&gt;</code> (default <code>bf16</code>) sets the format the matrix unit receives activations in for every MXFP4 GEMM (RI-KC-003): <code>bf16</code> on every target; <code>mxfp8</code> or <code>mxfp4</code> selects the gfx950 scaled MFMA with in-kernel activation quantization under RI-MIR-012, and SHALL be refused naming the target on any other target. The value SHALL be recorded in <code>metadata</code>. <em>Rationale: UC-01; RI-ART-004; ADR-010. <code>fp8</code> and <code>mxfp8</code> elements are OCP-OFP8 E4M3 (FNUZ on</em></td>
+<td>Critical</td>
+<td>R1 (core, --hash-weights, --precision, --kv-dtype, --activations); R2 (--tp); R3 (--ep, --lora-max-rank)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 6 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/tests/kv_dtype.rs"><code>rustinfer-core/tests/kv_dtype.rs</code></a> ×2; Epic: open <a href="https://github.com/itej89/rustinfer/issues/11">#11</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/36">#36</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/37">#37</a> (in progress)</td>
+</tr>
+<tr>
+<td>RI-CLI-003</td>
+<td><code>run</code> and <code>serve</code> SHALL accept an artifact or a model directory; given a model directory they SHALL build an artifact into <code>RUSTINFER_CACHE_DIR</code> (default <code>~/.cache/rustinfer</code>) keyed by model hash, target, precision, KV dtype, activation format and profile, and SHALL reuse it on later loads only while its whole checkpoint identity (RI-ART-008) matches; a cached artifact whose used weight range no longer matches SHALL be rebuilt, not refused; given a model directory they SHALL accept <code>--precision</code>, <code>--kv-dtype</code> and <code>--activations</code> as <code>build</code> does (RI-CLI-002). <em>Rationale: ADR-006; every incumbent engine builds on first load with a cache. The model</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 4 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/cache_key.rs"><code>rustinfer-artifact/tests/cache_key.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/11">#11</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/36">#36</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-CLI-004</td>
+<td><code>--require-prebuilt</code>, and the server key <code>strict_artifact</code>, SHALL make <code>run</code> and <code>serve</code> refuse a model directory and refuse to build. <em>Rationale: A production start never compiles.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 1 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/11">#11</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-CLI-005</td>
+<td><code>inspect &lt;file&gt;</code> SHALL print header, target, producer, LLVM version, profile, precision per weight class, KV geometry, catalog entries with resource reports, arena and weight sizes, input hashes, build options and whether the artifact came from <code>build</code> or a first load, without initialising a device. <em>Rationale: UC-02.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/11">#11</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-CLI-006</td>
+<td><code>run &lt;artifact or dir&gt; --prompt-tokens &lt;ids&gt;  or  --prompt &lt;text&gt;</code> SHALL load the artifact, refuse a target mismatch, and print generated tokens; sampling flags SHALL map one-to-one to RI-SMP. <em>Rationale: UC-03; the tokenizer is the checkpoint's HF-TOKENIZER <code>tokenizer.json</code>.</em></td>
+<td>High</td>
+<td>R1 (token ids); R2 (text through the tokenizer)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/14">#14</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-CLI-007</td>
+<td><code>tune --target &lt;arch&gt; [--generator &lt;name&gt;] [--shapes &lt;file&gt;]</code> SHALL run the autotuner on the current device and write catalog entries. <em>Rationale: RI-KC-006.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-CLI-008</td>
+<td><code>bench throughput or latency --engine &lt;file&gt; --dataset &lt;file or synthetic:...&gt; --concurrency N [--streaming]</code> SHALL report TTFT, TPOT, ITL at p50, p90 and p99, output tokens per second and requests per second, in text and JSON. <em>Rationale: UC-12.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CLI-009</td>
+<td><code>serve &lt;artifact or dir&gt; [--host] [--port] [--config &lt;yaml&gt;] [--set k=v]</code> SHALL start the server of RI-SRV with YAML configuration overridden by <code>--set</code>. <em>Rationale: UC-18; the API is that of RI-SRV-001 (OPENAI-API).</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CLI-010</td>
+<td>Every subcommand SHALL log a version manifest once at start: crate version, rustc version, LLVM version, host triple and each direct dependency version. <em>Rationale: SWG-001 §8.4.5.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/src/manifest.rs"><code>rustinfer-core/src/manifest.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/tests/manifest.rs"><code>rustinfer-core/tests/manifest.rs</code></a> ×7</td>
+</tr>
+<tr>
+<td>RI-CLI-011</td>
+<td>Every log line SHALL be <code>key=value</code> text with an ISO-8601 timestamp, level and component, on stderr; the level SHALL come from <code>RUSTINFER_LOG</code> (default <code>info</code>); stdout SHALL carry only results. <em>Rationale: SWG-001 §8.4.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>2 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×2</td>
+</tr>
+<tr>
+<td>RI-CLI-012</td>
+<td>Every path argument SHALL be canonicalised and checked (inputs exist, outputs have a writable parent) before any work starts. <em>Rationale: SWG-001 §8.7.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/src/commands.rs"><code>rustinfer-cli/src/commands.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="322-frontend">3.2.2 Frontend</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-FE-001</td>
+<td>The frontend SHALL lower the LLaMA family (<code>llama</code>, <code>mistral</code>, <code>qwen2</code>, <code>qwen3</code>) from <code>config.json</code> into Model IR: layers, hidden size, attention and KV heads, intermediate size, vocabulary, RoPE parameters and scaling, norm epsilon, tied embeddings. A feature of a family the Model IR cannot yet express SHALL be refused at lowering naming the feature, never approximated. The Qwen3 QK norm lowers as <code>rmsnorm(q, q_norm, group = head_dim)</code> and the same for k, before <code>rope</code> (RI-MIR-004). R1 gap, refused by name: <code>llama3</code>, <code>yarn</code> and <code>dynamic</code> RoPE scaling (a static frequency-table attribute on <code>rope</code>, #31). <em>Rationale: UC-01; issue #6 implements the four families. The field names and meanings are</em></td>
+<td>Critical</td>
+<td>R1 (all four families, with the R1 gap above); R2 (the gap lifted)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>38 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/llama/mod.rs"><code>rustinfer-frontend/src/arch/llama/mod.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/mod.rs"><code>rustinfer-frontend/src/arch/mod.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/config.rs"><code>rustinfer-frontend/tests/config.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/golden.rs"><code>rustinfer-frontend/tests/golden.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mapping.rs"><code>rustinfer-frontend/tests/mapping.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/partial_rotary.rs"><code>rustinfer-frontend/tests/partial_rotary.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/rope_parameters.rs"><code>rustinfer-frontend/tests/rope_parameters.rs</code></a> ×8; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/6">#6</a></td>
+</tr>
+<tr>
+<td>RI-FE-002</td>
+<td>The frontend SHALL map every HF parameter to the Model IR weight it feeds and SHALL fail naming the first missing or unexpected parameter. <em>Rationale: A silent weight mismatch is wrong output, not an error.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>12 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/mod.rs"><code>rustinfer-frontend/src/arch/mod.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/test_mixed.rs"><code>rustinfer-frontend/src/arch/test_mixed.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/config.rs"><code>rustinfer-frontend/tests/config.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/golden.rs"><code>rustinfer-frontend/tests/golden.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mapping.rs"><code>rustinfer-frontend/tests/mapping.rs</code></a> ×7; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/6">#6</a></td>
+</tr>
+<tr>
+<td>RI-FE-003</td>
+<td>An unsupported <code>model_type</code> SHALL be rejected with an error naming it and the supported list. <em>Rationale: UC-21; <code>model_type</code> is the HF-CONFIG field.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>6 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/mod.rs"><code>rustinfer-frontend/src/arch/mod.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/config.rs"><code>rustinfer-frontend/tests/config.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/error_contract.rs"><code>rustinfer-frontend/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/6">#6</a></td>
+</tr>
+<tr>
+<td>RI-FE-004</td>
+<td>The frontend and the build MAY read any input, including weight bytes, and MAY use what they read to optimize the build and the artifact. The frontend SHALL read <code>config.json</code> and the safetensors shard headers and SHALL emit the weight manifest (RI-ART-005). Every weight byte range the build reads and uses to produce the artifact SHALL be recorded in the checkpoint identity (RI-ART-008). The artifact SHALL NOT contain weight bytes (RI-ART-012); the weights the kernels consume are read by Sluice at load (RI-WST). <em>Rationale: Owner decision of 2026-11-13: the build "can read whatever it wants",</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>8 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/safetensors.rs"><code>rustinfer-frontend/tests/safetensors.rs</code></a> ×4</td>
+</tr>
+<tr>
+<td>RI-FE-005</td>
+<td>The frontend SHALL lower MoE families (DeepSeek-V3 with MLA, Qwen MoE, GPT-OSS): router, experts, shared experts, MLA latent projections. <em>Rationale: UC-14.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-FE-006</td>
+<td>Pre-quantized checkpoints (FP8 per-tensor and block-scale; AWQ, GPTQ, MXFP4) SHALL be imported with their scales as encodings (RI-MIR-011) and SHALL be rejected only when the target has neither a catalog kernel for the encoding nor a load-time decompression to a dtype it has kernels for. MXFP4 dense checkpoints of the RI-FE-001 families SHALL be imported as <code>fp4x2</code> weights with the <code>mx</code> encoding and a <code>ue8m0</code> scale tensor, from: (a) AMD Quark (QUARK): <code>quantization_config.quant_method</code> <code>quark</code>, global weight config <code>dtype</code> <code>fp4</code>, <code>qscheme</code> <code>per_group</code>, <code>group_size</code> 32, <code>ch_axis</code> -1, <code>scale_format</code> <code>e8m0</code>, <code>is_dynamic</code> false; tensors <code>&lt;name&gt;.weight</code> (U8, [out, in/2]) and <code>&lt;name&gt;.weight_scale</code> (U8, [out, in/32]); every <code>exclude</code> entry, a name or an <code>re:</code> pattern, SHALL be honoured by leaving that weight in its source dtype; a <code>layer_quant_config</code> entry with another weight scheme, and an <code>export.pack_method</code> other than <code>reorder</code>, SHALL be refused naming them; (b) compressed-tensors (CT): <code>format</code> <code>mxfp4-pack-quantized</code> (presets MXFP4A16, MXFP4, MXFP4XFP8); tensors <code>&lt;name&gt;.weight_packed</code> (U8, [out, in/2]) and <code>&lt;name&gt;.weight_scale</code> (U8, [out, in/32], bias 127); every <code>ignore</code> entry SHALL be honoured. A checkpoint whose activations were calibrated for a quantized format (Quark <code>input_tensors</code> fp4, CT MXFP4 or MXFP4XFP8) SHALL run with bf16 activations (W4A16) unless <code>--activations</code> selects its calibrated format on gfx950 (RI-CLI-002), and the build SHALL log any deviation from its calibration at <code>warn</code> and record it in <code>metadata</code>. A checkpoint KV quantization (Quark <code>kv_cache_quant_config</code> or <code>output_tensors</code> on <code>k_proj</code> and <code>v_proj</code>) SHALL supply the fp8 KV scales of RI-KVC-008 when <code>--kv-dtype fp8</code> is selected and SHALL otherwise be ignored with an <code>info</code> log naming it. Every other MXFP4 checkpoint form SHALL be refused naming its <code>quant_method</code> or <code>format</code>; later items, named: gpt-oss (<code>quant_method</code> <code>mxfp4</code>, MXFP4 MoE experts as <code>*_blocks</code> and <code>*_scales</code>) with the MoE families of RI-FE-005, and GGUF MXFP4 (a different nibble order). <em>Rationale: INV §1; ADR-010: AMD Quark and llm-compressor publish dense MXFP4 checkpoints</em></td>
+<td>High</td>
+<td>R1 (MXFP4 dense: Quark, compressed-tensors); R2 (FP8); R3 (AWQ, GPTQ; gpt-oss MXFP4 with RI-FE-005); later (GGUF MXFP4, unscheduled)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 41 / 5</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/safetensors.rs"><code>rustinfer-artifact/tests/safetensors.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/test_mixed.rs"><code>rustinfer-frontend/src/arch/test_mixed.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/quant/pattern.rs"><code>rustinfer-frontend/src/quant/pattern.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/golden.rs"><code>rustinfer-frontend/tests/golden.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a> ×15, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_audit.rs"><code>rustinfer-frontend/tests/mxfp4_audit.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs"><code>rustinfer-frontend/tests/mxfp4_kv_fp8.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_logging.rs"><code>rustinfer-frontend/tests/mxfp4_logging.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_review.rs"><code>rustinfer-frontend/tests/mxfp4_review.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/mx.rs"><code>rustinfer-target/tests/mx.rs</code></a>; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/arch/llama/mod.rs"><code>rustinfer-frontend/src/arch/llama/mod.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mapping.rs"><code>rustinfer-frontend/tests/mapping.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/35">#35</a></td>
+</tr>
+<tr>
+<td>RI-FE-007</td>
+<td>A LoRA adapter directory SHALL be read into adapter weights keyed by target module, with rank checked against the artifact's <code>max_lora_rank</code>. <em>Rationale: UC-15; the directory layout is PEFT's (section 3.1.3).</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-FE-008</td>
+<td>A model given as a Model IR JSON document SHALL be accepted in place of an HF directory. <em>Rationale: Custom architectures; the Model IR is the contract.</em></td>
+<td>Low</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="323-model-ir">3.2.3 Model IR</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-MIR-001</td>
+<td>The Model IR SHALL be a typed SSA graph: each node applies one operator to named input tensors and defines named outputs; the graph SHALL be acyclic. <em>Rationale: One contract for every frontend and backend (ADR-005).</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>4 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/graph_validation.rs"><code>rustinfer-mir/tests/graph_validation.rs</code></a> ×4; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-002</td>
+<td>A shape SHALL be a list of dimensions, each a static integer or a named dynamic dimension from the set <code>batch</code>, <code>num_tokens</code>, <code>seq_len</code>, <code>beam</code>, bounded by the profile. <em>Rationale: Semi-static artifact (INV §0).</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>18 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/profile.rs"><code>rustinfer-artifact/tests/profile.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/scan.rs"><code>rustinfer-mir/src/scan.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/boundary.rs"><code>rustinfer-mir/tests/boundary.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/shapes.rs"><code>rustinfer-mir/tests/shapes.rs</code></a> ×15; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-003</td>
+<td>Dtypes SHALL be bf16, fp16, fp32, fp8 (OCP e4m3 per OCP-OFP8, FNUZ e4m3 per AMD-FNUZ), fp8_e5m2 (OCP E5M2 per OCP-OFP8), int8, int4x2, fp4x2, ue8m0, int32, int64, bool, each with a defined element size; quantized tensors SHALL carry a compression encoding (RI-MIR-011). <code>fp8_e5m2</code> is one byte: a sign bit, a 5-bit exponent with bias 15 and a 2-bit mantissa, exponent 0 being subnormal (OCP-OFP8 §5.1, Tables 1 and 2); <code>S.11111.00</code> is ±Inf, <code>S.11111.{01,10,11}</code> is NaN, and the largest finite magnitude is 57344 (<code>S.11110.11</code>). It is quantized and takes the <code>linear</code> encoding. Conversion to it SHALL round to nearest, ties to even, keep the sign of a zero, and saturate: a value whose rounded magnitude exceeds 57344, and ±Inf, give ±57344 (OCP-OFP8 §5.2.1, Table 3, Appendix A); NaN gives a NaN. <code>fp4x2</code> holds OCP MX E2M1 values (OCP-MX), two per byte: along the innermost axis, value 2i is the low nibble (bits 3..0) and value 2i+1 the high nibble (bits 7..4) of byte i. A nibble is a sign bit (bit 3), a 2-bit exponent with bias 1 and a 1-bit mantissa, exponent 0 being subnormal: codes 0x0 to 0x7 are 0, 0.5, 1, 1.5, 2, 3, 4, 6 and 0x8 to 0xF their negatives (0x8 is −0); there is no Inf and no NaN. An <code>fp4x2</code> tensor's shape counts E2M1 values, its innermost axis SHALL be even, and it stores one byte per two values. <code>ue8m0</code> is the OCP MX v1.1 UE8M0 scale (E8M0 in v1.0): one unsigned byte e with value 2^(e−127) for e in 0 to 254 and NaN for e = 255; it has no sign, zero or Inf. Its IR token is <code>ue8m0</code>, after OCP MX v1.1: no Model IR reader has ever accepted <code>e8m0</code>, so the rename breaks no document, and <code>e8m0</code> is refused as an unknown dtype (checkpoint fields spelled <code>e8m0</code> are frontend input, RI-FE-006). <em>Rationale: The formats AMD matrix cores take; ADR-010 puts MXFP4 in R1. fp16 and fp32 are</em></td>
+<td>High</td>
+<td>R1 (bf16, fp16, fp32, fp8, fp8_e5m2, fp4x2, ue8m0, int32, int64, bool); R2 (int8); R3 (int4x2)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>44 / 0 / 1</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/dtype.rs"><code>rustinfer-mir/src/dtype.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/dtypes.rs"><code>rustinfer-mir/tests/dtypes.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/e5m2.rs"><code>rustinfer-mir/tests/e5m2.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/mx.rs"><code>rustinfer-mir/tests/mx.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/src/numeric.rs"><code>rustinfer-target/src/numeric.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/e5m2.rs"><code>rustinfer-target/tests/e5m2.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/mx.rs"><code>rustinfer-target/tests/mx.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/numeric.rs"><code>rustinfer-target/tests/numeric.rs</code></a> ×7; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/dtypes.rs"><code>rustinfer-mir/tests/dtypes.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a>, <a href="https://github.com/itej89/rustinfer/issues/34">#34</a></td>
+</tr>
+<tr>
+<td>RI-MIR-004</td>
+<td>The operator set SHALL be: embedding, matmul (bias, scales), rmsnorm, layernorm, rope, attention_prefill, attention_decode_paged, kv_cache_write, silu_and_mul, gelu_and_mul, residual_add, quantize, dequantize, logits_head, sample, moe_route, moe_experts, lora_apply, collective, and fused (the composition of its parts). <code>rmsnorm</code> MAY carry a group g: the norm then runs over each contiguous run of g elements of the last dimension independently (one head, for a per-head QK norm), g SHALL be non-zero and divide the static last dimension of its input, and the weight SHALL be <code>[g]</code>; without a group the norm runs over the whole last dimension and the weight SHALL be <code>[last dimension]</code>. Validation SHALL refuse a group or a weight shape that breaks this, and a group on <code>layernorm</code>, naming the function, the node and the field. <em>Rationale: Sufficient for the supported families; fusion needs a fused node. Qwen3</em></td>
+<td>Critical</td>
+<td>R1 (LLaMA subset); R2 (collective); R3 (moe_*, lora_apply)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>37 / 0 / 2</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/ops.rs"><code>rustinfer-mir/src/ops.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/registry.rs"><code>rustinfer-mir/src/registry.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/encodings.rs"><code>rustinfer-mir/tests/encodings.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/grouped_norm.rs"><code>rustinfer-mir/tests/grouped_norm.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/operators.rs"><code>rustinfer-mir/tests/operators.rs</code></a> ×15, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/grouped_rmsnorm.rs"><code>rustinfer-target/tests/grouped_rmsnorm.rs</code></a> ×5; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/operators.rs"><code>rustinfer-mir/tests/operators.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-005</td>
+<td>Every tensor SHALL carry a placement slot and every node a device slot, both empty after construction (by a frontend or a builder) and filled only by the planner. A filled placement slot SHALL name a device index into the topology's devices, a memory-tier index t that the device d can use: t is <code>devices[d].local_tier</code>, or d is listed in <code>memory_tiers[t].reachable_from</code> (RI-PLN-001), and MAY carry a shard spec: either split (axis, number of shards, shard index, with the index below the number of shards and the axis inside the tensor's rank) or replicated. A filled device slot SHALL name a device index. This is Model IR <code>ir_version</code> 2 (RI-MIR-008); the reader SHALL also accept an <code>ir_version</code> 1 document whose slots are all empty (every frontend output), reading it as version 2 with empty slots; a version 1 document with any filled slot SHALL be refused naming the first such tensor or node, with the reason that a version 1 placement must be re-planned. <em>Rationale: RI-PLN-003; a tier kind alone cannot say which GPU or which of two DRAM</em></td>
+<td>High</td>
+<td>R1 (slots, ir_version 2, single-device fill); R2 (shard specs filled)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>27 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/placement_v2.rs"><code>rustinfer-mir/tests/placement_v2.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/slots.rs"><code>rustinfer-mir/tests/slots.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/pinned.rs"><code>rustinfer-planner/tests/pinned.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement.rs"><code>rustinfer-planner/tests/placement.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement_v2.rs"><code>rustinfer-planner/tests/placement_v2.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/topology.rs"><code>rustinfer-planner/tests/topology.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a>, <a href="https://github.com/itej89/rustinfer/issues/15">#15</a></td>
+</tr>
+<tr>
+<td>RI-MIR-006</td>
+<td>Validation SHALL reject a cycle, an undefined input, a tensor defined twice, a dtype mismatch at an input, or a dynamic dimension outside the set, naming the node. <em>Rationale: Malformed graphs stop before the compiler.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>26 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/registry.rs"><code>rustinfer-mir/src/registry.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/validate.rs"><code>rustinfer-mir/src/validate.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/boundary.rs"><code>rustinfer-mir/tests/boundary.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/graph_validation.rs"><code>rustinfer-mir/tests/graph_validation.rs</code></a> ×16; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-007</td>
+<td>The Model IR SHALL round-trip through a canonical JSON form (sorted keys, exact numerics) without loss, and the artifact SHALL carry it. <em>Rationale: Inspection, golden tests, RI-FE-008, Apple's portable-IR property. The canonical</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>20 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/dtypes.rs"><code>rustinfer-mir/tests/dtypes.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/encodings.rs"><code>rustinfer-mir/tests/encodings.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/functions.rs"><code>rustinfer-mir/tests/functions.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/grouped_norm.rs"><code>rustinfer-mir/tests/grouped_norm.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/json_roundtrip.rs"><code>rustinfer-mir/tests/json_roundtrip.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_dtypes.rs"><code>rustinfer-mir/tests/kv_dtypes.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_groups.rs"><code>rustinfer-mir/tests/kv_groups.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/placement_v2.rs"><code>rustinfer-mir/tests/placement_v2.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/shapes.rs"><code>rustinfer-mir/tests/shapes.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/slots.rs"><code>rustinfer-mir/tests/slots.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-008</td>
+<td>The Model IR SHALL be versioned independently of the artifact format, with a reader that accepts a listed set of versions.</td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>13 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/error.rs"><code>rustinfer-mir/src/error.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/error_contract.rs"><code>rustinfer-mir/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/versions.rs"><code>rustinfer-mir/tests/versions.rs</code></a> ×10; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/3">#3</a></td>
+</tr>
+<tr>
+<td>RI-MIR-009</td>
+<td>A Model IR document SHALL hold one weight set and one or more named functions over it (<code>prefill</code>, <code>decode</code>, and from R3 draft and adapter functions), each a graph with its own signature; weights referenced by several functions SHALL exist once. The artifact SHALL carry one Plan per function and one weight manifest (RI-ART-002); the executor SHALL select a function by name (RI-RT-001). <em>Rationale: Core ML's multifunction models; a draft model or adapter as a second artifact</em></td>
+<td>Critical</td>
+<td>R1 (prefill, decode); R3 (draft, adapter)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 17 / 1</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/plan.rs"><code>rustinfer-artifact/tests/plan.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/weights.rs"><code>rustinfer-artifact/tests/weights.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/golden.rs"><code>rustinfer-frontend/tests/golden.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/functions.rs"><code>rustinfer-mir/tests/functions.rs</code></a> ×11; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/functions.rs"><code>rustinfer-mir/tests/functions.rs</code></a></td>
+</tr>
+<tr>
+<td>RI-MIR-010</td>
+<td>Each attention node SHALL reference a named KV group. Layers in a group share blocks and geometry; groups MAY differ in head count, head dimension, dtype, window length and state kind (paged KV, sliding window, recurrent state); a node MAY read another group's cache. The Plan SHALL record geometry per group (RI-GC-006) and a sequence SHALL hold one block table per group (RI-KVC-001). A group's dtype is its KV storage dtype (RI-KVC-008) and the group SHALL carry the encoding that dtype requires (RI-MIR-011): none for bf16, linear per-tensor for fp8, <code>mx</code> along <code>head_dim</code> for <code>fp4x2</code>; its geometry SHALL include the scale bytes per token and head. <em>Rationale: GPT-OSS and Gemma alternate window and full layers; Apple's on-device model</em></td>
+<td>Critical</td>
+<td>R1 (one group; bf16, fp8, fp4x2 storage); R2 (several)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 26 / 1</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kv_geometry.rs"><code>rustinfer-artifact/tests/kv_geometry.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/plan.rs"><code>rustinfer-artifact/tests/plan.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_dtypes.rs"><code>rustinfer-mir/tests/kv_dtypes.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_groups.rs"><code>rustinfer-mir/tests/kv_groups.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/operators.rs"><code>rustinfer-mir/tests/operators.rs</code></a>; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_groups.rs"><code>rustinfer-mir/tests/kv_groups.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/37">#37</a> (in progress)</td>
+</tr>
+<tr>
+<td>RI-MIR-011</td>
+<td>A quantized tensor SHALL carry one encoding: linear (per tensor, channel or block, with scale and optional zero-point dtypes), MX block scale (<code>mx</code>, below), lookup table (1 to 8 bit indices with a per-tensor or per-block table), or sparse (mask plus packed values); for each the graph compiler SHALL decide between in-kernel decompression and decompression at load into a catalog dtype, recording the choice as the weight's transform (RI-GC-008) for Sluice to execute. <code>mx</code> (OCP-MX): an <code>fp4x2</code> tensor in blocks of 32 consecutive values along its reduction axis (a matmul weight's input-feature axis; a KV group's <code>head_dim</code>), which SHALL be a multiple of 32, each block sharing one <code>ue8m0</code> scale; the scales are a companion tensor of the data tensor's logical shape with that axis divided by 32; values are packed low nibble first (RI-MIR-003); value = scale × E2M1 (RI-MIR-012); the encoding records <code>block_size</code> (32, the only R1 value), <code>axis</code> and <code>scale_dtype</code> (<code>ue8m0</code>). The decompression choice for <code>mx</code> per target SHALL be: on gfx950, gfx942 and cpu in kernel, each block dequantized to bf16 inside the GEMM or attention kernel (the default, RI-KC-003); on gfx950 with <code>--activations mxfp8</code> or <code>mxfp4</code> (RI-CLI-002) in kernel, the packed values and scales feeding the scaled MFMA; at load into bf16, on any target, only as the fallback when the catalog has no in-kernel kernel for the node, logged at <code>warn</code> naming the weight and printed by <code>inspect</code>. <em>Rationale: Core ML's <code>constexpr_*</code> encodings leave the where-to-decompress decision to the</em></td>
+<td>High</td>
+<td>R1 (linear per tensor and per channel; mx); R2 (linear per block, lookup table); R3 (sparse)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 27 / 1</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/src/scan.rs"><code>rustinfer-mir/src/scan.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/encodings.rs"><code>rustinfer-mir/tests/encodings.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/mx.rs"><code>rustinfer-mir/tests/mx.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/src/reference/mx.rs"><code>rustinfer-target/src/reference/mx.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/catalog.rs"><code>rustinfer-target/tests/catalog.rs</code></a>; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/encodings.rs"><code>rustinfer-mir/tests/encodings.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/34">#34</a></td>
+</tr>
+<tr>
+<td>RI-MIR-012</td>
+<td>Conversion to the <code>mx</code> encoding SHALL follow OCP MX v1.1 §6.3 (OCP-MX) for each block of 32 source values v (bf16, fp16 or fp32, widened to fp32), with E2M1 as the element format (emax 2, largest magnitude 6): (1) if any v is NaN or ±Inf, the scale SHALL be 0xFF (NaN) and every element code 0x0; (2) else, with amax the largest  or v or , if amax is 0 the scale SHALL be 0x7F (1.0) and every element code 0x0 (OCP leaves this case to the implementation); (3) else, with e = floor(log2 amax), expAdj follows OCP-MX §6.3 Equation 4: with round(amax) amax rounded to the element's precision (its mantissa width, ties to even) with unbounded exponent, expAdj = 1 if floor(log2 round(amax)) &gt; floor(log2 amax) (the rounding carries into the next power of two), or, for E4M3 elements only, if round(amax) is 1.875 × 2^n, and 0 otherwise; for E2M1 this is exactly amax ≥ 1.75 × 2^e, AMD Quark's <code>even</code> scale mode, and for E4M3 exactly amax &gt; 1.8125 × 2^e; the scale exponent s = e − emax + expAdj (e − 2 for E2M1), clamped to −127..127 and stored as s + 127; (4) each element is v / 2^s converted to E2M1 by roundTiesToEven with magnitudes above 6 clamped to ±6, keeping the sign (a negative value that rounds to zero is 0x8). A scale computed by plain floor (expAdj always 0) SHALL NOT be used. Dequantization SHALL give 2^s × E2M1(code) per element, and NaN for every element of a block whose scale is 0xFF. The in-kernel activation quantization selected by <code>--activations</code> (RI-KC-003) SHALL use this rule: as stated for <code>mxfp4</code>, and with OCP E4M3 elements (emax 8, largest magnitude 448, expAdj by the E4M3 case of Equation 4) for <code>mxfp8</code>. The CPU reference target SHALL implement both directions in Rust and SHALL be the oracle for every quantization, dequantization, load-time transform and in-kernel decompression on every other target (RI-TGT-003, RI-KC-007). <em>Rationale: Plain floor underestimates the block range and clips the largest values</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 24 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/src/reference/mx.rs"><code>rustinfer-target/src/reference/mx.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/kv.rs"><code>rustinfer-target/tests/kv.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/mx.rs"><code>rustinfer-target/tests/mx.rs</code></a> ×18; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/34">#34</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="324-graph-compiler">3.2.4 Graph compiler</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-GC-001</td>
+<td>The graph compiler SHALL run an ordered pass pipeline and SHALL log each pass's name, node count before and after, and duration at <code>info</code>. <em>Rationale: An attributable pipeline.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-002</td>
+<td>Shape inference SHALL resolve every tensor under the profile and SHALL fail on an unresolved dimension, a profile violating min ≤ opt ≤ max, or a <code>max_num_tokens</code> not a multiple of the KV block size. <em>Rationale: INV §2.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-003</td>
+<td>Fusion SHALL replace matched sequences (rmsnorm→matmul, matmul→silu_and_mul, residual_add→rmsnorm, rope→kv_cache_write, quantize→matmul, elementwise chains) with fused nodes only when the catalog lists a kernel or the fuser (RI-KC-010) can produce one. <em>Rationale: Target-dependent fusion.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-004</td>
+<td>The precision pass SHALL assign each matmul and attention a weight and activation format from the build options (<code>--precision</code>, <code>--kv-dtype</code>, RI-CLI-002) or the imported quantization (RI-FE-006), and SHALL insert the quantize and scale nodes the chosen kernel requires. <code>--precision mxfp4</code> SHALL quantize every eligible matmul weight to <code>fp4x2</code> with the <code>mx</code> encoding by RTN under RI-MIR-012, with bf16 activations (W4A16). Eligible: the attention projections (q, k, v, o) and the MLP projections (gate, up, down) whose input-feature axis is a multiple of 32. Excluded by default: embeddings, the logits head (tied or not), norms and every weight that is not a matmul operand; an otherwise eligible weight whose input-feature axis is not a multiple of 32 SHALL stay in its source dtype with an <code>info</code> log naming it. The artifact holds no weight byte, quantized or not (RI-ART-012), so the quantization SHALL be recorded as the weight's load-time transform (source dtype to <code>fp4x2</code> values and <code>ue8m0</code> scales, RI-GC-008) and executed by Sluice (RI-WST-003). The artifact SHALL record <code>--precision</code> in <code>metadata</code> build options, each weight's dtype and encoding in the Model IR, and its transform in the weight manifest; <code>inspect</code> SHALL print the format per weight class and every excluded weight. The activation format of every matmul SHALL be the one <code>--activations</code> selects (default bf16) and SHALL be fixed for the artifact: it SHALL NOT change with batch size, token count or profile bucket (RI-GC-015), and no kernel SHALL switch it implicitly. <em>Rationale: Quantization is a build decision; RTN is the reproducible baseline (about</em></td>
+<td>High</td>
+<td>R1 (bf16, fp8; MXFP4 weights imported or RTN at build; fp8 and MXFP4 KV); R2 (int8); R3 (int4 weight-only; GPTQ-calibrated MXFP4 at build)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/36">#36</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-005</td>
+<td>Kernel selection SHALL choose one catalog kernel per node and per profile bucket (RI-GC-015) by (operator, dtypes, layout, shape rules) ordered by tuned cost, record the kernel id in the Plan, request a missing bucket from the kernel compiler when a device is present (RI-KC-006), and otherwise fail naming the node. <em>Rationale: No run-time selection; no fallback.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 9 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/catalog.rs"><code>rustinfer-target/tests/catalog.rs</code></a> ×9; Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-006</td>
+<td>Memory planning SHALL assign every intermediate an offset in one activation arena sized at the profile's <code>max</code>, reusing non-overlapping lifetimes, and SHALL record the arena size, the KV geometry per KV group (RI-MIR-010) and per-sequence state sizes, with arena offsets per bucket (RI-GC-015). <em>Rationale: Allocate once.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 2 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/device.rs"><code>rustinfer-target/tests/device.rs</code></a> ×2; Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-007</td>
+<td>The Plan SHALL be an ordered list of launches with kernel id, argument bindings (arena offset, weight id, KV pool, request-state field, scalar), shape expressions over the dynamic dimensions, and sub-plans for prefill, decode and a mixed iteration. <em>Rationale: The runtime executes it verbatim.</em></td>
+<td>Critical</td>
+<td>R1 (prefill, decode); R2 (mixed)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-008</td>
+<td>The layout pass SHALL record, per weight, the layout the selected kernel declares and the transform from the source layout, as entries of the weight manifest and as load-phase launches of the Plan; the transform SHALL run at load on the device (RI-RT-001), never at build and never to disk. <em>Rationale: Matrix-core tiled weights; a wrong layout is silent corruption; the</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 1 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/transform.rs"><code>rustinfer-sluice/tests/transform.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-009</td>
+<td>Compilation SHALL be deterministic: identical inputs and options SHALL give byte-identical Plan, catalog and kernel sections. <em>Rationale: Reproducible artifacts; the JSON sections are RFC-8259 text in the canonical</em></td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 3 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/roundtrip.rs"><code>rustinfer-artifact/tests/roundtrip.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/golden.rs"><code>rustinfer-frontend/tests/golden.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-010</td>
+<td><code>--tp N</code> SHALL shard attention heads and MLP columns across N ranks, insert collective nodes and emit one Plan per rank. <em>Rationale: UC-13.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-GC-011</td>
+<td><code>--ep N</code> SHALL place experts across N ranks (EP-only or hybrid with TP), insert dispatch and combine nodes and record expert placement. <em>Rationale: UC-14.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-GC-012</td>
+<td>LoRA application points SHALL be reserved on every matmul marked adaptable, with <code>max_lora_rank</code> fixed in the Plan. <em>Rationale: UC-15.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-GC-013</td>
+<td>A verification sub-plan for speculative decoding SHALL be emitted when requested, bounded by <code>max_draft_tokens</code>. <em>Rationale: UC-16.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-GC-014</td>
+<td>A build whose feature combination is not marked supported in <code>docs/feature-matrix.md</code> SHALL be refused naming the pair.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/10">#10</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-GC-015</td>
+<td>The profile SHALL enumerate (batch, num_tokens) buckets between <code>min</code> and <code>max</code>; for every bucket the Plan SHALL record the kernel id per launch, the arena offsets and whether a captured graph exists, and SHALL mark each launch that requires host synchronisation; the executor SHALL dispatch by bucket lookup only (RI-RT-002), padding a batch up to its bucket. <em>Rationale: Core ML's enumerated shapes, vLLM's per-request-count graphs and SGLang's</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 2 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/graph.rs"><code>rustinfer-target/tests/graph.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/launch.rs"><code>rustinfer-target/tests/launch.rs</code></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="325-kernel-compiler">3.2.5 Kernel compiler</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-KC-001</td>
+<td>Kernels SHALL be written as Rust generators: functions taking a parameter struct (dtypes, tiles, layouts, pipeline depth, fused epilogue) and emitting Kernel IR through a builder; no kernel SHALL exist as MLIR text, HIP, OpenCL or assembly source except through a generator (RI-KC-009). <em>Rationale: ADR-005; the generator is the unit the autotuner explores.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 1 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/builder.rs"><code>rustinfer-kc/tests/builder.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KC-002</td>
+<td>The Kernel IR SHALL be an MLIR dialect at tile level with explicit layouts: tiles, memory spaces (global, shared, register), barriers, a matrix-multiply op, masked loads and stores, reductions, structured control flow; thread identity SHALL NOT appear. <em>Rationale: A tile IR retargets to SIMT, vector and mesh devices; a thread IR does not.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>31 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/src/mlir/lower.rs"><code>rustinfer-kc/src/mlir/lower.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/builder.rs"><code>rustinfer-kc/tests/builder.rs</code></a> ×13, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/dialect.rs"><code>rustinfer-kc/tests/dialect.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/mlir_link.rs"><code>rustinfer-kc/tests/mlir_link.rs</code></a> ×7; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/7">#7</a></td>
+</tr>
+<tr>
+<td>RI-KC-003</td>
+<td>AMD lowering SHALL go through the MLIR <code>gpu</code> pipeline to <code>rocdl</code> and the LLVM AMDGPU back end, emitting MFMA for the matrix op with each architecture's formats (bf16; fp8 FNUZ (AMD-FNUZ) on gfx942; OCP fp8 (OCP-OFP8), fp4, fp6 with UE8M0 scales on gfx950), LDS for shared tiles, and bounds-checked buffer loads. For an <code>fp4x2</code> weight with the <code>mx</code> encoding, by default (<code>--activations bf16</code>, RI-CLI-002) on gfx950 and gfx942 the weights SHALL stay packed in device memory and each weight tile SHALL be dequantized to bf16 in the kernel (on gfx950 with the <code>v_cvt_scalef32_pk_bf16_fp4</code> class of conversions; on gfx942, which has no FP4 format and no scaled MFMA, by integer and bf16 arithmetic), feeding the bf16 MFMA with bf16 activations, so gfx950, gfx942 and cpu compute the same W4A16 product. With <code>--activations mxfp8</code> or <code>mxfp4</code>, valid on gfx950 only, the matrix op SHALL lower to <code>llvm.amdgcn.mfma.scale.f32.16x16x128.f8f6f4</code> or <code>llvm.amdgcn.mfma.scale.f32.32x32x64.f8f6f4</code> (V_MFMA_SCALE_F32_*_F8F6F4) with the weight operand in E2M1 (format code 4) and its UE8M0 scale per 32 K-values, the bf16 activation tile being quantized in the kernel to E4M3 or E2M1 with a UE8M0 scale per 32 K-values by RI-MIR-012; the activation stays bf16 in memory. The activation format SHALL NOT depend on batch size, token count or bucket (RI-GC-004). Attention kernels SHALL dequantize fp8 and MXFP4 KV (RI-KVC-008) to bf16 in the kernel on both. fp6 is not an R1 format. <em>Rationale: The first target. The bf16 default follows vLLM, whose dense W4A16 MXFP4</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 1 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/dialect.rs"><code>rustinfer-kc/tests/dialect.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/8">#8</a> (in review 2026-11-13), <a href="https://github.com/itej89/rustinfer/issues/38">#38</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KC-004</td>
+<td>RISC-V lowering SHALL be rustinfer's own: Kernel IR to a vector form (RVV with the matrix extensions where the core has them) through the LLVM RISC-V back end, and to a mesh form for Tensix-class devices through their open MLIR dialect; the SPIR-V path for Vulkan-class devices SHALL use MLIR's <code>spirv</code> dialect. <em>Rationale: No vendor kernel exists on RISC-V; the IR must be ours end to end. The vector form</em></td>
+<td>High</td>
+<td>R2 (spirv, compile-tested); R3 (riscv-vector, compile-tested); R4 (riscv-mesh)</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KC-005</td>
+<td>The R1 generator set SHALL cover GEMM (bf16, fp8, MXFP4 weights with bf16 activations, and on gfx950 with MXFP8 or MXFP4 activations; bias, scale and activation epilogues), attention prefill, paged attention decode (bf16, fp8 and MXFP4 KV), rmsnorm, rope with cache write (bf16, fp8 and MXFP4 KV), silu_and_mul, embedding, residual add, quantize (including MX quantize, RI-MIR-012, as a load-time transform), MX dequantize to bf16 (the at-load fallback of RI-MIR-011), logits head and sampling; R3 adds MoE routing and expert GEMMs, MLA attention, LoRA application and speculative verification. <em>Rationale: The catalog of a transformer, as MLX keeps one.</em></td>
+<td>Critical</td>
+<td>R1; R3 as listed</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/38">#38</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KC-006</td>
+<td>The autotuner SHALL run a generator over its declared parameter space on the device, check each variant against the CPU reference, keep the fastest correct variant per shape bucket, and write the catalog entry (parameters, cost, binary hash, resource report); catalogs SHALL be committed per target and merged with no duplicate keys. <em>Rationale: The tuned table is ours now.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KC-007</td>
+<td>No kernel SHALL enter the catalog or an artifact without validation against the CPU reference at its catalogued shapes within a per-dtype tolerance. <em>Rationale: Correctness before speed.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KC-008</td>
+<td>Compilation to a binary SHALL use no external process: LLVM and <code>lld</code> as libraries, the target's module loader for the result. <em>Rationale: No toolchain dependency at build or load.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 2 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/mlir_link.rs"><code>rustinfer-kc/tests/mlir_link.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/7">#7</a></td>
+</tr>
+<tr>
+<td>RI-KC-009</td>
+<td>A generator MAY emit target assembly instead of Kernel IR for one hot kernel on one architecture; it SHALL register through the same catalog interface and pass RI-KC-007. <em>Rationale: The last fraction of performance, when measured to be needed (OI-001).</em></td>
+<td>Medium</td>
+<td>R4</td>
+<td><span class="state-no">planned R4</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KC-010</td>
+<td>One fusion generator SHALL compose chains of elementwise and reduction ops into a single kernel; no general-purpose fusion compiler SHALL be written. <em>Rationale: MLX's split: a fixed catalog plus a small fuser.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KC-011</td>
+<td>Kernel compilation SHALL be deterministic for the same generator, parameters, target and LLVM version; the artifact SHALL record the LLVM version. <em>Rationale: Reproducibility; the pinned LLVM is 23.1.x (ADR-007).</em></td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 3 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/concurrency.rs"><code>rustinfer-kc/tests/concurrency.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/mlir_link.rs"><code>rustinfer-kc/tests/mlir_link.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/7">#7</a></td>
+</tr>
+<tr>
+<td>RI-KC-012</td>
+<td>Every catalog entry SHALL carry a resource report (registers, LDS, occupancy) and <code>inspect</code> SHALL print it. <em>Rationale: Tuning without a profiler in hand.</em></td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KC-013</td>
+<td>A catalog entry SHALL record the hardware it was validated on (architecture, driver version, date); an entry SHALL NOT be used on an architecture it was not validated on. <em>Rationale: gfx950 and the CDNA successor share nothing but a CU count.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>1 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/catalog.rs"><code>rustinfer-target/tests/catalog.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/9">#9</a> (not started)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="326-topology-planner">3.2.6 Topology planner</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-PLN-001</td>
+<td>The topology model SHALL describe devices (architecture, compute kind, matrix formats, phase affinity, local tier, graph capture), memory tiers (capacity, read and write bandwidth, latency, sharing scope, reachable set with mechanism), links (endpoints, bandwidth, latency, adjacency, hardware collectives) and offload engines (functions they can own), serialisable to and from JSON. <em>Rationale: DEV §9; the interfaces exist from the first release.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>17 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/slots.rs"><code>rustinfer-mir/tests/slots.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/boundary.rs"><code>rustinfer-planner/tests/boundary.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/topology.rs"><code>rustinfer-planner/tests/topology.rs</code></a> ×14; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/15">#15</a></td>
+</tr>
+<tr>
+<td>RI-PLN-002</td>
+<td>Discovery SHALL populate the model from the node: HIP devices and peer access, PCIe and NUMA topology, DRAM, CXL devices, NVMe devices, RDMA-capable NICs, DPUs; what cannot be probed SHALL be absent, never guessed. <em>Rationale: Nodes differ; the planner must see the real one.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2 (reserved only)</span></td>
+<td>0 / 0 / 1</td>
+<td>Draft</td>
+<td>Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/reserved.rs"><code>rustinfer-planner/tests/reserved.rs</code></a></td>
+</tr>
+<tr>
+<td>RI-PLN-003</td>
+<td>The planner SHALL fill the Model IR placement and device slots in the form of RI-MIR-005 (device index, tier index, shard spec): weight residency and sharding per tensor, KV tier policy per layer, prefill and decode device sets, serving-stack function placement, expert placement, collective-to-link mapping, transfer path per cross-device edge, from a cost model over the topology, and SHALL explain each decision in the placement section. Every index it writes SHALL be inside the topology it planned against. <em>Rationale: UC-19, DEV §9.</em></td>
+<td>High</td>
+<td>R1 (single device: every tensor in the device's local tier, unsharded); R2 (GPU, host CPU, DRAM, NVMe, RDMA); R3 (CXL, expert placement); R4 (DPU functions)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>16 / 0 / 1</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement.rs"><code>rustinfer-planner/tests/placement.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement_v2.rs"><code>rustinfer-planner/tests/placement_v2.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/single_device.rs"><code>rustinfer-planner/tests/single_device.rs</code></a> ×10; Reserved: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/reserved.rs"><code>rustinfer-planner/tests/reserved.rs</code></a></td>
+</tr>
+<tr>
+<td>RI-PLN-004</td>
+<td>Placement SHALL be computed at load from the discovered topology, cached beside the artifact keyed by topology hash, and pinnable; a pinned placement SHALL be refused on a differing topology. <em>Rationale: The artifact must not bake one node's topology in.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-PLN-005</td>
+<td>The artifact SHALL reserve <code>topology</code> and <code>placement</code> sections, empty at build unless pinned. The <code>placement</code> section SHALL record each tensor's slot in the RI-MIR-005 form and each node's device index, under its own <code>placement_version</code> (2 with <code>ir_version</code> 2, RI-ART-014); a pinned section SHALL be parsed and validated against the pinned topology at load. <em>Rationale: Format stability.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>31 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/header.rs"><code>rustinfer-artifact/tests/header.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/roundtrip.rs"><code>rustinfer-artifact/tests/roundtrip.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/boundary.rs"><code>rustinfer-planner/tests/boundary.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/pinned.rs"><code>rustinfer-planner/tests/pinned.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement.rs"><code>rustinfer-planner/tests/placement.rs</code></a> ×8, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/placement_v2.rs"><code>rustinfer-planner/tests/placement_v2.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/topology.rs"><code>rustinfer-planner/tests/topology.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/15">#15</a></td>
+</tr>
+<tr>
+<td>RI-PLN-006</td>
+<td>The planner SHALL be able to place ingress, tokenization, streaming and KV eviction onto a DPU with general-purpose cores, running a rustinfer agent built for that ISA, with tokens delivered to device memory by RDMA. <em>Rationale: The CPU-free serving pattern on Pensando Salina or a merchant DPU.</em></td>
+<td>Medium</td>
+<td>R4</td>
+<td><span class="state-no">planned R4</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="327-artifact">3.2.7 Artifact</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-ART-001</td>
+<td>The artifact SHALL begin with the fixed header of ADR-002: magic, format version, header length, target, producer, SHA-256 of all following bytes, section count, section table. <em>Rationale: ADR-002; SHA-256 is FIPS-180-4.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/header.rs"><code>rustinfer-artifact/tests/header.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kernels.rs"><code>rustinfer-artifact/tests/kernels.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/roundtrip.rs"><code>rustinfer-artifact/tests/roundtrip.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/writer.rs"><code>rustinfer-artifact/tests/writer.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-ART-002</td>
+<td>Sections SHALL be <code>model_ir</code>, <code>plan</code> (one Plan per named function, RI-MIR-009), <code>profile</code>, <code>metadata</code>, <code>catalog</code>, <code>kernels</code>, <code>weights</code> (the weight manifest, RI-ART-012), <code>topology</code>, <code>placement</code>, and from R3 <code>lora_slots</code>, each with its own offset, length and alignment, addressable independently.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>17 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/src/reader.rs"><code>rustinfer-artifact/src/reader.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/header.rs"><code>rustinfer-artifact/tests/header.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kernels.rs"><code>rustinfer-artifact/tests/kernels.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/plan.rs"><code>rustinfer-artifact/tests/plan.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/refusals.rs"><code>rustinfer-artifact/tests/refusals.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/roundtrip.rs"><code>rustinfer-artifact/tests/roundtrip.rs</code></a> ×3; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-ART-003</td>
+<td>The reader SHALL refuse an artifact whose magic, version, header length, section bounds or hash fail, naming the failed check.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>19 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/refusals.rs"><code>rustinfer-artifact/tests/refusals.rs</code></a> ×17, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-ART-004</td>
+<td>The writer SHALL stream to a temporary file in the destination directory, write the hash last, <code>fsync</code>, and rename; an interrupted build SHALL leave no file at the destination.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/concurrency.rs"><code>rustinfer-artifact/tests/concurrency.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/roundtrip.rs"><code>rustinfer-artifact/tests/roundtrip.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/writer.rs"><code>rustinfer-artifact/tests/writer.rs</code></a> ×6; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/11">#11</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ART-005</td>
+<td>The weight manifest SHALL record, per weight id, the source file, tensor name, dtype, shape, source layout and byte range, the target layout and transform (RI-GC-008), the ranks that need it, and an optional SHA-256 of the tensor's source bytes (its byte range); the loader SHALL read source bytes by that range so no tensor is read by a rank that does not need it. The digest SHALL be recorded when <code>build --hash-weights</code> is given (RI-CLI-002), or when <code>run</code> or <code>serve</code> builds the artifact on first load (RI-CLI-003) under <code>--verify-weights</code>; otherwise it SHALL be absent. A weight byte range the build reads and uses is recorded in the checkpoint identity (RI-ART-008), not as this digest. An <code>mx</code> weight's entry SHALL also name its scale tensor (tensor name, dtype <code>ue8m0</code>, shape, byte range and optional digest), read by the same ranks as its data; a weight quantized at build (RI-GC-004) SHALL record its source dtype, its target dtype <code>fp4x2</code> with the <code>mx</code> encoding, and the quantize transform. <em>Rationale: RI-WST-005 needs a per-tensor reference value; per tensor rather than per</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 24 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/mx_manifest.rs"><code>rustinfer-artifact/tests/mx_manifest.rs</code></a> ×11, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/weights.rs"><code>rustinfer-artifact/tests/weights.rs</code></a> ×8, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mapping.rs"><code>rustinfer-frontend/tests/mapping.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4.rs"><code>rustinfer-frontend/tests/mxfp4.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/streaming.rs"><code>rustinfer-sluice/tests/streaming.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a>, <a href="https://github.com/itej89/rustinfer/issues/39">#39</a></td>
+</tr>
+<tr>
+<td>RI-ART-006</td>
+<td>The reader SHALL list the format versions it accepts; a bump SHALL be recorded in <code>docs/api/CHANGELOG.md</code> with a migration note.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/src/reader.rs"><code>rustinfer-artifact/src/reader.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/refusals.rs"><code>rustinfer-artifact/tests/refusals.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/versions.rs"><code>rustinfer-artifact/tests/versions.rs</code></a> ×5; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-ART-007</td>
+<td>A multi-rank build SHALL produce one artifact per rank carrying <code>rank</code>, <code>world_size</code> and the parallel layout; ranks from different builds SHALL be refused together.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-ART-008</td>
+<td><code>metadata</code> SHALL record build options, producer, rustc and LLVM versions, catalog version, the checkpoint identity, origin (<code>build</code> or first load) and timestamp. The checkpoint identity SHALL be: the SHA-256 of <code>config.json</code>; per weight file, its size and the SHA-256 of its safetensors header; and for every weight byte range the build read and used to produce the artifact, that range's file, offset, length and SHA-256, with the name of the tensor it lies in. The artifact is thereby bound exactly to the checkpoint content it depends on. <em>Rationale: Reproducibility and identity of the build inputs: <code>config.json</code> is HF-CONFIG,</em></td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>29 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/identity.rs"><code>rustinfer-artifact/tests/identity.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/json_strings.rs"><code>rustinfer-artifact/tests/json_strings.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/metadata.rs"><code>rustinfer-artifact/tests/metadata.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/safetensors.rs"><code>rustinfer-artifact/tests/safetensors.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/sha256_vectors.rs"><code>rustinfer-artifact/tests/sha256_vectors.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/timestamp.rs"><code>rustinfer-artifact/tests/timestamp.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/used_ranges.rs"><code>rustinfer-artifact/tests/used_ranges.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs"><code>rustinfer-frontend/tests/mxfp4_kv_fp8.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/safetensors.rs"><code>rustinfer-frontend/tests/safetensors.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/used_ranges.rs"><code>rustinfer-sluice/tests/used_ranges.rs</code></a> ×3; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-ART-009</td>
+<td>An artifact SHALL serve every batch size, token count and sequence length inside its <code>profile</code> section without a rebuild; only a new model, target, precision or profile range SHALL invalidate it (RI-MIR-002, ADR-006).</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 9 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/profile.rs"><code>rustinfer-artifact/tests/profile.rs</code></a> ×8</td>
+</tr>
+<tr>
+<td>RI-ART-010</td>
+<td>Autotuning results SHALL live in the catalog, keyed by target, generator version and shape bucket, independent of any artifact; a build SHALL copy the entries it uses into <code>catalog</code> and SHALL NOT re-tune a kernel the catalog already holds for that key, so a model or compiler change reuses every entry whose key still matches.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>1 / 7 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/catalog.rs"><code>rustinfer-artifact/tests/catalog.rs</code></a>; Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/catalog.rs"><code>rustinfer-artifact/tests/catalog.rs</code></a> ×7</td>
+</tr>
+<tr>
+<td>RI-ART-011</td>
+<td>Each release SHALL publish prebuilt artifacts for the reference models on every supported target of <code>docs/hardware.md</code>, so <code>--require-prebuilt</code> is the normal production path and build on first load is the fallback for a target without a published artifact.</td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-ART-012</td>
+<td>An artifact SHALL NOT contain weight bytes. It SHALL reference the checkpoint through the weight manifest, <code>run</code> and <code>serve</code> SHALL locate the checkpoint from the artifact's directory or <code>--weights &lt;dir&gt;</code>, SHALL refuse a checkpoint whose identity (RI-ART-008) differs from the one recorded in <code>metadata</code>, naming the first differing file (<code>config.json</code> first, then the weight files in name order) or, when every file agrees, the first differing used range (in file and offset order) by its tensor name, and SHALL offer <code>--verify-weights</code> for a full per-tensor hash check against the digests of RI-ART-005. Checking the used-range digests SHALL be part of every load. <em>Rationale: A 2.4T-parameter checkpoint is near 5 TB; copying it into an engine file is</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 18 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/error_contract.rs"><code>rustinfer-artifact/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/identity.rs"><code>rustinfer-artifact/tests/identity.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/size.rs"><code>rustinfer-artifact/tests/size.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/weights.rs"><code>rustinfer-artifact/tests/weights.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/refusal.rs"><code>rustinfer-sluice/tests/refusal.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/verify.rs"><code>rustinfer-sluice/tests/verify.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>RI-ART-013</td>
+<td>The <code>kernels</code> section SHALL carry each kernel's Kernel IR beside its binary; on a matching architecture whose driver or runtime version is not the one recorded in <code>metadata</code>, the loader MAY re-lower the Kernel IR into a device-local cache keyed by artifact hash, driver and compiler version instead of refusing (RI-NFR-017). <em>Rationale: Core ML specialises a compiled model per device at first load and caches it;</em></td>
+<td>Medium</td>
+<td>R1 (carry); R2 (re-lower)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>11 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kernels.rs"><code>rustinfer-artifact/tests/kernels.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-compiler/tests/kernels.rs"><code>rustinfer-compiler/tests/kernels.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/tests/kernel_format.rs"><code>rustinfer-core/tests/kernel_format.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-runtime/tests/kernels.rs"><code>rustinfer-runtime/tests/kernels.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/launch.rs"><code>rustinfer-target/tests/launch.rs</code></a></td>
+</tr>
+<tr>
+<td>RI-ART-014</td>
+<td>Every section whose body is JSON (<code>model_ir</code>, <code>plan</code>, <code>profile</code>, <code>metadata</code>, <code>catalog</code>, <code>weights</code>, <code>topology</code>, <code>placement</code>, and from R3 <code>lora_slots</code>) SHALL carry its own top-level version field (<code>ir_version</code> for <code>model_ir</code>, <code>&lt;section&gt;_version</code> otherwise), versioned independently of the artifact <code>format_version</code>; its reader SHALL list the versions it accepts and refuse any other naming the section and the version; a bump SHALL be recorded in <code>docs/api/CHANGELOG.md</code> with a migration note (RI-ART-006). <em>Rationale: A section's schema can evolve (RI-ART-005, RI-MIR-005) without bumping the</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>6 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kv_geometry.rs"><code>rustinfer-artifact/tests/kv_geometry.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/mx_manifest.rs"><code>rustinfer-artifact/tests/mx_manifest.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/plan.rs"><code>rustinfer-artifact/tests/plan.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/versions.rs"><code>rustinfer-artifact/tests/versions.rs</code></a> ×3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="328-target-abstraction">3.2.8 Target abstraction</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-TGT-001</td>
+<td>A target SHALL be identified by an architecture string and resolved from it only; product names SHALL NOT be interpreted.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>8 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/src/targets.rs"><code>rustinfer-cli/src/targets.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-rocm/tests/stub.rs"><code>rustinfer-target-rocm/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/error_contract.rs"><code>rustinfer-target/tests/error_contract.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/registry.rs"><code>rustinfer-target/tests/registry.rs</code></a> ×4; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>RI-TGT-002</td>
+<td>The <code>Target</code> trait SHALL be composed of <code>Catalog</code> (device-free), <code>Device</code> (enumeration, properties, buffers, streams, events, copies, graphs) and <code>Launcher</code> (execute a Plan entry), as in ADR-003.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>10 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/device.rs"><code>rustinfer-target/tests/device.rs</code></a> ×6, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/launch.rs"><code>rustinfer-target/tests/launch.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/registry.rs"><code>rustinfer-target/tests/registry.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/traits.rs"><code>rustinfer-target/tests/traits.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>RI-TGT-003</td>
+<td>The CPU reference target SHALL implement every R1 operator in Rust with fp32 accumulation and the collectives as in-process loops; it is the correctness oracle for every other target. <em>Rationale: fp32 is IEEE-754 binary32 and the conversions round ties to even, so the oracle is</em></td>
+<td>Critical</td>
+<td>R1 (operators); R2 (collectives)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>54 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/catalog.rs"><code>rustinfer-target/tests/catalog.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/e5m2.rs"><code>rustinfer-target/tests/e5m2.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/grouped_rmsnorm.rs"><code>rustinfer-target/tests/grouped_rmsnorm.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/launch.rs"><code>rustinfer-target/tests/launch.rs</code></a> ×13, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/mx.rs"><code>rustinfer-target/tests/mx.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/numeric.rs"><code>rustinfer-target/tests/numeric.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/reference.rs"><code>rustinfer-target/tests/reference.rs</code></a> ×26; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a>, <a href="https://github.com/itej89/rustinfer/issues/34">#34</a></td>
+</tr>
+<tr>
+<td>RI-TGT-004</td>
+<td>Adding a target SHALL require a new crate, one architecture registry entry and one Kernel IR lowering; nothing in the graph compiler, planner or runtime.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 4 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/src/targets.rs"><code>rustinfer-cli/src/targets.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/registry.rs"><code>rustinfer-target/tests/registry.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>RI-TGT-005</td>
+<td><code>Device</code> SHALL support capturing any sub-plan as graph segments between the launches marked as host-synchronising (RI-GC-015), keyed by bucket, and replaying them, with eager launches as the fallback.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 3 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/graph.rs"><code>rustinfer-target/tests/graph.rs</code></a> ×3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="329-rocm-backend">3.2.9 ROCm backend</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-ROC-001</td>
+<td>The ROCm target SHALL bind <code>libamdhip64</code> for devices, memory, streams, events, module loading, launches and graph capture through one FFI module.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/12">#12</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ROC-002</td>
+<td>Every HIP error SHALL become a typed error carrying the HIP error string and the failed operation.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/12">#12</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ROC-003</td>
+<td>The architecture SHALL be read from <code>gcnArchName</code>; an artifact for another architecture SHALL be refused.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/12">#12</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ROC-004</td>
+<td>Code objects SHALL be loaded with the HIP module loader after the artifact check, and each kernel's LDS and register needs SHALL be checked against the device before its first launch. <em>Rationale: The code objects follow AMDGPU-ABI (code object V5); the loader is HIP's.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/12">#12</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ROC-005</td>
+<td><code>unsafe</code> SHALL be confined to <code>rustinfer-target-rocm::ffi</code> with a <code>SAFETY</code> comment per block.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/12">#12</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-ROC-006</td>
+<td>Collectives SHALL go through RCCL, and for messages below a configurable size through rustinfer's own IPC all-reduce kernel.</td>
+<td>High</td>
+<td>R2 (RCCL); R3 (own all-reduce)</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-ROC-007</td>
+<td>Every sub-plan (prefill, decode, mixed, speculative verify) SHALL be captured into HIP graph segments per bucket (RI-GC-015) and replayed; a uniform batch of any query length SHALL replay one graph per request-count bucket.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3210-risc-v-backends">3.2.10 RISC-V backends</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-RV-001</td>
+<td>The workspace SHALL contain target crates <code>riscv-vector</code>, <code>riscv-mesh</code> and <code>spirv-vulkan</code>, each implementing <code>Target</code>, registered under their architecture strings, compiling on every host. <em>Rationale: <code>spirv-vulkan</code> emits SPIR-V modules for VULKAN devices.</em></td>
+<td>Medium</td>
+<td>R1 (stubs); R2 (spirv-vulkan lowering); R3 (riscv-vector lowering); R4 (riscv-mesh)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>7 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-mesh/tests/stub.rs"><code>rustinfer-target-riscv-mesh/tests/stub.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-vector/tests/stub.rs"><code>rustinfer-target-riscv-vector/tests/stub.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-spirv-vulkan/tests/stub.rs"><code>rustinfer-target-spirv-vulkan/tests/stub.rs</code></a> ×2; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>RI-RV-002</td>
+<td>A build for a stub target SHALL fail at kernel selection with "catalog empty", proving the abstraction end to end.</td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 6 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-mesh/tests/stub.rs"><code>rustinfer-target-riscv-mesh/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-vector/tests/stub.rs"><code>rustinfer-target-riscv-vector/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-rocm/tests/stub.rs"><code>rustinfer-target-rocm/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-spirv-vulkan/tests/stub.rs"><code>rustinfer-target-spirv-vulkan/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/catalog.rs"><code>rustinfer-target/tests/catalog.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/error_contract.rs"><code>rustinfer-target/tests/error_contract.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>RI-RV-003</td>
+<td>A RISC-V backend SHALL be brought up on hardware in this order: lowering compile-tested, CPU-reference parity for every R1 generator, autotuned catalog committed with validation records, op tests; no catalog entry without hardware validation (RI-KC-013).</td>
+<td>Medium</td>
+<td>R3 (first device)</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-RV-004</td>
+<td>The <code>riscv-vector</code> lowering SHALL target RVV 1.0 (RVV-1.0) with a vector-length-agnostic tile mapping and SHALL use a core's matrix extension when the catalog entry records it.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3211-executor">3.2.11 Executor</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-RT-001</td>
+<td>The executor SHALL load an artifact, verify the target and the checkpoint identity, run the planner, allocate the arena, KV pool and per-sequence state once, then have Sluice stream every weight the rank needs into device memory in its target layout (RI-WST), and select the functions it will run by name (RI-MIR-009), before the first request; no device allocation SHALL occur on the request path.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-002</td>
+<td>Each iteration SHALL execute the Plan's launches in order with no kernel selection, shape inference or allocation.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-003</td>
+<td>The API SHALL provide <code>enqueue(Request) -&gt; RequestId</code>, <code>await_responses (timeout)</code>, <code>cancel(RequestId)</code>, <code>iteration_stats()</code>, <code>request_stats()</code>, callable from several threads.</td>
+<td>Critical</td>
+<td>R1 (enqueue, await); R2 (cancel, stats, streaming)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-004</td>
+<td>A <code>Request</code> SHALL carry prompt tokens, <code>SamplingConfig</code>, <code>OutputConfig</code> (logprobs, logits, streaming), <code>max_new_tokens</code>, optional stop and bad words, optional LoRA id, optional guided-decoding spec, optional priority and deadline.</td>
+<td>Critical</td>
+<td>R1 (core); R2 (output config, stop, bad words); R3 (lora, guided, priority, deadline)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-005</td>
+<td>Streaming responses SHALL carry new tokens, finish reason and, when requested, logprobs, per iteration.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-RT-006</td>
+<td>A launch failure SHALL abort the affected batch with an error naming the Plan entry and kernel id, mark the requests failed, free their KV blocks, and leave the executor serving the next iteration.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-007</td>
+<td>Cancellation SHALL take effect at the next iteration boundary and free KV blocks within it.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-RT-008</td>
+<td>One iteration SHALL run per device stream; an activation arena SHALL NOT be shared between concurrent iterations.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-RT-009</td>
+<td>A multi-rank artifact SHALL run with one process per rank, synchronised per iteration over the target's collectives.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-RT-010</td>
+<td>Per-request state (block table rows, sampling parameters, penalty counters, the last sampled token) SHALL live in a device-resident slot table; input preparation and the consumption of sampled tokens by the next iteration SHALL run on the device; the decode path SHALL perform no host-device synchronisation other than result readback on a separate stream. <em>Rationale: vLLM measured host-side preparation and synchronisation at about a third of</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 3 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/device.rs"><code>rustinfer-target/tests/device.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/graph.rs"><code>rustinfer-target/tests/graph.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/launch.rs"><code>rustinfer-target/tests/launch.rs</code></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3212-scheduler">3.2.12 Scheduler</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-SCH-001</td>
+<td>New requests SHALL be admitted between iterations into one padding-free iteration with prefill requests first (in-flight batching).</td>
+<td>Critical</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-002</td>
+<td>Decode tokens SHALL be scheduled before prefill tokens within <code>max_batch_size</code> and <code>max_num_tokens</code>.</td>
+<td>Critical</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-003</td>
+<td>Policies <code>max_utilization</code>, <code>guaranteed_no_evict</code> and <code>static_batch</code> SHALL be selectable; the default from R2 SHALL be <code>max_utilization</code> with chunked prefill on. <em>Rationale: The first-class workload.</em></td>
+<td>High</td>
+<td>R1 (static_batch); R2 (the rest)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-SCH-004</td>
+<td>Chunked prefill SHALL split a prompt into KV-block-aligned chunks interleaved with decode under <code>max_num_tokens</code>.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-005</td>
+<td>The overlap scheduler SHALL run the host work of iteration n during the device work of iteration n+1, on by default, disable-able per executor.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-006</td>
+<td>Under <code>max_utilization</code>, when KV blocks run out the lowest-priority, most-recently-admitted decode request SHALL be paused and later resumed from its retained or recomputed prefix.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-007</td>
+<td>Requests SHALL carry a priority (default 0) and optional deadline; admission SHALL order by priority then arrival; an expired request SHALL fail.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-008</td>
+<td>LoRA requests SHALL batch with base requests up to <code>max_loras</code> adapters per iteration.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-009</td>
+<td>Iteration statistics SHALL record prefill and decode counts, scheduled tokens, KV blocks used and free, reuse hits, iteration latency and paused requests.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SCH-010</td>
+<td>The scheduler state SHALL be a single uniform token-level model for prefill, chunked prefill, decode, reuse and speculation (no separate queues per phase). <em>Rationale: vLLM V1's lesson: features compose when the scheduler is uniform.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3213-kv-cache">3.2.13 KV cache</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-KVC-001</td>
+<td>The cache SHALL be a pool of fixed-size token blocks (power of two, default 32, recorded in the Plan) with one page size for all KV groups and, per sequence, one block table per group (RI-MIR-010); the tables SHALL live on the device (RI-RT-010). A block's bytes per layer SHALL be block size × KV heads × 2 (K and V) × bytes per head, where bytes per head is head_dim × element size for bf16 and fp8, and head_dim / 2 + head_dim / 32 for MXFP4: the packed values, then the block's UE8M0 scales in the same block, so one block table addresses both. The pool size (RI-KVC-003) and the Plan geometry (RI-GC-006) SHALL use these bytes.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 8 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kv_geometry.rs"><code>rustinfer-artifact/tests/kv_geometry.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/plan.rs"><code>rustinfer-artifact/tests/plan.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_dtypes.rs"><code>rustinfer-mir/tests/kv_dtypes.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/kv.rs"><code>rustinfer-target/tests/kv.rs</code></a>; Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started), <a href="https://github.com/itej89/rustinfer/issues/37">#37</a> (in progress)</td>
+</tr>
+<tr>
+<td>RI-KVC-002</td>
+<td>Allocation and release SHALL be O(1) from one pre-allocated pool with an LRU free list; no per-block heap allocation at run time. <em>Rationale: vLLM V1's block pool; prefix reuse must cost nothing at a 0 percent hit rate.</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KVC-003</td>
+<td>Pool size SHALL be the smaller of <code>free_gpu_memory_fraction</code> (default 0.9) and an explicit <code>max_tokens</code>, computed after weights and arena.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KVC-004</td>
+<td>A sequence longer than the profile's <code>max_seq_len</code> SHALL be refused at admission.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-KVC-005</td>
+<td>Filled blocks SHALL be indexed in a radix tree keyed by (token prefix, KV group, LoRA id, multimodal item hashes, optional per-request <code>cache_salt</code>); a new request SHALL reuse matching blocks and skip their computation and SHALL NOT match a block whose key differs in any component; reuse SHALL be on by default; hits and misses SHALL be counted. <em>Rationale: SGLang's RadixAttention; agent traffic served well by default.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KVC-006</td>
+<td>Eviction SHALL be prioritised LRU with per-block priority (0 to 100, default 35) and optional retention windows; only unreferenced leaf blocks are evictable.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KVC-007</td>
+<td>Evicted blocks MAY be offloaded to host DRAM, CXL memory or NVMe tiers under the planner's KV policy and restored on reuse.</td>
+<td>Medium</td>
+<td>R3 (DRAM, NVMe); R4 (CXL, remote)</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-KVC-008</td>
+<td>FP8 and INT8 cache storage with per-block scales SHALL be supported where the catalog's attention kernels read them. In R1 the KV storage dtype is selected by <code>--kv-dtype</code> (RI-CLI-002): <code>bf16</code> (default); <code>fp8</code>, OCP E4M3 (OCP-OFP8) on gfx950 and cpu and FNUZ E4M3 (AMD-FNUZ) on gfx942, with one fp32 scale per layer for K and one for V, taken from the checkpoint's KV scales when it has them (RI-FE-006) and 1.0 otherwise, recorded in the Plan; <code>mxfp4</code>, K and V each stored as <code>fp4x2</code> with the <code>mx</code> encoding in blocks of 32 along <code>head_dim</code> per token and head, the UE8M0 scale of each block computed by the cache-write kernel under RI-MIR-012. A <code>head_dim</code> not a multiple of 32 with <code>mxfp4</code> SHALL be refused naming the KV group. Accuracy caveat, stated in this clause, the <code>--kv-dtype</code> help text and <code>docs/entry-points.md</code>: FP8 E4M3 is the industry's KV format; FP4 KV has shipped only as NVFP4, and NVIDIA measured Llama-3.3-70B MMLU at about 81.9 percent with NVFP4 KV and about 77.8 percent with MXFP4 KV (NV-KV). MXFP4 KV is a normal selectable dtype with no build-time gate (ADR-010). <em>Rationale: ADR-010: the owner's decision to ship MXFP4 KV in R1 with its caveat</em></td>
+<td>High</td>
+<td>R1 (bf16, fp8 per-tensor scale, mxfp4); R2 (int8, fp8 per-block scales)</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 21 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kv_geometry.rs"><code>rustinfer-artifact/tests/kv_geometry.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-cli/tests/cli.rs"><code>rustinfer-cli/tests/cli.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/tests/kv_dtype.rs"><code>rustinfer-core/tests/kv_dtype.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/kv_scales.rs"><code>rustinfer-frontend/src/kv_scales.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_audit.rs"><code>rustinfer-frontend/tests/mxfp4_audit.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs"><code>rustinfer-frontend/tests/mxfp4_kv_fp8.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_review.rs"><code>rustinfer-frontend/tests/mxfp4_review.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/kv_dtypes.rs"><code>rustinfer-mir/tests/kv_dtypes.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/kv.rs"><code>rustinfer-target/tests/kv.rs</code></a> ×4; Epic: open <a href="https://github.com/itej89/rustinfer/issues/37">#37</a> (in progress)</td>
+</tr>
+<tr>
+<td>RI-KVC-009</td>
+<td>Per-layer attention windows SHALL be supported with a circular block buffer; beam search SHALL be refused with sliding windows.</td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3214-sampling-and-decoding">3.2.14 Sampling and decoding</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-SMP-001</td>
+<td>Greedy, temperature, top-k, top-p, min-p, top-p decay and seeded sampling SHALL run per request on device for the whole batch in one launch.</td>
+<td>Critical</td>
+<td>R1 (greedy, temperature, top-k, top-p); R2 (min-p, decay, seeds)</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/13">#13</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-SMP-002</td>
+<td>Repetition, presence and frequency penalties, <code>no_repeat_ngram_size</code>, embedding bias, min and max tokens, stop words and bad words SHALL be applied per request.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SMP-003</td>
+<td>Logprobs and top-k logprobs SHALL be returned from the same logits the sample was drawn from.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SMP-004</td>
+<td>A caller-supplied logits processor SHALL run on the device over the whole batch between logits and sampling, with its per-request parameters staged from the host before the iteration; no per-request host callback SHALL exist on the decode path (RI-RT-010).</td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SMP-005</td>
+<td>Beam search SHALL support <code>best_of</code>, <code>n</code>, length penalty, diversity rate and early stopping, bounded by <code>max_beam_width</code>.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SMP-006</td>
+<td>Guided decoding SHALL accept a JSON schema, regex or grammar, compile it, and apply token masks on device each step; an uncompilable spec SHALL be refused at admission.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SMP-007</td>
+<td>Sampling SHALL be reproducible for the same seed, request, artifact and target.</td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3215-speculative-decoding">3.2.15 Speculative decoding</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-SPD-001</td>
+<td>Draft/target speculation SHALL run a draft function of the same artifact (RI-MIR-009), or a separate draft artifact, for <code>max_draft_tokens</code> steps and verify by rejection sampling; draft and target SHALL share a tokenizer.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SPD-002</td>
+<td>MTP speculation SHALL use the model's own heads for DeepSeek and Qwen MoE families, with optional relaxed acceptance.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SPD-003</td>
+<td>Acceptance rate and draft tokens proposed and accepted SHALL be reported per request and per iteration.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SPD-004</td>
+<td>Speculation SHALL be refused with pipeline parallelism, and tree speculation with sliding windows or MLA, per the feature matrix.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SPD-005</td>
+<td>EAGLE-3 linear and dynamic-tree speculation SHALL be supported for families with published heads.</td>
+<td>Medium</td>
+<td>R4</td>
+<td><span class="state-no">planned R4</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3216-lora">3.2.16 LoRA</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-LORA-001</td>
+<td>Adapters SHALL load at run time by id and path, cached on device up to <code>device_cache_percent</code> and on host up to <code>host_cache_size</code>, with <code>max_loras</code> in flight.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-LORA-002</td>
+<td>A request naming an unloaded adapter SHALL wait for its load or fail after a timeout; it SHALL never run without it.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-LORA-003</td>
+<td>An adapter exceeding <code>max_lora_rank</code> or targeting modules outside the adaptable set SHALL be refused.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3217-distributed">3.2.17 Distributed</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-DIST-001</td>
+<td>Tensor parallelism across up to 8 GPUs on one node SHALL run one process per rank with environment-variable rendezvous and collectives through the target. <em>Rationale: On ROCm the target's collectives are RCCL (RI-ROC-006).</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-DIST-002</td>
+<td>Expert parallelism (EP-only and hybrid) SHALL be supported for MoE artifacts with expert placement from the planner.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-DIST-003</td>
+<td>Attention data parallelism SHALL be supported for MLA models.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-DIST-004</td>
+<td>All ranks SHALL verify a shared build id and world size at start and refuse a mismatch.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-DIST-005</td>
+<td>Pipeline and context parallelism, multi-node over Ultra Ethernet, Helios-rack scale-up, and disaggregated prefill/decode with KV transfer SHALL be designed for (executor hooks, artifact sections) and implemented in R4.</td>
+<td>Low</td>
+<td>R4</td>
+<td><span class="state-no">planned R4</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3218-server">3.2.18 Server</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-SRV-001</td>
+<td><code>serve</code> SHALL implement <code>POST /v1/chat/completions</code>, <code>POST /v1/completions</code> and <code>GET /v1/models</code> with OpenAI-compatible shapes, SSE streaming, and the <code>n</code>, <code>logprobs</code>, <code>stop</code>, <code>seed</code>, <code>temperature</code>, <code>top_p</code>, <code>max_tokens</code>, <code>response_format</code> and <code>tools</code> fields where guided decoding supports them. <em>Rationale: UC-18. The shapes are OPENAI-API's; HTTP per RFC-9110; streaming per SSE.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SRV-002</td>
+<td><code>GET /health</code> (200 only when the executor can admit), <code>GET /version</code>, <code>GET /metrics</code> (JSON stats) and <code>GET /prometheus/metrics</code> SHALL be exposed. <em>Rationale: Status codes per RFC-9110; <code>/prometheus/metrics</code> in the PROM-TEXT format.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SRV-003</td>
+<td>Chat requests SHALL be rendered with the model's chat template and tokenised with a tokenizer compatible with HF <code>tokenizer.json</code>. <em>Rationale: The tokenizer and chat template are HF-TOKENIZER's.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SRV-004</td>
+<td>Every request SHALL carry or receive a UUID v4 <code>request_id</code>, logged at every boundary and returned in the response.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SRV-005</td>
+<td>Request size limits SHALL be enforced; malformed JSON SHALL return 400; overload SHALL return 429 or 503; no stack trace SHALL be exposed. <em>Rationale: JSON per RFC-8259; the status codes per RFC-9110.</em></td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SRV-006</td>
+<td><code>POST /start_profile</code> and <code>POST /stop_profile</code> SHALL toggle iteration-scoped profiling without restart, behind a configuration flag.</td>
+<td>Low</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3219-observability">3.2.19 Observability</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-OBS-001</td>
+<td>The executor SHALL maintain <code>rustinfer_requests_total{status}</code>, <code>rustinfer_iteration_duration_seconds</code>, <code>rustinfer_ttft_seconds</code>, <code>rustinfer_tpot_seconds</code>, <code>rustinfer_tokens_total{phase}</code>, <code>rustinfer_kv_blocks{state}</code>, <code>rustinfer_kv_reuse_total{result}</code>, <code>rustinfer_errors_total{error_type}</code>, with no high-cardinality labels. <em>Rationale: Exported in the PROM-TEXT format (section 3.1.3, RI-SRV-002).</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-OBS-002</td>
+<td>Every request SHALL be logged at admission and completion with request id, prompt length, generated length, finish reason and latency, never with text.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-OBS-003</td>
+<td><code>bench</code> SHALL run real (JSONL of tokens or text) and synthetic (normal or uniform length) datasets and produce the metrics of RI-CLI-008.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-OBS-004</td>
+<td><code>docs/observability.md</code> SHALL hold the tier assessment and signal inventory, updated in the same PR as any new signal.</td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3220-security">3.2.20 Security</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-SEC-001</td>
+<td>Path inputs SHALL be canonicalised; the only shared objects loaded SHALL be the HIP runtime and RCCL from the system library path; an artifact SHALL never name a symbol or path to load, and its code objects SHALL be loaded only after RI-ART-003 and RI-ROC-004 pass. <em>Rationale: Only the HIP and RCCL libraries are trusted code; code objects (AMDGPU-ABI) run</em></td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 4 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/refusal.rs"><code>rustinfer-sluice/tests/refusal.rs</code></a> ×2</td>
+</tr>
+<tr>
+<td>RI-SEC-002</td>
+<td>The artifact reader SHALL bound every length by the file size and reject overlapping or out-of-file sections before reading them.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>18 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/boundary.rs"><code>rustinfer-artifact/tests/boundary.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/fuzz.rs"><code>rustinfer-artifact/tests/fuzz.rs</code></a> ×8, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/kernels.rs"><code>rustinfer-artifact/tests/kernels.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/refusals.rs"><code>rustinfer-artifact/tests/refusals.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/weights.rs"><code>rustinfer-artifact/tests/weights.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/4">#4</a></td>
+</tr>
+<tr>
+<td>RI-SEC-003</td>
+<td><code>config.json</code>, safetensors headers, adapter configs and HTTP bodies SHALL be parsed with size limits into typed structures; unknown required fields SHALL be errors. <em>Rationale: <code>config.json</code> (HF-CONFIG), safetensors headers (SAFETENSORS), adapter configs</em></td>
+<td>High</td>
+<td>R1 (files); R3 (HTTP)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>78 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/src/unique_json.rs"><code>rustinfer-artifact/src/unique_json.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/boundary.rs"><code>rustinfer-artifact/tests/boundary.rs</code></a> ×9, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/json_strings.rs"><code>rustinfer-artifact/tests/json_strings.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/mx_manifest.rs"><code>rustinfer-artifact/tests/mx_manifest.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/safetensors.rs"><code>rustinfer-artifact/tests/safetensors.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/safetensors_duplicates.rs"><code>rustinfer-artifact/tests/safetensors_duplicates.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/src/quant/pattern.rs"><code>rustinfer-frontend/src/quant/pattern.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/config.rs"><code>rustinfer-frontend/tests/config.rs</code></a> ×8, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/lower.rs"><code>rustinfer-frontend/tests/lower.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_audit.rs"><code>rustinfer-frontend/tests/mxfp4_audit.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/mxfp4_review.rs"><code>rustinfer-frontend/tests/mxfp4_review.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/partial_rotary.rs"><code>rustinfer-frontend/tests/partial_rotary.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/rope_parameters.rs"><code>rustinfer-frontend/tests/rope_parameters.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-frontend/tests/safetensors.rs"><code>rustinfer-frontend/tests/safetensors.rs</code></a> ×16, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/mlir_link.rs"><code>rustinfer-kc/tests/mlir_link.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-mir/tests/boundary.rs"><code>rustinfer-mir/tests/boundary.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-planner/tests/boundary.rs"><code>rustinfer-planner/tests/boundary.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/refusal.rs"><code>rustinfer-sluice/tests/refusal.rs</code></a> ×9</td>
+</tr>
+<tr>
+<td>RI-SEC-004</td>
+<td>The build SHALL record in <code>metadata</code> the identity of its inputs: for the checkpoint, the identity of RI-ART-008 (SHA-256 of <code>config.json</code>; per weight file its size and the SHA-256 of its safetensors header; per weight byte range the build read and used, its file, offset, length and SHA-256); for every other input file it reads, its SHA-256. A weight byte the build does not use is not hashed at build; whole-tensor content is hashed only under <code>build --hash-weights</code> (RI-ART-005) or <code>--verify-weights</code> (RI-ART-012). <em>Rationale: Hashing every byte of a trillion-parameter checkpoint (near 5 TB) at each</em></td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SEC-005</td>
+<td>A feature combination not marked supported in <code>docs/feature-matrix.md</code> SHALL be refused at build or at admission, never attempted.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-SEC-006</td>
+<td>Grammar compilation and logits post-processors SHALL run under a per-request time budget; exceeding it fails the request, not the executor.</td>
+<td>Medium</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3221-concurrency">3.2.21 Concurrency</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-CON-001</td>
+<td>The graph compiler SHALL be single-threaded per build in R1; a parallel pass SHALL first pass a concurrency review and update the concurrency diagram.</td>
+<td>Low</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CON-002</td>
+<td>The executor SHALL own one device context per rank; submissions from many threads SHALL pass through one queue; device buffers SHALL be touched only by the executor thread.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CON-003</td>
+<td>The overlap scheduler SHALL hand results between the device thread and the host thread through a bounded channel ordered per request id; a failure on either side SHALL leave the KV cache consistent.</td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CON-004</td>
+<td>The server SHALL run an async frontend that never blocks on the executor, with bounded queues and 429/503 backpressure.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-CON-005</td>
+<td>The autotuner SHALL run variants sequentially on one device and MAY distribute generators across devices by process.</td>
+<td>Low</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3222-sluice-the-weight-streamer">3.2.22 Sluice, the weight streamer</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-WST-001</td>
+<td>Sluice SHALL take the weight manifest, a checkpoint root and a rank, and SHALL produce every weight that rank needs as a device buffer in the manifest's target layout, reading each source tensor by its byte range and nothing else.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>9 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/streaming.rs"><code>rustinfer-sluice/tests/streaming.rs</code></a> ×6; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>RI-WST-002</td>
+<td>Host memory SHALL be bounded by a configurable staging budget (default <code>RUSTINFER_STAGING_BYTES</code>, 1 GiB) regardless of model size; a tensor larger than the budget SHALL be streamed in slices.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>13 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-core/tests/settings.rs"><code>rustinfer-core/tests/settings.rs</code></a> ×3, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/budget.rs"><code>rustinfer-sluice/tests/budget.rs</code></a> ×7, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/streaming.rs"><code>rustinfer-sluice/tests/streaming.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>RI-WST-003</td>
+<td>Layout transforms SHALL run on the device as the load-phase launches recorded by the graph compiler (RI-GC-008); the staging buffer SHALL hold source layout only. The CPU reference target SHALL run the same transforms on the host. An <code>mx</code> weight SHALL stream as its packed <code>fp4x2</code> bytes together with its <code>ue8m0</code> scale tensor (RI-ART-005) and SHALL NOT be unpacked or dequantized at load unless its manifest transform is the at-load fallback of RI-MIR-011; a weight quantized at build (RI-GC-004) streams in its source dtype and is quantized by its recorded transform, which writes the packed values and scales.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 21 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a> ×8, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/refusal.rs"><code>rustinfer-sluice/tests/refusal.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/streaming.rs"><code>rustinfer-sluice/tests/streaming.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/transform.rs"><code>rustinfer-sluice/tests/transform.rs</code></a> ×7; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a>, <a href="https://github.com/itej89/rustinfer/issues/39">#39</a></td>
+</tr>
+<tr>
+<td>RI-WST-004</td>
+<td>Shard reads, host-to-device copies and transforms SHALL overlap on separate queues so load throughput is bounded by the slowest of storage, interconnect and transform, not their sum; <code>iteration_stats()</code> SHALL expose load time, bytes and throughput per stage.</td>
+<td>High</td>
+<td>R1 (overlap); R2 (stats)</td>
+<td><span class="state-ok">implemented</span></td>
+<td>6 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/concurrency.rs"><code>rustinfer-sluice/tests/concurrency.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/overlap.rs"><code>rustinfer-sluice/tests/overlap.rs</code></a>; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>RI-WST-005</td>
+<td>Sluice SHALL verify dtype, shape and byte range of every tensor against the shard header before reading it and SHALL refuse the first mismatch naming the tensor; with <code>--verify-weights</code> it SHALL also check each tensor's bytes against the SHA-256 recorded in the manifest (RI-ART-005) and refuse the first mismatch, or the first tensor with no recorded digest, naming the tensor. On every load, with or without <code>--verify-weights</code>, the used weight ranges of the checkpoint identity (RI-ART-008) SHALL be checked against their SHA-256 before any weight is placed, and the first mismatch refused naming its tensor (RI-ART-012). <em>Rationale: The shard header is the SAFETENSORS header; the digest is FIPS-180-4 SHA-256.</em></td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>3 / 13 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/verify.rs"><code>rustinfer-sluice/tests/verify.rs</code></a> ×3; Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/mxfp4.rs"><code>rustinfer-sluice/tests/mxfp4.rs</code></a> ×4, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/refusal.rs"><code>rustinfer-sluice/tests/refusal.rs</code></a> ×5, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-sluice/tests/verify.rs"><code>rustinfer-sluice/tests/verify.rs</code></a> ×4; Epic: closed <a href="https://github.com/itej89/rustinfer/issues/18">#18</a>, <a href="https://github.com/itej89/rustinfer/issues/39">#39</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="331-performance">3.3.1 Performance</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-001</td>
+<td>The decode path SHALL perform zero heap allocations after warm-up, verified by an allocation-counting test on the CPU target.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/14">#14</a> (not started)</td>
+</tr>
+<tr>
+<td>RI-NFR-002</td>
+<td><code>inspect</code> SHALL complete in under 1 s for any artifact.</td>
+<td>Medium</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-003</td>
+<td>On gfx950 with Llama-3-8B in FP8 at batch 64 and 1k/1k input/output, rustinfer SHALL reach at least 70 percent of the output-token throughput of vLLM with the AITER backend on the same GPU and ROCm in R2, and at least 100 percent in R3, measured with <code>bench</code>. <em>Rationale: Industry standard means matching the incumbent on its own kernels, with ours.</em></td>
+<td>High</td>
+<td>R2 (70%); R3 (100%)</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-004</td>
+<td>Host overhead per iteration SHALL be under 500 µs at batch 64 on the reference host with the overlap scheduler disabled. <em>Rationale: vLLM V1 and SGLang showed host overhead is the bottleneck as GPUs get faster.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-005</td>
+<td>Loading a 16 GB weight section SHALL take under 10 s from page cache.</td>
+<td>Medium</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-006</td>
+<td>A generated GEMM kernel SHALL reach at least 80 percent of the best AITER kernel for the same shape and dtype on gfx950 by the end of R2, measured per catalog bucket. <em>Rationale: OI-001; the kernel-level target behind RI-NFR-003.</em></td>
+<td>High</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="332-reliability">3.3.2 Reliability</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-007</td>
+<td>An interrupted build SHALL leave no file at the destination.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-ok">implemented</span></td>
+<td>2 / 0 / 0</td>
+<td>Draft</td>
+<td>Verifies: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-artifact/tests/writer.rs"><code>rustinfer-artifact/tests/writer.rs</code></a> ×2</td>
+</tr>
+<tr>
+<td>RI-NFR-008</td>
+<td>The executor SHALL survive any single request failure and continue serving.</td>
+<td>Critical</td>
+<td>R2</td>
+<td><span class="state-no">planned R2</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-009</td>
+<td>A 24-hour soak at 80 percent of peak SHALL show no memory growth beyond the configured caches.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="333-availability">3.3.3 Availability</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-010</td>
+<td><code>GET /health</code> SHALL answer within 1 s and SHALL return 200 only when a request can be admitted.</td>
+<td>High</td>
+<td>R3</td>
+<td><span class="state-no">planned R3</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="334-security">3.3.4 Security</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-011</td>
+<td><code>unsafe</code> SHALL exist only in backend <code>ffi</code> modules and the MLIR binding layer; CI SHALL count occurrences and fail on growth without an ADR reference.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-012</td>
+<td><code>cargo audit</code> and <code>cargo deny</code> SHALL pass in CI; every new dependency SHALL follow SWG-001 §18.8.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="335-maintainability">3.3.5 Maintainability</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-013</td>
+<td>Unit test line coverage SHALL be at least 80 percent per crate.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-014</td>
+<td><code>cargo clippy --all-targets --all-features -- -D warnings</code> and <code>cargo fmt --check</code> SHALL pass; every public item SHALL have rustdoc.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+<tr>
+<td>RI-NFR-015</td>
+<td><code>docs/feature-matrix.md</code> SHALL list every feature pair as supported, unsupported or untested, updated in the same PR as any feature.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="336-portability">3.3.6 Portability</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>text</th>
+<th>priority</th>
+<th>release</th>
+<th>state</th>
+<th>tags</th>
+<th>SRS status</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-NFR-016</td>
+<td>The workspace SHALL build and all non-device tests SHALL pass on a host without ROCm; device backends SHALL be behind Cargo features; the kernel compiler SHALL produce binaries for any target on any host, so only autotuning needs the device.</td>
+<td>Critical</td>
+<td>R1</td>
+<td><span class="state-part">partly implemented</span></td>
+<td>0 / 7 / 0</td>
+<td>Draft</td>
+<td>Groundwork for: <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-kc/tests/link.rs"><code>rustinfer-kc/tests/link.rs</code></a> ×2, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-mesh/tests/stub.rs"><code>rustinfer-target-riscv-mesh/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-riscv-vector/tests/stub.rs"><code>rustinfer-target-riscv-vector/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-rocm/tests/stub.rs"><code>rustinfer-target-rocm/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target-spirv-vulkan/tests/stub.rs"><code>rustinfer-target-spirv-vulkan/tests/stub.rs</code></a>, <a href="https://github.com/itej89/rustinfer/blob/main/crates/rustinfer-target/tests/registry.rs"><code>rustinfer-target/tests/registry.rs</code></a></td>
+</tr>
+<tr>
+<td>RI-NFR-017</td>
+<td>An artifact built on one host SHALL load on any host with the same target architecture and HIP runtime major version.</td>
+<td>High</td>
+<td>R1</td>
+<td><span class="state-no">planned R1</span></td>
+<td>0 / 0 / 0</td>
+<td>Draft</td>
+<td>Epic: open <a href="https://github.com/itej89/rustinfer/issues/14">#14</a> (not started)</td>
+</tr>
+</tbody>
+</table>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#headline">Headline</a></li><li><a href="#321-cli">3.2.1 CLI</a></li><li><a href="#322-frontend">3.2.2 Frontend</a></li><li><a href="#323-model-ir">3.2.3 Model IR</a></li><li><a href="#324-graph-compiler">3.2.4 Graph compiler</a></li><li><a href="#325-kernel-compiler">3.2.5 Kernel compiler</a></li><li><a href="#326-topology-planner">3.2.6 Topology planner</a></li><li><a href="#327-artifact">3.2.7 Artifact</a></li><li><a href="#328-target-abstraction">3.2.8 Target abstraction</a></li><li><a href="#329-rocm-backend">3.2.9 ROCm backend</a></li><li><a href="#3210-risc-v-backends">3.2.10 RISC-V backends</a></li><li><a href="#3211-executor">3.2.11 Executor</a></li><li><a href="#3212-scheduler">3.2.12 Scheduler</a></li><li><a href="#3213-kv-cache">3.2.13 KV cache</a></li><li><a href="#3214-sampling-and-decoding">3.2.14 Sampling and decoding</a></li><li><a href="#3215-speculative-decoding">3.2.15 Speculative decoding</a></li><li><a href="#3216-lora">3.2.16 LoRA</a></li><li><a href="#3217-distributed">3.2.17 Distributed</a></li><li><a href="#3218-server">3.2.18 Server</a></li><li><a href="#3219-observability">3.2.19 Observability</a></li><li><a href="#3220-security">3.2.20 Security</a></li><li><a href="#3221-concurrency">3.2.21 Concurrency</a></li><li><a href="#3222-sluice-the-weight-streamer">3.2.22 Sluice, the weight streamer</a></li><li><a href="#331-performance">3.3.1 Performance</a></li><li><a href="#332-reliability">3.3.2 Reliability</a></li><li><a href="#333-availability">3.3.3 Availability</a></li><li><a href="#334-security">3.3.4 Security</a></li><li><a href="#335-maintainability">3.3.5 Maintainability</a></li><li><a href="#336-portability">3.3.6 Portability</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

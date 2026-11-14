@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;Transformers config v5.23.0 audit&quot; — rustinfer</title>
+<meta name="description" content="The audit of the frontend&#x27;s config.json reading against Transformers v5.23.0, re-audited on 2026-11-14 at 8c7d47e after partial_rotary_factor and quantization_config landed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub" open><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html" class="here">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="transformers-config-v5230-audit">Transformers config v5.23.0 audit</h1>
+<p><strong>Re-audit of 2026-11-14</strong>, against the <a href="std-hf-config-requirements.html">requirements</a>,
+on origin/main <code>8c7d47e</code>, after PRs #55 (<code>6a18042</code>, <code>partial_rotary_factor</code>
+refused, HFC-5), #53 (<code>8d58ad6</code>, SRS v0.4.7) and #49 (<code>8c7d47e</code>,
+<code>quantization_config</code> read, HFC-3) merged. History: first audit 2026-11-13 on
+<code>ccf02b3</code>; re-audited on <code>b99720a</code> after PR #52 (the v5 <code>rope_parameters</code>,
+HFC-1).</p>
+<p><strong>Method.</strong> Read <code>crates/rustinfer-frontend/src/config.rs</code>,
+<code>src/fields.rs</code>, <code>src/arch/llama/config.rs</code>, <code>src/arch/llama/graph.rs</code> and
+<code>src/quant/mod.rs</code>, and the tests <code>tests/config.rs</code>, <code>tests/lower.rs</code>,
+<code>tests/mapping.rs</code>, <code>tests/rope_parameters.rs</code> (PR #52),
+<code>tests/partial_rotary.rs</code> (PR #55), <code>tests/mxfp4.rs</code> (PR #49) and the
+four fixtures <code>tests/fixtures/*/config.json</code>; compared each field with the
+v5.23.0 class definitions and RoPE standardization. The fixtures are
+Transformers 4.51 exports (<code>"transformers_version": "4.51.0"</code>, top-level
+<code>rope_theta</code> and <code>rope_scaling</code>); the v5 layout is covered by the configs
+<code>tests/rope_parameters.rs</code> writes. Tests were not
+run. Paths below are under <code>crates/rustinfer-frontend/</code> unless given in full.</p>
+<h2 id="model_type"><code>model_type</code></h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HFC-R1</td>
+<td><strong>conforms</strong></td>
+<td><code>model_type</code> is read first and looked up in the registry; an unknown one is <code>UnsupportedModelType</code> naming it and <code>SUPPORTED_MODEL_TYPES</code> (<code>src/config.rs:133-140</code>, <code>src/arch/mod.rs:135, 162</code>). <code>test_gpt2_is_refused_with_the_supported_list</code> (<code>tests/config.rs:113</code>), <code>test_missing_model_type_is_named</code> (<code>:138</code>), <code>test_family_names_round_trip</code> (<code>:526</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-fields">Architecture fields</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HFC-R2</td>
+<td><strong>conforms</strong></td>
+<td>Each size is required, a positive integer under its bound (<code>src/arch/llama/config.rs:149-181</code>). Requiring them where Transformers has defaults is stricter, and harmless: they are model-specific keys, always written by <code>save_pretrained</code> (HFC-R14). <code>test_each_required_field_is_named_when_missing</code> (<code>tests/config.rs:151</code>), <code>test_out_of_range_dimension_is_named</code> (<code>:201</code>), <code>test_dimension_limit_is_inclusive</code> (<code>:217</code>), <code>test_layers_over_the_limit_are_refused</code> (<code>:235</code>), <code>test_head_geometry_must_divide</code> (<code>:253</code>).</td>
+</tr>
+<tr>
+<td>HFC-R3</td>
+<td><strong>partial</strong> (HFC-2)</td>
+<td>An absent <code>num_key_value_heads</code> defaults to <code>num_attention_heads</code> for every family (<code>config.rs:152</code>). Right for Llama; Transformers gives Mistral 8 and Qwen2 and Qwen3 32. <code>test_kv_heads_and_head_dim_default_when_absent</code> (<code>tests/config.rs:100</code>) covers Llama only.</td>
+</tr>
+<tr>
+<td>HFC-R4</td>
+<td><strong>partial</strong> (HFC-2)</td>
+<td>An absent <code>head_dim</code> is <code>hidden_size / num_attention_heads</code> (<code>config.rs:182-192</code>). Right for Llama, Mistral and Qwen2; Qwen3's default is 128.</td>
+</tr>
+<tr>
+<td>HFC-R5</td>
+<td><strong>conforms</strong></td>
+<td>Default 1e-6 (<code>config.rs:19, 294</code>); non-finite or non-positive refused. <code>test_llama_config_parses_every_field</code> (<code>tests/config.rs:52</code>), <code>test_reals_must_be_positive_and_finite</code> (<code>:273</code>).</td>
+</tr>
+<tr>
+<td>HFC-R6</td>
+<td><strong>conforms</strong></td>
+<td>Default false (<code>config.rs:296</code>); a tied checkpoint expects no <code>lm_head.weight</code>. <code>test_family_defaults_are_applied</code> (<code>tests/config.rs:80</code>), <code>test_tied_embeddings_decide_whether_lm_head_is_expected</code> (<code>tests/mapping.rs:82</code>).</td>
+</tr>
+<tr>
+<td>HFC-R7</td>
+<td><strong>conforms</strong></td>
+<td>Absent or <code>silu</code> accepted; anything else refused naming it (<code>config.rs:406-415</code>). <code>test_gelu_activation_is_refused</code> (<code>tests/config.rs:292</code>).</td>
+</tr>
+<tr>
+<td>HFC-R8</td>
+<td><strong>conforms</strong></td>
+<td>Per family as Transformers defines them (<code>config.rs:222-244</code>). <code>test_llama_biases_are_expected_when_configured</code> (<code>tests/config.rs:500</code>), <code>test_qwen2_biases_reach_the_projections</code> (<code>tests/lower.rs:220</code>).</td>
+</tr>
+<tr>
+<td>HFC-R9</td>
+<td><strong>partial</strong> (HFC-2)</td>
+<td>Qwen's window applies only under <code>use_sliding_window</code>, as in Transformers, and any active window is refused as R2 (<code>config.rs:417-432</code>, <code>src/arch/llama/graph.rs:78-84</code>; <code>test_sliding_window_is_recorded_when_active</code>, <code>tests/config.rs:433</code>). But a Mistral config without <code>sliding_window</code> is read as no window, where Transformers applies 4096. A refusal of "every layer slides from <code>max_window_layers</code> on" is not needed in R1, since every active window is refused.</td>
+</tr>
+<tr>
+<td>HFC-R10</td>
+<td><strong>partial</strong> (HFC-2)</td>
+<td>Default 2048 for every family (<code>config.rs:23, 168-169</code>); Mistral's is 131072 and Qwen's 32768. RI-FE-001 does not list this field, so the effect is limited to what reads it later.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rotary-parameters">Rotary parameters</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HFC-R11</td>
+<td><strong>conforms</strong> (HFC-1 fixed in <code>b99720a</code>, HFC-5 in <code>6a18042</code>)</td>
+<td><code>rope_parameters</code> is read first: theta from <code>rope_parameters.rope_theta</code>, else the top-level <code>rope_theta</code>, else 10000, and the scaling from the same object with <code>rope_type</code> defaulting to <code>default</code>, as <code>standardize_rope_params</code> does (<code>config.rs:465-503</code>, <code>V5_PARAMETERS</code> <code>:453-460</code>). A per-layer-type nested object is refused naming it, not read as the default (<code>:487-493</code>); a config carrying both forms is read only when they agree, else refused naming both fields (<code>check_forms_agree</code>, <code>:506-528</code>). <code>partial_rotary_factor</code>, which Transformers reads from <code>rope_parameters</code> after moving a top-level or <code>rope_scaling</code> value there (<code>modeling_rope_utils.py:179-181</code>), is checked in all three places before anything else (<code>check_full_rotary</code>, <code>:466</code>, <code>:611-625</code>): only absent, <code>null</code> or 1.0 is accepted, since the R1 <code>rope</code> rotates the whole head; another value is refused naming the field, never read as 1 (<code>:627-645</code>). <code>test_v5_rope_parameters_give_theta_and_scaling</code> (<code>tests/rope_parameters.rs:66</code>), <code>test_v5_defaults_follow_transformers</code> (<code>:84</code>), <code>test_disagreeing_theta_is_refused_naming_both_fields</code> (<code>:123</code>), <code>test_disagreeing_scaling_is_refused_naming_both_fields</code> (<code>:142</code>), <code>test_v5_refusals_name_the_rope_parameters_field</code> (<code>:186</code>); <code>test_full_rotary_factor_is_accepted_in_every_family</code> (<code>tests/partial_rotary.rs:73</code>), <code>test_partial_top_level_factor_is_refused_naming_the_field</code> (<code>:96</code>), <code>test_partial_nested_factor_is_refused_naming_the_nested_field</code> (<code>:113</code>), <code>test_nested_partial_factor_wins_over_top_level_full_factor</code> (<code>:124</code>), <code>test_factor_boundaries_and_wrong_types_are_refused</code> (<code>:138</code>); each <code>Verifies RI-FE-001</code>. A partial factor is refused rather than implemented, which RI-FE-001 permits: no R1 family uses it.</td>
+</tr>
+<tr>
+<td>HFC-R12</td>
+<td><strong>conforms</strong></td>
+<td>Without <code>rope_parameters</code>, the top-level <code>rope_theta</code> and <code>rope_scaling</code> are read, with <code>rope_type</code> or the legacy <code>type</code> (<code>config.rs:465-481</code>, <code>parse_rope_scaling</code> <code>:530-536</code>, <code>rope_kind</code> <code>:540-549</code>). <code>test_rope_scaling_kinds_parse</code> (<code>tests/config.rs:306</code>), <code>test_legacy_rope_theta_and_scaling_still_read</code> (<code>tests/rope_parameters.rs:99</code>), <code>test_both_forms_that_agree_are_accepted</code> (<code>:110</code>).</td>
+</tr>
+<tr>
+<td>HFC-R13</td>
+<td><strong>partial</strong></td>
+<td><code>default</code> and <code>linear</code> lower (<code>config.rs:96-108</code>), in either layout; <code>dynamic</code>, <code>yarn</code> and <code>llama3</code> parse and are refused as R2, the R1 gap RI-FE-001 names (HFC-4, #31): <code>test_only_linear_scaling_lowers_in_r1</code> (<code>tests/config.rs:400</code>), and in <code>rope_parameters</code> <code>test_v5_later_release_kinds_are_still_refused</code> (<code>tests/rope_parameters.rs:157</code>). <code>longrope</code> and <code>proportional</code> are refused as unknown, naming the value: <code>test_unknown_rope_scaling_is_refused</code> (<code>:350</code>). <code>factor</code> below 1 is refused (<code>config.rs:596-603</code>). For <code>yarn</code> and <code>llama3</code> an absent <code>original_max_position_embeddings</code> is an error where Transformers defaults it; moot while both are refused.</td>
+</tr>
+<tr>
+<td>HFC-R14</td>
+<td><strong>partial</strong> (HFC-2)</td>
+<td>Keys absent from a v5 diff export take a default; rustinfer's defaults match the class defaults except those in HFC-R3, R4, R9 and R10.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quantization_config"><code>quantization_config</code></h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HFC-R15</td>
+<td><strong>conforms</strong> (HFC-3 fixed in <code>8c7d47e</code>)</td>
+<td><code>quantization_config</code> is parsed before <code>model_type</code>, so a checkpoint form of a later release is refused as that release (<code>src/config.rs:130-145</code>). <code>quant::parse</code> (<code>src/quant/mod.rs:197-211</code>) treats an absent or <code>null</code> key as no quantization, refuses a non-object, requires <code>quant_method</code> as Transformers does, imports <code>quark</code> and <code>compressed-tensors</code> (dense MXFP4, RI-FE-006) and refuses every other method naming the field and its release (<code>mxfp4</code> R3, <code>fp8</code> and <code>fbgemm_fp8</code> R2, <code>awq</code> and <code>gptq</code> R3) or that none schedules it (<code>gguf</code>), any unknown value as unsupported (<code>refuse_method</code>, <code>:214-235</code>). <code>test_other_quant_methods_are_refused_naming_their_release</code> (<code>tests/mxfp4.rs:641</code>), <code>test_gpt_oss_quant_method_is_refused_as_r3</code> (<code>:394</code>), <code>test_gguf_is_refused_naming_the_field_or_file</code> (<code>:419</code>), <code>test_metadata_of_unquantized_and_w4a16_checkpoints</code> (<code>:372</code>). Quantized dtypes outside an import are still refused by the mapping (<code>test_quantized_weights_are_a_later_release</code>, <code>tests/mapping.rs:157</code>). The method-specific fields are the <a href="std-quark-audit.html">QUARK</a> and <a href="std-ct-audit.html">CT</a> audits.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="result">Result</h2>
+<p>HFC-R1, R2, R5 to R8, R11, R12 and R15 conform; R3, R4, R9, R10, R13 and
+R14 are partial. Since <code>8c7d47e</code> the frontend reads <code>quantization_config</code>
+(HFC-3) and refuses a <code>partial_rotary_factor</code> other than 1 (HFC-5, <code>6a18042</code>).
+What remains is HFC-2 (per-family defaults for absent keys) and the R2 rope
+kinds (HFC-4). State: <strong>partial</strong>. Gaps on the
+<a href="std-hf-config-tracker.html">tracker</a>.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#model_type">model_type</a></li><li><a href="#architecture-fields">Architecture fields</a></li><li><a href="#rotary-parameters">Rotary parameters</a></li><li><a href="#quantization_config">quantization_config</a></li><li><a href="#result">Result</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

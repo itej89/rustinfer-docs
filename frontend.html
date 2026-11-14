@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontend — rustinfer</title>
+<meta name="description" content="How a Hugging Face checkpoint of the LLaMA family becomes a Model IR document, a weight manifest and a checkpoint identity; the Architecture seam and how to add an architecture; the R1 gaps refused by name.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html" class="here">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="frontend">Frontend</h1>
+<p>Read from <code>crates/rustinfer-frontend/src/</code>, SRS §3.2.2 (<code>RI-FE</code>) at v0.3,
+<code>docs/api/frontend.md</code>, <code>docs/api/CHANGELOG.md</code> and issue #6 at commit
+<code>04a2a26</code>. GitHub PR #24 merged into <code>main</code> as 84449e7 on 2026-11-12 and
+closed issue #6: the crate <code>rustinfer-frontend</code> lowers the LLaMA family from
+a checkpoint directory into Model IR. Two #27 pull requests of 2026-11-13
+changed it since: PR #30 replaced its safetensors header parser with the one
+shared reader in <code>rustinfer-artifact</code>, and PR #33 (04a2a26) made dtypes a
+per-tensor expectation. No subcommand calls it yet; <code>build</code> wires it to the graph
+compiler and the artifact writer in #11.</p>
+<h2 id="what-it-takes-and-what-it-gives">What it takes and what it gives</h2>
+<p><code>rustinfer_frontend::lower(dir)</code> (or <code>lower_with_limits</code>) reads a Hugging
+Face directory and returns a <code>Lowered</code> value with four parts:</p>
+<table>
+<thead>
+<tr>
+<th>part</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>document</code></td>
+<td>the validated Model IR <code>Document</code>: one weight set, the functions <code>prefill</code> and <code>decode</code>, one paged KV group named <code>main</code> (RI-FE-001, RI-MIR-009, RI-MIR-010)</td>
+</tr>
+<tr>
+<td><code>manifest</code></td>
+<td>the weight manifest: every Model IR weight mapped to its shard, tensor name, dtype, shape and byte range, with <code>root "."</code>, <code>source_layout</code> and <code>target_layout</code> <code>row_major</code>, <code>transform</code> <code>identity</code> and <code>ranks [0]</code> (RI-FE-002, RI-ART-005); the graph compiler later sets the target layout and transform per weight (#10)</td>
+</tr>
+<tr>
+<td><code>identity</code></td>
+<td>the checkpoint identity a load must match: the SHA-256 of <code>config.json</code>, each shard's size and header hash, and since SRS v0.4.7 (PR #53, PR #49) the file, tensor, byte range and SHA-256 of every weight range the build read and used, today a checkpoint's KV scale tensors (RI-ART-008, RI-ART-012)</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td>the typed <code>ModelConfig</code> the document was built from</td>
+</tr>
+</tbody>
+</table>
+<p>Only <code>config.json</code>, <code>model.safetensors.index.json</code> when present and the
+safetensors headers are read, plus, since SRS v0.4.7 allowed the build to read weights (RI-FE-004, PR #53), the few bytes of a checkpoint's KV scale tensors, each recorded as a used range of the identity (PR #49). All three are
+untrusted input, bounded by size before they are read and parsed into typed
+structures, and every refusal names the field or tensor (RI-SEC-003). With
+an index, only the shards its <code>weight_map</code> names are read, so a
+consolidated copy beside the shards is ignored; without one, every
+<code>.safetensors</code> file in the directory, in name order. Safetensors headers are
+parsed in Rust with no Python (OI-004), by <code>rustinfer_artifact::safetensors</code>,
+the one reader <a href="sluice.html">Sluice</a> also uses since PR #30: the frontend
+re-exports its <code>ShardHeader</code> and <code>TensorInfo</code> and reads them through
+<code>read_shard_header</code> and <code>parse_shard_header</code>, mapping the reader's classified
+faults to its own errors, which are unchanged.</p>
+<h2 id="what-lowers">What lowers</h2>
+<p>The <code>llama</code> architecture serves four <code>model_type</code> values, the families
+RI-FE-001 lists for R1 since SRS v0.3: <code>llama</code> (LLaMA 1, 2 and 3),
+<code>mistral</code>, <code>qwen2</code> (QKV bias, often tied embeddings) and <code>qwen3</code> (QK norm).
+Per layer the graph is <code>rmsnorm</code> → q, k and v <code>matmul</code> (with bias when the
+family has one) → <code>rope</code> → <code>kv_cache_write</code> → <code>attention_prefill</code> or
+<code>attention_decode_paged</code> → o <code>matmul</code> → <code>residual_add</code> → <code>rmsnorm</code> → gate
+and up <code>matmul</code> → <code>silu_and_mul</code> → down <code>matmul</code> → <code>residual_add</code>; then the
+final <code>rmsnorm</code>, <code>logits_head</code> (reading the embedding table when the
+embeddings are tied) and <code>sample</code>. Logits are <code>fp32</code>.</p>
+<p>Every architecture shares one calling convention so the executor binds the
+same names whatever the model: inputs <code>token_ids</code>, <code>positions</code>,
+<code>slot_mapping</code> and, for <code>decode</code>, <code>block_table</code> and <code>seq_lens</code>; outputs
+<code>logits</code> and <code>tokens</code>. Model IR weights are named after the checkpoint
+tensors (<code>model.layers.N.self_attn.q_proj.weight</code>).</p>
+<p>Refusals, each naming what it refuses: a <code>model_type</code> outside the registry,
+with the supported list (RI-FE-003); the first missing or unexpected tensor,
+and a shape or dtype mismatch (RI-FE-002); a non-contiguous safetensors
+data range; an unknown RoPE scaling type.</p>
+<table>
+<thead>
+<tr>
+<th>family</th>
+<th><code>model_type</code></th>
+<th>state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLaMA</td>
+<td><code>llama</code></td>
+<td><span class="state-ok">lowers</span> — golden graph <code>tests/golden/llama.json</code></td>
+</tr>
+<tr>
+<td>Mistral</td>
+<td><code>mistral</code></td>
+<td><span class="state-ok">lowers</span> without an active sliding window — golden graph <code>mistral.json</code></td>
+</tr>
+<tr>
+<td>Qwen2, Qwen2.5</td>
+<td><code>qwen2</code></td>
+<td><span class="state-ok">lowers</span> — golden graph <code>qwen2.json</code></td>
+</tr>
+<tr>
+<td>Qwen3</td>
+<td><code>qwen3</code></td>
+<td><span class="state-part">parsed, refused at lowering</span> — QK norm, until #26</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-architecture-seam">The Architecture seam</h2>
+<p>Everything outside <code>src/arch/</code> is architecture-neutral: <code>lowering.rs</code> walks
+the directory, <code>config.rs</code> bounds and parses <code>config.json</code> and looks up the
+<code>model_type</code>, <code>safetensors.rs</code> reads the headers through the shared reader,
+and <code>mapping.rs</code> matches the expected tensors against them, checks each
+tensor's dtype against its own expectation and builds the manifest. An
+architecture supplies the four things that differ, as the crate-internal
+trait <code>Architecture</code>:</p>
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>what it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>parse_config(model_type, fields)</code></td>
+<td>reads the architecture's configuration from the fields of <code>config.json</code> into a type implementing <code>ArchConfig</code></td>
+</tr>
+<tr>
+<td><code>expected_tensors(config)</code></td>
+<td>the tensors a checkpoint of that configuration holds, in weight order, each an <code>ExpectedTensor</code> with its own <code>DtypeExpectation</code>: <code>Compute</code> (the default), <code>Exact(d)</code> or <code>OneOf(ds)</code>; fallible, so a configuration of another architecture's type is reported as a registry bug instead of answered with an empty table</td>
+</tr>
+<tr>
+<td><code>dtype_policy()</code></td>
+<td>the dtypes the compute dtype may be and the <code>Deferred</code> rows, dtypes the architecture accepts in a later release (PR #33)</td>
+</tr>
+<tr>
+<td><code>build_graph(config, dtypes)</code></td>
+<td>the validated <code>prefill</code> and <code>decode</code> document over those tensors, given <code>&amp;TensorDtypes</code>: the compute dtype and every tensor's dtype by name (was one dtype per checkpoint before PR #33)</td>
+</tr>
+</tbody>
+</table>
+<p><code>REGISTRY</code> in <code>arch/mod.rs</code> maps each <code>model_type</code> to its architecture, one
+line per type, and <code>SUPPORTED_MODEL_TYPES</code>, the list the refusal reports, is
+derived from it. <code>ModelConfig::downcast::&lt;LlamaConfig&gt;()</code> exposes the
+architecture-specific configuration. A minimal architecture compiled only
+for the crate's unit tests (<code>arch/test_arch.rs</code>) lowers through the same
+generic path, which shows that path needs nothing from the LLaMA family.</p>
+<p><strong>Adding an architecture</strong>, as <code>arch/mod.rs</code> sets out:</p>
+<ol>
+<li>Create <code>src/arch/&lt;name&gt;/</code> with a unit struct implementing
+   <code>Architecture</code> and a configuration type implementing <code>ArchConfig</code>, plus
+   its tensor names and graph builder. Read <code>config.json</code> through <code>Fields</code>
+   so every refusal names the field, use the function inputs and outputs of
+   <code>arch/signature.rs</code>, and validate the document before returning it.</li>
+<li>Add one line per <code>model_type</code> to <code>REGISTRY</code>.</li>
+<li>Add a fixture <code>config.json</code> and a golden graph under <code>tests/</code>.</li>
+</ol>
+<p>The first real second architecture is RI-FE-005 (MoE and MLA, R3).</p>
+<h2 id="r1-gaps">R1 gaps</h2>
+<p>What the Model IR cannot yet express is refused by name at lowering, never
+approximated (RI-FE-001 v0.3, issue #6):</p>
+<table>
+<thead>
+<tr>
+<th>gap</th>
+<th>refusal</th>
+<th>lifted by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3 QK norm (<code>q_norm</code>, <code>k_norm</code>, a per-head <code>rmsnorm</code>)</td>
+<td>refused as R2: the R1 <code>rmsnorm</code> normalises over the whole last dimension, so lowering it would be silently wrong</td>
+<td>#26, a per-head attribute on <code>rmsnorm</code>; the <code>qwen3</code> fixture then gets a golden graph</td>
+</tr>
+<tr>
+<td><code>llama3</code>, <code>yarn</code> and <code>dynamic</code> RoPE scaling</td>
+<td>parsed, then refused: <code>rope_scaling type … (Model IR v1 carries linear scaling only)</code>; this rejects Llama 3.1 and later</td>
+<td>issue <a href="https://github.com/itej89/rustinfer/issues/31">#31</a> (open, R2): a static frequency-table attribute on <code>rope</code> (RI-MIR-004), computed by the frontend from <code>rope_scaling</code>, read by the CPU reference kernel; moved out of #27 because the SRS places it in R2</td>
+</tr>
+<tr>
+<td>An active sliding window (Mistral's <code>sliding_window</code>, Qwen's under <code>use_sliding_window</code>)</td>
+<td>refused as R2 (RI-MIR-010 window groups)</td>
+<td>R2</td>
+</tr>
+<tr>
+<td><code>partial_rotary_factor</code> other than 1 (rotating part of the head)</td>
+<td>refused naming the field, at top level or inside <code>rope_parameters</code> (HF-CONFIG HFC-5, PR #55, 6a18042)</td>
+<td>no release schedules it; the R1 <code>rope</code> rotates the whole head</td>
+</tr>
+<tr>
+<td>~~One dtype per checkpoint~~</td>
+<td>lifted by PR #33 (2026-11-13): each <code>ExpectedTensor</code> carries its own dtype expectation, so an architecture can declare a mixed fp8 and bf16 checkpoint (the unit tests' <code>test_mixed</code> architecture lowers one end to end). The LLaMA family still expects every tensor in the compute dtype (<code>bf16</code>, <code>fp16</code> or <code>fp32</code>) and defers <code>fp8_e4m3</code> and <code>fp8_e4m3fnuz</code> weights to R2 as a pre-quantized checkpoint (RI-FE-006, tagged <code>Groundwork for</code>); a mismatch is <code>DtypeMismatch</code> naming the tensor, the expected and the found dtype</td>
+<td>done; pre-quantized checkpoints are R2 (RI-FE-006)</td>
+</tr>
+</tbody>
+</table>
+<p>Supported families by release are on <a href="supported-models.html">supported models</a>;
+the Model IR the frontend lowers to is on <a href="design.html">design</a>.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#what-it-takes-and-what-it-gives">What it takes and what it gives</a></li><li><a href="#what-lowers">What lowers</a></li><li><a href="#the-architecture-seam">The Architecture seam</a></li><li><a href="#r1-gaps">R1 gaps</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

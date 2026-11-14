@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;OCP OFP8 Revision 1.1 audit&quot; — rustinfer</title>
+<meta name="description" content="The 2026-11-14 audit of rustinfer&#x27;s E4M3 and E5M2 encodings and conversion against OFP8 Revision 1.1 on 8c7d47e; both encodings and saturating conversion conform and are tested, the non-saturating mode is out of scope, the GPU users of E4M3 are pending.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub" open><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html" class="here">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="ocp-ofp8-revision-11-audit">OCP OFP8 Revision 1.1 audit</h1>
+<p><strong>Audit of 2026-11-14</strong>, against the <a href="std-ocp-ofp8-requirements.html">requirements</a>,
+on <code>origin/main</code> <code>8c7d47e</code> (after PR #55, merge <code>6a18042</code>: the <code>fp8_e5m2</code>
+dtype and its CPU conversion, SRS v0.4.6; PRs #53 and #49 change no OFP8
+code). History: first audited 2026-11-13 on <code>ccf02b3</code> (E4M3 only), re-audited
+the same day on <code>b99720a</code> after PRs #48, #50 (scope narrowed to saturating
+conversion) and #52 (OFP8-2 fixed). PR #55 added the <code>saturating</code> field to the
+shared <code>MiniFloat</code> row and moved every line of <code>numeric.rs</code> below it; the E4M3
+results below are unchanged and their line numbers are those of <code>8c7d47e</code>.</p>
+<p><strong>Method.</strong> Read the specification text (<code>pdftotext -layout</code> of
+<code>specs/number-formats/ocp-ofp8-rev1.1.pdf</code>): §3, §4.2, §5.1 with Tables 1
+and 2, §5.2.1 with Table 3, and Appendix A. Read <code>origin/main</code> at <code>8c7d47e</code>:
+<code>crates/rustinfer-target/src/numeric.rs</code>, <code>src/cpu/codec.rs</code>,
+<code>src/reference/mx.rs</code>, <code>src/reference/kv.rs</code>, <code>crates/rustinfer-mir/src/dtype.rs</code>,
+<code>crates/rustinfer-kc/src/dialect/types.rs</code> and <code>src/mlir/lower.rs</code>; the tests
+<code>crates/rustinfer-target/tests/numeric.rs</code>, <code>tests/mx.rs</code>, <code>tests/kv.rs</code>,
+<code>tests/e5m2.rs</code>, the E5M2 golden generator <code>tests/e5m2_golden/mod.rs</code> and its
+output <code>tests/data/e5m2_golden.txt</code>, and <code>crates/rustinfer-mir/tests/e5m2.rs</code>.
+Read SRS v0.4.8 RI-MIR-003 (<code>docs/SRS-RI-v0.1.md:591-634</code>) and the state of
+PR #44 (open). No tests were run.</p>
+<p><strong>Test tags.</strong> <code>tests/numeric.rs</code> and <code>tests/e5m2.rs</code> tag <code>Verifies RI-MIR-003</code>
+and <code>Verifies RI-TGT-003</code>; <code>crates/rustinfer-mir/tests/e5m2.rs</code> tags <code>Verifies
+RI-MIR-003</code>. The E4M3 cases in <code>tests/mx.rs</code> and the MX golden file are tagged
+<code>Groundwork for RI-MIR-012</code>, because RI-MIR-012 is not complete (#36, #38);
+their assertions still bind the E4M3 encoder, which they call.</p>
+<p><strong>Independent checks.</strong> E4M3: <code>test_every_fp8_pattern_round_trips</code>
+(<code>tests/numeric.rs:141</code>) decodes all 256 patterns and requires every non-NaN
+one to encode back to itself; since the encoder never yields 0xFF or 0x7F
+from a number, this also proves that both NaN patterns decode to NaN. The MX
+golden generator (<code>tests/mx_golden/mod.rs:66-77</code>) builds the E4M3 grid from
+the bit fields with integers only, and the 26 E4M3 golden lines must match
+the encoder bit for bit (<code>test_golden_blocks_quantize_bit_exactly</code>,
+<code>tests/mx.rs:320</code>). E5M2: the generator <code>tests/e5m2_golden/mod.rs</code> shares no
+code with <code>numeric.rs</code> and uses no floating point (every value an integer
+count of 2^−16 or 2^−17 units, every <code>f32</code> assembled from its bits,
+<code>:1-17</code>). It writes a <code>decode</code> line for each of the 256 codes and, for every
+pair of adjacent finite codes and for 57344 and the next binade's 65536, the
+midpoint with the <code>f32</code> one ULP either side, both signs (<code>midpoints</code>,
+<code>:123-141</code>), plus the clamp boundary, <code>f32::MAX</code>, ±Inf, ±0 and the smallest
+<code>f32</code> subnormal (<code>boundaries</code>, <code>:144-153</code>): 758 <code>round</code> lines.
+<code>test_golden_file_is_the_independent_generator_output</code> (<code>tests/e5m2.rs:87</code>)
+requires the committed file to be its output.</p>
+<h2 id="e4m3-ofp8-r1-to-r11">E4M3 (OFP8-R1 to R11)</h2>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>requirement</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OFP8-R1</td>
+<td>1-4-3 layout, bias 7, emax 8, emin −6</td>
+<td>conforms</td>
+<td><code>MiniFloat::E4M3</code> (<code>numeric.rs:60-68</code>); the sign is bit 7 (<code>:90-92</code>). <code>test_fp8_e4m3_encodes_ocp_values</code> (<code>tests/numeric.rs:93</code>): 1.0 is 0x38</td>
+</tr>
+<tr>
+<td>OFP8-R2</td>
+<td>normal and subnormal value formulas</td>
+<td>conforms</td>
+<td><code>numeric.rs:127-132</code> is the §5.1 formula, with <code>min_exponent</code> 1 − bias (<code>:103-105</code>). Asserted: 2^−9 round-trips (<code>tests/numeric.rs:104-107</code>); the golden grid is built independently from the same formula</td>
+</tr>
+<tr>
+<td>OFP8-R3</td>
+<td>no Inf; NaN S.1111.111 only; zeros; max ±448</td>
+<td>conforms</td>
+<td><code>special</code> treats only exponent 15 with mantissa 7 as NaN, either sign, and nothing as Inf (<code>numeric.rs:136-152</code>, <code>:151</code>); <code>max</code> is S.1111.110 (<code>:108-117</code>, <code>:114</code>). Asserted: 448 is 0x7E, 0x7F is NaN (<code>tests/numeric.rs:95-102</code>), <code>test_format_maxima</code> (<code>numeric.rs:367</code>); 0xFF is NaN by the exhaustive round trip. Min normal and max subnormal are not asserted by value but follow from R2 and the round trip</td>
+</tr>
+<tr>
+<td>OFP8-R4</td>
+<td>from binary32, binary16 and bfloat16</td>
+<td>conforms</td>
+<td>the codec widens <code>bf16</code> and <code>fp16</code> exactly to <code>f32</code>, then encodes once (<code>cpu/codec.rs:60-83</code>), so the single rounding is from the source value. Exact widening: <code>test_every_half_pattern_round_trips</code> (<code>tests/numeric.rs:159</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R5</td>
+<td>roundTiesToEven</td>
+<td>conforms</td>
+<td><code>numeric.rs:176-183</code>. Asserted: 1.0625 gives 1.0 and 1.1875 gives 1.25 (<code>tests/numeric.rs:109-110</code>); six E4M3 midpoints (one subnormal, two near 1, three near the top), each with its neighbours one ulp either side, for both signs, in the golden lines <code>e4m3 midpoints_positive</code> and <code>midpoints_negative</code> (scale 2^0, so each element is its input)</td>
+</tr>
+<tr>
+<td>OFP8-R6</td>
+<td>saturating <strong>and</strong> non-saturating modes; in scope: saturating only</td>
+<td>conforms in scope; non-saturating <strong>out of scope</strong> (OFP8-1)</td>
+<td><code>f32_to_fp8</code> has no mode parameter and always saturates (<code>numeric.rs:327-331</code>); every fp8 row sets <code>saturating: true</code> (<code>:66</code>, <code>:75</code>, <code>:86</code>) and <code>overflow</code> returns the maximum for them (<code>:185-192</code>). No non-saturating conversion exists on <code>origin/main</code>; SRS §1.4 scopes OCP-OFP8 to saturating conversion only (<code>docs/SRS-RI-v0.1.md:160</code>, PR #50, owner decision 2026-11-13)</td>
+</tr>
+<tr>
+<td>OFP8-R7</td>
+<td>NaN gives an implementation-defined NaN</td>
+<td>conforms</td>
+<td>a NaN encodes to 0x7F (<code>numeric.rs:156-158</code>, <code>:20</code>). Asserted (<code>tests/numeric.rs:103</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R8</td>
+<td>±Inf gives ±448 when saturating</td>
+<td>conforms</td>
+<td><code>round</code> passes Inf through (<code>numeric.rs:177-179</code>), the comparison with 448 sends it to <code>overflow</code>, which returns the maximum with the sign (<code>:162-164</code>, <code>:185-192</code>). Asserted: <code>test_fp8_e4m3_infinity_saturates_to_448</code> (<code>tests/numeric.rs:186</code>): ±Inf give 0x7E and 0xFE, decode to ±448, and <code>round_to_fp8</code> agrees (OFP8-2, fixed 2026-11-13)</td>
+</tr>
+<tr>
+<td>OFP8-R9</td>
+<td>overflow after rounding gives ±448 when saturating</td>
+<td>conforms</td>
+<td><code>numeric.rs:161-164</code>. Asserted: ±1e9 give 0x7E and 0xFE (<code>tests/numeric.rs:100-101</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R10</td>
+<td>the rounded value otherwise; the sign preserved</td>
+<td>conforms</td>
+<td><code>numeric.rs:165-172</code>, a negative zero result keeps the sign (<code>:166-167</code>). Asserted: −0.0 keeps its sign (<code>tests/numeric.rs:111-114</code>); negative golden lines; <code>test_e4m3_exp_adj_boundaries</code> asserts a tiny negative element is 0x80 (<code>tests/mx.rs:296-298</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R11</td>
+<td>448 &lt; x ≤ 464 rounds to 448 (Appendix A)</td>
+<td>conforms</td>
+<td>ties to even at the top binade (<code>numeric.rs:176-183</code>). Asserted: 464 encodes to 0x7E and decodes to 448 (<code>tests/mx.rs:296-299</code>, scale 2^0); golden line <code>e4m3 exp_adj_at_1.8125x2^8</code> (input 464, code 7e)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e5m2-ofp8-r12-to-r18-new-since-pr-55">E5M2 (OFP8-R12 to R18), new since PR #55</h2>
+<p>The dtype is <code>DType::Fp8E5m2</code>, token <code>fp8_e5m2</code>, one byte, quantized
+(<code>crates/rustinfer-mir/src/dtype.rs:30-35</code>, <code>:74-81</code>, <code>:141-151</code>); it is
+left out of <code>FLOAT_OR_QUANTIZED</code>, so no <code>matmul</code> or KV write reads it
+(<code>:84-94</code>), as RI-MIR-003 says nothing in R1 does. The conversion is the
+shared <code>MiniFloat</code> encoder with the row <code>MiniFloat::E5M2</code>
+(<code>crates/rustinfer-target/src/numeric.rs:78-88</code>), reached through
+<code>Fp8Format::E5m2</code> (<code>:253-295</code>) and the CPU codec (<code>src/cpu/codec.rs:67</code>, <code>:80</code>).</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>requirement</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OFP8-R12</td>
+<td>1-5-2 layout, bias 15, emax 15, emin −14</td>
+<td>conforms</td>
+<td><code>MiniFloat::E5M2</code>: 5 exponent bits, 2 mantissa bits, bias 15 (<code>numeric.rs:80-88</code>); sign bit 7 (<code>:90-92</code>); <code>min_exponent</code> −14 (<code>:103-105</code>). <code>test_fp8_e5m2_token_and_element_size</code> (<code>crates/rustinfer-mir/tests/e5m2.rs:68</code>): element size 1</td>
+</tr>
+<tr>
+<td>OFP8-R13</td>
+<td>normal and subnormal value formulas</td>
+<td>conforms</td>
+<td>the shared decoder (<code>numeric.rs:127-132</code>). <code>test_every_code_decodes_to_the_golden_value</code> (<code>tests/e5m2.rs:100</code>): all 256 codes equal the generator's integer-built values bit for bit</td>
+</tr>
+<tr>
+<td>OFP8-R14</td>
+<td>Inf S.11111.00, NaN S.11111.{01,10,11}, zeros, max ±57344, min normal 2^−14, max subnormal 0.75 × 2^−14, min subnormal 2^−16</td>
+<td>conforms</td>
+<td><code>ieee_specials: true</code> makes the all-ones exponent Inf at mantissa 0 and NaN otherwise, either sign (<code>numeric.rs:84</code>, <code>:143-150</code>); <code>max</code> is exponent 30 with mantissa 3 (<code>:108-110</code>), <code>E5M2_MAX</code> 57344 (<code>:27</code>). <code>test_table_2_values</code> (<code>tests/e5m2.rs:137</code>) asserts every Table 2 row by value, both signs of max and of the three NaN codes; <code>test_format_maxima</code> (<code>numeric.rs:367</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R15</td>
+<td>from binary32, binary16, bfloat16 with roundTiesToEven</td>
+<td>conforms</td>
+<td><code>round</code> (<code>numeric.rs:176-183</code>); the codec widens <code>bf16</code> and <code>fp16</code> exactly before the single rounding (<code>cpu/codec.rs:60-83</code>). <code>test_every_golden_rounding_case_encodes_to_the_golden_code</code> (<code>tests/e5m2.rs:120</code>): every midpoint goes to the even code, one <code>f32</code> ULP either side to the near code, both signs, subnormals included; <code>test_every_code_round_trips</code> (<code>:202</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R16</td>
+<td>NaN gives a NaN; ±Inf gives ±57344 (saturating)</td>
+<td>conforms</td>
+<td>a NaN encodes to 0x7E, <code>S.11111.10</code> (<code>numeric.rs:25</code>, <code>:156-158</code>); ±Inf passes <code>round</code> (<code>:177-179</code>) and reaches <code>overflow</code>, which with <code>saturating: true</code> returns the maximum, not the Inf pattern (<code>:86</code>, <code>:185-192</code>). <code>test_nan_input_gives_a_nan_code</code> (<code>tests/e5m2.rs:176</code>): either sign and a signalling payload; <code>test_saturation_clamps_to_57344</code> (<code>:156</code>): ±Inf give 0x7B and 0xFB, and <code>round_to_fp8</code> agrees</td>
+</tr>
+<tr>
+<td>OFP8-R17</td>
+<td>overflow after rounding gives ±57344 (saturating); otherwise the rounded value, the sign kept</td>
+<td>conforms</td>
+<td><code>numeric.rs:161-172</code>, a negative result rounding to zero keeps the sign (<code>:166-167</code>). <code>test_saturation_clamps_to_57344</code> (<code>tests/e5m2.rs:156</code>): 57344 + 1 ULP, 65536, <code>f32::MAX</code>, both signs; <code>test_negative_zero_keeps_its_sign</code> (<code>:187</code>): −0 is 0x80 and decodes to −0, −2^−18 and the tie −2^−17 give 0x80; the golden boundary lines (<code>e5m2_golden/mod.rs:144-153</code>)</td>
+</tr>
+<tr>
+<td>OFP8-R18</td>
+<td>57344 &lt; x &lt; 61440 rounds to 57344; 61440 rounds up and saturates (Appendix A)</td>
+<td>conforms</td>
+<td>ties to even at the top binade: 0x7B has an odd mantissa, so the tie at 61440 goes up to 65536, above <code>max</code>, and saturates (<code>numeric.rs:176-183</code>, <code>:161-164</code>). The generator's last midpoint pair is 57344 and 65536 with saturation (<code>e5m2_golden/mod.rs:123-141</code>), giving 0x7B one ULP below, at and above 61440; <code>test_saturation_clamps_to_57344</code> asserts 61440 itself (<code>tests/e5m2.rs:161</code>, <code>:166-167</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Beyond the clause's conversion: <code>test_fp8_format_of_e5m2</code> (<code>tests/e5m2.rs:219</code>)
+maps the dtype to the format, and <code>test_cpu_quantize_and_dequantize_launches_use_e5m2</code>
+(<code>:226</code>) runs the CPU <code>quantize</code> and <code>dequantize</code> kernels on <code>fp8_e5m2</code> (per
+channel amax to 57344, back exactly). In the Model IR, an E5M2 tensor without a
+<code>linear</code> encoding is refused (<code>crates/rustinfer-mir/tests/e5m2.rs:102</code>), only
+<code>quantize</code> outputs and <code>dequantize</code> inputs admit it (<code>:123</code>, <code>:167</code>), and
+<code>matmul</code> and a KV group refuse it (<code>:147</code>, <code>:204</code>). Every acceptance line of
+RI-MIR-003 for <code>fp8_e5m2</code> (<code>docs/SRS-RI-v0.1.md:624-628</code>) has its test.</p>
+<h2 id="other-users-of-the-formats-on-originmain">Other users of the formats on <code>origin/main</code></h2>
+<ul>
+<li>The Kernel IR's <code>max</code> identity for <code>f8E4M3FN</code> is 0xFE, −448, the most
+  negative finite E4M3 value (<code>crates/rustinfer-kc/src/mlir/lower.rs:23</code>),
+  asserted by <code>test_max_identity_of_ocp_e4m3_is_minus_448</code> (<code>lower.rs:441</code>)
+  (OFP8-2, fixed 2026-11-13). The Kernel IR also names <code>f8E5M2</code>
+  (<code>crates/rustinfer-kc/src/dialect/types.rs:21-22</code>) with <code>max</code> identity 0xFC,
+  −Inf (<code>lower.rs:24</code>), correct since E5M2 has infinities (Table 2); no kernel
+  of R1 uses it.</li>
+<li>The fp8 KV CPU reference (PR #48, <code>e218b8a</code>) writes each K and V value as
+  <code>f32_to_fp8(x / scale, format)</code> (<code>crates/rustinfer-target/src/reference/kv.rs:277</code>)
+  and reads it back as <code>bf16(scale × fp8(code))</code>, so it inherits R4, R5 and
+  R7 to R11; <code>test_cached_k_and_v_equal_the_oracle_conversion_bit_exactly</code>
+  (<code>tests/kv.rs:212</code>) covers OCP E4M3 storage (<code>tests/kv.rs:51</code>). Since PR #49
+  (<code>8c7d47e</code>) the frontend can fill the per-layer scales of that KV group from
+  a checkpoint's KV scale tensors (<code>crates/rustinfer-frontend/src/kv_scales.rs:102-121</code>);
+  the stored E4M3 conversion is unchanged.</li>
+<li><code>MxElement::E4m3</code> encodes with the same function (<code>reference/mx.rs:109</code>),
+  so MXFP8 elements inherit the saturating behaviour.</li>
+<li>E5M2 is not a checkpoint dtype: the safetensors reader has no <code>F8_E5M2</code>
+  entry (<code>crates/rustinfer-artifact/src/safetensors.rs:56-67</code>), so an E5M2
+  weight is refused as an unknown dtype. That is by design: SRS v0.4.6 adds
+  no "KV dtype, kernel or checkpoint dtype" (<code>docs/SRS-RI-v0.1.md:29</code>).</li>
+</ul>
+<h2 id="requirements-of-the-srs-not-yet-on-originmain">Requirements of the SRS not yet on <code>origin/main</code></h2>
+<table>
+<thead>
+<tr>
+<th>SRS requirement</th>
+<th>what needs E4M3</th>
+<th>where it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-KC-003</td>
+<td>OCP fp8 MFMA operands on gfx950</td>
+<td>PR #44 (issue #8), open</td>
+</tr>
+<tr>
+<td>RI-KVC-008</td>
+<td><code>--kv-dtype fp8</code>: E4M3 KV on gfx950 and cpu, written by the cache-write kernel</td>
+<td>CPU reference merged (PR #48, <code>e218b8a</code>); GPU kernels issue #38</td>
+</tr>
+<tr>
+<td>RI-MIR-012, RI-CLI-002</td>
+<td><code>--activations mxfp8</code>: in-kernel E4M3 activation quantization on gfx950</td>
+<td>issue #38, no PR</td>
+</tr>
+</tbody>
+</table>
+<p>These are recorded as OFP8-3: the conversions they perform must meet R5 to
+R10, and bit-exact agreement with the CPU reference is their acceptance test.
+No requirement needs E5M2 on a GPU in R1.</p>
+<h2 id="result">Result</h2>
+<p>The E4M3 encoding (R1 to R3) and the E5M2 encoding (R12 to R14), and
+saturating conversion to both (R4 to R11 and R15 to R18, in the
+saturating-only scope of SRS v0.4.3), conform and are tested; E5M2 against an
+independent integer-only golden table of all 256 codes and 758 rounding
+cases. The non-saturating mode (OFP8-1) is out of scope. The one open gap is
+coverage: the gfx950 fp8 MFMA (PR #44) and the GPU KV and <code>mxfp8</code> kernels
+(#38) are not on <code>origin/main</code> (OFP8-3). <strong>Partial</strong>, for the R1 coverage,
+not for any wrong value.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#e4m3-ofp8-r1-to-r11">E4M3 (OFP8-R1 to R11)</a></li><li><a href="#e5m2-ofp8-r12-to-r18-new-since-pr-55">E5M2 (OFP8-R12 to R18), new since PR #55</a></li><li><a href="#other-users-of-the-formats-on-originmain">Other users of the formats on origin/main</a></li><li><a href="#requirements-of-the-srs-not-yet-on-originmain">Requirements of the SRS not yet on origin/main</a></li><li><a href="#result">Result</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

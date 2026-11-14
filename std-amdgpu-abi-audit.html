@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;AMDGPU code object V5 audit&quot; — rustinfer</title>
+<meta name="description" content="The 2026-11-13 audit of rustinfer&#x27;s AMD code objects against AMDGPUUsage code object V5; everything is pending PR #44 or untested.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub" open><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub" open><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html" class="here">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="amdgpu-code-object-v5-audit">AMDGPU code object V5 audit</h1>
+<p><strong>Audit of 2026-11-13</strong>, against the <a href="std-amdgpu-abi-requirements.html">requirements</a>.</p>
+<p><strong>Method.</strong> Searched <code>origin/main</code> at <code>ccf02b3</code> for any code that emits,
+links or reads a code object (none). Read open PR #44 (branch
+<code>feat/8-amd-lowering</code>, head <code>10b8b1b</code>): <code>crates/rustinfer-kc/src/mlir/llvm.rs</code>,
+<code>emit.rs</code>, <code>code_object.rs</code>, <code>lld_shim.cpp</code>,
+<code>crates/rustinfer-target-rocm/src/ffi/hip.rs</code> and the tests
+<code>crates/rustinfer-kc/tests/amd_lowering.rs</code> and
+<code>crates/rustinfer-target-rocm/tests/gpu_code_objects.rs</code>. PR #44's CI run
+43520689140 passed; its GPU test request #45 has not been run. Each field
+was compared with the AMDGPUUsage text at <code>llvmorg-23.1.0</code>. No code object
+was built or inspected locally. Test tags follow <code>docs/testing.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AB-R1</td>
+<td><strong>pending PR #44</strong></td>
+<td><code>crates/rustinfer-kc/src/mlir/code_object.rs:80</code> to <code>:93</code> refuse anything but a little-endian ELF64 with <code>EM_AMDGPU</code>. Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:431</code> reaches that check through <code>elf_flags()</code> for both architectures (Groundwork for RI-KC-003)</td>
+</tr>
+<tr>
+<td>AB-R2</td>
+<td><strong>pending PR #44</strong>, untested</td>
+<td>PR #44 builds for the <code>amdhsa</code> OS (<code>crates/rustinfer-kc/src/mlir/llvm.rs:28</code>), for which the back end writes <code>ELFOSABI_AMDGPU_HSA</code>; no test reads <code>EI_OSABI</code> (byte 7). ABI-2</td>
+</tr>
+<tr>
+<td>AB-R3</td>
+<td><strong>pending PR #44</strong></td>
+<td><code>crates/rustinfer-kc/src/mlir/llvm.rs:32</code> pins version 500 through the <code>amdhsa_code_object_version</code> module flag (<code>:279</code> to <code>:286</code>) instead of relying on the default. Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:431</code> asserts <code>EI_ABIVERSION</code> = 3 (<code>ELFABIVERSION_AMDGPU_HSA_V5</code>)</td>
+</tr>
+<tr>
+<td>AB-R4</td>
+<td><strong>pending PR #44</strong></td>
+<td><code>crates/rustinfer-kc/src/mlir/llvm.rs:348</code> to <code>:360</code> link with <code>ld.lld -shared --no-undefined</code>; <code>crates/rustinfer-kc/src/mlir/emit.rs:28</code> to <code>:40</code>. Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:400</code> asserts <code>e_type</code> = <code>ET_DYN</code> (Groundwork for RI-KC-008). The loader's acceptance is <code>crates/rustinfer-target-rocm/tests/gpu_code_objects.rs:227</code>, not run (#45)</td>
+</tr>
+<tr>
+<td>AB-R5</td>
+<td><strong>pending PR #44</strong>, partly untested</td>
+<td><code>e_machine</code> = 224 is asserted at <code>crates/rustinfer-kc/tests/amd_lowering.rs:400</code> and checked by the reader (<code>code_object.rs:87</code> to <code>:92</code>). No test reads <code>e_entry</code>. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R6</td>
+<td><strong>pending PR #44</strong></td>
+<td>The processor is the target machine's CPU (<code>crates/rustinfer-kc/src/mlir/llvm.rs:242</code> to <code>:257</code>). Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:431</code> asserts <code>e_flags &amp; 0x0ff</code> is 0x04c for gfx942 and 0x04f for gfx950</td>
+</tr>
+<tr>
+<td>AB-R7</td>
+<td><strong>pending PR #44</strong></td>
+<td>No feature string is forced (<code>crates/rustinfer-kc/src/mlir/llvm.rs:252</code>, <code>c""</code>), so XNACK and SRAMECC are <code>ANY</code> and one object serves a device in either mode. Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:431</code> asserts <code>e_flags &amp; 0x300</code> = 0x100 and <code>e_flags &amp; 0xc00</code> = 0x400</td>
+</tr>
+<tr>
+<td>AB-R8</td>
+<td><strong>pending PR #44</strong>, partly untested</td>
+<td>Relocation model PIC (<code>crates/rustinfer-kc/src/mlir/llvm.rs:43</code>, <code>:254</code>); the reader finds <code>SHF_EXECINSTR</code> sections and the disassembly tests read them (<code>code_object.rs:96</code> to <code>:114</code>; <code>amd_lowering.rs:205</code> to <code>:259</code>). No test checks <code>.note</code>, <code>.rodata</code> or the dynamic sections. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R9</td>
+<td><strong>pending PR #44</strong>, untested</td>
+<td>Written by the back end for an <code>amdhsa</code> triple; no test looks for the <code>NT_AMDGPU_METADATA</code> note. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R10</td>
+<td><strong>pending PR #44</strong>, untested on the host</td>
+<td>No host test reads the symbol table. The hardware harness resolves the kernel by name with <code>hipModuleGetFunction</code> (<code>crates/rustinfer-target-rocm/src/ffi/hip.rs:150</code>), which would fail without the symbols; not run (#45). ABI-2, ABI-3</td>
+</tr>
+<tr>
+<td>AB-R11</td>
+<td><strong>pending PR #44</strong>, untested</td>
+<td>Written by the back end; no test decodes the metadata. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R12</td>
+<td><strong>pending PR #44</strong>, untested</td>
+<td>As AB-R11. With XNACK and SRAMECC <code>ANY</code> the canonical target ID is <code>amdgcn-amd-amdhsa--gfx942</code> (or <code>gfx950</code>) with no feature suffix; not checked. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R13</td>
+<td><strong>missing</strong> on the reading side; <strong>pending PR #44</strong>, untested, on the writing side</td>
+<td>No code reads <code>.group_segment_fixed_size</code>, <code>.sgpr_count</code>, <code>.vgpr_count</code> or <code>.agpr_count</code>, which RI-ROC-004's check of LDS and registers before the first launch needs (ABI-4, issue #12). The kernels take bare pointers (<code>use-bare-ptr-memref-call-conv=true</code>, PR #44 <code>crates/rustinfer-kc/src/dialect/mod.rs:59</code>), so the explicit arguments are global buffers; the hidden V5 arguments are filled by HIP at launch</td>
+</tr>
+<tr>
+<td>AB-R14</td>
+<td><strong>pending PR #44</strong>, untested</td>
+<td>Written by the back end and placed by <code>lld</code>; no test checks the descriptor's size, alignment, entry offset or reserved fields. ABI-2</td>
+</tr>
+<tr>
+<td>AB-R15</td>
+<td><strong>pending PR #44</strong></td>
+<td>No <code>amdgpu.buffer.oob.mode</code> flag is set (<code>crates/rustinfer-kc/src/mlir/llvm.rs:268</code> to <code>:289</code>), so the strict per-element guarantee holds, which RI-KC-003's bounds-checked masked loads need. Test: <code>crates/rustinfer-kc/tests/amd_lowering.rs:367</code>; on hardware <code>crates/rustinfer-target-rocm/tests/gpu_code_objects.rs:322</code>, not run (#45)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="result">Result</h2>
+<p>On <code>main</code> rustinfer produces no code object, so no item conforms. PR #44
+configures the back end for exactly the V5 <code>amdhsa</code> form (triple, pinned
+version, processor, unforced XNACK and SRAMECC, PIC, <code>lld -shared</code>) and its
+host tests pin the header fields the HIP loader checks first. The parts of
+the object the loader reads next (the metadata note, the <code>.kd</code> symbols and
+the kernel descriptor) are produced by LLVM and are not checked by any test;
+the hardware run of #45 would exercise them by loading and launching each
+object. Gaps are on the <a href="std-amdgpu-abi-tracker.html">tracker</a>.</p>
+    </article>
+  </main>
+  
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

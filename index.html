@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rustinfer</title>
+<meta name="description" content="The inference engine for AMD Instinct and RISC-V accelerators, read from its tree: what it is meant to be, what exists on 2026-11-14, and where the work is tracked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html" class="here">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="rustinfer">rustinfer</h1>
+<p>rustinfer is a compiled inference engine for AMD Instinct GPUs and RISC-V
+accelerators, written in Rust: the model is compiled once per target into a
+semi-static artifact that is a cache, never an obligation. Its specification says the mission is to
+be the engine the industry standardises on for those two families, by owning
+the whole path from model file to machine code: a model is lowered into a
+<strong>Model IR</strong>, compiled for one named target into an <strong>engine artifact</strong> whose
+kernels rustinfer generates itself from a <strong>Kernel IR</strong>, and executed by a
+runtime that makes no graph, kernel, layout or memory decision at inference
+time. No kernel library, no vendor BLAS, no Python, no NVIDIA.</p>
+<p>This site is a reading of the tree at commit <code>8c7d47e</code> on <code>main</code>, the merge
+of GitHub PR #49, first written on 2026-11-10, the day the project was specified and
+scaffolded, and refreshed on 2026-11-11, 2026-11-12, 2026-11-13 and 2026-11-14. Everything on it was read from the source, the SRS, the ADRs and
+the planning documents in <code>docs/</code>; nothing was run on a GPU. Where a page
+describes behaviour that does not exist yet it says so and names the issue
+that will add it.</p>
+<h2 id="where-it-stands">Where it stands</h2>
+<p><strong>Done</strong> means the code is in the tree and exercised by a test. <strong>In
+progress</strong> means a branch exists and is not merged. <strong>Planned</strong> means an
+approved-for-draft requirement and an issue exist. <strong>Not started</strong> means
+only the requirement exists. The numbers behind this table, issues
+closed, pull requests, the latest CI run, tests and coverage, are on the
+<a href="progress.html">progress</a> page, generated from GitHub and the tree; the
+steps in order are the <a href="roadmap.html">roadmap</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Specification: SRS-RI-v0.1 at version 0.4.8, 188 requirements, 28 groups, release tags R1 to R4</td>
+<td><span class="state-ok">done</span> — v0.2 approved 2026-11-11 (PR #16); v0.3 from the seam audit and conformance review (#27, PR #28, 7913427) on 2026-11-12; on 2026-11-13 v0.3.1 (grouped rmsnorm, PR #42), v0.4 moving MXFP4 into Release 1 with ADR-010 (PR #41, c5582da), v0.4.1 the OCP MX scale rule (PR #43), v0.4.2 citing the external standards (PR #46, e7dbdc6) v0.4.3 the Conformance column of §1.4 with OI-016 and OCP OFP8 narrowed to saturating conversion (PR #50, 48c2820), v0.4.6 the OCP E5M2 dtype <code>fp8_e5m2</code> (PR #55, 6a18042), v0.4.7 letting the build read weights and binding the artifact to the ranges it used, with an ADR-002 amendment (PR #53, 8d58ad6), and v0.4.8 closing OI-014, Quark's nibble order (PR #49, 8c7d47e); v0.4.4 and v0.4.5 were reserved and not used. The <a href="ref-requirements.html">requirements</a> page derives each requirement's state from the test tags of <code>docs/testing.md</code>: 39 implemented, 31 partial, 1 reserved only, 117 planned</td>
+</tr>
+<tr>
+<td>Standards: the 25 that SRS §1.4 marks mandatory (15 from R1, 4 from R2, 6 from R3), each audited on 2026-11-13 and re-audited against <code>main</code> at b99720a, then at 8c7d47e on 2026-11-14 for the standards PRs #55, #53 and #49 touch</td>
+<td><span class="state-part">in part</span> — R1: 6 work (IEEE 754, FIPS 180-4, RFC 8259, ISO 8601, AMD Quark, compressed-tensors), 7 partly work, 2 are missing (AMDGPU code object V5, HIP); the R2 and R3 standards are not due yet. 32 gaps open, 31 of them R1, and 40 more recorded for a later release; 8 closed on 2026-11-13 by PR #52 (#51) and 7 on 2026-11-14 by PRs #55 (HFC-5) and #49 (QK-1 to QK-3, CT-1, CT-2, HFC-3); one found by the re-audit (SHA256-2, the build hashes at most 4 bytes of a used range); OCP OFP8's E5M2 audited item by item and conforming, its non-saturating mode out of scope by PR #50. The mandatory class comes from the Conformance column of §1.4 on <code>main</code> (<a href="standards.html">standards map</a>, <a href="issues.html#standards">issues</a>)</td>
+</tr>
+<tr>
+<td>Decisions: ADR-001 to ADR-010</td>
+<td><span class="state-ok">done</span> — ADR-007 (LLVM 23 and the MLIR link, resolving OI-009) with GitHub PR #25, ADR-008 (hosting on GitHub) with PR #19, ADR-009 (placement names devices and tiers) with PR #28, all 2026-11-12; ADR-009's reachability rule clarified and its code merged (PR #32) on 2026-11-13; ADR-010 (MXFP4 in Release 1, OI-015 resolved following vLLM) with PR #41 on 2026-11-13; ADR-002 amended so the build may read weights and the identity covers the used ranges (PR #53); OI-014 resolved by PR #49; OI-016 (minimum Vulkan and SPIR-V version) open (<a href="decisions.html">decisions</a>)</td>
+</tr>
+<tr>
+<td>Workspace: 15 crates, dependency direction fixed, lints as design rules, MSRV 1.89</td>
+<td><span class="state-ok">done</span> — PR #17 merged into <code>main</code> 2026-11-12; <code>rustinfer-sluice</code> added by PR #23, <code>rust-version</code> 1.89 with an <code>msrv</code> CI job by PR #25 (<a href="ref-crates.html">crates</a>)</td>
+</tr>
+<tr>
+<td><code>rustinfer-core</code>: constants, settings, structured errors, <code>key=value</code> logging, version manifest</td>
+<td><span class="state-ok">done</span> — PR #17 merged; tested (<a href="design.html">design</a>)</td>
+</tr>
+<tr>
+<td>The <code>rustinfer</code> command: six subcommands parsed, paths validated, one error line on failure</td>
+<td><span class="state-ok">done</span> — PR #17 merged; every subcommand answers <code>not_implemented</code> after validation until #11 and #14; since PR #29 a usage error is the one structured line and <code>inspect</code>, <code>run</code>, <code>serve</code> and <code>bench</code> read an artifact argument at the boundary (<a href="getting-started.html">getting started</a>)</td>
+</tr>
+<tr>
+<td>Model IR: <code>rustinfer-mir</code>, the typed graph with one weight set, named functions, KV groups, twenty operators, validator and canonical JSON</td>
+<td><span class="state-ok">done</span> — Codeberg PR #19 merged into <code>main</code> as 2d75c5d on 2026-11-12, issue #3 closed; <code>ir_version</code> 2 with device, tier and shard placement (PR #32) and implicit operands as a registry column (PR #30, OI-013) on 2026-11-13; grouped rmsnorm (PR #42, #26), the MXFP4 dtypes <code>fp4x2</code> and <code>ue8m0</code> with the <code>mx</code> encoding (PR #43, #34) and KV-group encodings for fp8 and MXFP4 (PR #48) the same day; the OCP E5M2 dtype <code>fp8_e5m2</code>, taken only by <code>quantize</code> and <code>dequantize</code> (PR #55) (<a href="design.html">design</a>)</td>
+</tr>
+<tr>
+<td>Artifact: <code>rustinfer-artifact</code>, the <code>.rie</code> header, section table, content hash, verifying reader and atomic writer</td>
+<td><span class="state-ok">done</span> — Codeberg PR #21 merged into <code>main</code> as 678b084 on 2026-11-12, issue #4 closed; <code>format_version</code> 2 with a section table per version, a version in every JSON section, the kernels' <code>BinaryFormat</code> and the shared safetensors reader since PR #30 (2026-11-13); MXFP4 tensors with their scales in the weight manifest (PR #47), Plan KV geometry with scale bytes under <code>plan_version</code> 3 and the first-load cache key with the KV dtype (PR #48), and the #51 fixes: duplicate header keys refused and RFC 3339 timestamp ranges checked (PR #52); the used weight ranges with their SHA-256 in the checkpoint identity under <code>metadata_version</code> 2 (PR #49, SRS v0.4.7) (<a href="artifact.html">artifact</a>)</td>
+</tr>
+<tr>
+<td>Targets: <code>rustinfer-target</code>, the <code>Target</code>, <code>Catalog</code>, <code>Device</code> and <code>Launcher</code> traits, the architecture registry, the CPU reference target with every R1 operator in <code>f32</code>, four stub backends</td>
+<td><span class="state-ok">done</span> — GitHub PR #21 merged into <code>main</code> as f039b4d on 2026-11-12, issue #5 closed; 527 workspace tests passed and 96.44 percent line coverage in the PR's final test run; the OCP MX conversion oracle (PR #43) and bf16, fp8 and MXFP4 KV write, read and paged attention on the CPU reference (PR #48, part of #37) on 2026-11-13; the OCP E5M2 conversion, saturating, against an independent golden file (PR #55) (<a href="hardware.html">hardware</a>, <a href="design.html">design</a>)</td>
+</tr>
+<tr>
+<td>Planner: <code>rustinfer-planner</code>, the topology model and its JSON, <code>Placement</code>, the <code>Planner</code> trait and the single-device planner</td>
+<td><span class="state-ok">done</span> — GitHub PR #20 merged into <code>main</code> as d886a3c on 2026-11-12, issue #15 closed; discovery and the cost-model planner answer <code>not_implemented</code> until Release 2; placement v2 (device, tier, shard; <code>placement_version</code> 2; pinned placement checked at load) since PR #32 (<a href="planner.html">planner</a>)</td>
+</tr>
+<tr>
+<td>Sluice: <code>rustinfer-sluice</code>, the weight streamer: identity and header checks, byte-range reads, bounded staging, device-side transforms, three overlapped stages, <code>--verify-weights</code> digests</td>
+<td><span class="state-ok">done</span> — GitHub PR #23 merged into <code>main</code> as add4752 on 2026-11-12 (issue #18, closed 2026-11-13); the manifest's optional digest and the shared header reader since PR #30, digest recording waits on <code>build</code>; MXFP4 weights streamed packed, each scale tensor once, since PR #47 (#39 closed, 2026-11-13); every used range re-hashed at load and a mismatch refused naming the tensor (PR #49) (<a href="sluice.html">Sluice</a>)</td>
+</tr>
+<tr>
+<td>Frontend: <code>rustinfer-frontend</code>, <code>llama</code>, <code>mistral</code>, <code>qwen2</code> and <code>qwen3</code> from a Hugging Face directory to Model IR, weight manifest and checkpoint identity, behind the <code>Architecture</code> trait and its registry</td>
+<td><span class="state-ok">done</span> — GitHub PR #24 merged into <code>main</code> as 84449e7 on 2026-11-12, issue #6 closed; per-tensor dtype expectations since PR #33 (2026-11-13); Qwen3 QK norm lowers since PR #42 (#26 closed); the Transformers v5 <code>rope_parameters</code> read since PR #52; <code>llama3</code>/<code>yarn</code>/<code>dynamic</code> RoPE scaling (#31, R2), sliding windows and a <code>partial_rotary_factor</code> other than 1 (PR #55) refused by name in R1; Quark and compressed-tensors MXFP4 import, with checkpoint KV scales for <code>--kv-dtype fp8</code>, merged by PR #49 (8c7d47e, #35 closed 2026-11-14) (<a href="frontend.html">frontend</a>)</td>
+</tr>
+<tr>
+<td>Kernel IR: <code>rustinfer-kc</code>, the <code>kir</code> dialect, the typed <code>KernelBuilder</code>, the in-process MLIR/LLVM 23 link behind the <code>mlir</code> feature, host lowering to LLVM IR</td>
+<td><span class="state-ok">done</span> — GitHub PR #25 merged into <code>main</code> as ad51bce on 2026-11-12, issue #7 closed; 718 workspace tests passed with all features in the PR's final run (<a href="kernel-compiler.html">kernel compiler</a>)</td>
+</tr>
+<tr>
+<td>Conformance and seam fixes from the 2026-11-12 reviews (#27)</td>
+<td><span class="state-ok">done</span> — the SRS amendment (PR #28) and four pull requests merged on 2026-11-13: conformance defects (PR #29, with the test-tag rule of <code>docs/testing.md</code>), extension seams (PR #30), placement v2 (PR #32) and per-tensor frontend dtypes (PR #33); #27 closed 2026-11-13 (<a href="issues.html">issues</a>)</td>
+</tr>
+<tr>
+<td>AMD lowering (#8)</td>
+<td><span class="state-part">in progress</span> — PR #44, gfx942 and gfx950 code objects in-process with <code>lld</code>; merges only after GPU test #45 passes on MI300X and MI355X (<a href="kernel-compiler.html">kernel compiler</a>)</td>
+</tr>
+<tr>
+<td>MXFP4 in Release 1 (#34 to #39, ADR-010)</td>
+<td><span class="state-part">in progress</span> — #34 dtypes and oracle (PR #43) and #39 manifest and Sluice (PR #47) done; #37 KV dtypes on the CPU reference merged (PR #48), GPU kernels in #38; #35 frontend merged (PR #49, 2026-11-14); #36 precision pass and #38 AMD lowering open (<a href="roadmap.html">roadmap</a>)</td>
+</tr>
+<tr>
+<td>Generators and autotuner, graph compiler, build, ROCm target, executor, run</td>
+<td><span class="state-no">not started</span> — issues #9 to #14; #10 (graph compiler) is blocked by #9, which waits on #8 (<a href="roadmap.html">roadmap</a>)</td>
+</tr>
+<tr>
+<td>Any model running on any device</td>
+<td><span class="state-no">not started</span> (<a href="supported-models.html">supported models</a>)</td>
+</tr>
+<tr>
+<td>Documentation in the tree: six diagrams, entry points, observability, feature matrix, API changelog, the Model IR, Kernel IR, artifact, topology and placement schemas in <code>docs/api/</code></td>
+<td><span class="state-ok">done</span> — kept current by every merged PR, last by GitHub PRs #55, #53 and #49, with <code>docs/testing.md</code> added by PR #29 and the <code>gpu-test</code> issue template by PR #40 (<a href="design-diagrams.html">design diagrams</a>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="where-things-live">Where things live</h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository</td>
+<td><a href="https://github.com/itej89/rustinfer"><code>github.com/itej89/rustinfer</code></a>, private, since the move from Codeberg on 2026-11-12 (ADR-008); <code>main</code> at 8c7d47e holds SRS v0.4.8, ADR-001 to ADR-010, the fifteen-crate workspace, the Model IR, the artifact crate, the planner interfaces, the target abstraction with the CPU reference, Sluice, the frontend, the Kernel IR with its MLIR link and the first MXFP4 pieces (Codeberg PRs #16, #17, #19 and #21 before the move; GitHub PRs #19 to #25, #28 to #30, #32, #33, #40 to #43, #46 to #50, #52, #53 and #55 after it, the numbers coincide by accident). This site: <a href="https://github.com/itej89/rustinfer-docs"><code>github.com/itej89/rustinfer-docs</code></a>, published at <a href="https://itej89.github.io/rustinfer-docs/">https://itej89.github.io/rustinfer-docs/</a></td>
+</tr>
+<tr>
+<td>Tracker</td>
+<td><a href="https://github.com/itej89/rustinfer/issues">GitHub issues</a> #1 (Epic, Release 1), #2 to #15 and #18 (numbers kept from Codeberg), #26 (Qwen3 QK norm), #27 (tech debt), #31 (<code>llama3</code> RoPE, R2), #34 to #39 (MXFP4), #45 (GPU test of PR #44) and #51 (standards findings), dependencies linked, milestone <code>R1 — foundation</code>; #2 to #7, #15, #18, #26, #27, #34, #35 and #39 closed; GitHub PRs #19 (hosting), #20 (planner), #21 (target), #22 (README), #23 (Sluice), #24 (frontend), #25 (Kernel IR), #28 (SRS v0.3), #29 (conformance), #30 (seams), #32 (placement v2), #33 (frontend dtypes), #40 (GPU test template), #41 (SRS v0.4), #42 (grouped rmsnorm), #43 (MXFP4 oracle), #46 (SRS v0.4.2), #47 (MXFP4 Sluice), #48 (KV dtypes), #50 (SRS v0.4.3), #52 (standards fixes), #55 (E5M2, SRS v0.4.6), #53 (SRS v0.4.7) and #49 (MXFP4 import, SRS v0.4.8) merged; #44 and #56 open; CI on GitHub Actions, run 92 on <code>main</code> at 8c7d47e passed (<a href="issues.html">issues</a>)</td>
+</tr>
+<tr>
+<td>Specification</td>
+<td><code>docs/SRS-RI-v0.1.md</code></td>
+</tr>
+<tr>
+<td>Decisions</td>
+<td><code>docs/adr/ADR-001</code> to <code>ADR-010</code></td>
+</tr>
+<tr>
+<td>Planning</td>
+<td><code>docs/planning/</code>: the TensorRT-LLM feature inventory, 24 use cases, the device inventory, the issue drafts</td>
+</tr>
+<tr>
+<td>Rules</td>
+<td><code>CONTRIBUTING.md</code>, SWG-001 v4.0 as adapted by ADR-001 and, since the move, ADR-008 (ADR-004 until 2026-11-12)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-shape-it-is-built-into">The shape it is built into</h2>
+<p>Three decisions produce everything else; they are set out in full under
+<a href="design.html">design</a>.</p>
+<p><strong>Three representations and nothing else between a model file and the
+device.</strong> The Model IR is a typed SSA graph with profile-bounded dynamic
+dimensions that every frontend lowers to and every backend consumes. The
+Kernel IR is a tile-level MLIR dialect with explicit layouts and no thread
+identity, emitted by Rust generator functions. Two of the three are in the
+code: the Model IR as <code>rustinfer-mir</code> since Codeberg PR #19, and the Kernel
+IR as the <code>kir</code> dialect of <code>rustinfer-kc</code> since GitHub PR #25; the launch
+form the Plan will be made of, <code>Launch</code> in <code>rustinfer-target</code>, exists since
+GitHub PR #21, the Plan itself (#10) does not. The Plan is the static schedule
+the executor runs verbatim. ADR-005 calls this Apple's arrangement applied to
+data-centre inference.</p>
+<p><strong>Every kernel is generated, autotuned and validated.</strong> There is no kernel
+library and no vendor BLAS. Generators emit Kernel IR; the kernel compiler
+lowers it through MLIR to AMD code objects, through MLIR's <code>spirv</code> dialect for
+Vulkan-class devices, and through rustinfer's own lowering to RISC-V vector and
+mesh targets. No kernel enters the catalog without validation against the CPU
+reference target. In the code since GitHub PR #21: the <code>Target</code> trait family,
+the registry, the CPU reference with every R1 operator, and the catalog
+selection that serves only an entry validated on the catalog's architecture;
+every other target's catalog is empty.</p>
+<p><strong>The artifact is a cache, and strict mode makes it a requirement.</strong> <code>build</code>
+writes a <code>.rie</code> file; <code>run</code> and <code>serve</code> build the same file on first load and
+reuse it; <code>--require-prebuilt</code> refuses to build at start. ADR-006 records why
+the mandatory build step of the TensorRT engine model was dropped and its
+properties kept.</p>
+<ul class="cards">
+<li><a href="roadmap.html"><span class="card-title">Roadmap</span><span class="card-note">The steps to Release 1 in order, dated as they close, with the defects met on the way.</span></a></li>
+<li><a href="progress.html"><span class="card-title">Progress</span><span class="card-note">Issues closed, PRs, CI, requirements, tests, coverage: the roadmap's measure.</span></a></li>
+<li><a href="design.html"><span class="card-title">Design</span><span class="card-note">The three representations, the crates, the error contract, logging, settings and constants.</span></a></li>
+<li><a href="architecture-diagram.html"><span class="card-title">Architecture diagram</span><span class="card-note">rustinfer in the C4 model, context to code, with the layers, the standards, build-then-run and the deployment; every chip derived.</span></a></li>
+<li><a href="design-diagrams.html"><span class="card-title">Design diagrams</span><span class="card-note">The six UML diagrams the tree keeps, drawn as cards and numbered steps from their source.</span></a></li>
+<li><a href="features.html"><span class="card-title">Features</span><span class="card-note">Every feature with its release and its status today.</span></a></li>
+<li><a href="supported-models.html"><span class="card-title">Supported models</span><span class="card-note">What will run in each release; nothing runs today.</span></a></li>
+<li><a href="frontend.html"><span class="card-title">Frontend</span><span class="card-note">The LLaMA family into Model IR; the Architecture seam; the R1 gaps.</span></a></li>
+<li><a href="kernel-compiler.html"><span class="card-title">Kernel compiler</span><span class="card-note">Generators, the Kernel IR, the lowerings, the catalog and the autotuner.</span></a></li>
+<li><a href="runtime.html"><span class="card-title">Runtime and serving</span><span class="card-note">Executor, Sluice, scheduler, KV cache, sampler; what R1 has and what follows.</span></a></li>
+<li><a href="hardware.html"><span class="card-title">Hardware</span><span class="card-note">The targets and the AMD and RISC-V device landscape the planner must describe.</span></a></li>
+<li><a href="build-steps.html"><span class="card-title">Build steps</span><span class="card-note">Toolchain, the cargo gates, the CI scripts, coverage.</span></a></li>
+<li><a href="deployment.html"><span class="card-title">Deployment</span><span class="card-note">One binary, one artifact, strict mode; what is not there yet.</span></a></li>
+<li><a href="issues.html"><span class="card-title">Issue tracker</span><span class="card-note">#1 to #28 with blockers, branches and status.</span></a></li>
+<li><a href="decisions.html"><span class="card-title">Decisions</span><span class="card-note">The ADRs, the owner's decisions, and the conclusions this site had to retract.</span></a></li>
+<li><a href="ref-requirements.html"><span class="card-title">Requirements</span><span class="card-note">All 187, generated from the SRS.</span></a></li>
+</ul>
+
+<h2 id="reading-order">Reading order</h2>
+<p>Start with the <strong>roadmap</strong> and its measure, <strong>progress</strong>, then <strong>design</strong> for the three representations and the rules the
+compiler enforces, then the <strong>architecture diagram</strong> and the <strong>design diagrams</strong>. <strong>Features</strong> and <strong>supported
+models</strong> say what each release delivers and what exists today. <strong>Compiler</strong>
+takes the frontend, the graph compiler and the kernel compiler in turn; <strong>Runtime</strong> covers
+the executor, Sluice, the artifact cache and the planner. <strong>Hardware</strong> lists the
+targets and the devices. <strong>Development</strong> has the engineering rules, the build
+and the deployment story. <strong>Trackers</strong> hold the issues, the open questions and
+the decisions. <strong>Reference</strong> is generated from the tree: requirements,
+constants, error codes and crates.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#where-it-stands">Where it stands</a></li><li><a href="#where-things-live">Where things live</a></li><li><a href="#the-shape-it-is-built-into">The shape it is built into</a></li><li><a href="#reading-order">Reading order</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

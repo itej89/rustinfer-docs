@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;compressed-tensors 0.13.0 audit&quot; — rustinfer</title>
+<meta name="description" content="The 2026-11-14 audit of rustinfer&#x27;s compressed-tensors MXFP4 import on origin/main 8c7d47e, after PR #49 merged, against compressed-tensors 0.13.0.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub" open><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html" class="here">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="compressed-tensors-0130-audit">compressed-tensors 0.13.0 audit</h1>
+<p><strong>Audit of 2026-11-14 on origin/main <code>8c7d47e</code></strong> (PR #49 merged, issue #35;
+PRs #53 <code>8d58ad6</code> and #55 <code>6a18042</code> before it), against the
+<a href="std-ct-requirements.html">requirements</a>.</p>
+<p>History: the audit of 2026-11-13 read main <code>ccf02b3</code> and <code>b99720a</code>, where no
+<code>quantization_config</code> was read and every item was missing, and PR #49 at
+<code>de19390</code>, where <code>ignore</code> followed Quark's rules (CT-R6 partial). This audit
+replaces it.</p>
+<p><strong>Method.</strong> Read the compressed-tensors 0.13.0 source listed on the
+<a href="std-ct.html">overview</a>; read on main
+<code>crates/rustinfer-frontend/src/quant/{mod,ct,pattern}.rs</code>, <code>src/mapping.rs</code>,
+<code>src/kv_scales.rs</code> and the architecture's module classes
+(<code>src/arch/llama/config.rs</code>, <code>names.rs</code>), and the tests <code>tests/mxfp4.rs</code>,
+<code>tests/mxfp4_audit.rs</code>, <code>tests/mxfp4_review.rs</code> and <code>tests/mxfp4_kv_fp8.rs</code>.
+The fixture configs copy the shape of <code>nm-testing/Meta-Llama-3-8B-Instruct-MXFP4</code>.
+No real checkpoint was decoded, compressed-tensors was not run, and no tests
+were run here. Paths are under <code>crates/rustinfer-frontend/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence (origin/main <code>8c7d47e</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CT-R1</td>
+<td><strong>conforms</strong></td>
+<td><code>quant_method</code> <code>compressed-tensors</code> dispatches to <code>ct::parse</code> (<code>src/quant/mod.rs:197-211</code>); <code>format</code>, <code>quantization_status</code>, <code>config_groups</code>, <code>ignore</code> and <code>kv_cache_scheme</code> are read (<code>src/quant/ct.rs:36-57</code>); <code>global_compression_ratio</code> is informational and ignored by the declared unknown-field policy (<code>src/quant/mod.rs:12-21</code>).</td>
+</tr>
+<tr>
+<td>CT-R2</td>
+<td><strong>conforms</strong></td>
+<td><code>mxfp4-pack-quantized</code> accepted; FP8 and int8 formats refused as R2, int4 as R3, <code>nvfp4-pack-quantized</code> as unscheduled, others naming the field (<code>ct.rs:98-118</code>); a group with its own other <code>format</code> is refused (<code>:131-136</code>). An absent <code>format</code> is taken as MXFP4 (<code>:37</code>), looser than compressed-tensors' <code>fakequant</code> default (<code>quantization/quant_config.py:101</code>); the group checks (CT-R5) still require packed MXFP4 weights, so no other format loads that way. <code>test_compressed_tensors_fields_outside_mxfp4_are_refused_naming_the_field</code> (<code>tests/mxfp4.rs:524</code>).</td>
+</tr>
+<tr>
+<td>CT-R3</td>
+<td><strong>conforms</strong></td>
+<td><code>quantization_status</code> must be <code>compressed</code> (<code>ct.rs:39-40</code>).</td>
+</tr>
+<tr>
+<td>CT-R4</td>
+<td><strong>conforms</strong></td>
+<td><code>targets</code> must be exactly <code>["Linear"]</code> (<code>ct.rs:150-157</code>); <code>output_activations</code> refused (<code>:139-142</code>); a non-empty <code>transform_config</code> (online Hadamard or rotation) refused (<code>:61-75</code>); <code>symmetric</code>, <code>actorder</code>, <code>zp_dtype</code> and <code>block_structure</code> are not read, right for MXFP4 (symmetric, no zero point). <code>test_more_compressed_tensors_fields_are_refused</code> (<code>tests/mxfp4.rs:755</code>), <code>test_compressed_tensors_transform_config_is_refused</code> (<code>tests/mxfp4_review.rs:148</code>).</td>
+</tr>
+<tr>
+<td>CT-R5</td>
+<td><strong>conforms</strong></td>
+<td>Weights <code>num_bits</code> 4, <code>type</code> float, <code>strategy</code> group, <code>group_size</code> 32 (else unscheduled), <code>scale_dtype</code> <code>torch.uint8</code> when given, not dynamic (<code>ct.rs:160-189</code>); activations absent (MXFP4A16), 4-bit float (MXFP4) or 8-bit float (MXFP4XFP8), built as bf16 and reported (<code>:192-203</code>). <code>test_compressed_tensors_fixture_of_each_family_lowers_to_mx_weights</code> (<code>tests/mxfp4.rs:125</code>), <code>test_w4a4_fixtures_build_and_record_the_deviation</code> (<code>:320</code>).</td>
+</tr>
+<tr>
+<td>CT-R6</td>
+<td><strong>conforms</strong></td>
+<td>Under <code>Dialect::CompressedTensors</code> a <code>re:&lt;p&gt;</code> entry compiles to <code>^(?:p)</code>, anchored at the start only, as <code>re.match</code> (<code>src/quant/pattern.rs:150-153</code>); any other entry matches the module name exactly or the module class the architecture declares, and <code>*</code> is a literal character (<code>:88-98, 154-157</code>). Projections and <code>lm_head</code> are declared <code>Linear</code>, the embedding <code>Embedding</code> (<code>src/arch/llama/config.rs:312, 322, 400</code>). <code>test_compressed_tensors_ignore_matches_module_classes</code> (<code>tests/mxfp4_audit.rs:221</code>), <code>test_compressed_tensors_has_no_globs_and_quark_no_classes</code> (<code>:247</code>), <code>test_compressed_tensors_entries_match_names_and_classes</code> (<code>src/quant/pattern.rs:249</code>), <code>test_case_insensitive_patterns_match</code> (<code>tests/mxfp4_review.rs:182</code>). One narrow difference: <code>_match_class</code> walks the whole MRO (<code>utils/match.py:447-465</code>), so an entry <code>Module</code> would ignore every module; rustinfer matches the declared class only. Such a checkpoint keeps bf16 weights where rustinfer expects <code>weight_packed</code>, and is refused naming the missing tensor, so no wrong value results.</td>
+</tr>
+<tr>
+<td>CT-R7</td>
+<td><strong>conforms</strong></td>
+<td>A <code>kv_cache_scheme</code> must be 8-bit float per tensor with static scales (<code>ct.rs:80-95</code>); its <code>&lt;attention&gt;.k_scale</code> and <code>&lt;attention&gt;.v_scale</code> per layer become expected tensors (<code>src/quant/mod.rs:178-181</code>), located as float scalars and read into the fp8 KV group's <code>KvScales</code> by <code>apply_kv_scales</code> (<code>src/kv_scales.rs:102-179</code>), see QK-3. <code>test_compressed_tensors_kv_scales_are_recorded_per_layer</code> (<code>tests/mxfp4_audit.rs:104</code>), <code>test_kv_scales_are_expected_only_under_a_kv_quantization</code> (<code>tests/mxfp4.rs:679</code>), <code>test_checkpoint_kv_scales_fill_the_fp8_geometry</code> (<code>tests/mxfp4_kv_fp8.rs:85</code>), <code>test_kv_schemes_other_than_fp8_per_tensor_are_refused</code> (<code>tests/mxfp4_review.rs:218</code>).</td>
+</tr>
+<tr>
+<td>CT-R8</td>
+<td><strong>conforms</strong></td>
+<td><code>&lt;module&gt;.weight_packed</code> <code>U8 [out, in/2]</code> and <code>&lt;module&gt;.weight_scale</code> <code>U8 [out, in/32]</code> map to an <code>fp4x2 [out, in]</code> weight and a <code>ue8m0</code> scale (<code>src/quant/mod.rs:157-168</code>; <code>src/mapping.rs:270-321</code>). <code>test_manifest_names_data_and_scale_of_every_mx_weight</code> (<code>tests/mxfp4.rs:184</code>), <code>test_bad_mx_tensors_are_refused_naming_the_tensor</code> (<code>:587</code>), <code>test_packed_u8_shape_mismatch_is_refused_naming_the_tensor</code> (<code>tests/mxfp4_review.rs:162</code>).</td>
+</tr>
+<tr>
+<td>CT-R9</td>
+<td><strong>conforms</strong></td>
+<td>Low nibble first, the order of the CPU reference and of the fixture bytes (<code>tests/common/mxfp4.rs:7-15, 375-377</code>); the CT-R5 fixture test checks dequantized values equal the values written.</td>
+</tr>
+<tr>
+<td>CT-R10</td>
+<td><strong>conforms</strong></td>
+<td>The scale byte is read as <code>ue8m0</code>, <code>2^(e-127)</code>, the same bias as compressed-tensors' <code>scale - 127</code> (fixture decoder <code>tests/common/mxfp4.rs:346-347</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>A stale module header: <code>src/quant/ct.rs:12-13</code> still says the <code>k_scale</code> and
+<code>v_scale</code> tensors are "ignored by this build"; <code>src/kv_scales.rs</code> reads them.
+A documentation defect in the code, noted, not a conformance gap.</p>
+<h2 id="result">Result</h2>
+<p>Every item conforms on main <code>8c7d47e</code>. State: <strong>works</strong>. CT-1 and CT-2 are
+fixed by PR #49; no gap is open. Gaps on the <a href="std-ct-tracker.html">tracker</a>.</p>
+    </article>
+  </main>
+  
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

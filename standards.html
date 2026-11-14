@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standards map — rustinfer</title>
+<meta name="description" content="Every standard rustinfer must conform to, by area, with how far each one is met today, its open gaps and its four pages; then the other documents the SRS references.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html" class="here">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="standards-map">Standards map</h1>
+<p>rustinfer reads and writes formats it did not invent: safetensors shards, OCP
+microscaling blocks, AMD code objects, JSON sections, later an OpenAI-shaped HTTP
+API. SRS §1.4 marks each reference it names: <strong>mandatory R<n></strong> when a requirement
+can be met only by conforming to it, from release <em>n</em>; <em>process</em>, <em>informative</em> or
+<em>internal</em> otherwise. This map shows the mandatory ones, by area. A standard is
+never met as a whole: rustinfer conforms to <strong>the parts in its scope</strong>, the scope its
+§1.4 row names, and each standard's requirements page lists those parts one by one.</p>
+<p>Two separate things are shown for each standard. The colour is its <strong>state</strong>, from
+its audit:</p>
+<ul>
+<li><strong>works</strong>: every in-scope item conforms on <code>main</code>; open gaps, if any, are in the
+  tests, not the behaviour;</li>
+<li><strong>partly works</strong>: some in-scope items conform, others are missing or wait in an
+  open pull request;</li>
+<li><strong>missing</strong>: nothing in scope conforms on <code>main</code> yet;</li>
+<li><strong>later release</strong>: the standard is mandatory only from a release after the
+  current one, so nothing is due yet; the work is recorded on its tracker.</li>
+</ul>
+<p>The <strong>assessed</strong> tag appears when the standard has an audit page, dated, that checks
+the implementation item by item against the specification's own text, downloaded
+into the site's <code>specs/</code> folder (not published). Where the specification is sold
+and could not be read (IEEE 754, ISO 8601), the tag adds <strong>secondary</strong>: the
+audit used the named public sources its requirements page lists instead.</p>
+<p>Each standard has four pages: the <strong>overview</strong> (what it is, its scope and how far
+rustinfer meets it), the <strong>requirements</strong> (what the specification asks, in scope),
+the <strong>audit</strong> (each requirement against the code, with the evidence and its date)
+and the <strong>tracker</strong> (the gaps). A gap is <strong>open</strong> when its status is <em>Open</em> or
+<em>In PR #N</em>; a <em>Later release R<n></em> gap is recorded but not counted as open; an
+<em>Out of scope</em> gap, one the owner removed from the §1.4 scope (OCP OFP8's
+non-saturating mode, PR #50), is kept for the record and counted nowhere. The
+same counts feed the <a href="issues.html#standards">issue tracker</a> and the
+<a href="progress.html#standards">progress</a> page. The <a href="architecture-diagram.html#c4-standards">standards diagram</a> of the
+architecture diagram places the same standards on the parts of rustinfer that
+implement them, and the <em>show standards</em> switch puts them on each C4 level.</p>
+<div class="std-legend" aria-hidden="true">
+  <span class="std-key std-ok">works</span>
+  <span class="std-key std-part">partly works</span>
+  <span class="std-key std-gap">missing</span>
+  <span class="std-key std-later">later release</span>
+  <span class="std-tag">assessed</span>
+</div>
+
+<!-- begin generated map: scripts/reference/gen_standards.py from data/standards/*.json and the std-* pages; do not edit by hand -->
+<div class="std-map" role="list" aria-label="Areas and the mandatory standards in each">
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Number formats</h3>
+  <ul>
+    <li class="std-ok"><span class="std-name"><a href="std-ieee-754.html">IEEE 754</a></span><span class="std-scope">754-2019</span><span class="std-scope">mandatory R1 · 0 open gaps</span><span class="std-pages"><a href="std-ieee-754.html">overview</a> · <a href="std-ieee-754-requirements.html">requirements</a> · <a href="std-ieee-754-audit.html">audit</a> · <a href="std-ieee-754-tracker.html">tracker</a></span><a class="std-tag" href="std-ieee-754-audit.html" title="audited 2026-11-13 against secondary sources: the specification is not freely available">assessed · secondary</a></li>
+    <li class="std-part"><span class="std-name"><a href="std-ocp-ofp8.html">OCP OFP8</a></span><span class="std-scope">Revision 1.1</span><span class="std-scope">mandatory R1 · 1 open gap</span><span class="std-pages"><a href="std-ocp-ofp8.html">overview</a> · <a href="std-ocp-ofp8-requirements.html">requirements</a> · <a href="std-ocp-ofp8-audit.html">audit</a> · <a href="std-ocp-ofp8-tracker.html">tracker</a></span><a class="std-tag" href="std-ocp-ofp8-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-part"><span class="std-name"><a href="std-amd-fnuz.html">AMD FP8 FNUZ</a></span><span class="std-scope">CDNA3 ISA guide of 2025-08-05</span><span class="std-scope">mandatory R1 · 1 open gap</span><span class="std-pages"><a href="std-amd-fnuz.html">overview</a> · <a href="std-amd-fnuz-requirements.html">requirements</a> · <a href="std-amd-fnuz-audit.html">audit</a> · <a href="std-amd-fnuz-tracker.html">tracker</a></span><a class="std-tag" href="std-amd-fnuz-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-part"><span class="std-name"><a href="std-ocp-mx.html">OCP MX</a></span><span class="std-scope">v1.1.0</span><span class="std-scope">mandatory R1 · 3 open gaps</span><span class="std-pages"><a href="std-ocp-mx.html">overview</a> · <a href="std-ocp-mx-requirements.html">requirements</a> · <a href="std-ocp-mx-audit.html">audit</a> · <a href="std-ocp-mx-tracker.html">tracker</a></span><a class="std-tag" href="std-ocp-mx-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+  </ul>
+</section>
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Model formats</h3>
+  <ul>
+    <li class="std-part"><span class="std-name"><a href="std-safetensors.html">safetensors</a></span><span class="std-scope">v0.8.0</span><span class="std-scope">mandatory R1 · 3 open gaps</span><span class="std-pages"><a href="std-safetensors.html">overview</a> · <a href="std-safetensors-requirements.html">requirements</a> · <a href="std-safetensors-audit.html">audit</a> · <a href="std-safetensors-tracker.html">tracker</a></span><a class="std-tag" href="std-safetensors-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-part"><span class="std-name"><a href="std-hf-config.html">Transformers config</a></span><span class="std-scope">v5.23.0</span><span class="std-scope">mandatory R1 · 1 open gap, 1 later</span><span class="std-pages"><a href="std-hf-config.html">overview</a> · <a href="std-hf-config-requirements.html">requirements</a> · <a href="std-hf-config-audit.html">audit</a> · <a href="std-hf-config-tracker.html">tracker</a></span><a class="std-tag" href="std-hf-config-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-hf-tokenizer.html">Tokenizers</a></span><span class="std-scope">v0.23.3</span><span class="std-scope">mandatory R2 · 0 open gaps, 2 later</span><span class="std-pages"><a href="std-hf-tokenizer.html">overview</a> · <a href="std-hf-tokenizer-requirements.html">requirements</a> · <a href="std-hf-tokenizer-audit.html">audit</a> · <a href="std-hf-tokenizer-tracker.html">tracker</a></span><a class="std-tag" href="std-hf-tokenizer-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-ok"><span class="std-name"><a href="std-quark.html">AMD Quark MXFP4 export</a></span><span class="std-scope">as surveyed (313cb0b)</span><span class="std-scope">mandatory R1 · 0 open gaps</span><span class="std-pages"><a href="std-quark.html">overview</a> · <a href="std-quark-requirements.html">requirements</a> · <a href="std-quark-audit.html">audit</a> · <a href="std-quark-tracker.html">tracker</a></span><a class="std-tag" href="std-quark-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-ok"><span class="std-name"><a href="std-ct.html">compressed-tensors</a></span><span class="std-scope">0.13.0</span><span class="std-scope">mandatory R1 · 0 open gaps</span><span class="std-pages"><a href="std-ct.html">overview</a> · <a href="std-ct-requirements.html">requirements</a> · <a href="std-ct-audit.html">audit</a> · <a href="std-ct-tracker.html">tracker</a></span><a class="std-tag" href="std-ct-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-peft.html">PEFT</a></span><span class="std-scope">v0.21.3</span><span class="std-scope">mandatory R3 · 0 open gaps, 1 later</span><span class="std-pages"><a href="std-peft.html">overview</a> · <a href="std-peft-requirements.html">requirements</a> · <a href="std-peft-audit.html">audit</a> · <a href="std-peft-tracker.html">tracker</a></span><a class="std-tag" href="std-peft-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+  </ul>
+</section>
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Compiler and code generation</h3>
+  <ul>
+    <li class="std-part"><span class="std-name"><a href="std-llvm.html">LLVM</a></span><span class="std-scope">23.1.x</span><span class="std-scope">mandatory R1 · 2 open gaps, 2 later</span><span class="std-pages"><a href="std-llvm.html">overview</a> · <a href="std-llvm-requirements.html">requirements</a> · <a href="std-llvm-audit.html">audit</a> · <a href="std-llvm-tracker.html">tracker</a></span><a class="std-tag" href="std-llvm-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-part"><span class="std-name"><a href="std-mlir.html">MLIR</a></span><span class="std-scope">LLVM 23 (23.1.x)</span><span class="std-scope">mandatory R1 · 3 open gaps, 1 later</span><span class="std-pages"><a href="std-mlir.html">overview</a> · <a href="std-mlir-requirements.html">requirements</a> · <a href="std-mlir-audit.html">audit</a> · <a href="std-mlir-tracker.html">tracker</a></span><a class="std-tag" href="std-mlir-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-gap"><span class="std-name"><a href="std-amdgpu-abi.html">AMDGPU code object V5 (AMDGPUUsage)</a></span><span class="std-scope">code object V5, LLVM 23.1.0 text</span><span class="std-scope">mandatory R1 · 4 open gaps</span><span class="std-pages"><a href="std-amdgpu-abi.html">overview</a> · <a href="std-amdgpu-abi-requirements.html">requirements</a> · <a href="std-amdgpu-abi-audit.html">audit</a> · <a href="std-amdgpu-abi-tracker.html">tracker</a></span><a class="std-tag" href="std-amdgpu-abi-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-spir-v.html">SPIR-V</a></span><span class="std-scope">1.6 Revision 8</span><span class="std-scope">mandatory R2 · 0 open gaps, 3 later</span><span class="std-pages"><a href="std-spir-v.html">overview</a> · <a href="std-spir-v-requirements.html">requirements</a> · <a href="std-spir-v-audit.html">audit</a> · <a href="std-spir-v-tracker.html">tracker</a></span><a class="std-tag" href="std-spir-v-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-rvv-1.0.html">RISC-V V vector extension</a></span><span class="std-scope">1.0</span><span class="std-scope">mandatory R3 · 0 open gaps, 3 later</span><span class="std-pages"><a href="std-rvv-1.0.html">overview</a> · <a href="std-rvv-1.0-requirements.html">requirements</a> · <a href="std-rvv-1.0-audit.html">audit</a> · <a href="std-rvv-1.0-tracker.html">tracker</a></span><a class="std-tag" href="std-rvv-1.0-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+  </ul>
+</section>
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Runtime</h3>
+  <ul>
+    <li class="std-gap"><span class="std-name"><a href="std-hip.html">HIP runtime API</a></span><span class="std-scope">ROCm 7.0 to 7.2 (7.2.4 reference)</span><span class="std-scope">mandatory R1 · 10 open gaps, 2 later</span><span class="std-pages"><a href="std-hip.html">overview</a> · <a href="std-hip-requirements.html">requirements</a> · <a href="std-hip-audit.html">audit</a> · <a href="std-hip-tracker.html">tracker</a></span><a class="std-tag" href="std-hip-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-rccl.html">RCCL</a></span><span class="std-scope">ROCm 7.0 to 7.2 (RCCL 2.27.7 reference)</span><span class="std-scope">mandatory R2 · 0 open gaps, 6 later</span><span class="std-pages"><a href="std-rccl.html">overview</a> · <a href="std-rccl-requirements.html">requirements</a> · <a href="std-rccl-audit.html">audit</a> · <a href="std-rccl-tracker.html">tracker</a></span><a class="std-tag" href="std-rccl-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-vulkan.html">Vulkan</a></span><span class="std-scope">1.4.368 text; no minimum core version (OI-016)</span><span class="std-scope">mandatory R2 · 1 open gap, 4 later</span><span class="std-pages"><a href="std-vulkan.html">overview</a> · <a href="std-vulkan-requirements.html">requirements</a> · <a href="std-vulkan-audit.html">audit</a> · <a href="std-vulkan-tracker.html">tracker</a></span><a class="std-tag" href="std-vulkan-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+  </ul>
+</section>
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Data and integrity</h3>
+  <ul>
+    <li class="std-ok"><span class="std-name"><a href="std-fips-180-4.html">FIPS PUB 180-4 Secure Hash Standard (SHA-256)</a></span><span class="std-scope">180-4</span><span class="std-scope">mandatory R1 · 1 open gap</span><span class="std-pages"><a href="std-fips-180-4.html">overview</a> · <a href="std-fips-180-4-requirements.html">requirements</a> · <a href="std-fips-180-4-audit.html">audit</a> · <a href="std-fips-180-4-tracker.html">tracker</a></span><a class="std-tag" href="std-fips-180-4-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-ok"><span class="std-name"><a href="std-rfc-8259.html">RFC 8259 JSON</a></span><span class="std-scope">RFC 8259 (STD 90)</span><span class="std-scope">mandatory R1 · 0 open gaps</span><span class="std-pages"><a href="std-rfc-8259.html">overview</a> · <a href="std-rfc-8259-requirements.html">requirements</a> · <a href="std-rfc-8259-audit.html">audit</a> · <a href="std-rfc-8259-tracker.html">tracker</a></span><a class="std-tag" href="std-rfc-8259-audit.html" title="audited 2026-11-14 against the downloaded specification">assessed</a></li>
+    <li class="std-ok"><span class="std-name"><a href="std-iso-8601.html">ISO 8601-1 Date and time (RFC 3339 profile)</a></span><span class="std-scope">ISO 8601-1:2019 with Amd 1:2022</span><span class="std-scope">mandatory R1 · 2 open gaps</span><span class="std-pages"><a href="std-iso-8601.html">overview</a> · <a href="std-iso-8601-requirements.html">requirements</a> · <a href="std-iso-8601-audit.html">audit</a> · <a href="std-iso-8601-tracker.html">tracker</a></span><a class="std-tag" href="std-iso-8601-audit.html" title="audited 2026-11-13 against secondary sources: the specification is not freely available">assessed · secondary</a></li>
+  </ul>
+</section>
+
+<section class="std-card" role="listitem">
+  <h3 class="std-sys">Serving</h3>
+  <ul>
+    <li class="std-later"><span class="std-name"><a href="std-openai-api.html">OpenAI API</a></span><span class="std-scope">2.3.0</span><span class="std-scope">mandatory R3 · 0 open gaps, 5 later</span><span class="std-pages"><a href="std-openai-api.html">overview</a> · <a href="std-openai-api-requirements.html">requirements</a> · <a href="std-openai-api-audit.html">audit</a> · <a href="std-openai-api-tracker.html">tracker</a></span><a class="std-tag" href="std-openai-api-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-rfc-9110.html">HTTP RFC 9110 and RFC 9112</a></span><span class="std-scope">RFC 9110, RFC 9112</span><span class="std-scope">mandatory R3 · 0 open gaps, 4 later</span><span class="std-pages"><a href="std-rfc-9110.html">overview</a> · <a href="std-rfc-9110-requirements.html">requirements</a> · <a href="std-rfc-9110-audit.html">audit</a> · <a href="std-rfc-9110-tracker.html">tracker</a></span><a class="std-tag" href="std-rfc-9110-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-sse.html">Server-sent events</a></span><span class="std-scope">WHATWG 2026-11-13</span><span class="std-scope">mandatory R3 · 0 open gaps, 3 later</span><span class="std-pages"><a href="std-sse.html">overview</a> · <a href="std-sse-requirements.html">requirements</a> · <a href="std-sse-audit.html">audit</a> · <a href="std-sse-tracker.html">tracker</a></span><a class="std-tag" href="std-sse-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+    <li class="std-later"><span class="std-name"><a href="std-prom-text.html">Prometheus text format</a></span><span class="std-scope">0.0.4</span><span class="std-scope">mandatory R3 · 0 open gaps, 3 later</span><span class="std-pages"><a href="std-prom-text.html">overview</a> · <a href="std-prom-text-requirements.html">requirements</a> · <a href="std-prom-text-audit.html">audit</a> · <a href="std-prom-text-tracker.html">tracker</a></span><a class="std-tag" href="std-prom-text-audit.html" title="audited 2026-11-13 against the downloaded specification">assessed</a></li>
+  </ul>
+</section>
+
+</div>
+<!-- end generated map -->
+
+<h2 id="other-referenced-documents">Other referenced documents</h2>
+<p>SRS §1.4 also names documents that are not standards rustinfer must conform to:
+<em>process</em> (how the project is developed), <em>informative</em> (background, method,
+evidence) and <em>internal</em> (the project's own decisions, on the
+<a href="decisions.html">decisions</a> page). None has a tracker.</p>
+<!-- begin generated references: scripts/reference/gen_standards.py from SRS §1.4; do not edit by hand -->
+
+<p>Read from the Conformance column of SRS §1.4 at <code>origin/main</code>.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Document</th>
+<th>Conformance</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SWG-001</td>
+<td>Software Development Guidelines</td>
+<td>process</td>
+<td>The engineering standard the project is developed under: requirement format, reviews, logging, tests; adapted by ADR-001, ADR-004 and ADR-008.</td>
+</tr>
+<tr>
+<td>AITER-DOCS</td>
+<td>AITER read from the tree (<code>../aiter-docs</code>): the reference for tuned kernels on gfx942 and gfx950 and the benchmark baseline</td>
+<td>informative</td>
+<td>The kernels rustinfer's generated kernels are compared with, never linked: the GEMM baseline of RI-NFR-006.</td>
+</tr>
+<tr>
+<td>DEV</td>
+<td><code>docs/planning/datacenter-device-inventory.md</code></td>
+<td>informative</td>
+<td>The datacenter GPUs and accelerators the targets are chosen from.</td>
+</tr>
+<tr>
+<td>IEEE-29148</td>
+<td>ISO/IEC/IEEE 29148-2018</td>
+<td>informative</td>
+<td>The requirements-engineering standard that succeeds IEEE 830; the SRS follows both.</td>
+</tr>
+<tr>
+<td>IEEE-830</td>
+<td>IEEE Std 830-1998</td>
+<td>informative</td>
+<td>The structure of the SRS and the qualities a requirement must have.</td>
+</tr>
+<tr>
+<td>INV</td>
+<td><code>docs/planning/trt-llm-feature-inventory.md</code></td>
+<td>informative</td>
+<td>The TensorRT-LLM feature inventory the scope of each release was drawn from.</td>
+</tr>
+<tr>
+<td>MXFP4-RTN</td>
+<td>arXiv 2509.23202: weight-only MXFP4 RTN recovers about 95.6 percent on Llama-3.1-8B</td>
+<td>informative</td>
+<td>Evidence that weight-only MXFP4 round-to-nearest keeps about 95.6 percent of Llama-3.1-8B's accuracy, behind MXFP4 in Release 1.</td>
+</tr>
+<tr>
+<td>NV-KV</td>
+<td>NVIDIA, "Optimizing Inference for Long Context and Large Batch Sizes with NVFP4 KV Cache"</td>
+<td>informative</td>
+<td>Background for a low-precision KV cache (NVFP4 KV cache, long context and large batches).</td>
+</tr>
+<tr>
+<td>UC</td>
+<td><code>docs/planning/use-cases.md</code></td>
+<td>informative</td>
+<td>The use cases the requirements trace back to.</td>
+</tr>
+<tr>
+<td>ADR-001 to ADR-006</td>
+<td><code>docs/adr/</code></td>
+<td>internal</td>
+<td>The founding decisions: Rust under SWG-001, the artifact format, the target abstraction, Codeberg rules, the three representations, the artifact as a cache.</td>
+</tr>
+<tr>
+<td>ADR-007</td>
+<td><code>docs/adr/ADR-007-pinned-llvm-and-mlir-link.md</code></td>
+<td>internal</td>
+<td>The pinned LLVM 23 and the in-process MLIR link.</td>
+</tr>
+<tr>
+<td>ADR-008</td>
+<td><code>docs/adr/ADR-008-hosting-on-github.md</code></td>
+<td>internal</td>
+<td>The move of the project to GitHub.</td>
+</tr>
+<tr>
+<td>ADR-009</td>
+<td><code>docs/adr/ADR-009-placement-names-devices-and-tiers.md</code></td>
+<td>internal</td>
+<td>Placement names devices and tiers.</td>
+</tr>
+<tr>
+<td>ADR-010</td>
+<td><code>docs/adr/ADR-010-mxfp4-in-release-1.md</code></td>
+<td>internal</td>
+<td>MXFP4 in Release 1.</td>
+</tr>
+</tbody>
+</table>
+<!-- end generated references -->
+
+<h2 id="how-a-standard-is-added">How a standard is added</h2>
+<ol>
+<li><strong>A row in SRS §1.4</strong> through an SRS amendment: the ID, the exact title, the
+   pinned version and its date, the scope, and the conformance <code>mandatory R&lt;n&gt;</code>. The
+   version is the one the code is written against; "latest" is not a pin.</li>
+<li><strong>Its four pages</strong>, <code>content/std-&lt;id&gt;.md</code>, <code>-requirements</code>, <code>-audit</code> and
+   <code>-tracker</code>, with <code>section: Standards</code>, <code>group: "&lt;Area&gt; / &lt;Name&gt; &lt;version&gt;"</code> and
+   four consecutive orders; the specification downloaded into <code>specs/</code>.</li>
+<li><strong>Its record</strong>, <code>data/standards/&lt;id&gt;.json</code>: name, version, area, conformance,
+   state, whether it is assessed, the audit date and the source of the
+   specification (<code>downloaded</code> or <code>secondary</code>).</li>
+<li><code>.venv/bin/python scripts/reference/gen_standards.py</code>, which checks the pages
+   against the record and the SRS, recomputes the gap counts from the tracker and
+   rewrites the map above.</li>
+</ol>
+    </article>
+  </main>
+  
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

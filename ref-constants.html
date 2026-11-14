@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Constants — rustinfer</title>
+<meta name="description" content="Every named constant of rustinfer-core, the single definition of each domain string and threshold, generated from constants.rs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html" class="here">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <!-- Generated by scripts/reference/gen_constants.py from the rustinfer checkout; do not edit by hand. Regenerate with `.venv/bin/python scripts/reference/gen_constants.py`. -->
+<h1 id="constants">Constants</h1>
+<p>Generated from <code>crates/rustinfer-core/src/config/constants.rs</code> at commit
+8c7d47e 2026-11-13. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 156
+constants are defined. The requirement id in a note is the one the source cites.</p>
+<table>
+<thead>
+<tr>
+<th>constant</th>
+<th>type</th>
+<th>value</th>
+<th>what it is for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENV_LOG_LEVEL</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"RUSTINFER_LOG"</code></td>
+<td>Environment variable selecting the log level (RI-CLI-011).</td>
+</tr>
+<tr>
+<td><code>ENV_CACHE_DIR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"RUSTINFER_CACHE_DIR"</code></td>
+<td>Environment variable overriding the artifact cache directory (RI-CLI-003).</td>
+</tr>
+<tr>
+<td><code>DEFAULT_CACHE_DIR_NAME</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"rustinfer"</code></td>
+<td>Directory name under the user's cache root when <code>ENV_CACHE_DIR</code> is unset.</td>
+</tr>
+<tr>
+<td><code>DEFAULT_LOG_LEVEL</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"info"</code></td>
+<td>The default log level when <code>ENV_LOG_LEVEL</code> is unset.</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAGIC</code></td>
+<td><code>[u8; 4]</code></td>
+<td><code>*b"RIE\0"</code></td>
+<td>Magic bytes at offset zero of every artifact (ADR-002, RI-ART-001).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_EXTENSION</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"rie"</code></td>
+<td>File extension of an artifact.</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_FORMAT_VERSION</code></td>
+<td><code>u16</code></td>
+<td><code>2</code></td>
+<td>Artifact format version this build writes and the newest it reads (RI-ART-006).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_KERNELS_ALIGNMENT</code></td>
+<td><code>u32</code></td>
+<td><code>4096</code></td>
+<td>Alignment of the <code>kernels</code> section so its code objects can be memory-mapped (RI-ART-013); also the largest alignment the reader accepts. The <code>weights</code> section is a manifest and needs no page alignment (RI-ART-012).</td>
+</tr>
+<tr>
+<td><code>DEFAULT_KV_BLOCK_SIZE</code></td>
+<td><code>u32</code></td>
+<td><code>32</code></td>
+<td>Default KV cache block size in tokens; a power of two (RI-KVC-001).</td>
+</tr>
+<tr>
+<td><code>DEFAULT_KV_MEMORY_FRACTION</code></td>
+<td><code>f32</code></td>
+<td><code>0.9</code></td>
+<td>Default fraction of free device memory given to the KV pool (RI-KVC-003).</td>
+</tr>
+<tr>
+<td><code>KV_DTYPE_NAMES</code></td>
+<td><code>&amp;[&amp;str]</code></td>
+<td><code>&amp;["bf16", "fp8", "mxfp4"]</code></td>
+<td>The R1 KV storage dtypes of <code>--kv-dtype</code>, in help order (RI-CLI-002, RI-KVC-008); the first is the default.</td>
+</tr>
+<tr>
+<td><code>KV_DTYPE_CAVEAT_SOURCE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"https://developer.nvidia.com/blog/optimizing-inference-for-long-context-and-large-batch-sizes-with-nvfp4-kv-cache/"</code></td>
+<td>Source of the MXFP4 KV accuracy caveat (RI-KVC-008, ADR-010): NVIDIA's NVFP4 KV cache article.</td>
+</tr>
+<tr>
+<td><code>KV_DTYPE_HELP</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"KV cache storage dtype: bf16 (default), fp8 (E4M3, one scale per layer for K and for V) or mxfp4 (fp4x2 with one UE8M0 scale per 32 values along head_dim). Accuracy caveat: FP8 E4M3 is the industry's KV format</code></td>
+<td>The <code>--kv-dtype</code> help text with the accuracy caveat of RI-KVC-008 and its source (RI-CLI-002); <code>docs/entry-points.md</code> carries the same text.</td>
+</tr>
+<tr>
+<td><code>KV_FP8_DEFAULT_SCALE</code></td>
+<td><code>f32</code></td>
+<td><code>1.0</code></td>
+<td>The fp8 KV scale of a layer whose checkpoint has none (RI-KVC-008).</td>
+</tr>
+<tr>
+<td><code>KV_POOL_HEAD_DIM_AXIS</code></td>
+<td><code>u64</code></td>
+<td><code>3</code></td>
+<td>Axis of <code>head_dim</code> in a KV pool <code>[num_blocks, block_size, num_kv_heads, head_dim]</code>: the block axis of an MXFP4 KV group's <code>mx</code> encoding (RI-MIR-010, RI-MIR-011).</td>
+</tr>
+<tr>
+<td><code>FP8_FNUZ_ARCHITECTURES</code></td>
+<td><code>&amp;[&amp;str]</code></td>
+<td><code>&amp;["gfx942"]</code></td>
+<td>Architectures whose fp8 is AMD FNUZ E4M3 rather than OCP E4M3; fp8 KV is stored in that format there (RI-KVC-008).</td>
+</tr>
+<tr>
+<td><code>FIRST_LOAD_KEY_VERSION</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"rustinfer-first-load-key-v2"</code></td>
+<td>Version prefix of the first-load cache key (RI-CLI-003): a change to the key's components or their encoding changes it, so an old entry is never reused under a new meaning. v2: length-prefixed fields (#37 review).</td>
+</tr>
+<tr>
+<td><code>MODEL_HASH_VERSION</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"rustinfer-model-hash-v1"</code></td>
+<td>Version prefix of the model hash inside the first-load key: SHA-256 of the checkpoint identity's length-prefixed encoding (RI-CLI-003).</td>
+</tr>
+<tr>
+<td><code>PLAN_SECTION_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>3</code></td>
+<td>Version of the artifact's <code>plan</code> section, written in its <code>plan_version</code> field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010) and version 2 the geometry without the KV dtype's encoding, bytes per token and head and fp8 scales (RI-KVC-001, RI-KVC-008); no reader accepts either.</td>
+</tr>
+<tr>
+<td><code>PLAN_SECTION_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[PLAN_SECTION_VERSION]</code></td>
+<td>The <code>plan_version</code> values a reader accepts (RI-ART-006).</td>
+</tr>
+<tr>
+<td><code>WEIGHTS_SECTION_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>2</code></td>
+<td>Version of the artifact's <code>weights</code> section, written in its <code>weights_version</code> field. Version 2 adds the optional <code>quantization</code> record of an MXFP4 weight (RI-ART-005 v0.4); a version 1 manifest is a version 2 manifest without it (RI-ART-014).</td>
+</tr>
+<tr>
+<td><code>WEIGHTS_SECTION_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[1, WEIGHTS_SECTION_VERSION]</code></td>
+<td>The <code>weights_version</code> values a reader accepts (RI-ART-006): version 1 reads as version 2 without any quantization record.</td>
+</tr>
+<tr>
+<td><code>METADATA_SECTION_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>2</code></td>
+<td>Version of the artifact's <code>metadata</code> section, written in its <code>metadata_version</code> field. Version 2 adds the checkpoint identity's <code>used_ranges</code>: the digests of the weight bytes the build read and used (RI-ART-008 as amended); a version 1 section is a version 2 section without any (RI-ART-014).</td>
+</tr>
+<tr>
+<td><code>METADATA_SECTION_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[1, METADATA_SECTION_VERSION]</code></td>
+<td>The <code>metadata_version</code> values a reader accepts: version 1 reads as version 2 with no used ranges.</td>
+</tr>
+<tr>
+<td><code>DEFAULT_KV_BLOCK_PRIORITY</code></td>
+<td><code>u8</code></td>
+<td><code>35</code></td>
+<td>Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006).</td>
+</tr>
+<tr>
+<td><code>EXIT_CODE_FAILURE</code></td>
+<td><code>i32</code></td>
+<td><code>1</code></td>
+<td>Process exit code for a failure reported as a structured error (RI-CLI-001).</td>
+</tr>
+<tr>
+<td><code>EXIT_CODE_USAGE</code></td>
+<td><code>i32</code></td>
+<td><code>2</code></td>
+<td>Process exit code for invalid command-line usage.</td>
+</tr>
+<tr>
+<td><code>OUTPUT_WRITE_PROBE_PREFIX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>".rustinfer-write-probe-"</code></td>
+<td>File name prefix of the probe the CLI creates and removes in an output's parent directory to prove it writable (RI-CLI-012); <code>&lt;pid&gt;-&lt;nanos&gt;-&lt;counter&gt;</code> follows.</td>
+</tr>
+<tr>
+<td><code>LOG_FIELD_COMPONENT</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"component"</code></td>
+<td>Prefix of every log line's component field and of structured error lines.</td>
+</tr>
+<tr>
+<td><code>ERROR_FIELD_CODE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"error"</code></td>
+<td>Field name carrying the error code in a structured error line.</td>
+</tr>
+<tr>
+<td><code>ERROR_FIELD_DETAIL</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"detail"</code></td>
+<td>Field name carrying the human-readable detail in a structured error line.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_FORMAT_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>2</code></td>
+<td>Model IR document format version this build writes (RI-MIR-008). Versioned independently of <code>ARTIFACT_FORMAT_VERSION</code>.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[MODEL_IR_LEGACY_VERSION, MODEL_IR_FORMAT_VERSION]</code></td>
+<td>Model IR document versions the reader accepts (RI-MIR-008).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_LEGACY_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>1</code></td>
+<td>The Model IR version whose placement slots name a tier kind; the reader upgrades it to <code>MODEL_IR_FORMAT_VERSION</code> (RI-MIR-005, ADR-009).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_FUNCTION_PREFILL</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"prefill"</code></td>
+<td>Name of the prefill function of a Model IR document (RI-MIR-009).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_FUNCTION_DECODE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"decode"</code></td>
+<td>Name of the decode function of a Model IR document (RI-MIR-009).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_FUNCTION_NAMES</code></td>
+<td><code>&amp;[&amp;str]</code></td>
+<td><code>&amp;[MODEL_IR_FUNCTION_PREFILL, MODEL_IR_FUNCTION_DECODE]</code></td>
+<td>Function names a Model IR document may define in this release (RI-MIR-009).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_FUNCTION_NAMES_R3</code></td>
+<td><code>&amp;[&amp;str]</code></td>
+<td><code>&amp;["draft", "adapter"]</code></td>
+<td>Function names the specification reserves for Release 3 (RI-MIR-009).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_DOCUMENT_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>64 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of a Model IR JSON document the reader parses; checked before parsing (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_FUNCTIONS</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Upper bound on the functions of one Model IR document.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_NODES_PER_FUNCTION</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the nodes of one Model IR function.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_WEIGHTS</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the weights of one Model IR document.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_NODE_INPUTS</code></td>
+<td><code>usize</code></td>
+<td><code>16</code></td>
+<td>Upper bound on the inputs of one Model IR node.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_NODE_OUTPUTS</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Upper bound on the outputs of one Model IR node.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_SHAPE_RANK</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Upper bound on the rank of a Model IR tensor shape.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_NAME_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>256</code></td>
+<td>Upper bound on the length in bytes of a Model IR tensor or node name.</td>
+</tr>
+<tr>
+<td><code>MODEL_IR_MAX_KV_GROUPS</code></td>
+<td><code>usize</code></td>
+<td><code>1</code></td>
+<td>KV groups a Model IR document may define in this release (RI-MIR-010, R1).</td>
+</tr>
+<tr>
+<td><code>MX_BLOCK_SIZE</code></td>
+<td><code>u64</code></td>
+<td><code>32</code></td>
+<td>Values per block of the <code>mx</code> encoding, the only R1 block size (RI-MIR-011, OCP MX v1.1).</td>
+</tr>
+<tr>
+<td><code>MX_BLOCK_VALUES</code></td>
+<td><code>usize</code></td>
+<td><code>32</code></td>
+<td>[<code>MX_BLOCK_SIZE</code>] as an in-memory count, for the CPU reference (RI-MIR-012); a unit test keeps the two equal.</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_VERSION</code></td>
+<td><code>usize</code></td>
+<td><code>4</code></td>
+<td>Byte offset of <code>format_version</code> in the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_HEADER_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>6</code></td>
+<td>Byte offset of <code>header_length</code> in the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_TARGET</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Byte offset of the NUL-padded target id in the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_PRODUCER</code></td>
+<td><code>usize</code></td>
+<td><code>40</code></td>
+<td>Byte offset of the NUL-padded producer version in the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_HASH</code></td>
+<td><code>usize</code></td>
+<td><code>72</code></td>
+<td>Byte offset of the SHA-256 of every byte after the header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_OFFSET_SECTION_COUNT</code></td>
+<td><code>usize</code></td>
+<td><code>104</code></td>
+<td>Byte offset of <code>section_count</code> in the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_HEADER_FIXED_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>112</code></td>
+<td>Bytes of the fixed artifact header before the section table (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_HEADER_STRING_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>32</code></td>
+<td>Bytes of each NUL-padded string field of the artifact header (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_HASH_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>32</code></td>
+<td>Bytes of a SHA-256 digest (RI-ART-001).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_NAME_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>16</code></td>
+<td>Bytes of the NUL-padded name in a section table entry (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_ENTRY_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>40</code></td>
+<td>Bytes of one section table entry: name, offset, length, alignment, reserved (ADR-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_MODEL_IR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"model_ir"</code></td>
+<td>Name of the artifact section holding the Model IR document (RI-ART-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_PLAN</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"plan"</code></td>
+<td>Name of the artifact section holding one Plan per function (RI-ART-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_PROFILE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"profile"</code></td>
+<td>Name of the artifact section holding the profile bounds (RI-ART-009).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_METADATA</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"metadata"</code></td>
+<td>Name of the artifact section holding the build metadata (RI-ART-008).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_CATALOG</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"catalog"</code></td>
+<td>Name of the artifact section holding the catalog copy (RI-ART-010).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_KERNELS</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"kernels"</code></td>
+<td>Name of the artifact section holding code objects and Kernel IR (RI-ART-013).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_WEIGHTS</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"weights"</code></td>
+<td>Name of the artifact section holding the weight manifest (RI-ART-012).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_TOPOLOGY</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"topology"</code></td>
+<td>Name of the reserved topology section (RI-PLN-005).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_PLACEMENT</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"placement"</code></td>
+<td>Name of the reserved placement section (RI-PLN-005).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_SECTIONS</code></td>
+<td><code>usize</code></td>
+<td><code>16</code></td>
+<td>Upper bound on the section count the reader accepts, checked before the table is sized (RI-SEC-002). Room for the sections later releases append.</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_SECTION_ALIGNMENT</code></td>
+<td><code>u32</code></td>
+<td><code>64</code></td>
+<td>Alignment of every artifact section other than <code>kernels</code> (RI-ART-002).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_FILE_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>256 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of an artifact file, checked before it is read into memory (RI-SEC-002). The artifact holds no weights (RI-ART-012).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_JSON_SECTION_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>64 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of one JSON section of an artifact, checked before parsing (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_KERNELS</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the kernels of one artifact (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_CATALOG_ENTRIES</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the catalog entries copied into one artifact (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_RANKS_PER_WEIGHT</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the ranks listed for one weight of the manifest (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_MAX_STRING_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the byte length of a name, path or version string inside an artifact section (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>ARTIFACT_TMP_SUFFIX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"tmp"</code></td>
+<td>Suffix of the writer's temporary file: <code>&lt;out&gt;.tmp-&lt;pid&gt;</code> (RI-ART-004).</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_FORMAT_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>1</code></td>
+<td>Topology section format version this build writes (RI-PLN-001). Versioned independently of <code>ARTIFACT_FORMAT_VERSION</code> and <code>MODEL_IR_FORMAT_VERSION</code>.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[TOPOLOGY_FORMAT_VERSION]</code></td>
+<td>Topology section versions the reader accepts (RI-PLN-001).</td>
+</tr>
+<tr>
+<td><code>PLACEMENT_FORMAT_VERSION</code></td>
+<td><code>u32</code></td>
+<td><code>2</code></td>
+<td>Placement section format version this build writes (RI-PLN-005).</td>
+</tr>
+<tr>
+<td><code>PLACEMENT_SUPPORTED_VERSIONS</code></td>
+<td><code>&amp;[u32]</code></td>
+<td><code>&amp;[PLACEMENT_FORMAT_VERSION]</code></td>
+<td>Placement section versions the reader accepts (RI-PLN-005).</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_DOCUMENT_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>4 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of a topology JSON text the reader parses; checked before parsing (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_DEVICES</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the devices of one topology.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_MEMORY_TIERS</code></td>
+<td><code>usize</code></td>
+<td><code>4096</code></td>
+<td>Upper bound on the memory tiers of one topology.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_LINKS</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the links of one topology.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_OFFLOAD_ENGINES</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the offload engines of one topology.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_REACHABLE_PER_TIER</code></td>
+<td><code>usize</code></td>
+<td><code>TOPOLOGY_MAX_DEVICES</code></td>
+<td>Upper bound on the reachable-from entries of one memory tier.</td>
+</tr>
+<tr>
+<td><code>TOPOLOGY_MAX_NAME_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>MODEL_IR_MAX_NAME_LENGTH</code></td>
+<td>Upper bound on the length in bytes of a topology name, a placement tensor name or a placement node path.</td>
+</tr>
+<tr>
+<td><code>PLACEMENT_MAX_DOCUMENT_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>MODEL_IR_MAX_DOCUMENT_BYTES</code></td>
+<td>Upper bound on the byte length of a placement JSON text the reader parses; a placement names every tensor of a Model IR document (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>PLACEMENT_MAX_TENSORS</code></td>
+<td><code>usize</code></td>
+<td>`MODEL_IR_MAX_WEIGHTS</td>
+<td></td>
+</tr>
+<tr>
+<td>+ MODEL_IR_MAX_FUNCTIONS * MODEL_IR_MAX_NODES_PER_FUNCTION * MODEL_IR_MAX_NODE_OUTPUTS`</td>
+<td>Upper bound on the tensors one placement names: every weight plus every output of every node of every function.</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PLACEMENT_MAX_NODES</code></td>
+<td><code>usize</code></td>
+<td><code>MODEL_IR_MAX_FUNCTIONS * MODEL_IR_MAX_NODES_PER_FUNCTION</code></td>
+<td>Upper bound on the node paths one placement names across its functions.</td>
+</tr>
+<tr>
+<td><code>PLACEMENT_MAX_DECISIONS</code></td>
+<td><code>usize</code></td>
+<td><code>PLACEMENT_MAX_NODES</code></td>
+<td>Upper bound on the explained decisions of one placement (RI-PLN-003).</td>
+</tr>
+<tr>
+<td><code>PLANNER_NODE_PATH_SEPARATOR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"/"</code></td>
+<td>Separator between a fused node and one of its parts in a placement node path: <code>outer/part</code> (RI-MIR-005).</td>
+</tr>
+<tr>
+<td><code>PLANNER_SCOPE_WEIGHTS</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"weights"</code></td>
+<td>Pseudo-function naming the weight set in a placement error.</td>
+</tr>
+<tr>
+<td><code>PLANNER_SINGLE_DEVICE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"single_device"</code></td>
+<td>Name of the single-device planner of Release 1 (RI-PLN-005).</td>
+</tr>
+<tr>
+<td><code>PLANNER_COST_MODEL</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"cost_model"</code></td>
+<td>Name of the cost-model planner reserved for Release 2 (RI-PLN-003).</td>
+</tr>
+<tr>
+<td><code>TARGET_ARCHITECTURE_CPU</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"cpu"</code></td>
+<td>Architecture string of the CPU reference target (RI-TGT-001, ADR-003).</td>
+</tr>
+<tr>
+<td><code>TARGET_ARCHITECTURES_ROCM</code></td>
+<td><code>&amp;[&amp;str]</code></td>
+<td><code>&amp;["gfx942", "gfx950"]</code></td>
+<td>Architecture strings the <code>ROCm</code> target registers (RI-ROC-003).</td>
+</tr>
+<tr>
+<td><code>TARGET_ARCHITECTURE_RISCV_VECTOR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"riscv-vector"</code></td>
+<td>Architecture string of the RISC-V vector target (RI-RV-001).</td>
+</tr>
+<tr>
+<td><code>TARGET_ARCHITECTURE_RISCV_MESH</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"riscv-mesh"</code></td>
+<td>Architecture string of the RISC-V mesh target (RI-RV-001).</td>
+</tr>
+<tr>
+<td><code>TARGET_ARCHITECTURE_SPIRV_VULKAN</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"spirv-vulkan"</code></td>
+<td>Architecture string of the SPIR-V Vulkan target (RI-RV-001).</td>
+</tr>
+<tr>
+<td><code>TARGET_MAX_ARCHITECTURE_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>64</code></td>
+<td>Upper bound on the byte length of an architecture string, checked before the registry is consulted (RI-TGT-001, RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>CPU_DEVICE_NAME</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"cpu reference"</code></td>
+<td>Device name the CPU reference target reports.</td>
+</tr>
+<tr>
+<td><code>CPU_DEVICE_DEFAULT_MEMORY_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>16 * 1024 * 1024 * 1024</code></td>
+<td>Default memory budget of the CPU reference device, in bytes; allocations beyond it fail like a device out of memory.</td>
+</tr>
+<tr>
+<td><code>CPU_KERNEL_ID_PREFIX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"cpu."</code></td>
+<td>Prefix of every CPU reference kernel id: <code>cpu.&lt;operator&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>CPU_SAMPLE_SEED</code></td>
+<td><code>u64</code></td>
+<td><code>0x5EED_0000_0000_0005</code></td>
+<td>Seed of the CPU reference sampler's deterministic generator (RI-TGT-003).</td>
+</tr>
+<tr>
+<td><code>ENV_STAGING_BYTES</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"RUSTINFER_STAGING_BYTES"</code></td>
+<td>Environment variable bounding the host staging memory of the weight streamer, in bytes (RI-WST-002).</td>
+</tr>
+<tr>
+<td><code>DEFAULT_STAGING_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>1024 * 1024 * 1024</code></td>
+<td>The staging budget when <code>ENV_STAGING_BYTES</code> is unset: 1 GiB (RI-WST-002).</td>
+</tr>
+<tr>
+<td><code>STAGING_MIN_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>64 * 1024</code></td>
+<td>Smallest staging budget accepted; below it a chunk could not hold one row of a small weight and the pipeline would degenerate to one element per read.</td>
+</tr>
+<tr>
+<td><code>SLUICE_STAGING_CHUNKS</code></td>
+<td><code>u64</code></td>
+<td><code>4</code></td>
+<td>Staging chunks in flight: the depth of the host pool, of the device scratch ring and the capacity of every bounded channel between the read, copy and transform stages (RI-WST-004). The chunk size is the budget divided by this count.</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_HEADER_LENGTH_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Bytes of the little-endian header length that starts a safetensors file.</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_MAX_HEADER_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>100_000_000</code></td>
+<td>Upper bound on a safetensors header, checked before the header is allocated or read (RI-SEC-003); the format's own limit of 100 MB.</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_MAX_TENSORS</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the tensors of one safetensors header (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_MAX_TENSOR_NAME_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>ARTIFACT_MAX_STRING_LENGTH</code></td>
+<td>Upper bound on the byte length of a tensor name in a safetensors header.</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_METADATA_KEY</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"__metadata__"</code></td>
+<td>The key of the free-form metadata object a safetensors header may carry.</td>
+</tr>
+<tr>
+<td><code>CHECKPOINT_CONFIG_FILE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"config.json"</code></td>
+<td>The model configuration file of a checkpoint, hashed into the identity (RI-ART-008).</td>
+</tr>
+<tr>
+<td><code>CHECKPOINT_MAX_CONFIG_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>16 * 1024 * 1024</code></td>
+<td>Upper bound on <code>config.json</code>, checked before it is read (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>WEIGHT_LAYOUT_ROW_MAJOR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"row_major"</code></td>
+<td>The only source layout the weight streamer accepts in this release.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_IDENTITY</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"identity"</code></td>
+<td>Manifest transform leaving the source layout unchanged (RI-GC-008).</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_TRANSPOSE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"transpose"</code></td>
+<td>Manifest transform turning a rank-2 row-major tensor into its transpose.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_PAD</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"pad"</code></td>
+<td>Manifest transform zero-padding a rank-2 tensor: <code>pad:&lt;rows&gt;x&lt;cols&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_DEQUANTIZE_MX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"dequantize_mx"</code></td>
+<td>Manifest transform of the at-load fallback of RI-MIR-011: an <code>mx</code> weight (packed <code>fp4x2</code> values and <code>ue8m0</code> scales) dequantized to bf16 at load.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_QUANTIZE_MX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"quantize_mx"</code></td>
+<td>Manifest transform of a weight quantized at build (RI-GC-004): a float source quantized to <code>fp4x2</code> values and <code>ue8m0</code> scales at load by RI-MIR-012.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_SCALE_DIGEST_SUFFIX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"#scale"</code></td>
+<td>Suffix of a scale tensor's key among the weight digests of <code>--verify-weights</code>: <code>&lt;weight&gt;#scale</code> (RI-WST-005).</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_ARGUMENT_SEPARATOR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>":"</code></td>
+<td>Separator between a transform name and its arguments: <code>pad:64x128</code>.</td>
+</tr>
+<tr>
+<td><code>WEIGHT_TRANSFORM_SHAPE_SEPARATOR</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"x"</code></td>
+<td>Separator between the row and column arguments of <code>pad</code>: <code>64x128</code>.</td>
+</tr>
+<tr>
+<td><code>CHECKPOINT_ROOT_SELF</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"."</code></td>
+<td>Checkpoint root the frontend records in the weight manifest: the artifact's own directory, overridden by <code>--weights &lt;dir&gt;</code> (RI-ART-012).</td>
+</tr>
+<tr>
+<td><code>SAFETENSORS_EXTENSION</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"safetensors"</code></td>
+<td>File extension of a safetensors shard.</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_SHARDS</code></td>
+<td><code>usize</code></td>
+<td><code>4096</code></td>
+<td>Upper bound on the safetensors shards of one checkpoint directory.</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_LAYERS</code></td>
+<td><code>u64</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on <code>num_hidden_layers</code> of a checkpoint.</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_DIMENSION</code></td>
+<td><code>u64</code></td>
+<td><code>1 &lt;&lt; 24</code></td>
+<td>Upper bound on any dimension of a checkpoint configuration (hidden size, heads, intermediate size, vocabulary, positions).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_ENTRIES</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the entries of one list of a checkpoint's <code>quantization_config</code> (<code>exclude</code>, <code>ignore</code>, <code>layer_quant_config</code>, <code>config_groups</code>, <code>targets</code>), checked before any entry is read (RI-FE-006, RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_PATTERN_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the byte length of one <code>exclude</code> or <code>ignore</code> entry of a checkpoint's <code>quantization_config</code>, the <code>re:</code> prefix included (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_PATTERNS</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the entries of one exclusion list (<code>exclude</code>, <code>ignore</code>) of a checkpoint's <code>quantization_config</code>, checked before any entry is compiled (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_REGEX_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>64 * 1024</code></td>
+<td>Upper bound on the compiled size in bytes of one <code>re:</code> or glob entry of a checkpoint's <code>quantization_config</code>, the <code>regex</code> crate's <code>size_limit</code> (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_DFA_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>64 * 1024</code></td>
+<td>Upper bound on the lazy DFA cache in bytes of one such entry, the <code>regex</code> crate's <code>dfa_size_limit</code> (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_MAX_QUANT_REGEX_TOTAL_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>16 * 1024 * 1024</code></td>
+<td>Upper bound on the bytes the compiled entries of one exclusion list may take together, each counted at its two limits above: 16 MiB, so at most 128 compiled entries (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>QUANT_REGEX_PREFIX</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"re:"</code></td>
+<td>Prefix of a regular-expression entry of a Quark <code>exclude</code> or a compressed-tensors <code>ignore</code> list (RI-FE-006).</td>
+</tr>
+<tr>
+<td><code>FRONTEND_KV_GROUP</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"main"</code></td>
+<td>Name of the one KV group of a document the frontend emits (RI-MIR-010, R1).</td>
+</tr>
+<tr>
+<td><code>RANK_SINGLE</code></td>
+<td><code>u32</code></td>
+<td><code>0</code></td>
+<td>The rank of a single-rank build (RI-ART-005, R1).</td>
+</tr>
+<tr>
+<td><code>CHECKPOINT_INDEX_FILE</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"model.safetensors.index.json"</code></td>
+<td>Name of the shard index of a Hugging Face checkpoint: its <code>weight_map</code> names the shard that holds each tensor (RI-FE-004).</td>
+</tr>
+<tr>
+<td><code>CHECKPOINT_MAX_INDEX_BYTES</code></td>
+<td><code>u64</code></td>
+<td><code>64 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of the shard index, checked before it is read (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>KC_PINNED_LLVM_MAJOR</code></td>
+<td><code>u32</code></td>
+<td><code>23</code></td>
+<td>LLVM major version the kernel compiler is pinned to (ADR-007, RI-KC-011).</td>
+</tr>
+<tr>
+<td><code>KIR_DIALECT_NAME</code></td>
+<td><code>&amp;str</code></td>
+<td><code>"kir"</code></td>
+<td>Name of the Kernel IR dialect (RI-KC-002, ADR-005).</td>
+</tr>
+<tr>
+<td><code>KIR_MEMORY_SPACE_GLOBAL</code></td>
+<td><code>u32</code></td>
+<td><code>1</code></td>
+<td>MLIR memory space of a global buffer in the Kernel IR; the AMDGPU global address space, so the AMD lowering is a direct mapping (RI-KC-002).</td>
+</tr>
+<tr>
+<td><code>KIR_MEMORY_SPACE_SHARED</code></td>
+<td><code>u32</code></td>
+<td><code>3</code></td>
+<td>MLIR memory space of a shared (work-group local, LDS) buffer in the Kernel IR.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_RANK</code></td>
+<td><code>usize</code></td>
+<td><code>2</code></td>
+<td>Upper bound on the rank of a Kernel IR tile, buffer or mask.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_DIMENSION</code></td>
+<td><code>u64</code></td>
+<td><code>1 &lt;&lt; 20</code></td>
+<td>Upper bound on one dimension of a Kernel IR tile or buffer.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_NAME_LENGTH</code></td>
+<td><code>usize</code></td>
+<td><code>128</code></td>
+<td>Upper bound on the byte length of a kernel name.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_BUFFERS</code></td>
+<td><code>usize</code></td>
+<td><code>64</code></td>
+<td>Upper bound on the buffers (function arguments) of one kernel.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_OPERATIONS</code></td>
+<td><code>usize</code></td>
+<td><code>65_536</code></td>
+<td>Upper bound on the operations of one kernel, loops included.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_LOOP_DEPTH</code></td>
+<td><code>usize</code></td>
+<td><code>8</code></td>
+<td>Upper bound on loop nesting in one kernel.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_TEXT_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>16 * 1024 * 1024</code></td>
+<td>Upper bound on the byte length of a Kernel IR text entering the MLIR parser; checked before parsing (RI-SEC-003).</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_DIAGNOSTICS</code></td>
+<td><code>usize</code></td>
+<td><code>16</code></td>
+<td>Upper bound on the MLIR diagnostics kept for one structured error.</td>
+</tr>
+<tr>
+<td><code>KIR_MAX_DIAGNOSTIC_BYTES</code></td>
+<td><code>usize</code></td>
+<td><code>1024</code></td>
+<td>Upper bound on the byte length of one captured MLIR diagnostic.</td>
+</tr>
+</tbody>
+</table>
+    </article>
+  </main>
+  
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Features — rustinfer</title>
+<meta name="description" content="Every feature of the engine by component with its release tag and its status on 2026-11-10, and the feature combination matrix the tree refuses unlisted pairs against.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="index.html">rustinfer</a></li><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html" class="here">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>&quot;Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMDGPU code object V5&quot;</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1&quot;</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)&quot;</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0&quot;</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8&quot;</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4&quot;</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019&quot;</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259&quot;</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)&quot;</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0&quot;</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3&quot;</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0&quot;</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3&quot;</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0&quot;</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)&quot;</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019&quot;</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0&quot;</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1&quot;</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Runtime</summary><ul><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2&quot;</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2&quot;</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368&quot;</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>&quot;Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112&quot;</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0&quot;</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4&quot;</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)&quot;</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="features">Features</h1>
+<p>Read from the SRS by component and from <code>docs/feature-matrix.md</code> at commit
+<code>082df51</code>. A status of <strong>Supported</strong> means tested in the tree; <strong>Planned
+R<em>n</em></strong> means a requirement and, for R1, an issue exist; <strong>Not started</strong> is
+used where the SRS names the release but no issue has been opened yet (every
+R2 to R4 row). On 2026-11-12 the supported rows are the core, the Model IR, the
+artifact, the planner interfaces and the targets, all on <code>main</code>.</p>
+<h2 id="by-component">By component</h2>
+<table>
+<thead>
+<tr>
+<th>component</th>
+<th>feature</th>
+<th>requirement</th>
+<th>release</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLI</td>
+<td>six subcommands, exit codes, one structured error line</td>
+<td>RI-CLI-001</td>
+<td>R1</td>
+<td><span class="state-part">in progress</span> — contract tested and RI-CLI-001 implemented by the tag rule (the one-line usage error, PR #29); the subcommands' behaviour is pending</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>path validation before any work</td>
+<td>RI-CLI-012</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — <code>--out</code> writability checked since PR #29</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>version manifest at start; <code>key=value</code> logs with ISO-8601, level, component</td>
+<td>RI-CLI-010, -011</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — <code>llvm_version</code> and the host triple in the manifest since PR #29</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>--require-prebuilt</code> refusal</td>
+<td>RI-CLI-004</td>
+<td>R1</td>
+<td><span class="state-part">in progress</span> — the refusal exists, the build it refuses does not</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>build</code>, <code>inspect</code></td>
+<td>RI-CLI-002, -005</td>
+<td>R1</td>
+<td>Planned R1, #11</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>run</code> with token ids</td>
+<td>RI-CLI-006</td>
+<td>R1</td>
+<td>Planned R1, #14</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>tune</code></td>
+<td>RI-CLI-007</td>
+<td>R1</td>
+<td>Planned R1, #9</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>build on first load into the cache</td>
+<td>RI-CLI-003</td>
+<td>R1</td>
+<td>Planned R1, #11</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>bench</code> with TTFT, TPOT, ITL percentiles</td>
+<td>RI-CLI-008</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>serve</code> with YAML config and <code>--set</code></td>
+<td>RI-CLI-009</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>LLaMA family (<code>llama</code>, <code>mistral</code>, <code>qwen2</code>, <code>qwen3</code>) from HF</td>
+<td>RI-FE-001 to -003</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — GitHub PR #24 merged 2026-11-12; per-tensor dtypes since PR #33 (2026-11-13); Qwen3 QK norm and <code>llama3</code> RoPE scaling refused until #26 and #31 (R2) (<a href="frontend.html">frontend</a>)</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>weight streaming, Model IR JSON input, FP8 import</td>
+<td>RI-FE-004, -006, -008</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>MXFP4 dense checkpoints from AMD Quark and compressed-tensors</td>
+<td>RI-FE-006</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — GitHub PR #49 (8c7d47e, #35 closed 2026-11-14): <code>quantization_config</code> read, Quark <code>algo_config</code> and compressed-tensors <code>ignore</code> checked as the producers define them, checkpoint KV scales located and fed to the fp8 KV group, their byte ranges hashed into the checkpoint identity (SRS v0.4.7); moved to R1 by SRS v0.4 (ADR-010, GitHub PR #41); the manifest and Sluice stream the packed weights with their scales (PR #47)</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>MoE and MLA families, AWQ, GPTQ, gpt-oss MXFP4, LoRA adapters</td>
+<td>RI-FE-005 to -007</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Model IR</td>
+<td>typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version, named functions, KV groups, encodings</td>
+<td>RI-MIR-001 to -011</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — PR #19 merged 2026-11-12</td>
+</tr>
+<tr>
+<td>Graph compiler</td>
+<td>logged pass pipeline, shape inference, fusion against the catalog, bf16 and fp8 precision, kernel selection, arena planning, Plan, layouts, determinism, matrix refusal</td>
+<td>RI-GC-001 to -009, -014</td>
+<td>R1</td>
+<td>Planned R1, #10</td>
+</tr>
+<tr>
+<td>Graph compiler</td>
+<td>tensor parallel sharding, mixed iteration sub-plan</td>
+<td>RI-GC-010, -007</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Graph compiler</td>
+<td>expert parallel, LoRA points, speculative verification sub-plan</td>
+<td>RI-GC-011 to -013</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>Rust generators, tile-level MLIR dialect, in-process LLVM and <code>lld</code>, determinism</td>
+<td>RI-KC-001, -002, -008, -011</td>
+<td>R1</td>
+<td><span class="state-part">in part</span> — the <code>kir</code> dialect, builder and in-process LLVM 23 link to LLVM IR in GitHub PR #25 (2026-11-12); <code>lld</code> and code objects move to #8, generators to #9</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>AMD lowering with MFMA, LDS, bounds-checked loads</td>
+<td>RI-KC-003</td>
+<td>R1</td>
+<td>Planned R1, #8</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>R1 generator set, autotuner, CPU validation, validated-hardware records</td>
+<td>RI-KC-005 to -007, -013</td>
+<td>R1</td>
+<td>Planned R1, #9</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>SPIR-V lowering, elementwise fuser, resource reports</td>
+<td>RI-KC-004, -010, -012</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>RISC-V vector lowering; MoE, MLA, LoRA, verification generators</td>
+<td>RI-KC-004, -005</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Kernel compiler</td>
+<td>RISC-V mesh lowering; assembly generator for one hot kernel</td>
+<td>RI-KC-004, -009</td>
+<td>R4</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Planner</td>
+<td>topology model, reserved artifact sections, placement v2 checked at load</td>
+<td>RI-PLN-001, -003, -005</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — GitHub PR #20 merged 2026-11-12; placement v2 and <code>check_pinned</code> by PR #32 on 2026-11-13 (<a href="planner.html">planner</a>)</td>
+</tr>
+<tr>
+<td>Planner</td>
+<td>discovery, placement over GPU, host, DRAM, NVMe, RDMA; cached and pinnable</td>
+<td>RI-PLN-002 to -004</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Planner</td>
+<td>CXL tier, expert placement</td>
+<td>RI-PLN-003</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Planner</td>
+<td>DPU-resident serving functions</td>
+<td>RI-PLN-006</td>
+<td>R4</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Artifact</td>
+<td>header, sections, verifying reader, atomic writer, alignment, versions, metadata</td>
+<td>RI-ART-001 to -006, -008</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — Codeberg PR #21 merged 2026-11-12</td>
+</tr>
+<tr>
+<td>Artifact</td>
+<td>one artifact per rank</td>
+<td>RI-ART-007</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Artifact</td>
+<td>per-tensor digest in the manifest, per-section versions (SRS v0.3)</td>
+<td>RI-ART-005, -014</td>
+<td>R1</td>
+<td><span class="state-part">partly done</span> — per-section versions and <code>format_version</code> 2 by PR #30 (RI-ART-014 implemented); the digest field is in the manifest, recording it waits on <code>build</code> (RI-ART-005 partial) (<a href="artifact.html">artifact</a>)</td>
+</tr>
+<tr>
+<td>Sluice</td>
+<td>weight streaming from the manifest: byte-range reads, bounded staging, device-side transforms, overlap, verification</td>
+<td>RI-WST-001 to -005</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — GitHub PR #23 merged 2026-11-12 (<a href="sluice.html">Sluice</a>)</td>
+</tr>
+<tr>
+<td>Targets</td>
+<td>architecture strings, the <code>Target</code> trait, CPU reference operators, one-crate backends, stub targets that fail with <code>catalog empty</code></td>
+<td>RI-TGT-001 to -004, RI-RV-001, -002</td>
+<td>R1</td>
+<td><span class="state-ok">done</span> — GitHub PR #21 merged 2026-11-12</td>
+</tr>
+<tr>
+<td>Targets</td>
+<td>device graph capture; CPU collectives</td>
+<td>RI-TGT-005, -003</td>
+<td>R2</td>
+<td><span class="state-part">in progress</span> — <code>capture</code> and <code>replay</code> exist, eager on the CPU; collectives not started</td>
+</tr>
+<tr>
+<td>ROCm</td>
+<td>HIP binding, typed errors, <code>gcnArchName</code> check, module loading with resource checks, <code>unsafe</code> confined to <code>ffi</code></td>
+<td>RI-ROC-001 to -005</td>
+<td>R1</td>
+<td>Planned R1, #12</td>
+</tr>
+<tr>
+<td>ROCm</td>
+<td>RCCL collectives, HIP graphs per batch bucket</td>
+<td>RI-ROC-006, -007</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>ROCm</td>
+<td>own IPC all-reduce for small messages</td>
+<td>RI-ROC-006</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Executor</td>
+<td>load once, static execution, <code>enqueue</code> and <code>await_responses</code>, core <code>Request</code>, failure isolation, one stream per iteration</td>
+<td>RI-RT-001 to -004, -006, -008</td>
+<td>R1</td>
+<td>Planned R1, #13</td>
+</tr>
+<tr>
+<td>Executor</td>
+<td>streaming, cancel, stats, one process per rank</td>
+<td>RI-RT-003, -005, -007, -009</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>static batch</td>
+<td>RI-SCH-003</td>
+<td>R1</td>
+<td>Planned R1, #13</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>in-flight batching, decode before prefill, <code>max_utilization</code> default, chunked prefill, overlap scheduler, pause and resume, iteration stats, uniform token-level state</td>
+<td>RI-SCH-001 to -006, -009, -010</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>priorities and deadlines, LoRA batching</td>
+<td>RI-SCH-007, -008</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>fixed-size block pool, O(1) LRU free list, admission refusal above <code>max_seq_len</code></td>
+<td>RI-KVC-001, -002, -004</td>
+<td>R1</td>
+<td>Planned R1, #13</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>bf16, fp8 (per-tensor scale) and MXFP4 storage selected by <code>--kv-dtype</code></td>
+<td>RI-KVC-008, RI-CLI-002</td>
+<td>R1</td>
+<td><span class="state-part">in part</span> — the CPU reference, Model IR encodings, Plan geometry and cache key since GitHub PR #48 (part of #37); the GPU kernels are #38</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>memory fraction, radix-tree prefix reuse on by default, INT8 and per-block fp8 storage, sliding windows</td>
+<td>RI-KVC-003, -005, -008, -009</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>prioritised eviction, offload to DRAM and NVMe</td>
+<td>RI-KVC-006, -007</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>offload to CXL and remote tiers</td>
+<td>RI-KVC-007</td>
+<td>R4</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>greedy, temperature, top-k, top-p on device in one launch</td>
+<td>RI-SMP-001</td>
+<td>R1</td>
+<td>Planned R1, #13</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>min-p, top-p decay, seeds, penalties, stop and bad words, logprobs, host post-processor, reproducibility</td>
+<td>RI-SMP-001 to -004, -007</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>beam search, guided decoding</td>
+<td>RI-SMP-005, -006</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Speculative decoding</td>
+<td>draft/target, MTP, acceptance metrics, matrix refusals</td>
+<td>RI-SPD-001 to -004</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Speculative decoding</td>
+<td>EAGLE-3 linear and dynamic tree</td>
+<td>RI-SPD-005</td>
+<td>R4</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>LoRA</td>
+<td>run-time adapters with host and device caches, waits and refusals</td>
+<td>RI-LORA-001 to -003</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Distributed</td>
+<td>tensor parallel on one node, shared build id check</td>
+<td>RI-DIST-001, -004</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Distributed</td>
+<td>expert parallel, attention data parallel</td>
+<td>RI-DIST-002, -003</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Distributed</td>
+<td>pipeline and context parallel, multi-node, Helios scale-up, disaggregated prefill and decode</td>
+<td>RI-DIST-005</td>
+<td>R4</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>OpenAI-compatible endpoints, health and metrics, chat templates, request ids, limits, profiling toggles</td>
+<td>RI-SRV-001 to -006</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td><code>docs/observability.md</code> tier assessment and signal inventory</td>
+<td>RI-OBS-004</td>
+<td>R1</td>
+<td><span class="state-part">in progress</span> — the file is on <code>main</code></td>
+</tr>
+<tr>
+<td>Observability</td>
+<td>Prometheus metrics, request logs, bench datasets</td>
+<td>RI-OBS-001 to -003</td>
+<td>R2</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>canonical paths, only HIP and RCCL loaded, bounded artifact reader, bounded file parsing, input hashes, matrix refusal</td>
+<td>RI-SEC-001 to -005</td>
+<td>R1</td>
+<td>Planned R1 (#2 carries path canonicalisation; the rest with #4, #6, #10)</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>time budgets for grammars and post-processors</td>
+<td>RI-SEC-006</td>
+<td>R3</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>Concurrency</td>
+<td>single-threaded compiler, one device context per rank, sequential autotuner</td>
+<td>RI-CON-001, -002, -005</td>
+<td>R1</td>
+<td>Planned R1</td>
+</tr>
+<tr>
+<td>Concurrency</td>
+<td>overlap channel, async server with backpressure</td>
+<td>RI-CON-003, -004</td>
+<td>R2, R3</td>
+<td>Not started</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-feature-combination-matrix">The feature combination matrix</h2>
+<p><code>docs/feature-matrix.md</code> is kept from the first release (RI-NFR-015). Its
+rule, from the file: a combination not marked <strong>S</strong> is refused at build or at
+admission, never attempted (RI-SEC-005, RI-GC-014). <strong>U</strong> is unsupported by
+design, <strong>T</strong> untested, and <strong>–</strong> not yet implemented in any release. A cell
+moves from <code>–</code> to <code>S</code> only with a test that exercises the pair.</p>
+<p>On 2026-11-10 one cell is <strong>S</strong>: static batch with itself. Every other pair
+is <code>–</code>, except the decisions carried from the TensorRT-LLM inventory:</p>
+<table>
+<thead>
+<tr>
+<th>pair</th>
+<th>marking</th>
+<th>reason recorded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>in-flight batching, chunked prefill × static batch</td>
+<td>U</td>
+<td>the policies exclude each other</td>
+</tr>
+<tr>
+<td>tree speculation × sliding window</td>
+<td>U</td>
+<td>carried from the inventory; also refused with MLA (RI-SPD-004)</td>
+</tr>
+<tr>
+<td>beam search × sliding window</td>
+<td>U</td>
+<td>carried from the inventory (RI-KVC-009)</td>
+</tr>
+<tr>
+<td>speculation × pipeline parallelism</td>
+<td>U</td>
+<td>not a column until R4 (RI-SPD-004)</td>
+</tr>
+<tr>
+<td>LoRA × TP, LoRA × EP, speculation × LoRA</td>
+<td>T</td>
+<td>combinations to be tested, not assumed</td>
+</tr>
+</tbody>
+</table>
+<p>The columns are static batch, IFB, chunked prefill, prefix reuse, FP8 KV,
+sliding window, TP, EP, LoRA, linear speculation, tree speculation, guided
+decoding, beam search, overlap scheduler and HIP graph. The lower triangle is
+authoritative; the graph compiler will read the file's state and refuse an
+unlisted pair naming it (RI-GC-014).</p>
+    </article>
+  </main>
+  
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>8c7d47e 2026-11-13</code>, branch <code>main</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise; nothing on this site was run on a GPU.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>
