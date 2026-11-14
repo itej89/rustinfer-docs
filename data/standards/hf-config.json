@@ -1,0 +1,13 @@
+{
+  "id": "HF-CONFIG",
+  "name": "Transformers config",
+  "version": "v5.23.0",
+  "area": "Model formats",
+  "conformance": "mandatory R1",
+  "state": "part",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 3,
+  "gaps_total": 4,
+  "spec_source": "downloaded"
+}

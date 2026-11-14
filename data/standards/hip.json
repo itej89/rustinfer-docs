@@ -1,0 +1,13 @@
+{
+  "id": "HIP",
+  "name": "HIP runtime API",
+  "version": "ROCm 7.0 to 7.2 (7.2.4 reference)",
+  "area": "Runtime",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 10,
+  "gaps_total": 12,
+  "spec_source": "downloaded"
+}

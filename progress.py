@@ -237,7 +237,8 @@ def page(pages, sections):
     out = [
         '<p class="dash-sub">Under the <a href="roadmap.html">roadmap</a>: '
         '<a href="#trackers">trackers</a>, <a href="#requirements">the requirements</a>, '
-        'then the rest.</p>',
+        '<a href="#standards">the standards</a> (one card per tracker; the '
+        '<a href="standards.html">map</a> has their states), then the rest.</p>',
         waiting(tracked),
         week(pages),
         '<div class="dash">',
@@ -252,8 +253,8 @@ def page(pages, sections):
         '</section>',
     ]
     # under the roadmap: the trackers first, then the requirements they
-    # implement, then the rest
-    head = ["Trackers", "Reference"]
+    # implement, then the standards they must conform to, then the rest
+    head = ["Trackers", "Reference", "Standards"]
     shown = {"Reference": "Requirements"}
     for section in head + [x for x in sections if x not in head]:
         group = [(p, rows) for p, rows in tracked if p["section"] == section]

@@ -1,0 +1,13 @@
+{
+  "id": "PROM-TEXT",
+  "name": "Prometheus text format",
+  "version": "0.0.4",
+  "area": "Serving",
+  "conformance": "mandatory R3",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

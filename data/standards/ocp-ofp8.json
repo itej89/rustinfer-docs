@@ -1,0 +1,13 @@
+{
+  "id": "OCP-OFP8",
+  "name": "OCP OFP8",
+  "version": "Revision 1.1",
+  "area": "Number formats",
+  "conformance": "mandatory R1",
+  "state": "part",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 3,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

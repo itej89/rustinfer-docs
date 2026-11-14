@@ -1,0 +1,13 @@
+{
+  "id": "AMDGPU-ABI",
+  "name": "AMDGPU code object V5 (AMDGPUUsage)",
+  "version": "code object V5, LLVM 23.1.0 text",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 4,
+  "gaps_total": 4,
+  "spec_source": "downloaded"
+}

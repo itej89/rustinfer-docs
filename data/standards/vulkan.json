@@ -1,0 +1,13 @@
+{
+  "id": "VULKAN",
+  "name": "Vulkan",
+  "version": "1.4.368 text; no minimum core version (OI-016)",
+  "area": "Runtime",
+  "conformance": "mandatory R2",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 1,
+  "gaps_total": 5,
+  "spec_source": "downloaded"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "QUARK",
+  "name": "AMD Quark MXFP4 export",
+  "version": "as surveyed (313cb0b)",
+  "area": "Model formats",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 3,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

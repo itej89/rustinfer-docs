@@ -23,9 +23,10 @@ import datetime
 import re
 import subprocess
 
-from common import (EPIC, REPO, RUSTINFER, SEQUENCE, WEB, branch_of, commit, header,
-                    issue_status, requirement_states, srs_requirements,
-                    state_counts, test_tags, tracker_state, write)
+from common import (EPIC, REPO, RUSTINFER, SEQUENCE, STD_AREAS, WEB, branch_of, commit, header,
+                    issue_status, requirement_states, srs_requirements, standards,
+                    state_counts, std_badge, std_release_counts, std_slug, test_tags,
+                    tracker_state, write)
 
 TODAY = datetime.date.today().isoformat()
 
@@ -73,6 +74,19 @@ states = requirement_states(reqs, state, test_tags())
 counts = state_counts(states)
 
 # ------------------------------------------------------------- derivations
+stds = standards()
+std_rel = {r: std_release_counts(stds, r) for r in ("R1", "R2", "R3", "R4")}
+
+
+def std_row(r):
+    c = std_rel[r]
+    later = f"; {c['later']} later release (not due yet)" if c["later"] else ""
+    return (f"| Mandatory standards ({r}) | `{bar(c['works'], c['total'])}` | "
+            f"{c['works']} works / {c['part']} partly / {c['gap']} missing{later}, of the {c['total']} "
+            f"standards mandatory from {r} in SRS §1.4; the [standards map](standards.html), each one "
+            f"[below](#standards) |")
+
+
 issues = {i["number"]: i for i in state["issues"]}
 pulls = state["pulls"]
 pr_for_branch = {p["head"]: p for p in pulls}
@@ -131,9 +145,22 @@ runs did not move and are listed below as history.
 | Pull requests on GitHub | {merged} merged, {open_prs} open | {", ".join(f"[#{p['number']}]({p.get('url', WEB + '/pull/' + str(p['number']))}) `{p['head']}` → `{p['base']}` ({'merged' if p['merged'] else p['state']})" for p in pulls) or "none yet"}; four more were merged on Codeberg before the move, see below |
 | Latest CI run | {ci_text} | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
 | SRS requirements implemented | `{bar(implemented, len(reqs))}` | by the tag rule of `docs/testing.md`: a requirement is implemented when a test carries a `Verifies` tag for it and no test a `Groundwork for` tag; {counts["implemented"]} implemented, {counts["partial"]} partial (a `Groundwork for` tag), {counts["reserved only"]} reserved only (only `Reserved` tags), {counts["planned"]} planned; by release: {"; ".join(f"{r} {c['implemented']}/{c['partial']}/{c['reserved only']}/{c['planned']} of {c['total']}" for r, c in ((r, state_counts(states, r)) for r in ("R1", "R2", "R3", "R4")))} (implemented/partial/reserved only/planned); the tags and files per id are on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: {", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))} |
+{chr(10).join(std_row(r) for r in ("R1", "R2", "R3", "R4") if std_rel[r]["total"])}
 | Tests | {tests} | `#[test]` functions across {len(crates)} crates |
 | Line coverage | {COVERAGE[0]} | from {COVERAGE[1]}; the CI gate is 80 percent |
 | Rust | {lines_rs:,} lines in {len(rs_files)} files | `crates/**/*.rs`, tests and build scripts included |
+
+## Standards
+
+Every standard SRS §1.4 marks mandatory, from its record in `data/standards/` and its
+tracker: the state its audit found, the gaps open (status *Open* or *In PR #N*) and all
+its gaps, which include those recorded for a later release, never counted as open. A standard mandatory
+from a later release shows no state badge until that release is current. The map, with
+what the states mean, is [Standards](standards.html).
+
+| standard | area | conformance | state | open gaps | all gaps | tracker |
+|---|---|---|---|---|---|---|
+{chr(10).join(f"| [{d['name']}]({std_slug(d['id'])}.html) {d['version']} | {d['area']} | {d['conformance']} | {std_badge(d)} | {d['gaps_open']} | {d['gaps_total']} | [tracker]({std_slug(d['id'])}-tracker.html) |" for d in sorted(stds, key=lambda d: (d['release'], STD_AREAS.index(d['area']), d['name'].lower())))}
 
 ## Release 1 issues
 

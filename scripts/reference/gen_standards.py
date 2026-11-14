@@ -1,268 +1,292 @@
 #!/usr/bin/env python3
-"""The standards tracker: every reference of SRS section 1.4 with the
-requirements that cite it and a state derived from their test tags (the
-rule of common.requirement_states), the external interfaces of section 3.1.3
-with the reference that pins each, and the curated candidates of
-data/standards-candidates.json: standards the code or the plan depends on that
-section 1.4 does not reference yet."""
+"""The Standards map, kept consistent with its sources.
+
+Reads the mandatory standards of SRS section 1.4 (the `Conformance` column,
+from `origin/main` once it has the column, else from the branch of PR #50),
+the record of each standard in data/standards/<id>.json and the four pages
+of each, content/std-<id>{,-requirements,-audit,-tracker}.md, and:
+
+1. checks them: one record and four pages per mandatory standard, the same
+   section, group ("<Area> / <Name> <version>") and order block on the four
+   pages, the navtitles, the area and conformance of the record against the
+   group and the SRS, and every gap id unique on the whole site;
+2. recomputes `gaps_open` and `gaps_total` of every record from its tracker
+   table and writes the record back when they differ. The rule: a gap whose
+   status starts with "Open" or "In PR #N" is open; "Later release R<n>" is
+   counted in `gaps_total` only; anything else is closed (also in the total);
+3. writes the two generated blocks of content/standards.md: the map (one
+   card per area) and the other referenced documents of section 1.4 (process,
+   informative, internal), each with the one-line purpose kept below.
+
+Exits non-zero on any inconsistency, so a build never publishes a map that
+disagrees with the pages.
+"""
+import html
 import json
 import re
+import subprocess
 import sys
 
-from common import (IMPLEMENTED, PARTIAL, RESERVED_ONLY, PLANNED, RUSTINFER, SITE, SRS,
-                    STATES, commit, header, requirement_states, srs_meta,
-                    srs_requirements, test_tags, write)
+from common import (CONTENT, RUSTINFER, STD_AREAS, STD_LABEL, STD_MAP_CLASS,
+                    std_slug, standards)
 
-CANDIDATES = SITE / "data" / "standards-candidates.json"
-TEXT = SRS.read_text(encoding="utf-8")
+SRS_PATH = "docs/SRS-RI-v0.1.md"
+SRS_REFS = ["origin/main", "origin/docs/srs-standards-conformance"]  # PR #50 until merged
+PAGE = CONTENT / "standards.md"
+KINDS = [("", "Overview", "overview"), ("-requirements", "Requirements", "requirements"),
+         ("-audit", "Audit", "audit"), ("-tracker", "Tracker", "tracker")]
+ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d+[a-z]?$")
+RULE = re.compile(r"^\|[\s:|-]+\|$")
 
-# How a requirement cites a reference: its ID, or an unambiguous name of it,
-# in the clause, Rationale or Acceptance text (case-sensitive regexes).
-ALIASES = {
-    "SWG-001": [r"\bSWG-001\b"],
-    "IEEE-830": [r"\bIEEE-830\b", r"IEEE Std 830"],
-    "IEEE-29148": [r"\bIEEE-29148\b", r"\b29148\b"],
-    "INV": [r"\bINV\b", r"trt-llm-feature-inventory"],
-    "UC": [r"\bUC\b", r"use-cases\.md"],
-    "DEV": [r"\bDEV\b", r"datacenter-device-inventory"],
-    "AITER-DOCS": [r"\bAITER-DOCS\b", r"\bAITER\b"],
-    "MLIR": [r"\bMLIR\b"],
-    "ADR-001 to ADR-006": [r"\bADR-00[1-6]\b"],
-    "ADR-010": [r"\bADR-010\b"],
-    "OCP-MX": [r"\bOCP-MX\b", r"\bOCP MX\b", r"Microscaling"],
-    "QUARK": [r"\bQUARK\b", r"\bQuark\b"],
-    "CT": [r"\bCT\b", r"compressed-tensors", r"llm-compressor"],
-    "NV-KV": [r"\bNV-KV\b"],
-    "MXFP4-RTN": [r"\bMXFP4-RTN\b", r"2509\.23202"],
+# One line on what each non-mandatory reference of SRS §1.4 is for. A new
+# §1.4 row that is not mandatory needs a line here, or the script stops.
+PURPOSE = {
+    "SWG-001": "The engineering standard the project is developed under: requirement format, "
+               "reviews, logging, tests; adapted by ADR-001, ADR-004 and ADR-008.",
+    "IEEE-830": "The structure of the SRS and the qualities a requirement must have.",
+    "IEEE-29148": "The requirements-engineering standard that succeeds IEEE 830; the SRS follows both.",
+    "INV": "The TensorRT-LLM feature inventory the scope of each release was drawn from.",
+    "UC": "The use cases the requirements trace back to.",
+    "DEV": "The datacenter GPUs and accelerators the targets are chosen from.",
+    "AITER-DOCS": "The kernels rustinfer's generated kernels are compared with, never linked: "
+                  "the GEMM baseline of RI-NFR-006.",
+    "ADR-001 to ADR-006": "The founding decisions: Rust under SWG-001, the artifact format, the target "
+                          "abstraction, Codeberg rules, the three representations, the artifact as a cache.",
+    "ADR-007": "The pinned LLVM 23 and the in-process MLIR link.",
+    "ADR-008": "The move of the project to GitHub.",
+    "ADR-009": "Placement names devices and tiers.",
+    "ADR-010": "MXFP4 in Release 1.",
+    "NV-KV": "Background for a low-precision KV cache (NVFP4 KV cache, long context and large batches).",
+    "MXFP4-RTN": "Evidence that weight-only MXFP4 round-to-nearest keeps about 95.6 percent of "
+                 "Llama-3.1-8B's accuracy, behind MXFP4 in Release 1.",
 }
+KIND_ORDER = {"process": 0, "informative": 1, "internal": 2}
 
-# Our scope of each reference, quoted or condensed from the SRS text (where
-# in the SRS in brackets); absent means the SRS does not state one.
-SCOPE = {
-    "SWG-001": "applies in full with the adaptations in ADR-001 and ADR-004 (§2.5); requirement format per §2.4 (§3)",
-    "AITER-DOCS": "reference only: tuned kernels on gfx942 and gfx950 and the benchmark baseline (§1.4); "
-                  "GEMM at least 80 percent of the best AITER kernel (RI-NFR-006)",
-    "MLIR": "dialects `gpu`, `amdgpu`, `rocdl`, `spirv`, `vector` (§1.4) and `llvm`, linked through `melior` (§3.1.3); "
-            "the Kernel IR is an MLIR dialect (RI-KC-002)",
-    "OCP-MX": "MXFP4 only: E2M1 elements in blocks of 32 with a UE8M0 scale (§1.3, RI-MIR-003); "
-              "conversion per OCP MX v1.1 §6.3 Equation 4 (RI-MIR-012)",
-    "QUARK": "the MXFP4 export: `quant_method: \"quark\"`, `dtype: \"fp4\"`, `scale_format: \"e8m0\"`, "
-             "`scale_calculation_mode: \"even\"` (§1.4, RI-FE-006 (a))",
-    "CT": "the `mxfp4-pack-quantized` format (§1.4, RI-FE-006 (b))",
-    "ADR-001 to ADR-006": "decisions of the project; each requirement cites the one it implements",
-    "ADR-010": "MXFP4 in Release 1 (RI-FE-006, RI-GC-004, RI-KVC-008)",
-}
-NOT_STATED = "not stated in the SRS"
+errors = []
 
 
-def references():
-    """The rows of the §1.4 References table: (id, title, version, date)."""
-    sec = re.search(r"^### 1\.4 References\s*\n(.*?)(?=^### )", TEXT, re.S | re.M).group(1)
-    rows = []
-    for line in sec.splitlines():
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 4 and cells[0] not in ("ID",) and not set(cells[0]) <= set("-: "):
-            rows.append(tuple(cells))
-    return rows
+def fail(msg):
+    errors.append(msg)
 
 
-def interfaces():
-    """The rows of the §3.1.3 table: (interface, direction, contract)."""
-    sec = TEXT.split("| Interface | Direction | Contract |", 1)[1]
-    rows = []
-    for line in sec.splitlines()[2:]:
-        if not line.startswith("|"):
-            break
-        rows.append(tuple(c.strip() for c in line.strip().strip("|").split("|")))
-    return rows
+# ------------------------------------------------------------------ sources
+def srs():
+    """(ref, text) of the first SRS whose §1.4 has a Conformance column."""
+    for ref in SRS_REFS:
+        try:
+            text = subprocess.check_output(["git", "-C", str(RUSTINFER), "show", f"{ref}:{SRS_PATH}"],
+                                           text=True, stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            continue
+        sec = re.search(r"^### 1\.4 References\s*\n(.*?)(?=^### )", text, re.S | re.M)
+        if sec and re.search(r"^\|\s*ID\s*\|.*\|\s*Conformance\s*\|", sec.group(1), re.M):
+            return ref, sec.group(1)
+    sys.exit("gen_standards: no SRS with a §1.4 Conformance column in " + ", ".join(SRS_REFS))
 
 
-def requirement_texts(ids):
-    """{id: clause + Rationale + Acceptance} for every requirement of the SRS:
-    the code blocks split at blank lines, the Priority and Changed fields left out."""
+def references(section):
+    """{id: (title, conformance)} of the §1.4 table."""
     out = {}
-    for code in re.findall(r"^```[^\n]*\n(.*?)^```", TEXT, re.S | re.M):
-        for chunk in re.split(r"\n\s*\n", code):
-            m = re.match(r"\s*(RI-[A-Z]+-\d{3})\b", chunk)
-            if not m or m.group(1) not in ids:
-                continue
-            keep, cur = [], True
-            for line in chunk.splitlines():
-                field = re.match(r"(\w+):", line)
-                if field:
-                    cur = field.group(1) in ("Rationale", "Acceptance")
-                    if field.group(1) == "Priority":
-                        cur = False
-                if cur:
-                    keep.append(line)
-            out[m.group(1)] = "\n".join(keep)
+    for line in section.splitlines():
+        if not line.startswith("|") or RULE.match(line.strip()):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells[0] == "ID" or len(cells) < 5:
+            continue
+        out[cells[0]] = (cells[1], cells[4])
     return out
 
 
-def citing(patterns, texts):
-    return [rid for rid, t in texts.items() if any(re.search(p, t) for p in patterns)]
+def front(path):
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
+    meta = {}
+    for line in (m.group(1).splitlines() if m else []):
+        k, _, v = line.partition(":")
+        meta[k.strip()] = v.strip().strip('"')
+    return meta, text
 
 
-def standard_state(cites, states):
-    """(badge class or None, label): state-ok when at least one citing
-    requirement is R1 and every citing R1 requirement is implemented;
-    state-part when some citing requirement is implemented or partial;
-    state-no otherwise; no badge when nothing cites the reference."""
-    if not cites:
-        return None, "not cited"
-    r1 = [states[r] for r in cites if states[r]["tag"] == "R1"]
-    if r1 and all(s["state"] == IMPLEMENTED for s in r1):
-        return "state-ok", "implemented (R1 scope)"
-    if any(states[r]["state"] in (IMPLEMENTED, PARTIAL) for r in cites):
-        return "state-part", "in part"
-    return "state-no", "not implemented"
+def table_rows(text):
+    """(id, {header: cell}) of every table row whose first cell is an id."""
+    head = None
+    for line in text.split("\n"):
+        if not line.startswith("|"):
+            head = None
+            continue
+        if RULE.match(line.strip()):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not ID.match(cells[0]):
+            head = [c.lower() for c in cells]
+            continue
+        if head:
+            yield cells[0], dict(zip(head, cells))
 
 
-def counts(cites, states):
-    c = {st: sum(1 for r in cites if states[r]["state"] == st) for st in STATES}
-    return ", ".join(f"{c[st]} {st}" for st in STATES)
+def gap_kind(status):
+    s = re.sub(r"[*`]", "", status).strip()
+    if re.match(r"later release R\d", s, re.I):
+        return "later"
+    if re.match(r"(open|in pr #\d+)\b", s, re.I):
+        return "open"
+    if re.match(r"(closed|met|fixed|done|conforms|merged)\b", s, re.I):
+        return "closed"
+    return None
 
 
-def check_evidence(cands):
-    """Every evidence entry `path:line` must name a line of the checkout."""
-    bad = []
-    for c in cands:
-        for ev in c["evidence"]:
-            m = re.match(r"([^\s:]+):(\d+)", ev)
-            path = RUSTINFER / m.group(1) if m else None
-            if not m or not path.is_file() or int(m.group(2)) > len(path.read_text(errors="replace").splitlines()):
-                bad.append(f"{c['id']}: {ev}")
-    return bad
+# ------------------------------------------------------------------- checks
+ref, section = srs()
+refs = references(section)
+mandatory = {i: c for i, (_, c) in refs.items() if c.startswith("mandatory")}
+items = standards()
+by_id = {d["id"]: d for d in items}
+
+for i in sorted(set(mandatory) - set(by_id)):
+    fail(f"{i}: mandatory in SRS §1.4 ({ref}) but no data/standards record")
+for i in sorted(set(by_id) - set(mandatory)):
+    fail(f"{i}: has a record but is not mandatory in SRS §1.4 ({ref})")
+
+pages = {}
+for d in items:
+    sid, slug = d["id"], std_slug(d["id"])
+    if d["id"] in mandatory and d["conformance"] != mandatory[sid]:
+        fail(f"{sid}: record says {d['conformance']!r}, SRS §1.4 says {mandatory[sid]!r}")
+    if d["area"] not in STD_AREAS:
+        fail(f"{sid}: unknown area {d['area']!r}")
+    if d["state"] not in STD_LABEL:
+        fail(f"{sid}: unknown state {d['state']!r}")
+    metas = {}
+    for suffix, nav, _ in KINDS:
+        p = CONTENT / f"{slug}{suffix}.md"
+        if not p.exists():
+            fail(f"{sid}: missing {p.name}")
+            continue
+        metas[suffix] = front(p)
+        meta = metas[suffix][0]
+        for key in ("title", "navtitle", "section", "group", "order", "summary"):
+            if not meta.get(key):
+                fail(f"{p.name}: no {key}")
+        if meta.get("section") != "Standards":
+            fail(f"{p.name}: section {meta.get('section')!r}")
+        if meta.get("navtitle") != nav:
+            fail(f"{p.name}: navtitle {meta.get('navtitle')!r}, expected {nav!r}")
+    if len(metas) != 4:
+        continue
+    base = metas[""][0]
+    group = base.get("group", "")
+    area, _, label = group.partition(" / ")
+    if area != d["area"]:
+        fail(f"{sid}: group area {area!r}, record area {d['area']!r}")
+    if base.get("title") != label:
+        fail(f"{sid}: overview title {base.get('title')!r} is not the group's name {label!r}")
+    for n, (suffix, nav, _) in enumerate(KINDS):
+        meta = metas[suffix][0]
+        if meta.get("group") != group:
+            fail(f"{slug}{suffix}: group {meta.get('group')!r}, overview has {group!r}")
+        if int(meta.get("order", -1)) != int(base.get("order", 0)) + n:
+            fail(f"{slug}{suffix}: order {meta.get('order')}, expected {int(base.get('order', 0)) + n}")
+        if suffix and meta.get("title") != f"{label} {nav.lower()}":
+            fail(f"{slug}{suffix}: title {meta.get('title')!r}, expected {label + ' ' + nav.lower()!r}")
+    d["_label"], d["_order"] = label, int(base.get("order", 0))
+    pages[sid] = metas
+
+# gap ids: unique across the whole site, and each tracker's rows classified
+owner = {}
+for p in sorted(CONTENT.glob("*.md")):
+    for gid, _ in table_rows(p.read_text(encoding="utf-8")):
+        owner.setdefault(gid, set()).add(p.stem)
+changed = []
+for d in items:
+    sid = d["id"]
+    if sid not in pages:
+        continue
+    text = pages[sid]["-tracker"][1]
+    counts = {"open": 0, "later": 0, "closed": 0}
+    for gid, row in table_rows(text):
+        holders = owner.get(gid, set())
+        if len(holders) > 1:
+            fail(f"gap id {gid} of {std_slug(sid)}-tracker also used on {sorted(holders - {std_slug(sid) + '-tracker'})}")
+        status = row.get("status")
+        kind = gap_kind(status or "")
+        if kind is None:
+            fail(f"{gid}: status {status!r} is not Open, In PR #N, Later release R<n> or closed")
+            continue
+        counts[kind] += 1
+    new_open, new_total = counts["open"], sum(counts.values())
+    if (d["gaps_open"], d["gaps_total"]) != (new_open, new_total):
+        changed.append(f"{sid}: gaps {d['gaps_open']}/{d['gaps_total']} -> {new_open}/{new_total}")
+        d["gaps_open"], d["gaps_total"] = new_open, new_total
+        record = {k: v for k, v in d.items() if not k.startswith("_") and k != "release"}
+        d["_path"].write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    d["_later"] = counts["later"]
+
+others = {i: v for i, v in refs.items() if i not in mandatory}
+for i in sorted(set(others) - set(PURPOSE)):
+    fail(f"{i}: in SRS §1.4 ({ref}) as {others[i][1]!r} with no purpose line in gen_standards.py")
+
+for c in changed:
+    print("corrected", c)
+if errors:
+    for e in errors:
+        print("error:", e, file=sys.stderr)
+    sys.exit(1)
 
 
-def ids_cell(ids, states):
-    return ", ".join(f"{r} ({states[r]['tag']})" for r in ids) or "—"
-
-
+# ------------------------------------------------------------------- output
 def esc(s):
-    return s.replace("|", "\\|")
+    return html.escape(s, quote=False)
 
 
-reqs = srs_requirements()
-by_id = {r["id"]: r for r in reqs}
-tags = test_tags()
-states = requirement_states(reqs, {"issues": []}, tags)
-texts = requirement_texts(set(by_id))
-version, status = srs_meta()
-data = json.loads(CANDIDATES.read_text(encoding="utf-8"))
-cands = data["candidates"]
-bad = check_evidence(cands)
-if bad:
-    sys.exit("evidence not found in the checkout:\n  " + "\n  ".join(bad))
-unknown = [f"{c['id']}: {r}" for c in cands for r in c["cite"] if r not in by_id]
-if unknown:
-    sys.exit("candidate cites an id the SRS does not have:\n  " + "\n  ".join(unknown))
+def entry(d):
+    slug = std_slug(d["id"])
+    links = " · ".join(f'<a href="{slug}{suffix}.html">{word}</a>' for suffix, _, word in KINDS)
+    gaps = f'{d["gaps_open"]} open gap{"" if d["gaps_open"] == 1 else "s"}'
+    if d["_later"]:
+        gaps += f', {d["_later"]} later'
+    secondary = d.get("spec_source") == "secondary"
+    tag = "assessed · secondary" if secondary else "assessed"
+    tip = (f"audited {d['audit_date']}"
+           + (" against secondary sources: the specification is not freely available" if secondary
+              else " against the downloaded specification"))
+    tag_html = (f'<a class="std-tag" href="{slug}-audit.html" title="{tip}">{tag}</a>'
+                if d.get("assessed") else "")
+    return (f'    <li class="{STD_MAP_CLASS[d["state"]]}">'
+            f'<span class="std-name"><a href="{slug}.html">{esc(d["name"])}</a></span>'
+            f'<span class="std-scope">{esc(d["version"])}</span>'
+            f'<span class="std-scope">{d["conformance"]} · {gaps}</span>'
+            f'<span class="std-pages">{links}</span>{tag_html}</li>')
 
-refs = references()
-rows, summary = [], {"state-ok": 0, "state-part": 0, "state-no": 0, None: 0}
-for rid, title, ver, date in refs:
-    cites = citing(ALIASES.get(rid, [re.escape(rid)]), texts)
-    cls, label = standard_state(cites, states)
-    summary[cls] += 1
-    rows.append((rid, title, ver, date, SCOPE.get(rid, NOT_STATED), cites, cls, label))
 
-out = header("Standards tracker", "Standards", 2,
-             "Every reference of SRS §1.4 with the requirements that cite it and a state derived from "
-             "their test tags, the interfaces of §3.1.3, and the standards the tree depends on that the SRS "
-             "does not reference yet.",
-             navtitle="Standards tracker", script="gen_standards.py")
-out += f"""# Standards tracker
+cards = ['<div class="std-map" role="list" aria-label="Areas and the mandatory standards in each">', ""]
+for area in STD_AREAS:
+    group = sorted((d for d in items if d["area"] == area), key=lambda d: d["_order"])
+    if not group:
+        continue
+    cards += ['<section class="std-card" role="listitem">',
+              f'  <h3 class="std-sys">{esc(area)}</h3>', "  <ul>"]
+    cards += [entry(d) for d in group]
+    cards += ["  </ul>", "</section>", ""]
+cards.append("</div>")
 
-Generated from `docs/SRS-RI-v0.1.md` (version {version}, status *{status}*) and the
-test tags of the rustinfer checkout at commit {commit()}, and from the curated
-`data/standards-candidates.json` of this site. What the states mean and how a
-standard enters this table: [Standards](standards.html).
+rows = ["| ID | Document | Conformance | Purpose |", "|---|---|---|---|"]
+for i, (title, conf) in sorted(others.items(), key=lambda kv: (KIND_ORDER.get(kv[1][1], 9), kv[0])):
+    title = re.sub(r"\s*\(?https?://\S+", "", title).rstrip(",; ")
+    rows.append(f"| {i} | {title} | {conf} | {PURPOSE[i]} |")
 
-## Headline
+text = PAGE.read_text(encoding="utf-8")
 
-**{len(refs)} references in SRS §1.4: {summary['state-ok']} implemented in their R1 scope,
-{summary['state-part']} in part, {summary['state-no']} not implemented, {summary[None]} not cited by
-any requirement.** {len(cands)} standards the tree depends on are not referenced yet
-([below](#required-not-yet-in-the-srs)).
 
-## How the table is derived
+def put(text, name, body):
+    pat = re.compile(rf"(<!-- begin generated {name}[^>]*-->\n).*?(<!-- end generated {name} -->)", re.S)
+    if not pat.search(text):
+        sys.exit(f"gen_standards: content/standards.md has no generated {name} block")
+    return pat.sub(lambda m: m.group(1) + body + "\n" + m.group(2), text)
 
-- **Cites.** A requirement cites a reference when its clause, `Rationale` or
-  `Acceptance` text (not `Priority` or `Changed`) contains the reference ID or an
-  unambiguous name of it. The names matched, as regular expressions:
-"""
-for rid, *_ in refs:
-    pats = ALIASES.get(rid, [re.escape(rid)])
-    out += f"    - {rid}: " + ", ".join(f"`{p}`" for p in pats) + "\n"
-out += f"""- **Requirement state** is the site's rule (`scripts/reference/common.py`, the tag
-  rule of the rustinfer repository's `docs/testing.md`): *implemented* with a `Verifies`
-  tag and no `Groundwork for` tag, *partial* with any `Groundwork for` tag, *reserved only*
-  with `Reserved` tags alone, *planned* otherwise. Each citing id is shown with the first
-  release its SRS `Release` field names.
-- **Standard state.** <span class="state-ok">implemented (R1 scope)</span> when at least one
-  citing requirement is R1 and every citing R1 requirement is implemented;
-  <span class="state-part">in part</span> when some citing requirement is implemented or
-  partial; <span class="state-no">not implemented</span> otherwise; *not cited* when no
-  requirement cites the reference.
-- **Our scope** is what the SRS says we implement of the reference, with the place it says
-  so; "{NOT_STATED}" where it says nothing.
 
-## SRS §1.4 references
-
-| reference | title | pinned version | date | our scope | cited by | standard state | requirement states |
-|---|---|---|---|---|---|---|---|
-"""
-for rid, title, ver, date, scope, cites, cls, label in rows:
-    badge = f'<span class="{cls}">{label}</span>' if cls else label
-    out += (f"| {rid} | {esc(title)} | {esc(ver) or '—'} | {date or '—'} | {esc(scope)} | "
-            f"{ids_cell(cites, states)} | {badge} | {counts(cites, states) if cites else '—'} |\n")
-
-cand_alias = {c["id"]: c.get("aliases", []) for c in cands}
-out += """
-## External interfaces of §3.1.3
-
-The contract column of SRS §3.1.3 and the references that pin it: a §1.4 reference whose
-ID or name appears in the row, else the candidate below that would.
-
-| interface | direction | contract | pinned by §1.4 | candidate |
-|---|---|---|---|---|
-"""
-for name, direction, contract in interfaces():
-    row = f"{name} {contract}"
-    pinned = [rid for rid, *_ in refs if any(re.search(p, row) for p in ALIASES.get(rid, [re.escape(rid)]))]
-    cand = [cid for cid, pats in cand_alias.items() if any(re.search(p, row) for p in pats)]
-    out += (f"| {esc(name)} | {direction} | {esc(contract)} | {', '.join(pinned) or 'none'} | "
-            f"{', '.join(f'[{c}](#cand-{c.lower()})' for c in cand) or '—'} |\n")
-
-out += f"""
-## Required, not yet in the SRS
-
-Standards the code or the plan already depends on that SRS §1.4 does not reference, from
-`data/standards-candidates.json` (curated by reading the tree; every evidence line is
-checked against the checkout when this page is generated). None is tracked above until
-an SRS amendment adds its §1.4 row and a requirement cites it. *Should be cited by*
-lists the SRS ids with their first release and current state; *named in the SRS by* lists
-the requirements whose text already names the standard without a §1.4 row.
-
-| candidate | title | version to pin | date | release | should be cited by | named in the SRS by | why | evidence |
-|---|---|---|---|---|---|---|---|---|
-"""
-for c in cands:
-    named = citing(c.get("aliases", []), texts)
-    cited = ", ".join(f"{r} ({states[r]['tag']}, {states[r]['state']})" for r in c["cite"])
-    ev = "<br>".join(f"`{e.split(' ', 1)[0]}`" + (f" {e.split(' ', 1)[1]}" if " " in e else "")
-                     for e in c["evidence"])
-    title = f"[{esc(c['title'])}]({c['url']})"
-    out += (f"| <a id=\"cand-{c['id'].lower()}\"></a>{c['id']} | {title} | {esc(c['version'])} | "
-            f"{c['date'] or '—'} | {c['release']} | {cited} | {', '.join(named) or '—'} | "
-            f"{esc(c['why'])} | {ev} |\n")
-
-out += """
-### Considered and rejected
-
-| candidate | title | why not |
-|---|---|---|
-"""
-for r in data["rejected"]:
-    out += f"| {r['id']} | {esc(r['title'])} | {esc(r['reason'])} |\n"
-write("ref-standards.md", out)
+text = put(text, "map", "\n".join(cards))
+where = f"`{ref}`" + ("" if ref == "origin/main" else " (PR #50, not merged yet)")
+text = put(text, "references", f"\nRead from SRS §1.4 at {where}.\n\n" + "\n".join(rows) + "\n")
+PAGE.write_text(text, encoding="utf-8")
+print(f"wrote standards.md: {len(items)} standards in {len(STD_AREAS)} areas, "
+      f"{len(others)} other references (SRS from {ref})")

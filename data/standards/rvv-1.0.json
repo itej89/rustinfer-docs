@@ -1,0 +1,13 @@
+{
+  "id": "RVV-1.0",
+  "name": "RISC-V V vector extension",
+  "version": "1.0",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R3",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

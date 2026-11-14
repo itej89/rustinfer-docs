@@ -1,0 +1,13 @@
+{
+  "id": "LLVM",
+  "name": "LLVM",
+  "version": "23.1.x",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R1",
+  "state": "part",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 2,
+  "gaps_total": 4,
+  "spec_source": "downloaded"
+}

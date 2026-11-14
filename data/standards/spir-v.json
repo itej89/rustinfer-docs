@@ -1,0 +1,13 @@
+{
+  "id": "SPIR-V",
+  "name": "SPIR-V",
+  "version": "1.6 Revision 8",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R2",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

@@ -1,0 +1,39 @@
+---
+title: "RFC 8259 audit"
+navtitle: Audit
+section: Standards
+group: "Data and integrity / RFC 8259"
+order: 22
+summary: The 2026-11-13 audit of rustinfer's JSON against RFC 8259: the text conforms; the canonical profile loses the last bit of some reals on reading.
+---
+
+# RFC 8259 audit
+
+**Audit of 2026-11-13**, against the [requirements](std-rfc-8259-requirements.html).
+
+**Method.** Read the JSON writers and readers on origin/main (`ccf02b3`) and their
+tests; listed the `serde_json` features the workspace enables
+(`cargo tree --locked --offline -e features -i serde_json`: `default`, `std`); read
+the relevant parts of `serde_json` 1.0.154's source (string escaping, surrogate
+handling, byte order mark). One probe was run in a scratch crate against the same
+`serde_json` 1.0.154 with default features: two million `f64` values written with
+`to_string` and read back with `from_str`, comparing bits. The scratch crate's
+`target/` was deleted afterwards.
+
+| id | result | evidence |
+|---|---|---|
+| J1, J7 grammar of what is written | **conforms** | every writer prints through `serde_json::to_string` or `to_vec` (`crates/rustinfer-mir/src/json.rs:90`, `crates/rustinfer-artifact/src/json.rs:97`). Re-read by the same parser in `crates/rustinfer-mir/tests/json_roundtrip.rs:19` and `:27` (`Verifies RI-MIR-007`), and per section in `crates/rustinfer-artifact/tests/plan.rs:233`, `metadata.rs:47`, `catalog.rs:54` |
+| J2 literals | **conforms** | `serde_json` prints `true`, `false`, `null` in lower case |
+| J3 no NaN or Infinity | **conforms** | the Model IR is the only place reals occur; a non-finite real is refused before writing (`crates/rustinfer-mir/src/validate.rs:592`), `crates/rustinfer-mir/tests/graph_validation.rs:217` (`Verifies RI-MIR-006`). The artifact and planner sections hold no floating-point field |
+| J4 string escaping | **conforms**, untested | `serde_json`'s `format_escaped_str_contents` escapes `"`, `\` and U+0000 to U+001F. No rustinfer test writes such a character in a name or string: JSON-2 |
+| J5 UTF-8, no BOM | **conforms** | writers produce Rust strings (UTF-8) and never a BOM. The section reader refuses non-UTF-8 (`crates/rustinfer-artifact/src/json.rs:107`), `crates/rustinfer-artifact/tests/boundary.rs:199` (`Verifies RI-SEC-003`). A leading BOM is an error in `serde_json`, which §8.1 allows |
+| J6 parser accepts the grammar, within limits | **conforms** | `serde_json` parses the full grammar. The limits rustinfer adds are of the kinds §9 permits: text size (`json.rs:106`, `crates/rustinfer-mir/src/json.rs:123`), nesting depth (`serde_json`'s recursion limit), number range (out-of-range numbers are errors), string contents (a lone surrogate escape is refused, `serde_json` `LoneLeadingSurrogateInHexEscape`). Malformed JSON is refused naming the section, `crates/rustinfer-artifact/tests/boundary.rs:144` (`Verifies RI-SEC-003`) |
+| J8 unique names | **conforms** (a SHOULD) | writers build maps, so they never repeat a name. Readers parse into a `serde_json::Value` first (`crates/rustinfer-mir/src/json.rs:124`, `crates/rustinfer-artifact/src/json.rs:111`), which keeps the last of repeated names, so a duplicate in an input is accepted silently; the RFC leaves that behaviour open |
+| J9 integers above 2^53 | note | sizes and offsets are `u64` and exact in `serde_json`; a reader that is not `serde_json` would round those above 2^53 (over 8 PiB), far beyond any checkpoint |
+| P1 sorted keys, compact | **conforms** | `serde_json::Value` maps are B-tree maps without `preserve_order`; `crates/rustinfer-mir/tests/json_roundtrip.rs:37` (`Verifies RI-MIR-007`), `crates/rustinfer-mir/tests/functions.rs:146` |
+| P2 exact numerics | **partial** | integers are exact. Reals are written in shortest round-trip form, but `serde_json` without its `float_roundtrip` feature parses decimals with a faster algorithm that can be one unit in the last place off. The probe: 593,094 of 2,000,000 random bit patterns, and 206,330 of 2,000,000 values uniform in [0, 10^6), read back as a different `f64` (first case: `394301.33835633675` read as `394301.3383563367`). Common attribute values (`1e-5`, `1e-6`, `500000.0`, `10000.0`) round-trip; the fixtures use such values, so the tests pass. JSON-1 |
+| P3 byte-identical sections | **conforms** for serialisation | `crates/rustinfer-artifact/tests/roundtrip.rs:64` and `:75` (`Groundwork for RI-GC-009`: deterministic compilation itself is #10) |
+
+**Result.** JSON text conforms to RFC 8259. The canonical profile is partial because
+of P2; state *part*. The tests tag RI-MIR-007 `Verifies`, which P2 contradicts for
+reals outside the fixtures.

@@ -1,0 +1,13 @@
+{
+  "id": "IEEE-754",
+  "name": "IEEE 754",
+  "version": "754-2019",
+  "area": "Number formats",
+  "conformance": "mandatory R1",
+  "state": "works",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 0,
+  "spec_source": "secondary"
+}

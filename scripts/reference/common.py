@@ -383,3 +383,44 @@ def state_counts(states, release=None):
     requirement or for those whose first release is `release`."""
     vals = [v for v in states.values() if release is None or v["tag"] == release]
     return {st: sum(1 for v in vals if v["state"] == st) for st in STATES} | {"total": len(vals)}
+
+
+# -------------------------------------------------------------- standards
+# data/standards/<id>.json, one per mandatory standard of SRS §1.4, kept by
+# gen_standards.py (which recomputes the gap counts from the trackers).
+STANDARDS = SITE / "data" / "standards"
+STD_STATES = ("works", "part", "gap", "later")
+STD_LABEL = {"works": "works", "part": "partly works", "gap": "missing", "later": "later release"}
+STD_BADGE = {"works": "state-ok", "part": "state-part", "gap": "state-no"}  # later: no badge
+STD_MAP_CLASS = {"works": "std-ok", "part": "std-part", "gap": "std-gap", "later": "std-later"}
+STD_AREAS = ["Number formats", "Model formats", "Compiler and code generation", "Runtime",
+             "Data and integrity", "Serving"]
+
+
+def std_slug(sid):
+    return "std-" + sid.lower()
+
+
+def standards():
+    """Every standard's record, in map order (area, then its overview's order)."""
+    out = []
+    for p in sorted(STANDARDS.glob("*.json")):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        d["_path"] = p
+        d["release"] = d["conformance"].split()[-1]
+        out.append(d)
+    return out
+
+
+def std_badge(d):
+    """The state of a standard as the site shows it: a state-* badge, or plain
+    text for a standard not due before its release."""
+    if d["state"] == "later":
+        return f"later release ({d['release']})"
+    return f'<span class="{STD_BADGE[d["state"]]}">{STD_LABEL[d["state"]]}</span>'
+
+
+def std_release_counts(items, release):
+    """{state: count, 'total': n} over the standards mandatory from `release`."""
+    vals = [d for d in items if d["release"] == release]
+    return {s: sum(1 for d in vals if d["state"] == s) for s in STD_STATES} | {"total": len(vals)}

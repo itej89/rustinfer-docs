@@ -1,0 +1,13 @@
+{
+  "id": "HF-TOKENIZER",
+  "name": "Tokenizers",
+  "version": "v0.23.3",
+  "area": "Model formats",
+  "conformance": "mandatory R2",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 2,
+  "spec_source": "downloaded"
+}

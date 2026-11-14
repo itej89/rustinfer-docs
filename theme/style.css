@@ -788,6 +788,19 @@ a.std-tag:hover { background: var(--brass-soft); }
 .std-part { --std-c: var(--warn); }
 .std-gap  { --std-c: var(--crit); }
 .std-hw   { --std-c: var(--rule); }
+/* rustinfer: a standard not due before a later release; the muted ink reads
+   in both themes, where --rule would vanish against a dark card */
+.std-later { --std-c: var(--ink-3); }
+.std-name a { color: var(--ink); text-decoration: none; }
+.std-name a:hover { color: var(--brass); text-decoration: underline; }
+.std-pages {
+  grid-column: 1;
+  font-size: .78rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.std-pages a { color: var(--ink-2); }
+.std-pages a:hover { color: var(--brass); }
 /* The map is wider than a line of text: let it take the whole main column,
    and keep everything else on the page at reading width. */
 .prose:has(> .std-map) { max-width: none; }

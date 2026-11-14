@@ -1,0 +1,13 @@
+{
+  "id": "FIPS-180-4",
+  "name": "FIPS PUB 180-4 Secure Hash Standard (SHA-256)",
+  "version": "180-4",
+  "area": "Data and integrity",
+  "conformance": "mandatory R1",
+  "state": "works",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 1,
+  "gaps_total": 1,
+  "spec_source": "downloaded"
+}

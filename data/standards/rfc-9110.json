@@ -1,0 +1,13 @@
+{
+  "id": "RFC-9110",
+  "name": "HTTP RFC 9110 and RFC 9112",
+  "version": "RFC 9110, RFC 9112",
+  "area": "Serving",
+  "conformance": "mandatory R3",
+  "state": "later",
+  "assessed": true,
+  "audit_date": "2026-11-13",
+  "gaps_open": 0,
+  "gaps_total": 4,
+  "spec_source": "downloaded"
+}
