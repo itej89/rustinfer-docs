@@ -57,9 +57,7 @@
     {
      "name": "GPU tests",
      "tech": "a gfx942 and a gfx950 host",
-     "issues": [
-      45
-     ]
+     "hwtest": 45
     }
    ],
    "lede": "Where every change is built and tested; the GPU tests run on request on hosts with the hardware."

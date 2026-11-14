@@ -133,6 +133,14 @@ class Tracker:
         return next((b for b in self.state.get("branches", [])
                      if re.match(rf"(feat|fix|docs|refactor|ci|chore|infra)/{n}-", b)), None)
 
+    def gpu_test_for(self, pr):
+        """The open gpu-test issue that a pull request waits on, if any."""
+        for i in self.state["issues"]:
+            if (i["state"] == "open" and "gpu-test" in i.get("labels", [])
+                    and re.search(rf"\(PR #{pr}\)", i["title"])):
+                return i["number"]
+        return None
+
     def issue(self, n):
         """(kind, text) of one issue: done, review, progress or todo."""
         i = self.issues.get(n)
@@ -144,6 +152,9 @@ class Tracker:
         pulls = [p for p in self.state["pulls"] if b and p["head"] == b]
         live = next((p for p in pulls if p["state"] == "open"), None)
         if live:
+            gpu = self.gpu_test_for(live["number"])
+            if gpu:
+                return "review", f"#{n} in PR #{live['number']}, awaiting the hardware test #{gpu}"
             return "review", f"#{n} in PR #{live['number']}"
         merged = next((p for p in pulls if p.get("merged_at")), None)
         if merged:
@@ -154,6 +165,13 @@ class Tracker:
 
     def status(self, el):
         """The chip of an element: (css class, text), and its issue line."""
+        if el.get("hwtest"):
+            # hardware is not built here: its state is whether the GPU test has passed
+            n = el["hwtest"]
+            i = self.issues.get(n)
+            if i and i["state"] == "closed":
+                return ("chip-ok", f"run on hardware (#{n})"), self._link(n, f"#{n} done")
+            return ("chip-todo", f"not yet run on hardware (#{n})"), self._link(n, f"#{n} open")
         if el.get("external"):
             return ("chip-ext", "external"), ""
         rel = el.get("release")
@@ -174,8 +192,9 @@ class Tracker:
         elif kinds == {"todo"}:
             chip = ("chip-todo", "not started")
         elif "review" in kinds:
-            pr = next(t for k, t in states if k == "review").split()[-1]
-            chip = ("chip-part", f"in PR {pr}")
+            t = next(t for k, t in states if k == "review")
+            pr = re.search(r"PR #\d+", t).group(0)
+            chip = ("chip-part", f"in {pr}, awaiting hardware test" if "hardware" in t else f"in {pr}")
         else:
             chip = ("chip-part", "in progress")
         return chip, line

@@ -124,6 +124,9 @@ def parse_class(src):
                         a_, vals = a_.split(":", 1)
                         c["values"] += [v.strip() for v in vals.split(",") if v.strip()]
                     c["ann"].append(a_.strip())
+                elif re.match(r"^[A-Z]\w*\([^()]*\)$", b):
+                    # an enum variant with data, Replace(op name): no visibility, no return type
+                    c["values"].append(b)
                 elif re.match(r"^[+\-#~]?\w[^()]*\(.*\)", b):
                     c["methods"].append(b.lstrip("+-#~"))
                 elif re.match(r"^[+\-#~]\S", b):

@@ -248,15 +248,11 @@
    "parts": [
     {
      "name": "AMD Instinct gfx942",
-     "issues": [
-      45
-     ]
+     "hwtest": 45
     },
     {
      "name": "AMD Instinct gfx950",
-     "issues": [
-      45
-     ]
+     "hwtest": 45
     },
     {
      "name": "host CPU",
@@ -269,10 +265,7 @@
      "release": "R3"
     }
    ],
-   "issues": [
-    5,
-    45
-   ]
+   "hwtest": 45
   }
  ]
 }
