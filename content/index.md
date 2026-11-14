@@ -17,8 +17,8 @@ kernels rustinfer generates itself from a **Kernel IR**, and executed by a
 runtime that makes no graph, kernel, layout or memory decision at inference
 time. No kernel library, no vendor BLAS, no Python, no NVIDIA.
 
-This site is a reading of the tree at commit `8c7d47e` on `main`, the merge
-of GitHub PR #49, first written on 2026-11-10, the day the project was specified and
+This site is a reading of the tree at commit `99c1ec7` on `main`, the merge
+of GitHub PR #57, first written on 2026-11-10, the day the project was specified and
 scaffolded, and refreshed on 2026-11-11, 2026-11-12, 2026-11-13 and 2026-11-14. Everything on it was read from the source, the SRS, the ADRs and
 the planning documents in `docs/`; nothing was run on a GPU. Where a page
 describes behaviour that does not exist yet it says so and names the issue
