@@ -9,21 +9,24 @@ summary: The 2026-11-13 audit of rustinfer's MXFP4 types and conversion against 
 
 # OCP MX v1.1.0 audit
 
-**Audit of 2026-11-13**, against the [requirements](std-ocp-mx-requirements.html).
+**Audit of 2026-11-13**, against the [requirements](std-ocp-mx-requirements.html);
+re-audited the same day against `origin/main` `b99720a`, after PR #48 (KV
+dtypes, with MXFP4 KV) merged.
 
 **Method.** Read the specification text (`pdftotext -layout` of
 `specs/number-formats/ocp-mx-v1.1.0.pdf`), §3 to §6.3. Read `origin/main` at
-`ccf02b3`: `crates/rustinfer-target/src/reference/mx.rs`,
+`b99720a`: `crates/rustinfer-target/src/reference/mx.rs`,
 `crates/rustinfer-mir/src/dtype.rs`, `crates/rustinfer-mir/src/mx.rs`, the
 tests `crates/rustinfer-target/tests/mx.rs` and `crates/rustinfer-mir/tests/mx.rs`,
 the golden file `crates/rustinfer-target/tests/data/mx_golden.txt` and its
-generator `crates/rustinfer-target/tests/mx_golden/mod.rs`. Worked the
+generator `crates/rustinfer-target/tests/mx_golden/mod.rs`, and the MXFP4 KV
+path of PR #48 (`crates/rustinfer-mir/src/kv.rs`,
+`crates/rustinfer-target/src/reference/kv.rs`, their tests). Worked the
 Equation 4 thresholds by hand: for E2M1 (one mantissa bit) a significand
 rounds up to 2 exactly from 1.75, a tie that goes to the even 10.0; for E4M3
 1.8125 is a tie that goes to the even 1.75, anything above it and below
-1.9375 rounds to 1.875, and 1.9375 itself carries to 2. Read the SRS on branch `docs/srs-standards-conformance`
-(v0.4.3, open PR #50) and the file lists of open PRs #44, #48 and #49. No
-tests were run.
+1.9375 rounds to 1.875, and 1.9375 itself carries to 2. Read SRS v0.4.3 on `origin/main` and the file lists of open PRs
+#44 and #49. No tests were run.
 
 **Test tags.** The E2M1 decode, UE8M0 decode, `fp4x2` packing and storage
 tests carry `Verifies RI-MIR-003`. The conversion tests and the golden file
@@ -45,7 +48,7 @@ reference to reproduce all 51 blocks (25 E2M1, 26 E4M3) bit for bit.
 | item | requirement | result | evidence |
 |---|---|---|---|
 | MX-R1 | X NaN gives NaN everywhere; otherwise X·P_i; beyond Float32 implementation-defined | conforms | `mx_dequantize_block` multiplies by the decoded scale, NaN for 0xFF (`mx.rs:297-303`, `:225-227`). `test_nan_or_inf_block_has_nan_scale_and_dequantizes_to_nan` (`tests/mx.rs:235`); beyond the range rustinfer gives ±Inf, `test_dequantize_beyond_the_f32_range_is_infinite` (`tests/mx.rs:276`) |
-| MX-R2 | MXFP4: E2M1, k = 32, UE8M0 | conforms | `MX_BLOCK` 32 (`mx.rs:33`, from `constants.rs:136`), `test_block_constants_agree` (`mx.rs:565`); the Model IR refuses another block size, scale dtype or element dtype, or an axis not a multiple of 32 (`mir/src/mx.rs:52-86`): `tests/mx.rs` of `rustinfer-mir`, `:192`, `:204`, `:216`, `:225` |
+| MX-R2 | MXFP4: E2M1, k = 32, UE8M0 | conforms | `MX_BLOCK` 32 (`mx.rs:33`, from `constants.rs:171`), `test_block_constants_agree` (`mx.rs:565`); the Model IR refuses another block size, scale dtype or element dtype, or an axis not a multiple of 32 (`mir/src/mx.rs:52-86`): `tests/mx.rs` of `rustinfer-mir`, `:192`, `:204`, `:216`, `:225` |
 | MX-R3 | E2M1 table, subnormals | conforms | `E2M1_VALUES` and `e2m1_to_f32` (`mx.rs:69`, `:188-197`); the dtype doc (`dtype.rs:30-35`). `test_e2m1_decodes_all_sixteen_codes` (`tests/mx.rs:116`, Verifies RI-MIR-003): 0x1 is the subnormal 0.5, 0x8 is −0. The golden grid derives the same values from the bit fields |
 | MX-R4 | roundTiesToEven to FP4 | conforms | `e2m1_magnitude` counts the exact midpoints below the value and moves an odd code at a tie to the even one (`mx.rs:211-221`). `test_e2m1_rounds_every_midpoint_tie_to_even` (`tests/mx.rs:144`), `test_e2m1_rounds_one_ulp_either_side_of_every_midpoint` (`:154`); golden `e2m1 midpoints_positive`, `midpoints_negative`, `midpoints_scale_2^-3` |
 | MX-R5 | clamp to ±6 keeping the sign, Infs included | conforms | above the last midpoint the code is 7 (`mx.rs:214-215`), the sign kept (`:207-208`). `test_e2m1_clamps_to_six_keeping_the_sign` (`tests/mx.rs:168`): 6⁺, 7, 8, 1e30, Inf, both signs |
@@ -70,18 +73,35 @@ the dot products are outside the scope.
 
 - The reference also converts with E4M3 elements (MXFP8, `MxElement::E4m3`).
   MXFP8 is not in the Scope phrase. If it were claimed, §5.3.1 would require
-  both the SAT and NONSAT FP8 modes, which rustinfer lacks (OFP8-1).
+  both the SAT and NONSAT FP8 modes; rustinfer has the saturating mode only,
+  and OCP-OFP8 is scoped to it (OFP8-1, out of scope since PR #50).
 - Checkpoint import (PR #49, issue #35) reads Quark and compressed-tensors
   MXFP4 tensors as `fp4x2` and `ue8m0`; that is the QUARK and CT standards.
   `test_quark_compressed_tensors_convention_hand_built` (`tests/mx.rs:535`)
   decodes a hand-built tensor; OI-014 (Quark's own unpacking) is still open.
+
+## MXFP4 KV cache (PR #48, merged `e218b8a`)
+
+- The Model IR gives an MXFP4 KV group `fp4x2` storage with the `mx` encoding
+  along `head_dim` and `ue8m0` scales (`crates/rustinfer-mir/src/kv.rs:31-45`,
+  `:52-56`), and refuses a `head_dim` not a multiple of 32
+  (`:147-150`; `crates/rustinfer-mir/tests/kv_dtypes.rs:122`).
+- The CPU reference cache write applies §6.3 per 32-value block with E2M1
+  elements through `mx_quantize_block` (`crates/rustinfer-target/src/reference/kv.rs:287-298`),
+  stores the packed values then the UE8M0 scales, and reads back
+  `2^s × E2M1(code)` with `mx_dequantize_block` (`:353`). Being the same
+  function as the oracle, it inherits MX-R1 to MX-R13.
+  `test_cached_k_and_v_equal_the_oracle_conversion_bit_exactly`
+  (`crates/rustinfer-target/tests/kv.rs:212`) and
+  `test_attention_over_quantized_kv_equals_attention_over_the_oracle_values`
+  (`:290`), both `Groundwork for RI-KVC-008, RI-MIR-012`, check it.
 
 ## Requirements of the SRS not yet on `origin/main`
 
 | SRS requirement | what must apply §6.3 | where it is |
 |---|---|---|
 | RI-GC-004, RI-CLI-002, RI-MIR-012 | `build --precision mxfp4`: RTN quantization of weights at build, recorded as the load-time transform | issue #36, no PR |
-| RI-KVC-008, RI-MIR-012 | `--kv-dtype mxfp4`: the cache-write kernel computes each block's UE8M0 scale | PR #48 (issue #37), open: CPU reference path; GPU kernels issue #38 |
+| RI-KVC-008, RI-MIR-012 | `--kv-dtype mxfp4`: the cache-write kernel computes each block's UE8M0 scale | CPU reference merged (PR #48, `e218b8a`); GPU kernels issue #38 |
 | RI-KC-003, RI-MIR-011, RI-MIR-012 | in-kernel MXFP4 dequantization on gfx950 and gfx942; in-kernel `mxfp4` activation quantization on gfx950 | issue #38, no PR (blocked by #8, PR #44) |
 
 Recorded as MX-1 to MX-3.
@@ -89,6 +109,7 @@ Recorded as MX-1 to MX-3.
 ## Result
 
 Every in-scope item conforms in the Model IR and the CPU reference, the
-oracle the other targets are checked against. The paths that must apply the
-same rule at build time, in the KV cache and in kernels are not on
+oracle the other targets are checked against, and since PR #48 the MXFP4 KV
+CPU reference applies it. The paths that must apply the same rule at build
+time (MX-1), in the GPU KV kernels (MX-2) and in kernels (MX-3) are not on
 `origin/main`. **Partial**, for the R1 coverage, not for any wrong value.

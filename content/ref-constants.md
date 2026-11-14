@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-04a2a26 2026-11-13. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 132
+b99720a 2026-11-13. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 147
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -24,8 +24,18 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_KERNELS_ALIGNMENT` | `u32` | `4096` | Alignment of the `kernels` section so its code objects can be memory-mapped (RI-ART-013); also the largest alignment the reader accepts. The `weights` section is a manifest and needs no page alignment (RI-ART-012). |
 | `DEFAULT_KV_BLOCK_SIZE` | `u32` | `32` | Default KV cache block size in tokens; a power of two (RI-KVC-001). |
 | `DEFAULT_KV_MEMORY_FRACTION` | `f32` | `0.9` | Default fraction of free device memory given to the KV pool (RI-KVC-003). |
-| `PLAN_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010), which no reader accepts. |
+| `KV_DTYPE_NAMES` | `&[&str]` | `&["bf16", "fp8", "mxfp4"]` | The R1 KV storage dtypes of `--kv-dtype`, in help order (RI-CLI-002, RI-KVC-008); the first is the default. |
+| `KV_DTYPE_CAVEAT_SOURCE` | `&str` | `"https://developer.nvidia.com/blog/optimizing-inference-for-long-context-and-large-batch-sizes-with-nvfp4-kv-cache/"` | Source of the MXFP4 KV accuracy caveat (RI-KVC-008, ADR-010): NVIDIA's NVFP4 KV cache article. |
+| `KV_DTYPE_HELP` | `&str` | `"KV cache storage dtype: bf16 (default), fp8 (E4M3, one scale per layer for K and for V) or mxfp4 (fp4x2 with one UE8M0 scale per 32 values along head_dim). Accuracy caveat: FP8 E4M3 is the industry's KV format` | The `--kv-dtype` help text with the accuracy caveat of RI-KVC-008 and its source (RI-CLI-002); `docs/entry-points.md` carries the same text. |
+| `KV_FP8_DEFAULT_SCALE` | `f32` | `1.0` | The fp8 KV scale of a layer whose checkpoint has none (RI-KVC-008). |
+| `KV_POOL_HEAD_DIM_AXIS` | `u64` | `3` | Axis of `head_dim` in a KV pool `[num_blocks, block_size, num_kv_heads, head_dim]`: the block axis of an MXFP4 KV group's `mx` encoding (RI-MIR-010, RI-MIR-011). |
+| `FP8_FNUZ_ARCHITECTURES` | `&[&str]` | `&["gfx942"]` | Architectures whose fp8 is AMD FNUZ E4M3 rather than OCP E4M3; fp8 KV is stored in that format there (RI-KVC-008). |
+| `FIRST_LOAD_KEY_VERSION` | `&str` | `"rustinfer-first-load-key-v2"` | Version prefix of the first-load cache key (RI-CLI-003): a change to the key's components or their encoding changes it, so an old entry is never reused under a new meaning. v2: length-prefixed fields (#37 review). |
+| `MODEL_HASH_VERSION` | `&str` | `"rustinfer-model-hash-v1"` | Version prefix of the model hash inside the first-load key: SHA-256 of the checkpoint identity's length-prefixed encoding (RI-CLI-003). |
+| `PLAN_SECTION_VERSION` | `u32` | `3` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010) and version 2 the geometry without the KV dtype's encoding, bytes per token and head and fp8 scales (RI-KVC-001, RI-KVC-008); no reader accepts either. |
 | `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
+| `WEIGHTS_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `weights` section, written in its `weights_version` field. Version 2 adds the optional `quantization` record of an MXFP4 weight (RI-ART-005 v0.4); a version 1 manifest is a version 2 manifest without it (RI-ART-014). |
+| `WEIGHTS_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, WEIGHTS_SECTION_VERSION]` | The `weights_version` values a reader accepts (RI-ART-006): version 1 reads as version 2 without any quantization record. |
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
 | `EXIT_CODE_FAILURE` | `i32` | `1` | Process exit code for a failure reported as a structured error (RI-CLI-001). |
 | `EXIT_CODE_USAGE` | `i32` | `2` | Process exit code for invalid command-line usage. |
@@ -49,6 +59,8 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `MODEL_IR_MAX_SHAPE_RANK` | `usize` | `8` | Upper bound on the rank of a Model IR tensor shape. |
 | `MODEL_IR_MAX_NAME_LENGTH` | `usize` | `256` | Upper bound on the length in bytes of a Model IR tensor or node name. |
 | `MODEL_IR_MAX_KV_GROUPS` | `usize` | `1` | KV groups a Model IR document may define in this release (RI-MIR-010, R1). |
+| `MX_BLOCK_SIZE` | `u64` | `32` | Values per block of the `mx` encoding, the only R1 block size (RI-MIR-011, OCP MX v1.1). |
+| `MX_BLOCK_VALUES` | `usize` | `32` | [`MX_BLOCK_SIZE`] as an in-memory count, for the CPU reference (RI-MIR-012); a unit test keeps the two equal. |
 | `ARTIFACT_OFFSET_VERSION` | `usize` | `4` | Byte offset of `format_version` in the artifact header (ADR-002). |
 | `ARTIFACT_OFFSET_HEADER_LENGTH` | `usize` | `6` | Byte offset of `header_length` in the artifact header (ADR-002). |
 | `ARTIFACT_OFFSET_TARGET` | `usize` | `8` | Byte offset of the NUL-padded target id in the artifact header (ADR-002). |
@@ -123,6 +135,9 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `WEIGHT_TRANSFORM_IDENTITY` | `&str` | `"identity"` | Manifest transform leaving the source layout unchanged (RI-GC-008). |
 | `WEIGHT_TRANSFORM_TRANSPOSE` | `&str` | `"transpose"` | Manifest transform turning a rank-2 row-major tensor into its transpose. |
 | `WEIGHT_TRANSFORM_PAD` | `&str` | `"pad"` | Manifest transform zero-padding a rank-2 tensor: `pad:<rows>x<cols>`. |
+| `WEIGHT_TRANSFORM_DEQUANTIZE_MX` | `&str` | `"dequantize_mx"` | Manifest transform of the at-load fallback of RI-MIR-011: an `mx` weight (packed `fp4x2` values and `ue8m0` scales) dequantized to bf16 at load. |
+| `WEIGHT_TRANSFORM_QUANTIZE_MX` | `&str` | `"quantize_mx"` | Manifest transform of a weight quantized at build (RI-GC-004): a float source quantized to `fp4x2` values and `ue8m0` scales at load by RI-MIR-012. |
+| `WEIGHT_SCALE_DIGEST_SUFFIX` | `&str` | `"#scale"` | Suffix of a scale tensor's key among the weight digests of `--verify-weights`: `<weight>#scale` (RI-WST-005). |
 | `WEIGHT_TRANSFORM_ARGUMENT_SEPARATOR` | `&str` | `":"` | Separator between a transform name and its arguments: `pad:64x128`. |
 | `WEIGHT_TRANSFORM_SHAPE_SEPARATOR` | `&str` | `"x"` | Separator between the row and column arguments of `pad`: `64x128`. |
 | `CHECKPOINT_ROOT_SELF` | `&str` | `"."` | Checkpoint root the frontend records in the weight manifest: the artifact's own directory, overridden by `--weights <dir>` (RI-ART-012). |

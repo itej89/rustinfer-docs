@@ -10,8 +10,19 @@ summary: The 2026-11-13 audit of rustinfer's compressed-tensors MXFP4 import, on
 # compressed-tensors 0.13.0 audit
 
 **Audit of 2026-11-13**, against the [requirements](std-ct-requirements.html),
-on origin/main `ccf02b3` and PR #49 (`feat/35-mxfp4-checkpoints`, head
+on origin/main `ccf02b3` (re-read on `b99720a`) and PR #49 (`feat/35-mxfp4-checkpoints`, head
 `de19390`).
+
+**Re-read on origin/main `b99720a`** (after PRs #47, #48, #50 and #52):
+main still has no `quantization_config` reader, so every result below
+stands. PR #48 (`e218b8a`) added the place checkpoint KV scales go: the plan's
+KV geometry records per-layer fp8 `KvScales`, unit scales that "a frontend
+replaces with the checkpoint's" (`crates/rustinfer-artifact/src/plan.rs:79-125`;
+`test_fp8_geometry_records_unit_scales_per_layer`,
+`crates/rustinfer-artifact/tests/kv_geometry.rs:133`). PR #49 has moved to
+head `fd03bc1`; its description now claims `ignore` matched as compressed-tensors 0.13.0 `utils/match.py` matches it (`re:` by `re.match`, any other entry an exact module name or a module class or base class, no globs, through `ExpectedTensor::module_class`) and the `kv_cache_scheme` scales filling the fp8 KV group's `KvScales` (`src/kv_scales.rs`). Those commits were not
+re-audited here: the PR evidence below is as read at `de19390`, and the PR is
+re-audited when it merges.
 
 **Method.** Read the compressed-tensors 0.13.0 source listed on the
 [overview](std-ct.html); read `crates/rustinfer-frontend/src/quant/{mod,ct,pattern}.rs`
@@ -40,6 +51,6 @@ the policy (main `tests/mapping.rs:125`).
 
 ## Result
 
-Nothing conforms on main. State: **gap**. With PR #49 merged, every item
+Nothing conforms on main `b99720a`. State: **gap**. With PR #49 merged, every item
 but CT-R6 would conform; CT-R6 would be partial. Gaps on the
 [tracker](std-ct-tracker.html).

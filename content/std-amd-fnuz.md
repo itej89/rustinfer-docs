@@ -23,9 +23,13 @@ MFMA on gfx942) and RI-KVC-008 (`--kv-dtype fp8` is FNUZ E4M3 on gfx942).
   (`:131-149`), `Fp8Format::E4m3Fnuz` (`:234-235`).
 - The Kernel IR type `f8E4M3FNUZ` (`crates/rustinfer-kc/src/dialect/types.rs:23-24`),
   with 0xFF (−240) as the identity of a `max` reduction
-  (`crates/rustinfer-kc/src/mlir/lower.rs:25`).
-- Pending: the gfx942 FNUZ MFMA (PR #44, issue #8) and fp8 KV storage
-  (PR #48, issue #37; GPU kernels issue #38).
+  (`crates/rustinfer-kc/src/mlir/lower.rs:25`), asserted by
+  `test_max_identity_of_fnuz_e4m3_is_minus_240` (`lower.rs:454`).
+- fp8 KV is FNUZ on gfx942 (`crates/rustinfer-mir/src/kv.rs:15-25`), written by
+  the CPU reference cache write (`crates/rustinfer-target/src/reference/kv.rs:263-285`),
+  PR #48.
+- Pending: the gfx942 FNUZ MFMA (PR #44, issue #8) and the GPU fp8 KV
+  kernels (issue #38).
 
 **Conformance:** mandatory from **R1**.
 
@@ -41,6 +45,6 @@ Executable definition: LLVM APFloat `Float8E4M3FNUZ` at `llvmorg-23.1.0`
 |---|---|
 | Pages | [requirements](std-amd-fnuz-requirements.html) · [audit](std-amd-fnuz-audit.html) · [tracker](std-amd-fnuz-tracker.html) |
 | Conformance | mandatory R1 (RI-MIR-003, RI-CLI-002, RI-KC-003, RI-KVC-008) |
-| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the ISA guide and LLVM |
-| Result | the encoding conforms in the CPU reference and the Kernel IR; one constant is untested; the gfx942 users are in open PRs |
-| Open gaps | 2 |
+| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the ISA guide and LLVM; re-audited at `b99720a` after PRs #48 and #52 |
+| Result | the encoding conforms and is tested in the CPU reference, the Kernel IR and the fp8 KV CPU reference; the gfx942 MFMA and GPU KV kernels are pending (PR #44, #38) |
+| Open gaps | 1 |

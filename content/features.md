@@ -30,7 +30,8 @@ artifact, the planner interfaces and the targets, all on `main`.
 | CLI | `serve` with YAML config and `--set` | RI-CLI-009 | R3 | Not started |
 | Frontend | LLaMA family (`llama`, `mistral`, `qwen2`, `qwen3`) from HF | RI-FE-001 to -003 | R1 | <span class="state-ok">done</span> — GitHub PR #24 merged 2026-11-12; per-tensor dtypes since PR #33 (2026-11-13); Qwen3 QK norm and `llama3` RoPE scaling refused until #26 and #31 (R2) ([frontend](frontend.html)) |
 | Frontend | weight streaming, Model IR JSON input, FP8 import | RI-FE-004, -006, -008 | R2 | Not started |
-| Frontend | MoE and MLA families, AWQ, GPTQ, MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started — MXFP4 is tagged R3 here and R2 for the precision pass (RI-GC-004) in SRS v0.3 on `main`; an SRS v0.4 amendment moving MXFP4 to R1 is proposed, in review, and not decided. |
+| Frontend | MXFP4 dense checkpoints from AMD Quark and compressed-tensors | RI-FE-006 | R1 | In PR #49 (#35) — moved to R1 by SRS v0.4 (ADR-010, GitHub PR #41); the manifest and Sluice already stream the packed weights with their scales (PR #47) |
+| Frontend | MoE and MLA families, AWQ, GPTQ, gpt-oss MXFP4, LoRA adapters | RI-FE-005 to -007 | R3 | Not started |
 | Model IR | typed SSA graph, profile-bounded dims, R1 dtypes, operator set, slots, validation, canonical JSON, own version, named functions, KV groups, encodings | RI-MIR-001 to -011 | R1 | <span class="state-ok">done</span> — PR #19 merged 2026-11-12 |
 | Graph compiler | logged pass pipeline, shape inference, fusion against the catalog, bf16 and fp8 precision, kernel selection, arena planning, Plan, layouts, determinism, matrix refusal | RI-GC-001 to -009, -014 | R1 | Planned R1, #10 |
 | Graph compiler | tensor parallel sharding, mixed iteration sub-plan | RI-GC-010, -007 | R2 | Not started |
@@ -60,7 +61,8 @@ artifact, the planner interfaces and the targets, all on `main`.
 | Scheduler | in-flight batching, decode before prefill, `max_utilization` default, chunked prefill, overlap scheduler, pause and resume, iteration stats, uniform token-level state | RI-SCH-001 to -006, -009, -010 | R2 | Not started |
 | Scheduler | priorities and deadlines, LoRA batching | RI-SCH-007, -008 | R3 | Not started |
 | KV cache | fixed-size block pool, O(1) LRU free list, admission refusal above `max_seq_len` | RI-KVC-001, -002, -004 | R1 | Planned R1, #13 |
-| KV cache | memory fraction, radix-tree prefix reuse on by default, FP8 and INT8 storage, sliding windows | RI-KVC-003, -005, -008, -009 | R2 | Not started |
+| KV cache | bf16, fp8 (per-tensor scale) and MXFP4 storage selected by `--kv-dtype` | RI-KVC-008, RI-CLI-002 | R1 | <span class="state-part">in part</span> — the CPU reference, Model IR encodings, Plan geometry and cache key since GitHub PR #48 (part of #37); the GPU kernels are #38 |
+| KV cache | memory fraction, radix-tree prefix reuse on by default, INT8 and per-block fp8 storage, sliding windows | RI-KVC-003, -005, -008, -009 | R2 | Not started |
 | KV cache | prioritised eviction, offload to DRAM and NVMe | RI-KVC-006, -007 | R3 | Not started |
 | KV cache | offload to CXL and remote tiers | RI-KVC-007 | R4 | Not started |
 | Sampling | greedy, temperature, top-k, top-p on device in one launch | RI-SMP-001 | R1 | Planned R1, #13 |

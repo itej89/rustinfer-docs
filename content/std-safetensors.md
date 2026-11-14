@@ -15,15 +15,16 @@ length, JSON header, `data_offsets`) and the dtype names.
 RI-ART-008, RI-SEC-003, RI-SEC-004 and RI-WST-005.
 
 **Implementation:** one header reader, `rustinfer_artifact::safetensors`
-(`crates/rustinfer-artifact/src/safetensors.rs`, origin/main `ccf02b3`). It
-bounds the length prefix before allocating (`header_end`, lines 301-321),
-parses the header as a JSON object whose `__metadata__` must be a map of
-strings (`parse_object`, 555-573), types every entry and refuses unknown keys
-(`parse_entry`, 408-425), checks each `data_offsets` against the data region
-and the shape times the element size (`parse_offsets`, 505-525), and requires
+(`crates/rustinfer-artifact/src/safetensors.rs`, origin/main `b99720a`). It
+bounds the length prefix before allocating (`header_end`, lines 303-323),
+parses the header as a JSON object that repeats no key, refusing a
+duplicate by name (`parse_object`, 557-573, through `unique_json`, PR #52), whose `__metadata__` must be a map of
+strings, types every entry and refuses unknown keys
+(`parse_entry`, 410-427), checks each `data_offsets` against the data region
+and the shape times the element size (`parse_offsets`, 507-527), and requires
 the ranges to tile the data region with no gap or overlap
-(`check_contiguous`, 367-387; `check_region_end`, 390-406). The dtype names it
-reads are the table `DTYPES` (54-65). The frontend
+(`check_contiguous`, 369-389; `check_region_end`, 392-408). The dtype names it
+reads are the table `DTYPES` (56-67). The frontend
 (`crates/rustinfer-frontend/src/safetensors.rs`) and Sluice
 (`crates/rustinfer-sluice/src/safetensors.rs`) call it and map its refusals
 into their own error types. No byte after the header is read at build.
@@ -43,7 +44,7 @@ standard's scope.
 | | |
 |---|---|
 | Pages | [requirements](std-safetensors-requirements.html) · [audit](std-safetensors-audit.html) · [tracker](std-safetensors-tracker.html) |
-| Audited | 2026-11-13, by reading the reader and its tests on origin/main against the README and `tensor.rs`, and one probe of `serde_json` 1.0.154 (the locked version) |
-| Header layout | length prefix, bounds, offsets, tiling and `__metadata__` conform |
-| Gaps | duplicate keys accepted silently; the first header byte is not checked to be `{` |
+| Audited | 2026-11-13, by reading the reader and its tests on origin/main (`b99720a`) against the README and `tensor.rs`, and one probe of `serde_json` 1.0.154 (the locked version) |
+| Header layout | length prefix, bounds, offsets, tiling, unique keys (since `b99720a`) and `__metadata__` conform |
+| Gaps | the first header byte is not checked to be `{`; `U8` read as `ue8m0`; no empty or 0-rank tensor test (duplicate keys fixed in `b99720a`) |
 | Dtype names | 10 of the 22 names read, spelled as the format spells them; the rest refused by name |

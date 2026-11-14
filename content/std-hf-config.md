@@ -15,17 +15,18 @@ reference title but no R1 requirement reads it.
 **Conformance:** mandatory from **R1**. Cited by RI-FE-001, RI-FE-003,
 RI-FE-004, RI-ART-008 and RI-SEC-003.
 
-**Implementation:** `crates/rustinfer-frontend` on origin/main `ccf02b3`.
+**Implementation:** `crates/rustinfer-frontend` on origin/main `b99720a`.
 `ModelConfig::from_json_with_limits` bounds the text, parses it as a JSON
 object and looks `model_type` up in the architecture registry
 (`src/config.rs:83-112`; registry `src/arch/mod.rs:121`). The LLaMA family
 (`llama`, `mistral`, `qwen2`, `qwen3`) reads its fields in
-`src/arch/llama/config.rs`: geometry (139-182), `rms_norm_eps` and
-`rope_theta` with Hugging Face defaults (18-23, 279-294), `rope_scaling`
-(405-477), biases (212-233), sliding window (391-403) and `hidden_act`
-(378-387). Keys a family does not use are ignored. `quantization_config` is
+`src/arch/llama/config.rs`: geometry (145-188), `rms_norm_eps` with its Hugging Face default (18-19,
+285-299), the rotary parameters from the v5 `rope_parameters` or the v4
+`rope_theta` and `rope_scaling`, refusing a config whose two forms disagree
+(440-578, PR #52), biases (218-240), sliding window (392-407) and `hidden_act`
+(381-390). Keys a family does not use are ignored. `quantization_config` is
 not read on main; PR #49 (branch `feat/35-mxfp4-checkpoints`, head
-`de19390`) adds it.
+`fd03bc1`) adds it.
 
 **Source:** Hugging Face Transformers **v5.23.0**: the configuration page
 https://huggingface.co/docs/transformers/v5.23.0/en/main_classes/configuration
@@ -38,7 +39,7 @@ v5.23.0: `configuration_utils.py`, `modeling_rope_utils.py`,
 | | |
 |---|---|
 | Pages | [requirements](std-hf-config-requirements.html) · [audit](std-hf-config-audit.html) · [tracker](std-hf-config-tracker.html) |
-| Audited | 2026-11-13, by reading the frontend and its tests on origin/main and PR #49 against the v5.23.0 source |
+| Audited | 2026-11-13, by reading the frontend and its tests on origin/main (`b99720a`) and PR #49 against the v5.23.0 source |
 | `model_type`, geometry, norm, biases | conform |
-| RoPE | reads the v4 layout (`rope_theta`, `rope_scaling`) only; a v5 `rope_parameters` config is lowered with the default theta, silently |
+| RoPE | reads the v5 `rope_parameters` and the v4 `rope_theta`, `rope_scaling`, refusing disagreeing forms (fixed in `b99720a`); `partial_rotary_factor` is not read (HFC-5) |
 | `quantization_config` | ignored on main; pending PR #49 |

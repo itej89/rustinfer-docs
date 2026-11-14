@@ -11,8 +11,13 @@ summary: What OFP8 Revision 1.1 requires of the E4M3 encoding and of conversion 
 
 Source: `specs/number-formats/ocp-ofp8-rev1.1.pdf` (*OCP 8-bit Floating Point
 Specification (OFP8), Revision 1.1*, effective June 22, 2026). Sections
-cited are those of that document. Scope: E4M3 only (SRS §1.4); E5M2 is
-outside it.
+cited are those of that document. Scope (SRS §1.4 on `origin/main` since
+v0.4.3, PR #50): "the E4M3 and E5M2 encodings with saturating conversion
+(roundTiesToEven) only; the non-saturating mode of Revision 1.1 section 5.2.1
+is out of scope" (owner decision 2026-11-13). The items below are those of
+E4M3, the format every requirement uses; no SRS requirement converts to or
+from E5M2, which appears on `origin/main` only as a Kernel IR element type
+(see the audit).
 
 The specification defines formats and conversion only. §4 puts out of scope
 conversion between OFP8 and other 8-bit formats or integers, arithmetic, and
@@ -42,6 +47,9 @@ conversions, nor does it require using status flags for exceptions."
 | OFP8-R11 | Consequence of R5 at the top of the range: 448 has an even mantissa LSB, so "source format magnitudes up to and including 1/2 an ULP greater (i.e. 448 < x <= 464) round down to 448". | Appendix A (non-normative, §1 Notes) |
 
 OFP8-R6 requires both modes of every implementation. The SRS uses only the
-saturating mode (RI-KVC-008's fp8 KV, RI-MIR-012's `mxfp8` elements), but its
-Scope phrase covers "conversion rounding and saturation" without narrowing
-the modes, so R6 is in scope.
+saturating mode (RI-KVC-008's fp8 KV, RI-MIR-012's `mxfp8` elements), and
+since v0.4.3 (PR #50, owner decision 2026-11-13) its Scope phrase is
+"saturating conversion (roundTiesToEven) only". R6 is therefore in scope for
+its saturating mode only, and the non-saturating halves of R8 and R9 are out
+of scope: rustinfer claims conformance to saturating conversion, a documented
+deviation from §5.2.1's "requires ... saturating and non-saturating modes".

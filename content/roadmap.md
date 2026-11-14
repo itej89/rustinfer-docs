@@ -21,9 +21,13 @@ the one binary validates its arguments, `build` and `tune` resolve their
 components have behaviour, all merged by 2026-11-12: the core, the Model IR,
 the artifact, the planner interfaces, the target abstraction with the CPU
 reference, Sluice, the LLaMA-family frontend and the Kernel IR with its
-MLIR link. The tech-debt work of #27 merged on 2026-11-13 and closed it. The
-next step is the AMD lowering (#8), unblocked; the graph compiler (#10)
-waits on #9, which waits on #8.
+MLIR link. The tech-debt work of #27 merged on 2026-11-13 and closed it. On
+the same day MXFP4 moved into Release 1 (SRS v0.4, ADR-010), and its first
+three pieces merged: the dtypes and the conversion oracle (#34), the manifest
+and Sluice (#39), the KV dtypes on the CPU reference (part of #37); the 25
+mandatory standards were audited and the defects found on `main` fixed (#51,
+PR #52). The AMD lowering (#8) is PR #44, waiting on GPU test #45; the graph
+compiler (#10) waits on #9, which waits on #8.
 
 The [progress](progress.html) page is this roadmap's measure: every tracker
 on this site counted by state, the [issues](issues.html) first, then the
@@ -255,11 +259,46 @@ followed on 2026-11-13:
 #27 closed when PR #33 merged. The `llama3`, `yarn` and `dynamic` RoPE
 scaling it had listed moved to issue #31, because the SRS places it in R2.
 
+## 11. MXFP4 in Release 1 (#34 to #39) — in progress
+
+The owner moved MXFP4 into Release 1 on 2026-11-13, from pre-quantized
+checkpoints, quantization at build and the KV cache (SRS v0.4, ADR-010,
+GitHub PR #41, c5582da; the scale rule of OCP MX v1.1 §6.3 Equation 4
+corrected by SRS v0.4.1, PR #43). By default every target dequantizes the
+weights to bf16 in the kernel; `--activations mxfp8|mxfp4` opts into the
+gfx950 scaled MFMA (OI-015, following vLLM). A hardware test is a `gpu-test`
+issue the owner runs by hand (PR #40, 8fb46f3).
+
+| issue | what | state |
+|---|---|---|
+| #34 | `fp4x2` and `ue8m0` dtypes, the `mx` encoding, the OCP conversion oracle in the CPU reference | done, PR #43 (b21ae62) |
+| #39 | MXFP4 in the weight manifest and Sluice: packed weights streamed once with their scale tensors, `U8` headers | done, PR #47 (ccf02b3) |
+| #37 | `--kv-dtype bf16\|fp8\|mxfp4`: Model IR KV-group encodings, Plan geometry with scale bytes (`plan_version` 3), the first-load cache key, and quantized KV write, read and paged attention on the CPU reference | CPU half done, PR #48 (e218b8a); the GPU kernels are #38 |
+| #35 | the frontend imports Quark and compressed-tensors MXFP4 checkpoints (`quantization_config`) | in PR #49 |
+| #36 | `build --precision mxfp4` by RTN | open, needs #10 |
+| #38 | AMD lowering of MXFP4: in-kernel bf16 dequantization, opt-in gfx950 scaled MFMA, the GPU KV kernels | open, needs #8 (PR #44) and #9 |
+
+## 12. Standards conformance (#51) — fixes merged 2026-11-13
+
+SRS v0.4.2 (PR #46, e7dbdc6) cites the 21 external standards the
+requirements depend on; v0.4.3 (PR #50, 48c2820) classes each §1.4 reference
+`mandatory R<n>` with a scope, `process`, `informative` or `internal`, adds
+OI-016 (the minimum Vulkan and SPIR-V version, open) and narrows OCP OFP8 to
+saturating conversion only. The 25 mandatory standards were audited the same
+day ([standards map](standards.html)); the defects on `main` went into issue
+#51 and were fixed test-first by PR #52 (b99720a): `serde_json` with
+`float_roundtrip`, the Transformers v5 `rope_parameters`, duplicate
+safetensors keys refused, RFC 3339 field ranges, and tests for RFC 8259
+escapes, the FIPS 180-4 vectors and the fp8 identities. #51 stays open for
+its SRS items (RI-KC-004 against the LLVM row, the RVV numeric plan, the
+serving citations, OI-016). PR #53, an SRS amendment that lets the build
+read weights and binds the artifact to the byte ranges it used, is open.
+
 ## What comes next
 
 Release 2, production serving: in-flight batching, chunked prefill, the
 overlap scheduler, prefix reuse on by default, HIP graphs, tensor
-parallelism on one node, metrics and `bench`; 44 requirements, no issues
+parallelism on one node, metrics and `bench`; 41 requirements, no issues
 yet. Then Release 3, the industry-standard feature set (33 requirements)
 and Release 4 (4). The [release plan](release-plan.html) has each.
 
@@ -271,13 +310,16 @@ and Release 4 (4). The [release plan](release-plan.html) has each.
 | ~~PR #17 merged (#2)~~ done 2026-11-12 | any branch has a base |
 | ~~Model IR (#3)~~ done 2026-11-12 (PR #19) | artifact, targets, frontend, graph compiler, planner |
 | ~~Kernel IR link (#7) and ADR-007's runner decision~~ done 2026-11-12 (GitHub PR #25) | any kernel compiles in CI |
-| AMD lowering (#8) | a code object exists; #9 can start |
+| AMD lowering (#8): PR #44, then GPU test #45 on MI300X and MI355X | a code object exists; #9 can start; the MXFP4 kernels (#38) |
 | A gfx950 host (OI-008) | the catalog has a validated entry; `run` on a GPU |
 | ~~CPU reference (#5)~~ done 2026-11-12 (GitHub PR #21) | any kernel is validated |
 | ~~Planner interfaces (#15)~~ done 2026-11-12 (GitHub PR #20) | the Model IR's slots are filled; the artifact's `topology` and `placement` sections have a schema |
 | ~~Sluice (#18)~~ done 2026-11-12 (GitHub PR #23) | the executor has weights in device memory |
 | ~~Frontend (#6)~~ done 2026-11-12 (GitHub PR #24) | `build` has a Model IR and a weight manifest |
 | ~~Placement v2 in the code (#27, ADR-009)~~ done 2026-11-13 (GitHub PR #32) | the graph compiler and the executor read slots |
+| ~~MXFP4 dtypes and oracle (#34)~~ done 2026-11-13 (GitHub PR #43) | every MXFP4 issue has a reference to match bit for bit |
+| ~~MXFP4 manifest and Sluice (#39)~~ done 2026-11-13 (GitHub PR #47) | packed weights reach the device with their scales |
+| MXFP4 frontend (#35): PR #49 | Quark and compressed-tensors checkpoints build |
 | Graph compiler (#10) | `build` produces an artifact |
 | Executor (#13) | `run` produces a token |
 
@@ -287,6 +329,7 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
+| 2026-11-13 | Later the same day on GitHub: PR #42 (b621fed, #26 closed) grouped rmsnorm, so Qwen3 QK norm lowers; PR #40 (8fb46f3) the `gpu-test` issue template; PR #41 (c5582da) SRS v0.4 and ADR-010, MXFP4 in Release 1, issues #34 to #39 opened; PR #43 (b21ae62, #34 closed) the MXFP4 dtypes, `mx` encoding and OCP conversion oracle, SRS v0.4.1; PR #46 (e7dbdc6) SRS v0.4.2 citing the external standards; PR #47 (ccf02b3, #39 closed) MXFP4 in the weight manifest and Sluice; PR #48 (e218b8a, part of #37) the KV dtypes bf16, fp8 and MXFP4 on the CPU reference with `--kv-dtype`; PR #50 (48c2820) SRS v0.4.3, the Conformance column of §1.4, OI-016, OCP OFP8 narrowed to saturating conversion; PR #52 (b99720a) the #51 standards fixes. Open: PR #44 (#8, waits on GPU test #45), PR #49 (#35), PR #53 (SRS: the build may read weights). This site: the 25 mandatory standards with their four pages each and the map, gaps closed by PRs #48, #50 and #52 marked fixed with their evidence, the generated pages from b99720a |
 | 2026-11-13 | The #27 code merged into `main` on GitHub: PR #29 (35f0b3b) the conformance defects and `docs/testing.md`, the rule that a test tags a requirement `Verifies`, `Groundwork for` or `Reserved`; PR #30 (742c08f) the extension seams, artifact `format_version` 2 with per-section versions, `BinaryFormat`, the shared safetensors reader, OI-013 resolved; PR #32 (3df8c1b) placement v2, `ir_version` 2, the reachability rule, ADR-009 in the code; PR #33 (04a2a26) per-tensor frontend dtypes. Issues #18 and #27 closed; #31 (`llama3` RoPE scaling, R2) opened. A v0.4 SRS amendment moving MXFP4 to R1 is proposed, in review. This site refreshed: generated pages from 04a2a26, the requirement state derived from the test tags alone (39 implemented, 27 partial, 1 reserved only, 120 planned, where the earlier citation-and-Epic rule counted 69 implemented), the tag rule on the [engineering rules](engineering-rules.html) page |
 | 2026-11-12 | Four more pull requests merged into `main` on GitHub late in the day: PR #23 (add4752), issue #18: `rustinfer-sluice`, the weight streamer; PR #24 (84449e7), issue #6 closed: `rustinfer-frontend` for `llama`, `mistral`, `qwen2` and `qwen3` behind the `Architecture` trait and registry; PR #25 (ad51bce), issue #7 closed: the `kir` dialect, `KernelBuilder` and the in-process MLIR/LLVM 23 link behind the `mlir` feature, ADR-007, MSRV 1.89, the `msrv` CI job and `scripts/ci/install_llvm.sh`; PR #28 (7913427): SRS v0.3 and ADR-009 from the seam audit and conformance review (#27). Issues #26 (Qwen3 QK norm) and #27 (tech debt) opened. This site refreshed: generated pages from 7913427, a new [frontend](frontend.html) page, Sluice and the kernel compiler described from the code, the v0.3 contract changes on the artifact and planner pages marked specified versus in the code, ADR-007 and ADR-009 from their files |
 | 2026-11-12 | Three pull requests merged into `main` on GitHub in the evening: PR #19 (9d448ce) with ADR-008 and the CI retarget to `ubuntu-latest`, `upload-artifact` v4 and a concurrency group; PR #20 (d886a3c), issue #15: `rustinfer-planner` with the topology model, `Placement`, the `Planner` trait, `SingleDevicePlanner` and `place`, the `TOPOLOGY_*`, `PLACEMENT_*` and `PLANNER_*` constants, `docs/api/topology.md`; PR #21 (f039b4d), issue #5: `rustinfer-target` with the `Target`, `Catalog`, `Device` and `Launcher` traits, the `Registry`, the CPU reference target over every R1 operator in `f32`, the `numeric` conversions, the four backend stubs and the command's registry, `build` and `tune` resolving `--target` first; 527 workspace tests, 96.44 percent line coverage; CI runs 6 and 8 green on `main`. Issues #3, #4, #5 and #15 closed; Sluice (#18), the frontend (#6) and the Kernel IR (#7) started. This site refreshed: generated pages from f039b4d, the targets and the planner described from the code, ADR-008 from the file |

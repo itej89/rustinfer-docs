@@ -4,15 +4,15 @@ navtitle: Tracker
 section: Standards
 group: "Data and integrity / RFC 8259"
 order: 23
-summary: Gaps between rustinfer's JSON and RFC 8259 with its canonical profile: lossy reading of some reals, and no escaping test.
+summary: Gaps between rustinfer's JSON and RFC 8259 with its canonical profile; both closed by PR #52 (b99720a).
 ---
 
 # RFC 8259 tracker
 
-From the [audit](std-rfc-8259-audit.html) of 2026-11-13. No GitHub issue covers
-either row.
+From the [audit](std-rfc-8259-audit.html) of 2026-11-13. Both rows were raised in
+issue #51 and closed by PR #52 (merge `b99720a`).
 
 | id | gap | required by | status | notes |
 |---|---|---|---|---|
-| JSON-1 | A real can read back one unit in the last place off, so a Model IR document does not always round-trip "without loss" | RI-MIR-007 (canonical profile, P2); RFC 8259 §6 permits the precision limit, the profile does not | Open | `serde_json` is built without `float_roundtrip` (`Cargo.toml:51`). The fix is that feature on the workspace dependency, plus a test that round-trips many random finite `f64` attributes bit for bit. Until then the `Verifies RI-MIR-007` tags overstate the clause. Also matters for RI-GC-009 once a rebuild reads a document back |
-| JSON-2 | No test writes and re-reads a string with a quotation mark, reverse solidus or control character | §7 | Open | Escaping is `serde_json`'s and correct today; the test would pin it for tensor and node names, which come from untrusted checkpoints |
+| JSON-1 | A real can read back one unit in the last place off, so a Model IR document does not always round-trip "without loss" | RI-MIR-007 (canonical profile, P2); RFC 8259 §6 permits the precision limit, the profile does not | Fixed 2026-11-13 b99720a | `float_roundtrip` is enabled on the workspace `serde_json` (`Cargo.toml:54`). Test: `crates/rustinfer-mir/tests/json_roundtrip.rs:229` `test_reals_round_trip_bit_for_bit_across_magnitudes` (100,000 seeded reals, bit for bit) and `:253` `test_hard_real_attribute_round_trips_through_the_document` (`394301.33835633675` through the document), both `Verifies RI-MIR-007` |
+| JSON-2 | No test writes and re-reads a string with a quotation mark, reverse solidus or control character | §7 | Fixed 2026-11-13 b99720a | Escaping is `serde_json`'s (`crates/rustinfer-artifact/src/json.rs:97`, `:111`). Tests: `crates/rustinfer-artifact/tests/json_strings.rs:58` (every control character, `"` and `\` escaped on output and read back), `:76` (unescaped control character refused), `:92` (every escape and a surrogate pair decode), `:102` (lone surrogates refused) |

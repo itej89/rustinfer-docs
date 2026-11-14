@@ -7,7 +7,7 @@
   "state": "works",
   "assessed": true,
   "audit_date": "2026-11-13",
-  "gaps_open": 1,
+  "gaps_open": 0,
   "gaps_total": 1,
   "spec_source": "downloaded"
 }

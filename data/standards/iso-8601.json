@@ -4,10 +4,10 @@
   "version": "ISO 8601-1:2019 with Amd 1:2022",
   "area": "Data and integrity",
   "conformance": "mandatory R1",
-  "state": "part",
+  "state": "works",
   "assessed": true,
   "audit_date": "2026-11-13",
-  "gaps_open": 3,
+  "gaps_open": 2,
   "gaps_total": 3,
   "spec_source": "secondary"
 }

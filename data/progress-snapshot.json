@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-14T02:04:59+00:00",
+ "fetched_at": "2026-11-14T03:14:37+00:00",
  "source": "github",
  "issues": [
   {
@@ -511,7 +511,7 @@
     "RI-CLI-002"
    ],
    "branch": "feat/37-kv-dtypes",
-   "derived_status": "In review 2026-11-13"
+   "derived_status": "In progress"
   },
   {
    "number": 38,
@@ -579,8 +579,8 @@
    "milestone": "R1 — foundation",
    "blocked_by": [],
    "requirements": [],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "fix/51-standards-defects",
+   "derived_status": "In progress"
   }
  ],
  "pulls": [
@@ -815,11 +815,11 @@
   {
    "number": 48,
    "title": "feat: KV cache dtypes bf16, fp8 and MXFP4 with --kv-dtype (#37)",
-   "state": "open",
+   "state": "closed",
    "head": "feat/37-kv-dtypes",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-14",
    "mergeable": true,
    "created_at": "2026-11-13",
    "url": "https://github.com/itej89/rustinfer/pull/48"
@@ -839,30 +839,142 @@
   {
    "number": 50,
    "title": "docs(srs): mark each standard mandatory or informative",
-   "state": "open",
+   "state": "closed",
    "head": "docs/srs-standards-conformance",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-14",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/50"
+  },
+  {
+   "number": 52,
+   "title": "fix: standards audit defects on main (#51)",
+   "state": "closed",
+   "head": "fix/51-standards-defects",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-14",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/52"
+  },
+  {
+   "number": 53,
+   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
+   "state": "open",
+   "head": "docs/srs-build-reads-weights",
    "base": "main",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
    "created_at": "2026-11-14",
-   "url": "https://github.com/itej89/rustinfer/pull/50"
+   "url": "https://github.com/itej89/rustinfer/pull/53"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 18,
-   "closed": 30
+   "open": 17,
+   "closed": 33
   }
  ],
  "runs": [
   {
-   "id": 73,
-   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
+   "id": 81,
+   "title": "Merge pull request #52 from itej89/fix/51-standards-defects",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "b99720a",
+   "created": "2026-11-14T03:06",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43549897715"
+  },
+  {
+   "id": 80,
+   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
    "status": "in_progress",
    "conclusion": null,
+   "event": "pull_request",
+   "ref": "docs/srs-build-reads-weights",
+   "sha": "4726543",
+   "created": "2026-11-14T03:06",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43549851439"
+  },
+  {
+   "id": 79,
+   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/35-mxfp4-checkpoints",
+   "sha": "fd03bc1",
+   "created": "2026-11-14T02:49",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43548397394"
+  },
+  {
+   "id": 78,
+   "title": "Merge pull request #50 from itej89/docs/srs-standards-conformance",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "48c2820",
+   "created": "2026-11-14T02:42",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43547816832"
+  },
+  {
+   "id": 77,
+   "title": "Merge pull request #48 from itej89/feat/37-kv-dtypes",
+   "status": "completed",
+   "conclusion": "cancelled",
+   "event": "push",
+   "ref": "main",
+   "sha": "e218b8a",
+   "created": "2026-11-14T02:42",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43547760971"
+  },
+  {
+   "id": 76,
+   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/35-mxfp4-checkpoints",
+   "sha": "5d2411a",
+   "created": "2026-11-14T02:35",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43547186293"
+  },
+  {
+   "id": 75,
+   "title": "fix: standards audit defects on main (#51)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "fix/51-standards-defects",
+   "sha": "a1374bd",
+   "created": "2026-11-14T02:17",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43545482271"
+  },
+  {
+   "id": 74,
+   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/35-mxfp4-checkpoints",
+   "sha": "a35421c",
+   "created": "2026-11-14T02:12",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43544966583"
+  },
+  {
+   "id": 73,
+   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
+   "status": "completed",
+   "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/8-amd-lowering",
    "sha": "821a57e",
@@ -872,8 +984,8 @@
   {
    "id": 72,
    "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "status": "in_progress",
-   "conclusion": null,
+   "status": "completed",
+   "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/35-mxfp4-checkpoints",
    "sha": "c17c203",
@@ -901,100 +1013,13 @@
    "sha": "874b50b",
    "created": "2026-11-14T01:55",
    "url": "https://github.com/itej89/rustinfer/actions/runs/43543389976"
-  },
-  {
-   "id": 69,
-   "title": "Merge pull request #47 from itej89/feat/39-mxfp4-sluice",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "ccf02b3",
-   "created": "2026-11-14T01:39",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43541854812"
-  },
-  {
-   "id": 68,
-   "title": "docs(srs): mark each standard mandatory or informative",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-standards-conformance",
-   "sha": "dcc22fd",
-   "created": "2026-11-14T01:29",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43540855043"
-  },
-  {
-   "id": 67,
-   "title": "feat: MXFP4 in the weight manifest and Sluice, packed weights streamed with their scales (#39)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/39-mxfp4-sluice",
-   "sha": "895f157",
-   "created": "2026-11-14T01:28",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43540831832"
-  },
-  {
-   "id": 66,
-   "title": "feat: KV cache dtypes bf16, fp8 and MXFP4 with --kv-dtype (#37)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/37-kv-dtypes",
-   "sha": "5d64e97",
-   "created": "2026-11-14T01:24",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43540442432"
-  },
-  {
-   "id": 65,
-   "title": "docs(srs): mark each standard mandatory or informative",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-standards-conformance",
-   "sha": "2beef6d",
-   "created": "2026-11-14T01:21",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43540119185"
-  },
-  {
-   "id": 64,
-   "title": "feat: MXFP4 in the weight manifest and Sluice, packed weights streamed with their scales (#39)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/39-mxfp4-sluice",
-   "sha": "69154cf",
-   "created": "2026-11-13T23:24",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43526936425"
-  },
-  {
-   "id": 63,
-   "title": "Merge pull request #46 from itej89/docs/srs-standards",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "e7dbdc6",
-   "created": "2026-11-13T23:18",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43526109735"
-  },
-  {
-   "id": 62,
-   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "de19390",
-   "created": "2026-11-13T23:00",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43523781080"
   }
  ],
  "branches": [
   "docs/27-srs-v0.3",
   "docs/gpu-test-template",
   "docs/readme-docs-link",
+  "docs/srs-build-reads-weights",
   "docs/srs-standards",
   "docs/srs-standards-conformance",
   "docs/srs-v0.4-mxfp4",
@@ -1011,6 +1036,7 @@
   "feat/7-kernel-ir-and-mlir-link",
   "feat/8-amd-lowering",
   "fix/27-conformance",
+  "fix/51-standards-defects",
   "infra/github-hosting",
   "main",
   "refactor/27-frontend-dtypes",

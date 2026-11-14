@@ -17,13 +17,13 @@ version ("as surveyed"); this audit surveys Quark's source at commit
 2026-11-13).
 **Conformance:** mandatory from **R1** (RI-FE-006, ADR-010).
 
-**Implementation:** none on origin/main `ccf02b3`. The frontend does not read
+**Implementation:** none on origin/main `b99720a`. The frontend does not read
 `quantization_config`, so a Quark checkpoint is refused through its tensor
 dtypes. The shared safetensors reader already types `U8` for MXFP4
-(`crates/rustinfer-artifact/src/safetensors.rs:48-61`) and Sluice already
+(`crates/rustinfer-artifact/src/safetensors.rs:51-63`) and Sluice already
 streams `U8`-packed data with its scales (PR #47, merged;
 `crates/rustinfer-sluice/tests/mxfp4.rs:653`). The import itself is in
-**PR #49** (`feat/35-mxfp4-checkpoints`, head `de19390`, issue #35):
+**PR #49** (`feat/35-mxfp4-checkpoints`, head `fd03bc1`, audited at `de19390`, issue #35):
 `crates/rustinfer-frontend/src/quant/quark.rs` and `quant/pattern.rs`.
 
 **Source:** AMD Quark, https://github.com/amd/Quark at `313cb0b78ef3`:
@@ -38,7 +38,7 @@ Local copies: `specs/model-formats/quark-313cb0b-*`.
 | | |
 |---|---|
 | Pages | [requirements](std-quark-requirements.html) · [audit](std-quark-audit.html) · [tracker](std-quark-tracker.html) |
-| Audited | 2026-11-13, by reading Quark's source, origin/main and PR #49 |
+| Audited | 2026-11-13, by reading Quark's source, origin/main (`b99720a`) and PR #49 (`de19390`) |
 | On main | nothing imported; every requirement is missing or pending PR #49 |
-| PR #49 | reads every listed field, the packing order and `exclude` as Quark writes them; does not check `algo_config` |
-| KV scales | Quark KV scales reach `--kv-dtype fp8` in neither PR #48 nor PR #49 |
+| PR #49 | reads every listed field, the packing order and `exclude` as Quark writes them; at `de19390` did not check `algo_config`, which head `fd03bc1` claims to |
+| KV scales | PR #48 (merged) records unit fp8 KV scales per layer; PR #49 at `fd03bc1` claims to fill them from the checkpoint |

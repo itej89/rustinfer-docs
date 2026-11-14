@@ -4,10 +4,10 @@
   "version": "RFC 8259 (STD 90)",
   "area": "Data and integrity",
   "conformance": "mandatory R1",
-  "state": "part",
+  "state": "works",
   "assessed": true,
   "audit_date": "2026-11-13",
-  "gaps_open": 2,
+  "gaps_open": 0,
   "gaps_total": 2,
   "spec_source": "downloaded"
 }

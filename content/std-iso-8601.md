@@ -29,13 +29,13 @@ source; no ISO clause number is cited.
 `iso8601_from_unix`), a civil-date conversion from Unix days by Howard Hinnant's
 algorithm without a date crate (`logging.rs:191-215`). The log line puts it first
 (`logging.rs:75-81`). The artifact's metadata uses the same clock
-(`crates/rustinfer-artifact/src/metadata.rs:57-59`) and checks the shape on reading
-(`metadata.rs:183-201`).
+(`crates/rustinfer-artifact/src/metadata.rs:57-59`) and checks the shape and every
+field's range on reading (`metadata.rs:201-256`, since PR #52).
 
 | | |
 |---|---|
 | Pages | [requirements](std-iso-8601-requirements.html) · [audit](std-iso-8601-audit.html) · [tracker](std-iso-8601-tracker.html) |
-| Audited | 2026-11-13, by reading origin/main and its tests against RFC 3339 |
+| Audited | 2026-11-13, by reading origin/main and its tests against RFC 3339; re-read at `b99720a` after PR #52 |
 | Writing | conforms |
-| Reading (`metadata`) | **partial**: the shape is checked, the field ranges are not |
-| Open gaps | 3 |
+| Reading (`metadata`) | conforms: the shape and every field range are checked (since `b99720a`) |
+| Open gaps | 2 (DT-2 test tags and calendar edges, DT-3 pre-1970 clock); DT-1 fixed in `b99720a` |

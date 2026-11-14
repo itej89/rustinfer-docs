@@ -10,8 +10,19 @@ summary: The 2026-11-13 audit of rustinfer's Quark MXFP4 import, on main and in 
 # AMD Quark MXFP4 export audit
 
 **Audit of 2026-11-13**, against the [requirements](std-quark-requirements.html),
-on origin/main `ccf02b3` and PR #49 (`feat/35-mxfp4-checkpoints`, head
+on origin/main `ccf02b3` (re-read on `b99720a`) and PR #49 (`feat/35-mxfp4-checkpoints`, head
 `de19390`).
+
+**Re-read on origin/main `b99720a`** (after PRs #47, #48, #50 and #52):
+main still has no `quantization_config` reader, so every result below
+stands. PR #48 (`e218b8a`) added the place checkpoint KV scales go: the plan's
+KV geometry records per-layer fp8 `KvScales`, unit scales that "a frontend
+replaces with the checkpoint's" (`crates/rustinfer-artifact/src/plan.rs:79-125`;
+`test_fp8_geometry_records_unit_scales_per_layer`,
+`crates/rustinfer-artifact/tests/kv_geometry.rs:133`). PR #49 has moved to
+head `fd03bc1`; its description now claims the `algo_config` check (`src/quant/quark_algo.rs`: only offline algorithms accepted; online rotations, `quarot` and `svdquant` refused), refusal of `softmax_quant_spec` and of `kv_cache_post_rope` true, and checkpoint KV scales filling the fp8 KV group's `KvScales` (`src/kv_scales.rs`). Those commits were not
+re-audited here: the PR evidence below is as read at `de19390`, and the PR is
+re-audited when it merges.
 
 **Method.** Read Quark's config, export and packing source at `313cb0b`;
 read `crates/rustinfer-frontend/src/quant/{mod,quark,pattern,section}.rs`,
@@ -50,10 +61,11 @@ supply the fp8 KV scales when `--kv-dtype fp8` is selected. PR #49 detects
 it and ignores the scale tensors with an `info` line, leaving the feed to
 issue #37 (`src/quant/quark.rs:9-13`); PR #48 (#37) fills unit scales and
 lists the checkpoint scales as "#35 frontend" work. Neither PR does it
-(QK-3).
+(QK-3). On main the scale slot now exists (PR #48, `plan.rs:79-125`); the
+feed from the checkpoint is claimed by PR #49 at `fd03bc1`.
 
 ## Result
 
-Nothing conforms on main. State: **gap**. With PR #49 merged, QK-R1, R2, R4
+Nothing conforms on main `b99720a`. State: **gap**. With PR #49 merged, QK-R1, R2, R4
 to R7, R9 and R10 would conform, QK-R8 would stay missing. Gaps on the
 [tracker](std-quark-tracker.html).

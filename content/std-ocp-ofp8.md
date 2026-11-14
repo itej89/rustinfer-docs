@@ -9,8 +9,10 @@ summary: The OCP E4M3 8-bit float and its conversion rounding and saturation, as
 
 # OCP OFP8 Revision 1.1
 
-**Scope (SRS §1.4, OCP-OFP8):** the E4M3 encoding and its conversion
-rounding and saturation; E5M2 is used by no requirement. The requirements
+**Scope (SRS §1.4, OCP-OFP8, v0.4.3):** the E4M3 and E5M2 encodings with
+saturating conversion (roundTiesToEven) only; the non-saturating mode of
+Revision 1.1 §5.2.1 is out of scope (owner decision 2026-11-13, PR #50). E5M2
+is used by no requirement. The requirements
 that cite it are RI-MIR-003 (the `fp8` dtype, OCP E4M3), RI-CLI-002
 (`fp8` and `mxfp8` elements are OCP E4M3), RI-KC-003 (OCP fp8 MFMA on gfx950)
 and RI-KVC-008 (`--kv-dtype fp8` is OCP E4M3 on gfx950 and cpu). RI-MIR-012
@@ -23,14 +25,18 @@ uses E4M3 as the element of `mxfp8` activation quantization.
   row `MiniFloat::E4M3` (bias 7, no infinity, `:49-56`), the NaN `0x7F` and
   the maximum 448 (`:18-24`), decode (`:96-128`), encode with roundTiesToEven
   and saturation (`:131-181`), and `f32_to_fp8` and `fp8_to_f32` (`:296-306`).
-  It saturates: there is no non-saturating mode.
+  It saturates, as the narrowed scope requires; ±Inf to ±448 is asserted
+  (`crates/rustinfer-target/tests/numeric.rs:186`).
 - The MX reference uses the same encoder for E4M3 elements
   (`crates/rustinfer-target/src/reference/mx.rs:106-118`).
 - The Kernel IR names the type `f8E4M3FN` (`crates/rustinfer-kc/src/dialect/types.rs:19-20`)
   and uses 0xFE (−448) as the identity of a `max` reduction
-  (`crates/rustinfer-kc/src/mlir/lower.rs:19-28`).
-- Pending: the gfx950 OCP fp8 MFMA (PR #44, issue #8), fp8 KV storage (PR #48,
-  issue #37) and in-kernel `mxfp8` activation quantization (issue #38).
+  (`crates/rustinfer-kc/src/mlir/lower.rs:19-28`), asserted by
+  `test_max_identity_of_ocp_e4m3_is_minus_448` (`lower.rs:441`).
+- The fp8 KV CPU reference (PR #48): the cache write quantizes with
+  `f32_to_fp8` (`crates/rustinfer-target/src/reference/kv.rs:263-285`).
+- Pending: the gfx950 OCP fp8 MFMA (PR #44, issue #8), and the GPU fp8 KV and
+  in-kernel `mxfp8` activation quantization kernels (issue #38).
 
 **Conformance:** mandatory from **R1**.
 
@@ -47,6 +53,6 @@ and adds Appendix A".
 |---|---|
 | Pages | [requirements](std-ocp-ofp8-requirements.html) · [audit](std-ocp-ofp8-audit.html) · [tracker](std-ocp-ofp8-tracker.html) |
 | Conformance | mandatory R1 (RI-MIR-003, RI-CLI-002, RI-KC-003, RI-KVC-008) |
-| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the specification text |
-| Result | the E4M3 encoding, roundTiesToEven and saturating conversion conform; the required non-saturating mode is missing; the GPU users are in open PRs |
-| Open gaps | 3 |
+| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the specification text; re-audited at `b99720a` after PRs #48, #50 and #52 |
+| Result | the E4M3 encoding, roundTiesToEven and saturating conversion conform and are tested; the non-saturating mode is out of scope (PR #50); the GPU users are pending (PR #44, #38) |
+| Open gaps | 1 |

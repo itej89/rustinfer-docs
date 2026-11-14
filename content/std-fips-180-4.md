@@ -16,10 +16,10 @@ RI-SEC-004 (the checkpoint identity: `config.json` and every safetensors header)
 RI-WST-005 (Sluice's `--verify-weights`).
 
 **Implementation:** SHA-256 is not written by rustinfer. It comes from the RustCrypto
-`sha2` crate, pinned exactly (`Cargo.toml:52`, `sha2 = "=0.10.9"`), behind one type,
+`sha2` crate, pinned exactly (`Cargo.toml:55`, `sha2 = "=0.10.9"`), behind one type,
 `rustinfer_artifact::Sha256` (`crates/rustinfer-artifact/src/hash.rs:20-64`):
 `Sha256::of` hashes a byte slice (`hash.rs:35-39`) and the digest is carried in JSON
-as 64 lowercase hex digits (`hash.rs:41-63`). Call sites on origin/main (`ccf02b3`):
+as 64 lowercase hex digits (`hash.rs:41-63`). Call sites on origin/main (`b99720a`):
 the writer and reader of the artifact hash (`writer.rs:110`, `reader.rs:288`), the
 safetensors header identity (`safetensors.rs:275`, `metadata.rs:109-114`), the
 `config.json` hash (`crates/rustinfer-frontend/src/lowering.rs:127`,
@@ -34,10 +34,10 @@ https://csrc.nist.gov/pubs/fips/180-4/upd1/final). Free.
 | | |
 |---|---|
 | Pages | [requirements](std-fips-180-4-requirements.html) · [audit](std-fips-180-4-audit.html) · [tracker](std-fips-180-4-tracker.html) |
-| Audited | 2026-11-13, by reading origin/main and its tests against FIPS 180-4 |
-| Algorithm (§5, §6.2) | conforms, through `sha2` 0.10.9; checked by the one-block "abc" vector |
+| Audited | 2026-11-13, by reading origin/main and its tests against FIPS 180-4; re-read at `b99720a` after PR #52 |
+| Algorithm (§5, §6.2) | conforms, through `sha2` 0.10.9; checked by the "abc", empty, two-block, padding-boundary and one-million-`a` vectors |
 | Digest form (§3.1, §6.2.2) | conforms: 256 bits, lowercase hex |
-| Open gaps | 1: the known-answer tests cover one block only |
+| Open gaps | 0 (SHA256-1 fixed in `b99720a`) |
 
 rustinfer does not claim FIPS validation. The standard's announcement says "Only
 algorithm implementations that are validated by NIST will be considered as complying

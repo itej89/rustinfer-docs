@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 04a2a26 2026-11-13. A failure leaves the command as one line on
+`src/error.rs` at commit b99720a 2026-11-13. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -135,6 +135,7 @@ and component.
 | `rustinfer-mir` | `mir` | `FilledLegacySlot` | `unsupported` |
 | `rustinfer-mir` | `mir` | `InvalidProfile` | `delegated` |
 | `rustinfer-mir` | `mir` | `NonFiniteAttribute` | `delegated` |
+| `rustinfer-mir` | `mir` | `InvalidAttribute` | `delegated` |
 | `rustinfer-mir` | `mir` | `UnsupportedFeature` | `delegated` |
 | `rustinfer-planner` | `planner` | `Malformed` | `delegated` |
 | `rustinfer-planner` | `planner` | `TooLarge` | `delegated` |
@@ -172,6 +173,10 @@ and component.
 | `rustinfer-sluice` | `sluice` | `PipelineClosed` | `internal` |
 | `rustinfer-sluice` | `sluice` | `DigestMissing` | `delegated` |
 | `rustinfer-sluice` | `sluice` | `DigestMismatch` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `Manifest` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `TransformUnavailable` | `unsupported` |
+| `rustinfer-sluice` | `sluice` | `SharedScaleTransform` | `delegated` |
+| `rustinfer-sluice` | `sluice` | `StagingTooSmall` | `delegated` |
 | `rustinfer-target` | `target` | `CatalogEmpty` | `delegated` |
 | `rustinfer-target` | `target` | `NoKernel` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownArchitecture` | `delegated` |
