@@ -35,8 +35,10 @@ moved from Codeberg Pages on 2026-11-12 together with the project
 ## Where the content comes from
 
 `content/*.md` are the pages, each with a small header naming its title,
-section, group and order. The sections are Overview, Design, Compiler,
-Runtime, Hardware, Development, Trackers, Reference and Standards.
+section, group and order. The sections, in sidebar order, are Introduction
+(the rustinfer page alone), Standards (right below it, by the owner's request of
+2026-11-14), Overview, Design, Compiler, Runtime, Hardware, Development,
+Trackers and Reference.
 
 The Standards section follows the Matins model: `standards.md` is the
 Standards map, and each of the 25 standards SRS §1.4 marks `mandatory R<n>`

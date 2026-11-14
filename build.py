@@ -64,8 +64,8 @@ def source_branch():
     except Exception:  # noqa: BLE001
         return "unknown"
 
-SECTIONS = ["Overview", "Design", "Compiler", "Runtime", "Hardware",
-            "Development", "Trackers", "Reference", "Standards"]
+SECTIONS = ["Introduction", "Standards", "Overview", "Design", "Compiler", "Runtime", "Hardware",
+            "Development", "Trackers", "Reference"]
 
 MD = dict(
     extensions=["extra", "tables", "fenced_code", "codehilite", "toc",

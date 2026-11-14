@@ -1,6 +1,6 @@
 ---
 title: rustinfer
-section: Overview
+section: Introduction
 order: 1
 summary: The inference engine for AMD Instinct and RISC-V accelerators, read from its tree: what it is meant to be, what exists on 2026-11-14, and where the work is tracked.
 ---
