@@ -85,7 +85,10 @@ def parse(path):
         for line in m.group(1).splitlines():
             if ":" in line:
                 k, v = line.split(":", 1)
-                meta[k.strip()] = v.strip()
+                v = v.strip()
+                if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
+                    v = v[1:-1]  # a quoted YAML scalar, as the standards pages write their group
+                meta[k.strip()] = v
         text = text[m.end():]
     return meta, text
 
