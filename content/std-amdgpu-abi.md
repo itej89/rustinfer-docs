@@ -13,7 +13,7 @@ summary: The AMDHSA code object V5 ABI of LLVM 23.1's AMDGPUUsage: the ELF heade
 kernel descriptor and the metadata, as the HIP module loader reads them.
 Code object V5 (`ELFABIVERSION_AMDGPU_HSA_V5`) is the LLVM 23.1 default.
 Other code object versions, PAL and Mesa ABIs, the trap handler and debug
-information are out of the claim.
+information are out of the claim. Since SRS v0.4.11 (PR #65, ADR-011) the scope adds, for RI-KC-015, "the memory model sections (GFX942, GFX125x) and the Load-Visible and Store-Available tables: the cache-policy bits per target and scope" (AB-R16).
 
 **Implementation:** on `main` (`81fbcba`) the kernel compiler emits gfx942
 and gfx950 code objects in-process (PR #44, merge `38f2f60`, issue #8) and
@@ -48,6 +48,6 @@ in that copy.
 |---|---|
 | Pages | [requirements](std-amdgpu-abi-requirements.html) · [audit](std-amdgpu-abi-audit.html) · [tracker](std-amdgpu-abi-tracker.html) |
 | Conformance | mandatory R1 |
-| Audited | 2026-11-14, by reading `main` `81fbcba`, the results of #45 and #59 in #54 and the specification text; no test run locally |
-| Result | part: the header, `e_flags`, `EI_OSABI`, `e_entry`, the metadata note, `amdhsa.version` and the descriptor's segment sizes are tested, and the ROCm target reads the metadata before every load; verified on gfx950 (#45, #59); gfx942 not yet run (#61); `amdhsa.target`, the symbol types and the descriptor's entry offset, alignment and reserved fields have no test |
-| Open gaps | 2 of 4 (ABI-2 untested fields, ABI-3 gfx942 load); ABI-1 fixed by PR #44, ABI-4 by PR #58 |
+| Audited | 2026-11-14, by reading `main` `81fbcba`, the results of #45 and #59 in #54 and the specification text; no test run locally; AB-R16 audited 2026-11-15 at `b057ef5` |
+| Result | part: the header, `e_flags`, `EI_OSABI`, `e_entry`, the metadata note, `amdhsa.version` and the descriptor's segment sizes are tested, and the ROCm target reads the metadata before every load; verified on gfx950 (#45, #59); gfx942 not yet run (#61); `amdhsa.target`, the symbol types and the descriptor's entry offset, alignment and reserved fields have no test; no cache-policy bit is mapped or emitted (#64) |
+| Open gaps | 3 of 5 (ABI-2 untested fields, ABI-3 gfx942 load, ABI-5 cache-policy bits); ABI-1 fixed by PR #44, ABI-4 by PR #58 |

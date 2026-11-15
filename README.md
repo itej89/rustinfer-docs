@@ -41,7 +41,7 @@ section, group and order. The sections, in sidebar order, are Introduction
 Trackers and Reference.
 
 The Standards section follows the Matins model: `standards.md` is the
-Standards map, and each of the 25 standards SRS §1.4 marks `mandatory R<n>`
+Standards map, and each of the 27 standards SRS §1.4 marks `mandatory R<n>`
 has four pages, `std-<id>.md` (overview), `std-<id>-requirements.md`,
 `std-<id>-audit.md` and `std-<id>-tracker.md`, grouped in the navigation as
 `<Area> / <Name> <version>`, with its record in `data/standards/<id>.json`

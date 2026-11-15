@@ -4,7 +4,7 @@ navtitle: Audit
 section: Standards
 group: "Number formats / AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)"
 order: 32
-summary: The 2026-11-14 audit of rustinfer's FP8 E4M3 FNUZ encoding against the CDNA3 ISA guide and LLVM APFloat on main 81fbcba; the encoding conforms, the gfx942 FNUZ MFMA is merged but not yet run on hardware.
+summary: The audit of rustinfer's FP8 E4M3 FNUZ encoding against the CDNA3 ISA guide and LLVM APFloat (main 81fbcba) and of the gfx942 capability values (main b057ef5); the encoding conforms, the cache bits and direct-to-LDS loads are #64.
 ---
 
 # AMD FP8 FNUZ audit
@@ -66,6 +66,22 @@ the explicit assertion that 0x7F is 240, no pattern is an infinity.
   `test_cached_k_and_v_equal_the_oracle_conversion_bit_exactly`
   (`crates/rustinfer-target/tests/kv.rs:212`) covers FNUZ storage (`tests/kv.rs:57`).
 
+## The gfx942 capability values, audit of 2026-11-15
+
+Against FNUZ-R7 to FNUZ-R9, added to the scope by SRS v0.4.11 (PR #65), on
+`main` `b057ef5`. Read §3.1, §9.1.10.2, §10.1, §10.2, §11 and §12.15 of the
+guide; on `b057ef5` read `crates/rustinfer-kc/src/capabilities.rs`,
+`amd.rs`, `dialect/ops.rs`, `mlir/rocdl/`, the constants and the tests named
+below, and searched every crate for direct-to-LDS and cache-policy
+spellings (none). No tests were run. gfx942 hardware runs no longer gate R1
+(SRS v0.4.12 §2.4); the checks below are all offline.
+
+| item | requirement | result | evidence |
+|---|---|---|---|
+| FNUZ-R7 | LDS 64 kB per work group | conforms; no per-field test (FNUZ-3) | `KC_GFX942_LDS_BYTES` = `64 * 1024`, citing "the §3.1 table: 64 KiB per CU" (`crates/rustinfer-core/src/config/constants.rs:717-719`), the gfx942 description's `shared_memory_bytes` (`crates/rustinfer-kc/src/amd.rs:116`). The back end refuses 65540 bytes and compiles 65536 for gfx942 (`test_kernel_over_the_lds_limit_is_refused_by_the_back_end`, `crates/rustinfer-kc/tests/amd_lowering.rs:437`); the ROCm target checks against the device before loading (`crates/rustinfer-target-rocm/src/resources.rs:65`). No test reads the capability field |
+| FNUZ-R8 | SC1, SC0, NT and Table 48 | missing (FNUZ-3) | No hint field in `Capabilities` (`capabilities.rs:47-64`); the lowered accesses carry no cache-policy attribute (`crates/rustinfer-kc/src/mlir/rocdl/helpers.rs:78`, `:154`, `:321-330`), so all are wave scope, NT = 0 |
+| FNUZ-R9 | `GLOBAL_LOAD_LDS_*` at 1, 2, 4 bytes | missing (FNUZ-3) | No mover field and no asynchronous tile copy (`crates/rustinfer-kc/src/dialect/ops.rs:8-21`); no `rocdl.load.to.lds`, `global.load.lds` or `amdgpu.gather_to_lds` emitted. LLVM's widths for gfx942 are [DMA-1](std-llvm-amdgpu-dma-tracker.html) |
+
 ## Conversion behaviour, outside the scope
 
 Recorded for the gfx942 work, not judged:
@@ -112,5 +128,8 @@ Every in-scope item of the encoding conforms on `origin/main` and is tested;
 the identity constant is asserted since PR #52 (FNUZ-1 fixed), and the fp8 KV
 CPU reference of PR #48 writes FNUZ on gfx942. The gfx942 FNUZ MFMA is merged
 (PR #44) but not yet run on gfx942 hardware (#61), and the GPU cache-write
-kernel (#38) is not written (FNUZ-2). **Partial**, for the R1 coverage, not for
+kernel (#38) is not written (FNUZ-2). Of the gfx942 capability values the
+scope gained on 2026-11-15, the 64 kB LDS is right but its capability field
+is untested, and the cache bits and the direct-to-LDS loads are not yet in
+the description (FNUZ-3, #64). **Partial**, for the R1 coverage, not for
 any wrong encoding.

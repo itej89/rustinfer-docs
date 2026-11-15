@@ -45,6 +45,19 @@ gfx942 not yet run (#61).
 | AB-R14 | **partly tested** | `amd_lowering.rs:585` asserts the descriptor's size (64 bytes), `GROUP_SEGMENT_FIXED_SIZE` and `KERNARG_SIZE`. Not checked: the 64-byte alignment, `KERNEL_CODE_ENTRY_BYTE_OFFSET` and the 256-byte alignment of the entry, the reserved fields, `COMPUTE_PGM_RSRC1` to `RSRC3`. The gfx950 dispatches of #45 ran correctly, which they could not with a wrong entry offset. ABI-2 |
 | AB-R15 | **conforms**; hardware: gfx950 verified, gfx942 open | No `amdgpu.buffer.oob.mode` flag is set (`llvm.rs:268-287`). Test: `test_masked_load_lowers_to_a_bounds_checked_buffer_load` (`amd_lowering.rs:370`, Groundwork for RI-KC-003). On gfx950 #45 read zeros past the bound (`masked_readback`, `max_abs_err=0`) |
 
+## Cache-policy bits, audit of 2026-11-15
+
+Against AB-R16, added to the scope by SRS v0.4.11 (PR #65), on `main`
+`b057ef5`. Read the Load-Visible and Store-Available tables and the
+non-atomic code sequences of *Memory Model GFX942* and *Memory Model
+GFX125x*; read `crates/rustinfer-kc/src/capabilities.rs` and the ROCDL
+lowering (`crates/rustinfer-kc/src/mlir/rocdl/`) and searched every crate
+for `sc0`, `sc1`, `nt`, nontemporal and cache-policy spellings. No test run.
+
+| id | result | evidence |
+|---|---|---|
+| AB-R16 | **missing** (ABI-5) | The capability description has no cache-policy hint (`capabilities.rs:47-64`), and no lowered access carries a cache-policy attribute or `!nontemporal` (`crates/rustinfer-kc/src/mlir/rocdl/helpers.rs:78`, `:154`, `:321-330`), so the back end emits every global access at wavefront scope with no bit, the first column of both tables. Correct for the kernels on `b057ef5`, none of which needs a wider scope or a streaming hint; the `cache-hints` pass (RI-KC-016 (h)) and the hint field are planned in #64. The gfx950 ISA side is [CDNA4-2](std-amd-cdna4-isa-tracker.html), the gfx942 side FNUZ-3 |
+
 ## Result
 
 The kernel compiler on `main` writes code object V5 in the form the HIP

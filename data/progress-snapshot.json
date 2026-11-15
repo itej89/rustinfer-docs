@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-15T19:08:09+00:00",
+ "fetched_at": "2026-11-15T19:24:06+00:00",
  "source": "github",
  "issues": [
   {
@@ -488,8 +488,8 @@
     "RI-CLI-002",
     "RI-CLI-003"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/36-mxfp4-precision",
+   "derived_status": "In review 2026-11-15"
   },
   {
    "number": 37,
@@ -1161,6 +1161,18 @@
    "mergeable": true,
    "created_at": "2026-11-15",
    "url": "https://github.com/itej89/rustinfer/pull/75"
+  },
+  {
+   "number": 76,
+   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
+   "state": "open",
+   "head": "feat/36-mxfp4-precision",
+   "base": "feat/10-graph-compiler",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/76"
   }
  ],
  "milestones": [
@@ -1173,10 +1185,21 @@
  ],
  "runs": [
   {
-   "id": 151,
-   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
+   "id": 152,
+   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
    "status": "in_progress",
    "conclusion": null,
+   "event": "pull_request",
+   "ref": "feat/36-mxfp4-precision",
+   "sha": "99bf9d5",
+   "created": "2026-11-15T19:21",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43751938787"
+  },
+  {
+   "id": 151,
+   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
+   "status": "completed",
+   "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/9-generators-autotuner",
    "sha": "82fed79",
@@ -1186,8 +1209,8 @@
   {
    "id": 150,
    "title": "Merge pull request #72 from itej89/feat/13-executor-static-batch",
-   "status": "in_progress",
-   "conclusion": null,
+   "status": "completed",
+   "conclusion": "success",
    "event": "push",
    "ref": "main",
    "sha": "b057ef5",
@@ -1292,17 +1315,6 @@
    "sha": "3f5c321",
    "created": "2026-11-15T16:00",
    "url": "https://github.com/itej89/rustinfer/actions/runs/43733036895"
-  },
-  {
-   "id": 140,
-   "title": "feat(kc): the remaining R1 generators (#9, 9b)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/9b-generators",
-   "sha": "b41a8f1",
-   "created": "2026-11-15T16:00",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43733035378"
   }
  ],
  "branches": [
@@ -1327,6 +1339,7 @@
   "feat/27-placement-v2",
   "feat/34-mxfp4-ir-oracle",
   "feat/35-mxfp4-checkpoints",
+  "feat/36-mxfp4-precision",
   "feat/37-kv-dtypes",
   "feat/39-mxfp4-sluice",
   "feat/5-target-and-cpu-reference",

@@ -137,6 +137,26 @@
    "element": "rustinfer-target-rocm"
   },
   {
+   "standard": "AMD-CDNA4-ISA",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "AMD-CDNA4-ISA",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "LLVM-AMDGPU-DMA",
+   "level": "context",
+   "element": "x-llvm"
+  },
+  {
+   "standard": "LLVM-AMDGPU-DMA",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
    "standard": "RCCL",
    "level": "context",
    "element": "x-gpu"

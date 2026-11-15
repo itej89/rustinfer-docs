@@ -62,6 +62,16 @@ PURPOSE = {
     "ADR-008": "The move of the project to GitHub.",
     "ADR-009": "Placement names devices and tiers.",
     "ADR-010": "MXFP4 in Release 1.",
+    "ADR-011": "A smart compiler, not hand-tuned kernels: architecture-agnostic generators, the "
+               "capability query, optimisation passes and tuned compiler settings; no assembly in the tree.",
+    "AMD-CDNA3-WP": "The MI300X cache hierarchy behind the gfx942 memory-hierarchy values of RI-KC-015: "
+                    "8 XCDs, L1 32 KB, L2 4 MB per XCD, 256 MB Infinity Cache.",
+    "AMD-CDNA4-WP": "The MI350 cache hierarchy behind the gfx950 memory-hierarchy values of RI-KC-015: "
+                    "LDS 160 KB, L1 32 KB, L2 4 MB per XCD, 256 MB Infinity Cache.",
+    "AMD-MI300-MODES": "Why work-group order decides L2 sharing on MI300X (RI-KC-016 (g)): in SPX mode "
+                       "work groups go round-robin to the XCDs, each with its own L2.",
+    "AMD-TDM": "AMD's name, Tensor Data Mover, for the gfx1250 descriptor-based tile mover that "
+               "RI-KC-015's tensor mover describes.",
     "NV-KV": "Background for a low-precision KV cache (NVFP4 KV cache, long context and large batches).",
     "MXFP4-RTN": "Evidence that weight-only MXFP4 round-to-nearest keeps about 95.6 percent of "
                  "Llama-3.1-8B's accuracy, behind MXFP4 in Release 1.",

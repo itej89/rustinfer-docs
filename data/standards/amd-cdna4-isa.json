@@ -1,0 +1,13 @@
+{
+  "id": "AMD-CDNA4-ISA",
+  "name": "AMD CDNA4 ISA",
+  "version": "guide of 2025-08-05",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R1",
+  "state": "part",
+  "assessed": true,
+  "audit_date": "2026-11-15",
+  "gaps_open": 3,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

@@ -36,6 +36,19 @@ unsigned zero). This format's exponent bias is 8".
 | FNUZ-R5 | One NaN, 0x80 (the negative-zero pattern). | [ISA] Table 30 "NaN 0x80"; [LLVM] `fltNanEncoding::NegativeZero` |
 | FNUZ-R6 | Largest finite magnitude 240 (S.1111.111, emax 7, significand 1.875). | [ISA] Table 30 "max 240"; [LLVM] maximum exponent 7, precision 4 |
 
+## The gfx942 capability values (SRS v0.4.11)
+
+SRS v0.4.11 (PR #65) extends the scope with three more sections of the same
+guide, the gfx942 values of RI-KC-015's capability query; the gfx950 values
+are [AMD-CDNA4-ISA](std-amd-cdna4-isa-requirements.html)'s. Page numbers
+are the guide's printed "n of 553".
+
+| item | requirement | source |
+|---|---|---|
+| FNUZ-R7 | LDS, "Local Data Share", 64kB; "There are 64 kB memory per compute unit, segmented into 32 banks of 512 Dwords ... One work-group can request up to 64 kB memory". The gfx942 description's shared-memory bytes per work group are 64 × 1024 | [ISA] §3.1 Table 2 (p. 8); §11 (p. 84) |
+| FNUZ-R8 | Vector memory instructions have "SC[1:0] System Cache level: 0=wave, 1=group, 2=device, 3=system" and "NT Non-Temporal: 0=expect temporal reuse; 1=do not expect temporal reuse"; Table 48 gives the CU cache, L2 and last-level behaviour per combination (NT = 1: "Miss Evict", "Hit Stream", "Hit Evict" at wave and group scope). RI-KC-015 (iii)'s abstract hints map onto them | [ISA] §9.1.10.2, Table 48 "Load Controls", Table 49 "Store Controls" (pp. 73 to 74) |
+| FNUZ-R9 | The global loads into LDS are `GLOBAL_LOAD_LDS_UBYTE`, `_SBYTE`, `_USHORT`, `_SSHORT` and `_DWORD`: 1, 2 or 4 bytes per lane (no `DWORDX3` or `DWORDX4` on CDNA3); M0 gives the LDS offset ("Implied use of M0 for SCRATCH and GLOBAL only when LDS=1") and lane `i` writes at `ThreadID*4` | [ISA] §12.15 (pp. 499 to 500); §10.1 Table 54 (p. 79); §10.2 (p. 81) |
+
 ## Related, outside the Scope phrase
 
 The Scope phrase is the encoding only. The ISA guide also defines the

@@ -61,3 +61,13 @@ check of RI-ROC-004 needs.
 | id | requirement | source |
 |---|---|---|
 | AB-R15 | Untyped buffer accesses keep per-element out-of-bounds guarantees unless `amdgpu.buffer.oob.mode` is 1 (relaxed); absent means "any", whose "Code generation is identical to strict" | *Module Flags* (line 973), lines 990 to 1002 |
+
+## Cache-policy bits of the memory model (SRS v0.4.11)
+
+SRS v0.4.11 (PR #65, ADR-011) extends the scope "for RI-KC-015, the memory
+model sections (GFX942, GFX125x) and the Load-Visible and Store-Available
+tables: the cache-policy bits per target and scope".
+
+| id | requirement | source |
+|---|---|---|
+| AB-R16 | The cache-policy bits per target and scope: on gfx942 and gfx950 a `global_load_dwordx4` or `global_store_dwordx4` carries no bit at wavefront scope, `sc0` at workgroup, `sc1` at agent, `sc0 sc1` at system; on gfx12 and later the scope is `SCOPE_CU`, `SCOPE_SE`, `SCOPE_DEV` or `SCOPE_SYS`. A nontemporal non-atomic load or store is `nt=1` on GFX942 and `th:TH_LOAD_NT` or `th:TH_STORE_NT` on GFX125x; a volatile one `sc0=1 sc1=1` and `scope:SCOPE_SYS`. "There may be multiple L2 caches per agent" on GFX125x. These are the bits RI-KC-015's abstract hints (non-temporal or streaming, expected reuse, coherence scope) lower to | tables *AMDGPU Load-Visible Implementation* (line 2145) and *AMDGPU Store-Available Implementation* (line 2168); *Memory Model GFX942* (line 11080), code sequences lines 11226 to 11268; *Memory Model GFX125x* (line 17585), line 17618, lines 17803 to 17844 |
