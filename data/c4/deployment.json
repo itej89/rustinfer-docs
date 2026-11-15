@@ -4,7 +4,7 @@
  "nodes": [
   {
    "name": "Linux host",
-   "tech": "x86_64, ROCm 7.0 to 7.2",
+   "tech": "x86_64, HIP runtime major 7 (ROCm 10.1 tested)",
    "children": [
     {
      "name": "rustinfer CLI",
@@ -38,7 +38,11 @@
      "name": "AMD Instinct GPUs",
      "tech": "MI300X (gfx942) or MI355X (gfx950), up to 8, Infinity Fabric",
      "ref": "x-gpu",
-     "hw": true
+     "hw": true,
+     "hwtest": [
+      {"arch": "gfx950", "issues": [45, 59]},
+      {"arch": "gfx942", "issues": [61]}
+     ]
     }
    ],
    "lede": "Everything Release 1 needs, on one machine: the binary, the files it reads and writes, and the GPUs behind ROCm."
@@ -57,7 +61,10 @@
     {
      "name": "GPU tests",
      "tech": "a gfx942 and a gfx950 host",
-     "hwtest": 45
+     "hwtest": [
+      {"arch": "gfx950", "issues": [45, 59]},
+      {"arch": "gfx942", "issues": [61]}
+     ]
     }
    ],
    "lede": "Where every change is built and tested; the GPU tests run on request on hosts with the hardware."

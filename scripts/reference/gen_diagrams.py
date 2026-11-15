@@ -440,7 +440,7 @@ def parse_graph(src):
         if s.startswith("classDef "):
             classes[s.split()[1]] = s
             continue
-        toks = re.split(r"\s*(-\.->|-->|-- [^>]*? -->)\s*", s)
+        toks = re.split(r"\s*(-\.->|-\. [^>]*? \.->|-->|-- [^>]*? -->)\s*", s)
         if len(toks) == 1:
             node(toks[0])
             continue
@@ -448,10 +448,10 @@ def parse_graph(src):
         for i in range(1, len(toks), 2):
             arrow, nxt = toks[i], node(toks[i + 1])
             lab = ""
-            m = re.match(r"^-- (.*) -->$", arrow)
+            m = re.match(r"^-- (.*) -->$", arrow) or re.match(r"^-\. (.*) \.->$", arrow)
             if m:
                 lab = m.group(1)
-            edges.append((prev, nxt, lab, arrow == "-.->"))
+            edges.append((prev, nxt, lab, arrow.startswith("-.")))
             prev = nxt
     return nodes, edges
 
@@ -495,7 +495,10 @@ def render_component(n, src, where, kind, line):
             for k in [x for x in grp if memo[x] == b]:
                 lab = label(nodes[k]["label"]).split(" · ")
                 ext = nodes[k]["cls"] == "ext" or nodes[k]["shape"] == "store"
-                uses = " ".join(f'<a href="#ud{n}-{d}">{e(name(d).replace("rustinfer-", ""))}</a>' for d in deps[k])
+                labels = {b: lab for a, b, lab, _ in edges if a == k and lab}
+                uses = " ".join(f'<a href="#ud{n}-{d}">{e(name(d).replace("rustinfer-", ""))}</a>'
+                                + (f' <span class="c4-type">({e(labels[d])})</span>' if d in labels else "")
+                                for d in deps[k])
                 cards.append(f'<div class="c4-box {"c4-external" if ext else "c4-container"}" id="ud{n}-{k}">'
                              f'<div class="c4-box-head"><span class="c4-name">{e(lab[0])}</span></div>'
                              f'<span class="c4-type">[{"external library" if ext else "crate"}]</span>'

@@ -1,5 +1,5 @@
 {
- "commit": "99c1ec7",
+ "commit": "81fbcba",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -123,6 +123,8 @@
     "rustinfer-core"
    ],
    "api": [
+    "AmdArch",
+    "Mfma",
     "KernelBuilder",
     "KernelModule",
     "Value",
@@ -147,6 +149,7 @@
     "link_status",
     "require_link",
     "LinkStatus",
+    "CodeObject",
     "KernelContext"
    ]
   },
@@ -345,6 +348,15 @@
     "rustinfer-target"
    ],
    "api": [
+    "CodeObject",
+    "FeatureMode",
+    "KernelArgument",
+    "KernelMetadata",
+    "LaunchDims",
+    "RocmDevice",
+    "TargetId",
+    "DeviceLimits",
+    "hip",
     "ARCHITECTURES",
     "RocmTarget",
     "entry"

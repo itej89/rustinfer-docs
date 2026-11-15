@@ -13,19 +13,31 @@ Read from `README.md`, `CONTRIBUTING.md`, `Cargo.toml` and
 
 ## Toolchain
 
-The workspace declares `rust-version = "1.85"`, edition 2021, stable channel.
-No ROCm is needed to build or test: the ROCm backend sits behind the `rocm`
-feature of `rustinfer-target-rocm`, and the SRS requires every non-device test
-to pass on a host without ROCm (RI-NFR-016).
+Re-read at `81fbcba` (2026-11-14), after PR #60. The toolchain is pinned in
+`rust-toolchain.toml`: Rust **1.100.0** with `rustfmt`, `clippy` and
+`llvm-tools-preview`, profile `minimal` (owner decision of 2026-11-14,
+ADR-001). rustup reads the file and installs that release on the first
+`cargo` command in the checkout, so nothing but rustup needs installing by
+hand; do not override it with `+stable`, the gates must run on the pinned
+release. The workspace's MSRV stays `rust-version = "1.89"` (edition 2021,
+ADR-007), which CI's `msrv` job checks; locally that is
+`cargo +1.89 check --workspace --all-features`. No ROCm is needed to build
+or test: the ROCm backend sits behind the `rocm` feature of
+`rustinfer-target-rocm`, which opens the HIP runtime only at run time, and
+the SRS requires every non-device test to pass on a host without ROCm
+(RI-NFR-016).
 
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path --profile minimal
 export PATH="$HOME/.cargo/bin:$PATH"     # --no-modify-path leaves your shell files alone
-rustup component add rustfmt clippy
+# optional: fetch the pinned release ahead of the first cargo command
+rustup toolchain install 1.100.0 --profile minimal --component rustfmt,clippy,llvm-tools-preview
 ```
 
 The `--no-modify-path` form is how the toolchain was installed on the
-development host; with it, every new shell needs the `export` line.
+development host; with it, every new shell needs the `export` line. Building
+with `--all-features` also needs the pinned LLVM 23 with MLIR and `lld`
+(`scripts/ci/install_llvm.sh`, ADR-007; see [build steps](build-steps.html#the-pinned-llvm)).
 
 ## Build and test
 

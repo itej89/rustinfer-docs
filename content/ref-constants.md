@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-99c1ec7 2026-11-14. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 156
+81fbcba 2026-11-14. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 171
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -121,6 +121,26 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `CPU_DEVICE_NAME` | `&str` | `"cpu reference"` | Device name the CPU reference target reports. |
 | `CPU_DEVICE_DEFAULT_MEMORY_BYTES` | `u64` | `16 * 1024 * 1024 * 1024` | Default memory budget of the CPU reference device, in bytes; allocations beyond it fail like a device out of memory. |
 | `CPU_KERNEL_ID_PREFIX` | `&str` | `"cpu."` | Prefix of every CPU reference kernel id: `cpu.<operator>`. |
+| `ROCM_HIP_LIBRARY_PATHS` | `&[&str]` | `&[
+    "/opt/rocm/lib/libamdhip64.so.7",
+    "/usr/lib/x86_64-linux-gnu/libamdhip64.so.7",
+    "/usr/lib64/libamdhip64.so.7",
+    "/usr/lib/libamdhip64.so.7",
+]` | Where the `ROCm` target loads the HIP runtime from, in order (RI-SEC-001): absolute paths in the system library directories only, so neither `LD_LIBRARY_PATH` nor the working directory can substitute the library. The soname pins the HIP major version the binding is written against (`ROCM_HIP_RUNTIME_MAJOR`). |
+| `ENV_HIP_LIBRARY` | `&str` | `"RUSTINFER_HIP_LIBRARY"` | Environment variable naming a specific HIP runtime library to load instead of searching `ROCM_HIP_LIBRARY_PATHS`; validated at startup (RI-SEC-001). |
+| `ROCM_HIP_SONAME_PREFIX` | `&str` | `"libamdhip64.so.7"` | The file-name prefix every accepted HIP 7 runtime library shares, so a `RUSTINFER_HIP_LIBRARY` override still names the pinned major version. |
+| `ROCM_HIP_RUNTIME_MAJOR` | `i32` | `7` | The HIP runtime major version the binding is written against (`ROCm` 7.0 to 7.2, SRS §1.4 HIP; RI-NFR-017): `hipRuntimeGetVersion` divided by `ROCM_HIP_VERSION_MAJOR_FACTOR` must equal it. |
+| `ROCM_HIP_VERSION_MAJOR_FACTOR` | `i32` | `10_000_000` | The factor of the major version in a HIP version number (`HIP_VERSION_MAJOR * 10000000 + HIP_VERSION_MINOR * 100000 + patch`). |
+| `ROCM_MAX_VGPRS` | `u64` | `512` | Vector registers a work item may use on gfx942 and gfx950, architectural and accumulation registers together (`AMDGPUUsage`, `compute_pgm_rsrc1`, GFX90A and GFX942: `vgprs_used 0..512`). |
+| `ROCM_MAX_AGPRS` | `u64` | `256` | Accumulation registers a work item may use (half the unified file). |
+| `ROCM_MAX_SGPRS` | `u64` | `112` | Scalar registers a wavefront may use, special registers included (`AMDGPUUsage`, `compute_pgm_rsrc1`, GFX9: `sgprs_used 0..112`). |
+| `ROCM_VGPR_GRANULE` | `u64` | `8` | Allocation granule of vector registers on gfx942 and gfx950 (`ceil(vgprs_used / 8)` blocks). |
+| `ROCM_SIMDS_PER_CU` | `u64` | `4` | SIMDs per compute unit on CDNA 3 and CDNA 4: the waves of one work group are spread over them, so each SIMD's register file holds a quarter. |
+| `ROCM_VGPRS_PER_SIMD` | `u64` | `512` | Vector registers per lane in one SIMD's register file (gfx942, gfx950). |
+| `ROCM_MAX_WORK_ITEMS_PER_DIMENSION` | `u64` | `1 << 32` | Exclusive upper bound on grid size times block size in one dimension of a HIP launch (HIP reference, `hipModuleLaunchKernel`: "gridDim x blockDim >= 2^32" is not supported). |
+| `ROCM_MAX_CODE_OBJECT_BYTES` | `usize` | `256 * 1024 * 1024` | Upper bound on the size of a code object the `ROCm` target parses before handing it to HIP (RI-SEC-002 style bound on an external input). |
+| `ROCM_MAX_METADATA_DEPTH` | `usize` | `16` | Upper bound on the nesting depth of the `NT_AMDGPU_METADATA` `MessagePack` document the `ROCm` target decodes. |
+| `ROCM_MAX_METADATA_ITEMS` | `usize` | `65_536` | Upper bound on the elements of one `MessagePack` map or array in the metadata. |
 | `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |
 | `ENV_STAGING_BYTES` | `&str` | `"RUSTINFER_STAGING_BYTES"` | Environment variable bounding the host staging memory of the weight streamer, in bytes (RI-WST-002). |
 | `DEFAULT_STAGING_BYTES` | `u64` | `1024 * 1024 * 1024` | The staging budget when `ENV_STAGING_BYTES` is unset: 1 GiB (RI-WST-002). |

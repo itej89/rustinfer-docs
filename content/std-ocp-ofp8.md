@@ -41,8 +41,12 @@ uses E4M3 as the element of `mxfp8` activation quantization.
   `test_max_identity_of_ocp_e4m3_is_minus_448` (`lower.rs:441`).
 - The fp8 KV CPU reference (PR #48): the cache write quantizes with
   `f32_to_fp8` (`crates/rustinfer-target/src/reference/kv.rs:263-285`).
-- Pending: the gfx950 OCP fp8 MFMA (PR #44, issue #8), and the GPU fp8 KV and
-  in-kernel `mxfp8` activation quantization kernels (issue #38).
+- The gfx950 OCP fp8 MFMA, `v_mfma_f32_32x32x64_f8f6f4` and
+  `v_mfma_f32_16x16x128_f8f6f4` with format code 0 (E4M3) or 1 (E5M2)
+  (`crates/rustinfer-kc/src/amd.rs:160-170`), merged with PR #44 (issue #8,
+  `38f2f60`) and verified exact on an MI350X by GPU test #45 (results in #54).
+- Pending: the GPU fp8 KV and in-kernel `mxfp8` activation quantization
+  kernels (issue #38).
 
 **Conformance:** mandatory from **R1**.
 
@@ -59,6 +63,6 @@ and adds Appendix A".
 |---|---|
 | Pages | [requirements](std-ocp-ofp8-requirements.html) · [audit](std-ocp-ofp8-audit.html) · [tracker](std-ocp-ofp8-tracker.html) |
 | Conformance | mandatory R1 (RI-MIR-003 for E4M3 and E5M2, RI-CLI-002, RI-KC-003, RI-KVC-008) |
-| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the specification text; re-audited at `b99720a` after PRs #48, #50 and #52, and on 2026-11-14 at `8c7d47e` after PR #55 (E5M2) |
-| Result | the E4M3 and E5M2 encodings, roundTiesToEven and saturating conversion conform and are tested; the non-saturating mode is out of scope (PR #50); the GPU users are pending (PR #44, #38) |
+| Audited | 2026-11-13, by reading `origin/main` `ccf02b3` and its tests against the specification text; re-audited at `b99720a` after PRs #48, #50 and #52, on 2026-11-14 at `8c7d47e` after PR #55 (E5M2), and the same day at `81fbcba` after PR #44, with the gfx950 results of #45 (#54) |
+| Result | the E4M3 and E5M2 encodings, roundTiesToEven and saturating conversion conform and are tested; the non-saturating mode is out of scope (PR #50); the gfx950 E4M3 and E5M2 MFMA is verified exact on hardware (#45); the GPU KV and `mxfp8` kernels are pending (#38) |
 | Open gaps | 1 |

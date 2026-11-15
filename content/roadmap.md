@@ -30,8 +30,14 @@ PR #52). Late on 2026-11-13 (US Central; 2026-11-14 UTC) three more merged:
 OCP E5M2 and the `partial_rotary_factor` refusal (PR #55, SRS v0.4.6), the
 build allowed to read weights with the artifact bound to the ranges it used
 (PR #53, SRS v0.4.7), and the Quark and compressed-tensors MXFP4 checkpoint
-import with checkpoint KV scales (PR #49, #35 closed, SRS v0.4.8). The AMD lowering (#8) is PR #44, waiting on GPU test #45; the graph
-compiler (#10) waits on #9, which waits on #8.
+import with checkpoint KV scales (PR #49, #35 closed, SRS v0.4.8). Late on
+2026-11-14 (US Central; 2026-11-15 UTC) the first GPU work merged after its
+hardware tests passed on an MI350X (gfx950): the ROCm target over the HIP 7
+runtime (PR #58, #12 closed; GPU test #59) and the AMD lowering to gfx942 and
+gfx950 code objects with `lld` through a C++ shim (PR #44, #8 closed; GPU test
+#45), with the Rust toolchain pinned to 1.100.0 (PR #60) and SRS v0.4.10
+stating HIP support by runtime major version 7 (PR #62). gfx942 has not run
+yet (#61). The graph compiler (#10) waits on #9, which #8 no longer blocks.
 
 The [progress](progress.html) page is this roadmap's measure: every tracker
 on this site counted by state, the [issues](issues.html) first, then the
@@ -155,7 +161,7 @@ by name: Qwen3 QK norm (#26), `llama3`, `yarn` and `dynamic` RoPE scaling
 (#31, R2), sliding windows; mixed dtypes were lifted by PR #33 on 2026-11-13,
 with a dtype expectation per tensor ([frontend](frontend.html)).
 
-## 4. Kernel IR and the MLIR link (#7), AMD lowering (#8) — #7 **done, 2026-11-12**; #8 next
+## 4. Kernel IR and the MLIR link (#7), AMD lowering (#8) — **done**, #7 2026-11-12, #8 2026-11-14
 
 The Kernel IR (#7) merged into `main` as ad51bce on 2026-11-12 (GitHub PR
 #25) and issue #7 is closed: the `kir` dialect as a Rust operation table
@@ -174,20 +180,25 @@ self-hosted runner early. On GitHub's hosted runners the install script and
 the link stay inside the ten-minute job timeout, so ADR-007 needs no
 self-hosted runner.
 
-**Next: the AMD lowering (#8)**, unblocked since #7 closed: the `gpu` →
-`rocdl` → AMDGPU lowering with MFMA, LDS and bounds-checked loads for gfx942
-and gfx950, complete when the code objects assemble and disassemble as
-expected on a host without a GPU. The PR #25 review moved one criterion here
-from #7: a module compiled to a code object in-process through the LLVM C
-API and `lld` as a library, byte-identical when built twice, with
-`liblld-23-dev` added to the install script.
+**The AMD lowering (#8), done 2026-11-14** (US Central; GitHub PR #44,
+merge `38f2f60`, 2026-11-15 UTC): the `gpu` → `rocdl` → AMDGPU lowering
+with MFMA, LDS and bounds-checked buffer loads for gfx942 and gfx950,
+compiled in process and linked by `lld` as a library through a C++ shim that
+returns its messages (ADR-007), byte-identical across builds and processes.
+Host tests check the disassembly (the exact MFMA per architecture and dtype)
+and the code object V5 header, metadata note and kernel descriptor. GPU test
+#45 passed on an MI350X (gfx950) on 2026-11-15 UTC, every result exact
+(results in #54); the owner merged on gfx950, and the gfx942 run moved to
+#61, which also asks for a gfx950 re-run on `main` because the PR was
+rebased onto the ROCm target after its run.
 
 ## 5. Generators, catalog and autotuner (#9)
 
 The R1 generator set, the catalog with validated-hardware records, and
-`rustinfer tune`. Blocked on #5 and #8, and on hardware: the autotuner runs
-on an MI300X or MI355X, which is not on the bench (OI-008; the recorded
-resolution is to rent an MI355X node). This is the first step that cannot
+`rustinfer tune`. #5 and #8 are closed, so it waits only on hardware: the
+autotuner runs on an MI300X or MI355X, which is not on the bench (OI-008;
+the recorded resolution is to rent an MI355X node; the GPU tests so far ran
+on the owner's MI350X). This is the first step that cannot
 complete on a laptop.
 
 ## 6. Graph compiler (#10), then build and inspect (#11)
@@ -200,10 +211,18 @@ consumes the version 2 placement slot of ADR-009 from its first commit; then
 artifact writer, with the cache-keyed first-load build of ADR-006
 ([artifact as cache](artifact-cache.html)), blocked on #4, #6 and #10.
 
-## 7. ROCm target (#12), executor (#13), run (#14)
+## 7. ROCm target (#12) — **done, 2026-11-14**; executor (#13), run (#14)
 
-The HIP binding behind one `ffi` module, raising the unsafe budget from
-zero by exactly its count, blocked on #5 and on hardware; the static-batch
+The HIP binding behind one `ffi` module merged on 2026-11-14 US Central
+(GitHub PR #58, merge `53dac5b`, #12 closed): `libamdhip64.so.7` opened with
+`dlopen` from the system library directories or the checked
+`RUSTINFER_HIP_LIBRARY`, a HIP runtime of another major version refused,
+devices read from `gcnArchName`, memory, streams, events, modules, launches
+and graph capture, the LDS and register check before loading, and
+per-resource last-use events so a buffer or graph is released only after the
+device work using it. GPU test #59 passed 11 of 11 on an MI350X (gfx950)
+under ROCm 10.1 (10.1.0-3); gfx942 is #61 ([hardware](hardware.html)). Still
+to come: the static-batch
 executor with the O(1) KV block pool and the one-launch sampler, blocked on
 #10 and #12 ([runtime](runtime.html)); and `run` end to end, blocked on #11
 and #13, which closes the Epic's acceptance criteria: a LLaMA checkpoint
@@ -280,7 +299,7 @@ issue the owner runs by hand (PR #40, 8fb46f3).
 | #37 | `--kv-dtype bf16\|fp8\|mxfp4`: Model IR KV-group encodings, Plan geometry with scale bytes (`plan_version` 3), the first-load cache key, and quantized KV write, read and paged attention on the CPU reference | CPU half done, PR #48 (e218b8a); the GPU kernels are #38 |
 | #35 | the frontend imports Quark and compressed-tensors MXFP4 checkpoints (`quantization_config`), with `algo_config`, `ignore` and checkpoint KV scales for `--kv-dtype fp8` bound into the checkpoint identity by their used ranges | done, PR #49 (8c7d47e), closed 2026-11-14 |
 | #36 | `build --precision mxfp4` by RTN | open, needs #10 |
-| #38 | AMD lowering of MXFP4: in-kernel bf16 dequantization, opt-in gfx950 scaled MFMA, the GPU KV kernels | open, needs #8 (PR #44) and #9 |
+| #38 | AMD lowering of MXFP4: in-kernel bf16 dequantization, opt-in gfx950 scaled MFMA, the GPU KV kernels | open, needs #9 (#8 closed 2026-11-14) |
 
 ## 12. Standards conformance (#51) — fixes merged 2026-11-13
 
@@ -320,7 +339,8 @@ and Release 4 (4). The [release plan](release-plan.html) has each.
 | ~~PR #17 merged (#2)~~ done 2026-11-12 | any branch has a base |
 | ~~Model IR (#3)~~ done 2026-11-12 (PR #19) | artifact, targets, frontend, graph compiler, planner |
 | ~~Kernel IR link (#7) and ADR-007's runner decision~~ done 2026-11-12 (GitHub PR #25) | any kernel compiles in CI |
-| AMD lowering (#8): PR #44, then GPU test #45 on MI300X and MI355X | a code object exists; #9 can start; the MXFP4 kernels (#38) |
+| ~~AMD lowering (#8) and ROCm target (#12)~~ done 2026-11-14 (GitHub PRs #44 and #58, GPU tests #45 and #59 on gfx950) | a code object exists and loads; #9 can start; the MXFP4 kernels (#38) |
+| gfx942 GPU runs (#61) | the gfx942 MFMA layouts, FNUZ fp8 and 64 KiB LDS are verified on hardware |
 | A gfx950 host (OI-008) | the catalog has a validated entry; `run` on a GPU |
 | ~~CPU reference (#5)~~ done 2026-11-12 (GitHub PR #21) | any kernel is validated |
 | ~~Planner interfaces (#15)~~ done 2026-11-12 (GitHub PR #20) | the Model IR's slots are filled; the artifact's `topology` and `placement` sections have a schema |
@@ -339,6 +359,7 @@ Hand-maintained here, newest first; the generated pages never touch it.
 
 | date | what |
 |---|---|
+| 2026-11-14 | Merged on GitHub late on 2026-11-14 US Central (2026-11-15 UTC): PR #58 (53dac5b, #12 closed) the ROCm target over the HIP 7 runtime by `dlopen`, `RUSTINFER_HIP_LIBRARY`, per-resource last-use events, SRS v0.4.9; PR #60 (14ec27e) the Rust toolchain pinned to 1.100.0, the `msrv` job on 1.89; PR #44 (38f2f60, #8 closed) the AMD lowering to gfx942 and gfx950 code objects, `lld` through a C++ shim, ADR-007 amended; PR #62 (81fbcba) SRS v0.4.10, HIP support by runtime major version 7. GPU tests #45 and #59 passed on an MI350X (gfx950) under ROCm 10.1 (10.1.0-3), results in #54; gfx942 is #61. This site: HIP, AMDGPU code object V5, LLVM, MLIR, AMD FNUZ and OCP OFP8 re-audited at 81fbcba; the hardware chips per architecture; hardware, getting-started and build-steps pages refreshed |
 | 2026-11-14 | Merged on GitHub late on 2026-11-13 US Central (2026-11-14 UTC): PR #55 (6a18042, part of #51) the `fp8_e5m2` dtype and its CPU conversion, `partial_rotary_factor` other than 1 refused, SRS v0.4.6; PR #53 (8d58ad6) the build may read weights and the checkpoint identity covers the used ranges, SRS v0.4.7 with the ADR-002 amendment note; PR #49 (8c7d47e, #35 closed) Quark and compressed-tensors MXFP4 dense checkpoints, `algo_config`, `ignore` and KV-scale handling, the KV scales' used ranges in the identity, OI-014 closed, SRS v0.4.8. Open: PR #44 (#8), PR #56 (Mermaid fences in the sequence diagrams). This site: the affected standards re-audited at 8c7d47e and their gaps marked fixed with evidence, E5M2 audited item by item, the generated pages from 8c7d47e |
 | 2026-11-13 | Later the same day on GitHub: PR #42 (b621fed, #26 closed) grouped rmsnorm, so Qwen3 QK norm lowers; PR #40 (8fb46f3) the `gpu-test` issue template; PR #41 (c5582da) SRS v0.4 and ADR-010, MXFP4 in Release 1, issues #34 to #39 opened; PR #43 (b21ae62, #34 closed) the MXFP4 dtypes, `mx` encoding and OCP conversion oracle, SRS v0.4.1; PR #46 (e7dbdc6) SRS v0.4.2 citing the external standards; PR #47 (ccf02b3, #39 closed) MXFP4 in the weight manifest and Sluice; PR #48 (e218b8a, part of #37) the KV dtypes bf16, fp8 and MXFP4 on the CPU reference with `--kv-dtype`; PR #50 (48c2820) SRS v0.4.3, the Conformance column of §1.4, OI-016, OCP OFP8 narrowed to saturating conversion; PR #52 (b99720a) the #51 standards fixes. Open: PR #44 (#8, waits on GPU test #45), PR #49 (#35), PR #53 (SRS: the build may read weights). This site: the 25 mandatory standards with their four pages each and the map, gaps closed by PRs #48, #50 and #52 marked fixed with their evidence, the generated pages from b99720a |
 | 2026-11-13 | The #27 code merged into `main` on GitHub: PR #29 (35f0b3b) the conformance defects and `docs/testing.md`, the rule that a test tags a requirement `Verifies`, `Groundwork for` or `Reserved`; PR #30 (742c08f) the extension seams, artifact `format_version` 2 with per-section versions, `BinaryFormat`, the shared safetensors reader, OI-013 resolved; PR #32 (3df8c1b) placement v2, `ir_version` 2, the reachability rule, ADR-009 in the code; PR #33 (04a2a26) per-tensor frontend dtypes. Issues #18 and #27 closed; #31 (`llama3` RoPE scaling, R2) opened. A v0.4 SRS amendment moving MXFP4 to R1 is proposed, in review. This site refreshed: generated pages from 04a2a26, the requirement state derived from the test tags alone (39 implemented, 27 partial, 1 reserved only, 120 planned, where the earlier citation-and-Epic rule counted 69 implemented), the tag rule on the [engineering rules](engineering-rules.html) page |

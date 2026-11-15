@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-14T14:05:28+00:00",
+ "fetched_at": "2026-11-15T03:29:31+00:00",
  "source": "github",
  "issues": [
   {
@@ -148,8 +148,8 @@
   {
    "number": 8,
    "title": "AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-15",
    "labels": [
     "feature"
    ],
@@ -161,7 +161,7 @@
     "RI-KC-003"
    ],
    "branch": "feat/8-amd-lowering",
-   "derived_status": "In review 2026-11-13"
+   "derived_status": "Done 2026-11-15"
   },
   {
    "number": 9,
@@ -243,8 +243,8 @@
   {
    "number": 12,
    "title": "ROCm target: HIP binding behind one FFI module",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-15",
    "labels": [
     "feature"
    ],
@@ -259,8 +259,8 @@
     "RI-ROC-004",
     "RI-ROC-005"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/12-rocm-target",
+   "derived_status": "Done 2026-11-15"
   },
   {
    "number": 13,
@@ -557,8 +557,8 @@
   {
    "number": 45,
    "title": "GPU test: AMD code objects of the matrix op, masked buffer access and LDS on gfx942 and gfx950 (PR #44)",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-15",
    "labels": [
     "gpu-test"
    ],
@@ -566,7 +566,7 @@
    "blocked_by": [],
    "requirements": [],
    "branch": null,
-   "derived_status": "Not started"
+   "derived_status": "Done 2026-11-15"
   },
   {
    "number": 51,
@@ -585,6 +585,34 @@
   {
    "number": 54,
    "title": "Tests required on GPU hardware (owner's queue)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 59,
+   "title": "GPU test: HIP binding of the ROCm target on gfx942 and gfx950 (PR #58)",
+   "state": "closed",
+   "closed_at": "2026-11-15",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Done 2026-11-15"
+  },
+  {
+   "number": 61,
+   "title": "GPU test: gfx942 (MI300X) runs of #45 and #59, and a gfx950 re-run of #45 on main",
    "state": "open",
    "closed_at": "",
    "labels": [
@@ -793,11 +821,11 @@
   {
    "number": 44,
    "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
-   "state": "open",
+   "state": "closed",
    "head": "feat/8-amd-lowering",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-15",
    "mergeable": true,
    "created_at": "2026-11-13",
    "url": "https://github.com/itej89/rustinfer/pull/44"
@@ -921,148 +949,184 @@
    "mergeable": true,
    "created_at": "2026-11-14",
    "url": "https://github.com/itej89/rustinfer/pull/57"
+  },
+  {
+   "number": 58,
+   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
+   "state": "closed",
+   "head": "feat/12-rocm-target",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/58"
+  },
+  {
+   "number": 60,
+   "title": "build: pin the Rust toolchain to 1.100.0 (owner decision)",
+   "state": "closed",
+   "head": "infra/pin-rust-toolchain",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-14",
+   "url": "https://github.com/itej89/rustinfer/pull/60"
+  },
+  {
+   "number": 62,
+   "title": "docs(srs): support HIP by runtime major version, ROCm 10.0 verified",
+   "state": "closed",
+   "head": "docs/srs-hip-runtime-major",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/62"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 15,
-   "closed": 39
+   "open": 12,
+   "closed": 47
   }
  ],
  "runs": [
   {
-   "id": 96,
-   "title": "Merge pull request #57 from itej89/fix/51-used-range-u8-empty",
+   "id": 113,
+   "title": "Merge pull request #62 from itej89/docs/srs-hip-runtime-major",
    "status": "in_progress",
    "conclusion": null,
    "event": "push",
    "ref": "main",
-   "sha": "99c1ec7",
-   "created": "2026-11-14T13:59",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43602511505"
+   "sha": "81fbcba",
+   "created": "2026-11-15T03:22",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43672080555"
   },
   {
-   "id": 95,
-   "title": "fix: U8 as raw bytes, exact used-range digests, empty tensors (#51 SHA256-2, ST-3, ST-4)",
+   "id": 112,
+   "title": "docs(srs): support HIP by runtime major version, ROCm 10.0 verified",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "fix/51-used-range-u8-empty",
-   "sha": "f5b921a",
-   "created": "2026-11-14T05:01",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43559450351"
+   "ref": "docs/srs-hip-runtime-major",
+   "sha": "ccd7a54",
+   "created": "2026-11-15T02:58",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43670224156"
   },
   {
-   "id": 94,
-   "title": "Merge pull request #56 from itej89/docs/uml-close-fences",
+   "id": 111,
+   "title": "Merge pull request #44 from itej89/feat/8-amd-lowering",
    "status": "completed",
    "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "ce44f24",
-   "created": "2026-11-14T04:43",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43558065470"
+   "sha": "38f2f60",
+   "created": "2026-11-15T02:53",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43669832084"
   },
   {
-   "id": 93,
-   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
+   "id": 110,
+   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "docs/uml-close-fences",
-   "sha": "be831c5",
-   "created": "2026-11-14T04:19",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43556108310"
+   "ref": "feat/8-amd-lowering",
+   "sha": "3070d85",
+   "created": "2026-11-15T02:34",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43668455825"
   },
   {
-   "id": 92,
-   "title": "Merge pull request #49 from itej89/feat/35-mxfp4-checkpoints",
+   "id": 109,
+   "title": "docs(srs): support HIP by runtime major version, ROCm 10.0 verified",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/srs-hip-runtime-major",
+   "sha": "145c851",
+   "created": "2026-11-15T02:23",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43667591012"
+  },
+  {
+   "id": 108,
+   "title": "Merge pull request #60 from itej89/infra/pin-rust-toolchain",
    "status": "completed",
    "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "8c7d47e",
-   "created": "2026-11-14T04:19",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43556032360"
+   "sha": "14ec27e",
+   "created": "2026-11-15T02:22",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43667499681"
   },
   {
-   "id": 91,
-   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
+   "id": 107,
+   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "2491c56",
-   "created": "2026-11-14T04:08",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43555102083"
+   "ref": "feat/8-amd-lowering",
+   "sha": "4ad2d26",
+   "created": "2026-11-15T02:17",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43667083546"
   },
   {
-   "id": 90,
-   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
+   "id": 106,
+   "title": "Merge pull request #58 from itej89/feat/12-rocm-target",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "53dac5b",
+   "created": "2026-11-15T02:05",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43666111372"
+  },
+  {
+   "id": 105,
+   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "docs/uml-close-fences",
-   "sha": "e8c9fa8",
-   "created": "2026-11-14T04:06",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43555006868"
+   "ref": "feat/12-rocm-target",
+   "sha": "bb0ce2f",
+   "created": "2026-11-14T17:19",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43620455054"
   },
   {
-   "id": 89,
-   "title": "docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams",
+   "id": 104,
+   "title": "build: pin the Rust toolchain to 1.100.0 (owner decision)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "infra/pin-rust-toolchain",
+   "sha": "d2b120a",
+   "created": "2026-11-14T17:04",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43619039852"
+  },
+  {
+   "id": 103,
+   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/12-rocm-target",
+   "sha": "019829f",
+   "created": "2026-11-14T17:00",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43618718388"
+  },
+  {
+   "id": 102,
+   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
    "status": "completed",
    "conclusion": "cancelled",
    "event": "pull_request",
-   "ref": "docs/uml-close-fences",
-   "sha": "05ae20b",
-   "created": "2026-11-14T04:06",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43554993050"
-  },
-  {
-   "id": 88,
-   "title": "Merge pull request #53 from itej89/docs/srs-build-reads-weights",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "8d58ad6",
-   "created": "2026-11-14T03:59",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43554364783"
-  },
-  {
-   "id": 87,
-   "title": "feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/35-mxfp4-checkpoints",
-   "sha": "380d7a3",
-   "created": "2026-11-14T03:55",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43554054333"
-  },
-  {
-   "id": 86,
-   "title": "docs(srs): the build may read weights; the artifact binds to the content it used",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-build-reads-weights",
-   "sha": "c635ce7",
-   "created": "2026-11-14T03:51",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43553756452"
-  },
-  {
-   "id": 85,
-   "title": "Merge pull request #55 from itej89/fix/51-e5m2-partial-rotary",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "6a18042",
-   "created": "2026-11-14T03:49",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43553600779"
+   "ref": "feat/12-rocm-target",
+   "sha": "3a95a82",
+   "created": "2026-11-14T16:59",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43618613953"
   }
  ],
  "branches": [
@@ -1070,10 +1134,12 @@
   "docs/gpu-test-template",
   "docs/readme-docs-link",
   "docs/srs-build-reads-weights",
+  "docs/srs-hip-runtime-major",
   "docs/srs-standards",
   "docs/srs-standards-conformance",
   "docs/srs-v0.4-mxfp4",
   "docs/uml-close-fences",
+  "feat/12-rocm-target",
   "feat/15-planner-interfaces",
   "feat/18-sluice-weight-streamer",
   "feat/26-grouped-rmsnorm",
@@ -1091,6 +1157,7 @@
   "fix/51-standards-defects",
   "fix/51-used-range-u8-empty",
   "infra/github-hosting",
+  "infra/pin-rust-toolchain",
   "main",
   "refactor/27-frontend-dtypes",
   "refactor/27-seams"

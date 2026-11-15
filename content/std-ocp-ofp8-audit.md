@@ -4,19 +4,21 @@ navtitle: Audit
 section: Standards
 group: "Number formats / OCP OFP8 Revision 1.1"
 order: 22
-summary: The 2026-11-14 audit of rustinfer's E4M3 and E5M2 encodings and conversion against OFP8 Revision 1.1 on 8c7d47e; both encodings and saturating conversion conform and are tested, the non-saturating mode is out of scope, the GPU users of E4M3 are pending.
+summary: The 2026-11-14 audit of rustinfer's E4M3 and E5M2 encodings and conversion against OFP8 Revision 1.1 on 81fbcba; both encodings and saturating conversion conform and are tested, the non-saturating mode is out of scope, the gfx950 fp8 MFMA is verified exact on hardware, the GPU KV and mxfp8 kernels are pending.
 ---
 
 # OCP OFP8 Revision 1.1 audit
 
 **Audit of 2026-11-14**, against the [requirements](std-ocp-ofp8-requirements.html),
-on `origin/main` `8c7d47e` (after PR #55, merge `6a18042`: the `fp8_e5m2`
-dtype and its CPU conversion, SRS v0.4.6; PRs #53 and #49 change no OFP8
-code). History: first audited 2026-11-13 on `ccf02b3` (E4M3 only), re-audited
-the same day on `b99720a` after PRs #48, #50 (scope narrowed to saturating
-conversion) and #52 (OFP8-2 fixed). PR #55 added the `saturating` field to the
-shared `MiniFloat` row and moved every line of `numeric.rs` below it; the E4M3
-results below are unchanged and their line numbers are those of `8c7d47e`.
+on `origin/main` `81fbcba` (after PR #44, issue #8, merge `38f2f60`: the
+gfx950 OCP fp8 MFMA; PRs #58, #60 and #62 change no OFP8 code). The
+encoding and conversion results below were read on `8c7d47e` (after PR #55,
+merge `6a18042`: the `fp8_e5m2` dtype and its CPU conversion, SRS v0.4.6) and
+are unchanged on `81fbcba`: no merge since touched `numeric.rs`, `cpu/codec.rs`,
+the references, `dtype.rs` or `lower.rs`, so their line numbers stand.
+History: first audited 2026-11-13 on `ccf02b3` (E4M3 only), re-audited the
+same day on `b99720a` after PRs #48, #50 (scope narrowed to saturating
+conversion) and #52 (OFP8-2 fixed), and on `8c7d47e` after PR #55.
 
 **Method.** Read the specification text (`pdftotext -layout` of
 `specs/number-formats/ocp-ofp8-rev1.1.pdf`): §3, §4.2, §5.1 with Tables 1
@@ -27,8 +29,10 @@ and 2, §5.2.1 with Table 3, and Appendix A. Read `origin/main` at `8c7d47e`:
 `crates/rustinfer-target/tests/numeric.rs`, `tests/mx.rs`, `tests/kv.rs`,
 `tests/e5m2.rs`, the E5M2 golden generator `tests/e5m2_golden/mod.rs` and its
 output `tests/data/e5m2_golden.txt`, and `crates/rustinfer-mir/tests/e5m2.rs`.
-Read SRS v0.4.8 RI-MIR-003 (`docs/SRS-RI-v0.1.md:591-634`) and the state of
-PR #44 (open). No tests were run.
+Read SRS v0.4.8 RI-MIR-003 (`docs/SRS-RI-v0.1.md:591-634`). On `81fbcba`, read
+the MFMA table `crates/rustinfer-kc/src/amd.rs`, `tests/amd_target.rs`,
+`tests/amd_lowering.rs` and `crates/rustinfer-target-rocm/tests/gpu_code_objects.rs`,
+and the gfx950 results of GPU test #45 in #54. No tests were run locally.
 
 **Test tags.** `tests/numeric.rs` and `tests/e5m2.rs` tag `Verifies RI-MIR-003`
 and `Verifies RI-TGT-003`; `crates/rustinfer-mir/tests/e5m2.rs` tags `Verifies
@@ -123,17 +127,39 @@ RI-MIR-003 for `fp8_e5m2` (`docs/SRS-RI-v0.1.md:624-628`) has its test.
   weight is refused as an unknown dtype. That is by design: SRS v0.4.6 adds
   no "KV dtype, kernel or checkpoint dtype" (`docs/SRS-RI-v0.1.md:29`).
 
-## Requirements of the SRS not yet on `origin/main`
+## Requirements of the SRS that use the formats on a GPU
 
 | SRS requirement | what needs E4M3 | where it is |
 |---|---|---|
-| RI-KC-003 | OCP fp8 MFMA operands on gfx950 | PR #44 (issue #8), open |
+| RI-KC-003 | OCP fp8 MFMA operands on gfx950 | merged with PR #44 (`38f2f60`) and verified exact on gfx950 hardware (#45, results in #54); see below |
 | RI-KVC-008 | `--kv-dtype fp8`: E4M3 KV on gfx950 and cpu, written by the cache-write kernel | CPU reference merged (PR #48, `e218b8a`); GPU kernels issue #38 |
 | RI-MIR-012, RI-CLI-002 | `--activations mxfp8`: in-kernel E4M3 activation quantization on gfx950 | issue #38, no PR |
 
-These are recorded as OFP8-3: the conversions they perform must meet R5 to
-R10, and bit-exact agreement with the CPU reference is their acceptance test.
-No requirement needs E5M2 on a GPU in R1.
+The KV and `mxfp8` rows are recorded as OFP8-3: the conversions they perform
+must meet R5 to R10, and bit-exact agreement with the CPU reference is their
+acceptance test.
+
+**The gfx950 fp8 MFMA (PR #44).** OCP E4M3 and E5M2 on gfx950 map to
+`v_mfma_f32_32x32x64_f8f6f4` and `v_mfma_f32_16x16x128_f8f6f4`, with operand
+format code 0 for E4M3 and 1 for E5M2 (`crates/rustinfer-kc/src/amd.rs:34-36`,
+`:160-170`); `test_mfma_table_records_the_fp8_operand_format_on_gfx950`
+(`crates/rustinfer-kc/tests/amd_target.rs:72`) and the four disassembly tests
+`crates/rustinfer-kc/tests/amd_lowering.rs:244-262` (all Groundwork for
+RI-KC-003) check the instruction and format on the host. On hardware,
+`test_matrix_op_matches_the_cpu_on_the_gpu`
+(`crates/rustinfer-target-rocm/tests/gpu_code_objects.rs:257`) encodes the E4M3
+inputs with the CPU reference's `f32_to_fp8` and the E5M2 inputs as the high
+byte of their binary16 (`:148`, `:150`; exact for these values), runs the
+MFMA and compares with an f32 CPU product. GPU test #45 on an MI350X (gfx950)
+under ROCm 10.1 (10.1.0-3) gave `max_abs_err=0` on all 12 fp8 lines
+(`F8E4M3Fn` and `F8E5M2`, 16x16x128, 32x32x128 and 48x16x256, 64 and 256 work
+items), posted in #54 on 2026-11-15 (UTC). The inputs are multiples of 0.5 in
+[−2, 2], so the run shows the hardware decodes those codes as R2 and R13
+define, not every code; the accumulation is in f32, so no conversion to fp8
+is exercised. It ran at `821a57e`, the PR #44 head before its rebase onto the
+ROCm target of #58; #61 asks for a gfx950 re-run on `main`. RI-KC-003's E5M2
+MFMA is an R1 instruction choice; still no requirement converts to E5M2 on a
+GPU in R1.
 
 ## Result
 
@@ -141,7 +167,8 @@ The E4M3 encoding (R1 to R3) and the E5M2 encoding (R12 to R14), and
 saturating conversion to both (R4 to R11 and R15 to R18, in the
 saturating-only scope of SRS v0.4.3), conform and are tested; E5M2 against an
 independent integer-only golden table of all 256 codes and 758 rounding
-cases. The non-saturating mode (OFP8-1) is out of scope. The one open gap is
-coverage: the gfx950 fp8 MFMA (PR #44) and the GPU KV and `mxfp8` kernels
-(#38) are not on `origin/main` (OFP8-3). **Partial**, for the R1 coverage,
-not for any wrong value.
+cases. The non-saturating mode (OFP8-1) is out of scope. The gfx950 E4M3 and
+E5M2 MFMA is merged (PR #44) and verified exact on hardware (#45, #54). The
+one open gap is coverage: the GPU KV and `mxfp8` kernels (#38) are not on
+`origin/main` (OFP8-3). **Partial**, for the R1 coverage, not for any wrong
+value.

@@ -2,29 +2,33 @@
 title: Build steps
 section: Development
 order: 2
-summary: The toolchain, the cargo gates, the four CI scripts, coverage, the rocm feature flag, and the pinned LLVM the kernel compiler will need; every command the tree's CI runs, in its order.
+summary: The pinned toolchain (Rust 1.100.0, MSRV 1.89), the cargo gates, the CI jobs and their toolchains, coverage, the rocm feature flag, and the pinned LLVM 23; every command the tree's CI runs, in its order.
 ---
 
 # Build steps
 
 Read from `README.md`, `CONTRIBUTING.md`, `Cargo.toml`, `clippy.toml`,
 `rustfmt.toml`, `deny.toml`, `.github/workflows/ci.yml` and `scripts/ci/` at
-commit `082df51` (2026-11-11).
+commit `082df51` (2026-11-11); the toolchain, the CI jobs, the `rocm` feature
+and the pinned LLVM re-read at `81fbcba` (2026-11-14), after PRs #58, #60, #44
+and #62.
 
 ## Toolchain
 
 | item | value | where stated |
 |---|---|---|
-| Rust | stable channel, edition 2021, `rust-version = "1.85"` | `[workspace.package]` |
-| components | `rustfmt`, `clippy`; `llvm-tools-preview` for coverage | `ci.yml` |
-| external tools | `cargo-llvm-cov` 0.9.1 and `cargo-audit` 0.23.0, installed in CI as prebuilt binaries through `taiki-e/install-action`; `cargo-deny` through its action | `ci.yml` |
-| ROCm | not needed to build or test; the ROCm backend is behind the `rocm` feature of `rustinfer-target-rocm` (RI-NFR-016) | `README.md` |
-| MLIR, LLVM | not yet a dependency; see the last section | SRS §2.4, OI-009 |
+| Rust | **1.100.0**, pinned with `rustfmt`, `clippy` and `llvm-tools-preview`, profile `minimal` (owner decision of 2026-11-14, PR #60); rustup installs it on the first `cargo` command | `rust-toolchain.toml`, ADR-001 |
+| MSRV | `rust-version = "1.89"`, edition 2021; checked by the `msrv` CI job | `[workspace.package]`, ADR-007 |
+| external tools | `cargo-llvm-cov` 0.9.1 and `cargo-audit` 0.23.0, installed in CI as prebuilt binaries through `taiki-e/install-action`, which also installs `cargo-deny` 0.20.2 | `ci.yml` |
+| ROCm | not needed to build or test; the ROCm backend is behind the `rocm` feature of `rustinfer-target-rocm`, which opens `libamdhip64.so.7` with `dlopen` at run time (RI-NFR-016) | `README.md`, the crate's `Cargo.toml` |
+| MLIR, LLVM, `lld` | LLVM 23.1.6 from apt.llvm.org, exact package versions per Ubuntu codename (jammy, noble, resolute), for `--all-features` builds; see the last section | `scripts/ci/install_llvm.sh`, ADR-007 |
 
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path --profile minimal
 export PATH="$HOME/.cargo/bin:$PATH"
-rustup component add rustfmt clippy llvm-tools-preview
+# rust-toolchain.toml selects 1.100.0 with rustfmt, clippy and llvm-tools-preview
+rustup toolchain install 1.100.0 --profile minimal --component rustfmt,clippy,llvm-tools-preview
+rustup toolchain install 1.89 --profile minimal     # only for the MSRV check
 cargo install cargo-llvm-cov --locked
 ```
 
@@ -52,29 +56,38 @@ python3 scripts/ci/validate_mermaid.py docs/uml/*.md
 | `cargo fmt --check` | `rustfmt.toml`: edition 2021, `max_width = 100` |
 | `cargo clippy -D warnings` | every lint of ADR-001 as an error: `pedantic` warnings become errors; the denied list is on [crates](ref-crates.html) |
 | `cargo doc` with `-D warnings` | every public item documented, no broken intra-doc links; CI adds `--document-private-items` |
-| `check_unsafe_budget.sh` | `unsafe` only under `crates/rustinfer-target-*/src/ffi` or `crates/rustinfer-kc/src/mlir`; the total may not exceed `scripts/ci/unsafe_budget.txt`, which holds `0` (RI-NFR-011) |
+| `check_unsafe_budget.sh` | `unsafe` only under `crates/rustinfer-target-*/src/ffi` or `crates/rustinfer-kc/src/mlir`; the total may not exceed `scripts/ci/unsafe_budget.txt`, which holds `52` at `81fbcba` after the HIP binding and the `lld` shim (RI-NFR-011) |
 | `check_doc_freshness.py` | every `docs/uml/*.md` carries the header SWG-001 §17.3 requires |
 | `validate_mermaid.py` | every Mermaid block in the diagrams parses |
 
 ## The CI pipeline
 
-`.github/workflows/ci.yml`, on push to `main` and on every pull request,
-with `RUSTFLAGS: -D warnings` for every job, `permissions: contents: read`
-at the top, and `timeout-minutes: 10` on every job. Four jobs, each needing
-the one before, so a failure blocks the next stage (SWG-001 §11.1):
+`.github/workflows/ci.yml` at `81fbcba`, on push to `main` and on every pull
+request, with `RUSTFLAGS: -D warnings` for every job, `permissions: contents:
+read` at the top, `MLIR_SYS_230_PREFIX` and `TABLEGEN_230_PREFIX` set to
+`/usr/lib/llvm-23`, and `timeout-minutes: 10` on every job. Five jobs; each
+needs the one before except `msrv`, which runs beside `security` after `lint`,
+so a failure blocks the next stage (SWG-001 §11.1). Every job prints
+`rustc -V` and `cargo -V` first, so the log shows which compiler ran.
 
-| job | steps |
-|---|---|
-| `lint` | checkout; stable toolchain with `rustfmt` and `clippy`; format; clippy; rustdoc with private items; unsafe budget; diagram headers; Mermaid parse |
-| `security` | checkout; `cargo-deny` action (licences, advisories, sources per `deny.toml`); `cargo-audit` 0.23.0 installed as a prebuilt binary through `taiki-e/install-action`; `cargo audit` for CVEs (RI-NFR-012) |
-| `test` | checkout; toolchain with `llvm-tools-preview`; `cargo-llvm-cov` 0.9.1 installed as a prebuilt binary; `cargo llvm-cov --workspace --all-features --fail-under-lines 80 --lcov --output-path lcov.info` (RI-NFR-013); upload `lcov.info` as the `coverage` artifact |
-| `build` | checkout; `cargo build --release --workspace`; smoke test `target/release/rustinfer --version` (RI-CLI-001); upload the binary as the `rustinfer` artifact |
+| job | toolchain | steps |
+|---|---|---|
+| `lint` | 1.100.0, `rustfmt`, `clippy` | checkout; rust-cache; install the pinned LLVM; format; clippy with `--all-features`; rustdoc with private items; unsafe budget; diagram headers; Mermaid parse |
+| `msrv` | 1.89 (`RUSTUP_TOOLCHAIN` overrides `rust-toolchain.toml`) | checkout; rust-cache; install the pinned LLVM; `cargo check --workspace --all-features` on the declared `rust-version` (SWG-001 §18, ADR-007) |
+| `security` | 1.100.0 | checkout; `cargo-deny` 0.20.2 and `cargo-audit` 0.23.0 as prebuilt binaries; `cargo deny check` (licences, advisories, sources per `deny.toml`); `cargo audit` for CVEs (RI-NFR-012) |
+| `test` | 1.100.0, `llvm-tools-preview` | checkout; rust-cache; install the pinned LLVM; `cargo-llvm-cov` 0.9.1; `cargo llvm-cov --workspace --all-features --fail-under-lines 80 --lcov --output-path lcov.info` (RI-NFR-013), which runs the AMD lowering tests; the GPU tests are ignored without a GPU; upload `lcov.info` as the `coverage` artifact |
+| `build` | 1.100.0 | checkout; rust-cache; install the pinned LLVM; `cargo build --release --workspace --all-features`; `cargo check --workspace` without the LLVM features (RI-NFR-016); smoke test `target/release/rustinfer --version` (RI-CLI-001); upload the binary as the `rustinfer` artifact |
+
+To bump the toolchain, one pull request changes `channel` in
+`rust-toolchain.toml` and every `toolchain:` input in `ci.yml` (the comment
+in `rust-toolchain.toml`).
 
 Every action is pinned to a full commit SHA with the tag in a comment, as
-SWG-001 §11 asks (`actions/checkout` v4, `dtolnay/rust-toolchain` stable of
-2026-11, `taiki-e/install-action` v2 installing `cargo-deny` 0.20.2,
-`cargo-audit` 0.23.0 and `cargo-llvm-cov` 0.9.1, `actions/upload-artifact`
-v3.2.2). The first green run, run 7 of 2026-11-11 on Codeberg, took about
+SWG-001 §11 asks (`actions/checkout` v4.4.0, `dtolnay/rust-toolchain` from
+its stable branch of 2026-11, which installs the `toolchain:` input,
+`Swatinem/rust-cache` v2.9.3, `taiki-e/install-action` v2.90.3 installing
+`cargo-deny` 0.20.2, `cargo-audit` 0.23.0 and `cargo-llvm-cov` 0.9.1,
+`actions/upload-artifact` v4.6.2). The first green run, run 7 of 2026-11-11 on Codeberg, took about
 five and a half minutes for the four jobs in sequence.
 
 ### GitHub Actions
@@ -94,7 +107,7 @@ and `actions/upload-artifact` v4.6.2 pinned by SHA.
 | Actions | pinned by full commit SHA with the tag in a comment, as before; the `https://github.com/` prefix Forgejo needed is dropped, short `owner/repo@sha` names resolve on github.com |
 | Artifacts | `actions/upload-artifact` v4, the version Forgejo's artifact service refused |
 | Runs | GitHub's run numbers restart at 1 on 2026-11-12; the Codeberg runs 1 to 11 did not move ([issues](issues.html)) |
-| Still needed | a self-hosted runner for the issues that link LLVM (#7 onward), to be decided in ADR-007 with the LLVM pinning (OI-009); `deny.toml` keeps `allow-wildcard-paths = true`, which is `cargo-deny`'s reading of version-less path dependencies, not the host's |
+| LLVM | no self-hosted runner was needed: every job but `security` installs the pinned LLVM 23 on the hosted runner with `scripts/ci/install_llvm.sh` and caches the compiled binding with `Swatinem/rust-cache` (ADR-007); `deny.toml` keeps `allow-wildcard-paths = true`, which is `cargo-deny`'s reading of version-less path dependencies, not the host's |
 
 The three Codeberg rules learned from runs 3 to 6 and recorded in ADR-004
 (short action names resolving against `data.forgejo.org`, which mirrors only
@@ -115,21 +128,33 @@ comment, since `clippy.toml` permits them in tests.
 
 ## The `rocm` feature
 
-`rustinfer-target-rocm` has features `default` and `rocm`. Without `rocm`
-the crate compiles everywhere and the target reports itself unsupported on
-selection; with it the workspace links `libamdhip64`. The feature is empty
-at `082df51` (issue #12 fills it). The SRS requires that the kernel compiler
-produce binaries for any target on any host, so only autotuning needs the
-device (RI-NFR-016).
+`rustinfer-target-rocm` has features `default`, `rocm` and `rocm-test`
+(`81fbcba`). Without `rocm` the crate compiles everywhere and the target
+reports itself unsupported on device selection. With it, the crate opens the
+HIP runtime with `dlopen` at run time, never at build time: the first of
+`/opt/rocm/lib/libamdhip64.so.7`, `/usr/lib/x86_64-linux-gnu/libamdhip64.so.7`,
+`/usr/lib64/libamdhip64.so.7` and `/usr/lib/libamdhip64.so.7` that loads, or
+only the file named by `RUSTINFER_HIP_LIBRARY` once it passes its checks
+(RI-SEC-001); `LD_LIBRARY_PATH` is never searched. A runtime whose major
+version is not 7 is refused (RI-NFR-017). So the feature builds and its host
+tests run, over a mock of the HIP function table, on a host without ROCm
+(RI-NFR-016). `rocm-test` adds the hardware tests of the AMD lowering, which
+compile kernels in process through `rustinfer-kc`'s `mlir` feature; they are
+ignored without a GPU and run with `--ignored` on one (`docs/gpu-testing.md`;
+[hardware](hardware.html)).
 
 ## The pinned LLVM
 
-The kernel compiler links MLIR and LLVM through the `melior` crate at one
-pinned version, with `lld` linked for code objects and no system LLVM
-required (SRS §2.4, RI-KC-008). The SRS's reference table names LLVM 22.
-Open issue OI-009 says building it in CI is slow and records the resolution
-as a vendored prebuilt with a recorded hash; the draft of issue #7 says
-ADR-007 will decide how CI and developers obtain it. At `082df51` there is no
-`melior` dependency, no ADR-007 and no LLVM in the build; the workspace
-builds with four external crates. When #7 lands this page's toolchain table
-gains a row.
+The kernel compiler links MLIR and LLVM 23 in process through `melior`
+0.29.1 and `mlir-sys` 230.0.2, and links AMDGPU code objects with `lld` as a
+library through a small C++ shim (`crates/rustinfer-kc/src/mlir/lld_shim.cpp`)
+that returns `lld`'s messages instead of printing them (PR #44, ADR-007).
+`scripts/ci/install_llvm.sh` installs LLVM 23.1.6 at exact package versions
+per Ubuntu codename (jammy, noble, resolute) from apt.llvm.org, the key
+checked against a recorded fingerprint, including `liblld-23-dev` for the
+static `lld` libraries and `llvm-23` and `lld-23` for the code-object
+regression test; `--prefix DIR` installs the same packages without sudo,
+verifying the suite signature and every package hash. A build needs
+`MLIR_SYS_230_PREFIX` and `TABLEGEN_230_PREFIX` pointing at the prefix
+(`/usr/lib/llvm-23` after the apt install), and a C++17 compiler for the
+shim. Builds without `--all-features` need no LLVM (RI-NFR-016).

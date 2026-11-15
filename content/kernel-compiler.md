@@ -12,9 +12,15 @@ and §4, `docs/api/kernel-ir.md` and `crates/rustinfer-kc/src/` at commit
 `04a2a26`. GitHub PR #25 merged into `main` as ad51bce on 2026-11-12 and
 closed issue #7: the `kir` dialect, the typed builder and, behind a Cargo
 feature, the in-process link to a pinned MLIR and LLVM 23 that verifies a
-kernel, lowers it for the host and translates it to LLVM IR. No generator,
-no device lowering, no code object, catalog entry or autotuner exists yet;
-those are #8 and #9. Nothing here has been run on a GPU.
+kernel, lowers it for the host and translates it to LLVM IR. The rest of
+this page describes the tree at `04a2a26`. Since then GitHub PR #44 (merge
+`38f2f60`, 2026-11-14, issue #8 closed) added the device lowering: `gpu` →
+`rocdl` → AMDGPU code objects V5 for gfx942 and gfx950, linked in process by
+`lld` through a C++ shim (ADR-007 point 9), verified on an MI350X (gfx950) by
+GPU test #45 and not yet run on gfx942 (#61); the
+[LLVM](std-llvm-audit.html), [MLIR](std-mlir-audit.html) and
+[code object V5](std-amdgpu-abi-audit.html) audits read it at `81fbcba`. No
+generator, catalog entry or autotuner exists yet; that is #9.
 
 ## The route
 

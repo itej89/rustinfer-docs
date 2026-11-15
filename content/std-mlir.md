@@ -16,21 +16,23 @@ defined in MLIR's `irdl` dialect (ADR-007 point 6), so IRDL is audited here
 too. Nothing else of MLIR is claimed.
 
 **Implementation:** `crates/rustinfer-kc`, feature `mlir`. On `origin/main`
-(`ccf02b3`):
+(`81fbcba`):
 
 - `crates/rustinfer-kc/src/dialect/irdl.rs:16` generates the `kir` dialect
-  as IRDL from the operation table; `crates/rustinfer-kc/src/mlir/mod.rs:169`
+  as IRDL from the operation table; `crates/rustinfer-kc/src/mlir/mod.rs:220`
   loads it at context creation and checks every operation registered.
 - `crates/rustinfer-kc/src/mlir/lower.rs:31` rewrites each `kir` operation
-  into `vector` and `arith` operations; `crates/rustinfer-kc/src/dialect/mod.rs:47`
-  is the host pipeline to `llvm`; `crates/rustinfer-kc/src/mlir/raw.rs:26`
+  into `vector` and `arith` operations; `crates/rustinfer-kc/src/dialect/mod.rs:71`
+  is the host pipeline to `llvm`; `crates/rustinfer-kc/src/mlir/raw.rs:27`
   translates the result to LLVM IR.
-- The only flavour on `main` is `Flavor::Host`
-  (`crates/rustinfer-kc/src/dialect/mod.rs:29`). The `gpu`, `amdgpu` and
-  `rocdl` lowering (flavours `RocdlGfx942`, `RocdlGfx950`, the
-  `mlir/rocdl` preparation) is open PR #44 (branch `feat/8-amd-lowering`,
-  head `10b8b1b`); its GPU test #45 has not been run. The MXFP4 paths
-  (`amdgpu.scaled_mfma`, scaled conversions) are issue #38.
+- Since PR #44 (issue #8, merge `38f2f60`) the flavours `RocdlGfx942` and
+  `RocdlGfx950` (`crates/rustinfer-kc/src/dialect/mod.rs:33-41`): the
+  `mlir/rocdl` preparation moves the kernel into a `gpu.module`, emits
+  `amdgpu.mfma` (picked by `crates/rustinfer-kc/src/amd.rs:71`) and
+  bounds-checked `amdgpu.raw_buffer_load` and `raw_buffer_store`, and runs
+  `convert-gpu-to-rocdl` (`dialect/mod.rs:59-68`). GPU test #45 passed on an
+  MI350X (gfx950), results in #54; gfx942 is not yet run (#61). The MXFP4
+  paths (`amdgpu.scaled_mfma`, scaled conversions) are issue #38.
 
 See also the [kernel compiler](kernel-compiler.html) page.
 
@@ -51,6 +53,6 @@ in these copies.
 |---|---|
 | Pages | [requirements](std-mlir-requirements.html) · [audit](std-mlir-audit.html) · [tracker](std-mlir-tracker.html) |
 | Conformance | mandatory R1 (`gpu`, `amdgpu`, `rocdl`, `vector`, `llvm`, passes); R2 (`spirv`) |
-| Audited | 2026-11-13, by reading `origin/main` `ccf02b3`, PR #44 at `10b8b1b` and the specification text; no test run locally |
-| Result | part: IRDL, `vector`, the host passes and `llvm` translation conform on `main`; `gpu`, `amdgpu` and `rocdl` are pending PR #44; the MXFP4 operations are missing (#38) |
-| Open gaps | 3 (one in PR #44, two open); 1 more item recorded as later release (R2) |
+| Audited | 2026-11-13, by reading `origin/main` `ccf02b3`, PR #44 at `10b8b1b` and the specification text; re-audited 2026-11-14 at `81fbcba` after PR #44 merged, with the gfx950 results of #45 (#54); no test run locally |
+| Result | part: IRDL, `vector`, the host passes, `llvm` translation and since PR #44 `gpu`, `amdgpu` and `rocdl` conform; the MFMA layouts, bounds-checked loads and LDS barrier are verified on gfx950 (#45, results in #54), gfx942 not yet run (#61); the MXFP4 operations are missing (#38) |
+| Open gaps | 2 (gfx942 hardware, #61; MXFP4 operations, #38); MLIR-1 fixed by PR #44; 1 more item recorded as later release (R2) |

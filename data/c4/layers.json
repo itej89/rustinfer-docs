@@ -196,7 +196,7 @@
    "no": "1",
    "name": "Targets",
    "cls": "layer-0",
-   "note": "Target, Device, Catalog and Launcher are the whole contract a backend implements. The CPU reference runs every R1 operator in f32 and is the oracle for the rest. ROCm/HIP is registered for gfx942 and gfx950 with an empty catalog until HIP is bound; riscv-vector, riscv-mesh and spirv-vulkan are registered stubs.",
+   "note": "Target, Device, Catalog and Launcher are the whole contract a backend implements. The CPU reference runs every R1 operator in f32 and is the oracle for the rest. ROCm/HIP serves gfx942 and gfx950 through the HIP 7 runtime opened with dlopen (memory, streams, events, modules, launches, graphs), with an empty catalog until the autotuner fills it; riscv-vector, riscv-mesh and spirv-vulkan are registered stubs.",
    "parts": [
     {
      "name": "Target · Device · Catalog · Launcher",
@@ -244,15 +244,19 @@
    "no": "—",
    "name": "Hardware",
    "cls": "layer-hw",
-   "note": "AMD Instinct CDNA3 (gfx942: MI300X, MI308X, MI325X) and CDNA4 (gfx950: MI350X, MI355X) on ROCm 7.0 to 7.2; the host CPU, which compiles and runs the reference; RISC-V boards from Release 3. Nothing on this site was run on a GPU yet (#45 asks for the first test).",
+   "note": "AMD Instinct CDNA3 (gfx942: MI300X, MI308X, MI325X) and CDNA4 (gfx950: MI350X, MI355X) behind a HIP runtime of major version 7 (libamdhip64.so.7), tested under ROCm 10.1; the host CPU, which compiles and runs the reference; RISC-V boards from Release 3. gfx950 is verified on an MI350X by the GPU tests #45 and #59 (results in #54); gfx942 has not been run yet (#61).",
    "parts": [
     {
      "name": "AMD Instinct gfx942",
-     "hwtest": 45
+     "hwtest": [
+      {"arch": "gfx942", "issues": [61]}
+     ]
     },
     {
      "name": "AMD Instinct gfx950",
-     "hwtest": 45
+     "hwtest": [
+      {"arch": "gfx950", "issues": [45, 59]}
+     ]
     },
     {
      "name": "host CPU",
@@ -265,7 +269,10 @@
      "release": "R3"
     }
    ],
-   "hwtest": 45
+   "hwtest": [
+    {"arch": "gfx950", "issues": [45, 59]},
+    {"arch": "gfx942", "issues": [61]}
+   ]
   }
  ]
 }

@@ -166,12 +166,7 @@ class Tracker:
     def status(self, el):
         """The chip of an element: (css class, text), and its issue line."""
         if el.get("hwtest"):
-            # hardware is not built here: its state is whether the GPU test has passed
-            n = el["hwtest"]
-            i = self.issues.get(n)
-            if i and i["state"] == "closed":
-                return ("chip-ok", f"run on hardware (#{n})"), self._link(n, f"#{n} done")
-            return ("chip-todo", f"not yet run on hardware (#{n})"), self._link(n, f"#{n} open")
+            return self.hardware(el["hwtest"])
         if el.get("external"):
             return ("chip-ext", "external"), ""
         rel = el.get("release")
@@ -198,6 +193,28 @@ class Tracker:
         else:
             chip = ("chip-part", "in progress")
         return chip, line
+
+    def hardware(self, tests):
+        """The chip of hardware: per architecture, whether its GPU tests have
+        passed. `tests` is a list of {"arch", "issues"}; an architecture is
+        verified when every one of its gpu-test issues is closed, else not yet
+        run. One architecture gives its own chip; several give `built` only
+        when all are verified, else `partly`, naming each."""
+        chips, links = [], []
+        for t in tests:
+            nums = t["issues"]
+            done = all(self.issues.get(n, {}).get("state") == "closed" for n in nums)
+            refs = ", ".join(f"#{n}" for n in nums)
+            chips.append(("chip-ok", f"verified on {t['arch']} ({refs})") if done
+                         else ("chip-todo", f"{t['arch']} not yet run ({refs})"))
+            links += [self._link(n, f"#{n} " + ("done" if self.issues.get(n, {}).get("state") == "closed"
+                                               else "open")) for n in nums]
+        line = " · ".join(dict.fromkeys(links))
+        if len(chips) == 1:
+            return chips[0], line
+        kinds = {c for c, _ in chips}
+        cls = "chip-ok" if kinds == {"chip-ok"} else ("chip-todo" if kinds == {"chip-todo"} else "chip-part")
+        return (cls, "; ".join(t for _, t in chips)), line
 
     @staticmethod
     def _link(n, text):
@@ -651,7 +668,9 @@ def render():
         kids = []
         for k in nd["children"]:
             ref = allel.get(k.get("ref"), {})
-            if ref.get("type", "").startswith("External"):
+            if k.get("hwtest"):
+                ch, _ = tr.status(k)
+            elif ref.get("type", "").startswith("External"):
                 ch = ("chip-ext", "external")
             else:
                 ch, _ = tr.status(ref if ref else k)

@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 99c1ec7 2026-11-14. A failure leaves the command as one line on
+`src/error.rs` at commit 81fbcba 2026-11-14. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -107,6 +107,8 @@ and component.
 | `rustinfer-kc` | `kc` | `ShapeMismatch` | `delegated` |
 | `rustinfer-kc` | `kc` | `TooLarge` | `delegated` |
 | `rustinfer-kc` | `kc` | `Mlir` | `invalid` |
+| `rustinfer-kc` | `kc` | `Unsupported` | `unsupported` |
+| `rustinfer-kc` | `kc` | `Backend` | `internal` |
 | `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
 | `rustinfer-mir` | `mir` | `Malformed` | `delegated` |
@@ -200,7 +202,19 @@ and component.
 | `rustinfer-target` | `target` | `UnsupportedDtype` | `unsupported` |
 | `rustinfer-target` | `target` | `IndexOutOfRange` | `delegated` |
 | `rustinfer-target` | `target` | `NotImplemented` | `not_implemented` |
+| `rustinfer-target` | `target` | `Backend` | `delegated` |
 | `rustinfer-target-riscv-mesh` | `?` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target-riscv-vector` | `?` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target-rocm` | `rocm` | `NotImplemented` | `not_implemented` |
+| `rustinfer-target-rocm` | `rocm` | `Unsupported` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `Hip` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `Library` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `RuntimeVersion` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `ArchName` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `ArchitectureMismatch` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `TargetFeature` | `delegated` |
+| `rustinfer-target-rocm` | `rocm` | `CodeObject` | `artifact` |
+| `rustinfer-target-rocm` | `rocm` | `KernelResources` | `unsupported` |
+| `rustinfer-target-rocm` | `rocm` | `GraphBusy` | `device` |
+| `rustinfer-target-rocm` | `rocm` | `Launch` | `invalid` |
 | `rustinfer-target-spirv-vulkan` | `?` | `NotImplemented` | `not_implemented` |

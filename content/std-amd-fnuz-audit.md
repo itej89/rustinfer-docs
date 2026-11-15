@@ -4,14 +4,18 @@ navtitle: Audit
 section: Standards
 group: "Number formats / AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)"
 order: 32
-summary: The 2026-11-13 audit of rustinfer's FP8 E4M3 FNUZ encoding against the CDNA3 ISA guide and LLVM APFloat; the encoding conforms.
+summary: The 2026-11-14 audit of rustinfer's FP8 E4M3 FNUZ encoding against the CDNA3 ISA guide and LLVM APFloat on main 81fbcba; the encoding conforms, the gfx942 FNUZ MFMA is merged but not yet run on hardware.
 ---
 
 # AMD FP8 FNUZ audit
 
-**Audit of 2026-11-13**, against the [requirements](std-amd-fnuz-requirements.html);
-re-audited the same day against `origin/main` `b99720a`, after PRs #48 (KV
-dtypes) and #52 (issue #51 fixes) merged.
+**Audit of 2026-11-14**, against the [requirements](std-amd-fnuz-requirements.html),
+on `origin/main` `81fbcba`, after PR #44 (issue #8, merge `38f2f60`: the AMD
+lowering with the gfx942 FNUZ MFMA). First audited 2026-11-13 on `ccf02b3`,
+re-audited the same day on `b99720a` after PRs #48 (KV dtypes) and #52
+(issue #51 fixes). PR #44 and the other merges since (#58, #60, #62) change
+no line of `numeric.rs`, `dtype.rs`, `kv.rs` or `lower.rs`, so the encoding
+results and their line numbers below stand.
 
 **Method.** Read §7.2 of the ISA guide (`pdftotext -layout` of
 `specs/number-formats/amd-cdna3-isa.pdf`, pages 50 and 51) and LLVM APFloat
@@ -22,8 +26,10 @@ at `llvmorg-23.1.0` (`semFloat8E4M3FNUZ`, `fltNonfiniteBehavior`,
 `crates/rustinfer-kc/src/mlir/lower.rs`, and the tests in
 `crates/rustinfer-target/tests/numeric.rs`, and the fp8 KV path of PR #48
 (`crates/rustinfer-mir/src/kv.rs`, `crates/rustinfer-target/src/reference/kv.rs`,
-their tests). Read SRS v0.4.3 on `origin/main` and the description of open
-PR #44. No tests were run.
+their tests). On `81fbcba`, also read the MFMA table `crates/rustinfer-kc/src/amd.rs`, the
+gfx942 tests of `crates/rustinfer-kc/tests/amd_lowering.rs` and the hardware
+test `crates/rustinfer-target-rocm/tests/gpu_code_objects.rs`, and the GPU
+results of #45 in #54 and the open request #61. No tests were run.
 
 **Test tags.** `tests/numeric.rs` tags `Verifies RI-MIR-003` and `Verifies
 RI-TGT-003`.
@@ -76,19 +82,35 @@ Recorded for the gfx942 work, not judged:
   converting, and not rely on MLIR constant folding (APFloat semantics) for
   out-of-range values. This belongs to issue #37 and #38.
 
-## Requirements of the SRS not yet on `origin/main`
+## Requirements of the SRS not yet met on `origin/main`
 
 | SRS requirement | what needs FNUZ | where it is |
 |---|---|---|
-| RI-KC-003 | fp8 FNUZ MFMA operands on gfx942 | PR #44 (issue #8), open |
+| RI-KC-003 | fp8 FNUZ MFMA operands on gfx942 | merged with PR #44 (`38f2f60`): `crates/rustinfer-kc/src/amd.rs:154-156`, host disassembly tests `crates/rustinfer-kc/tests/amd_lowering.rs:220`, `:226`; not yet run on gfx942 hardware (#61) |
 | RI-KVC-008 | `--kv-dtype fp8` on gfx942: FNUZ KV written by the cache-write kernel, read by attention | configuration and CPU reference merged (PR #48, `e218b8a`); GPU kernels issue #38 |
 
 Recorded as FNUZ-2.
 
+## The gfx942 FNUZ MFMA (PR #44)
+
+The MFMA table maps `F8E4M3Fnuz` on gfx942 to `v_mfma_f32_32x32x16_fp8_fp8`
+and `v_mfma_f32_16x16x32_fp8_fp8` (`crates/rustinfer-kc/src/amd.rs:154-156`),
+the CDNA3 instructions that read FNUZ operands; OCP E4M3 on gfx942 and FNUZ on
+gfx950 are refused (`test_mfma_table_refuses_every_pair_outside_the_r1_set_naming_both`,
+`crates/rustinfer-kc/tests/amd_target.rs:90`). On the host this is checked by
+disassembly only (`crates/rustinfer-kc/tests/amd_lowering.rs:220`, `:226`,
+Groundwork for RI-KC-003). Whether the hardware reads the FNUZ codes as
+Table 30 defines is shown only by the gfx942 run of
+`test_matrix_op_matches_the_cpu_on_the_gpu`
+(`crates/rustinfer-target-rocm/tests/gpu_code_objects.rs:257`), whose inputs
+are encoded with `f32_to_fp8(x, Fp8Format::E4m3Fnuz)` (`:149`). That run is
+#61, not yet made; the gfx950 run of #45 (#54) has no FNUZ case.
+
 ## Result
 
-Every in-scope item conforms on `origin/main` and is tested; the identity
-constant is asserted since PR #52 (FNUZ-1 fixed), and the fp8 KV CPU
-reference of PR #48 writes FNUZ on gfx942. The gfx942 FNUZ MFMA (PR #44) and
-GPU cache-write kernel (#38) are not on `origin/main` (FNUZ-2). **Partial**,
-for the R1 coverage, not for any wrong encoding.
+Every in-scope item of the encoding conforms on `origin/main` and is tested;
+the identity constant is asserted since PR #52 (FNUZ-1 fixed), and the fp8 KV
+CPU reference of PR #48 writes FNUZ on gfx942. The gfx942 FNUZ MFMA is merged
+(PR #44) but not yet run on gfx942 hardware (#61), and the GPU cache-write
+kernel (#38) is not written (FNUZ-2). **Partial**, for the R1 coverage, not for
+any wrong encoding.

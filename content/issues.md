@@ -8,8 +8,8 @@ summary: The Epic and the fourteen Release 1 issues and the pull requests on Git
 # Issue tracker
 
 **As of 2026-11-14.** The tracker state is read live from GitHub
-(fetched 2026-11-14 14:05 UTC, kept in `data/progress-snapshot.json`); the
-counts of requirements, tests and lines are read from the rustinfer tree at commit 99c1ec7 2026-11-14.
+(fetched 2026-11-15 03:29 UTC, kept in `data/progress-snapshot.json`); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit 81fbcba 2026-11-14.
 Coverage is not measured here: it is the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12. The [progress](progress.html) page counts the rows
 below with every other tracker on the site; the [roadmap](roadmap.html) is the same sequence as prose.
 The project moved from Codeberg to [github.com/itej89/rustinfer](https://github.com/itej89/rustinfer) on 2026-11-12 (ADR-008,
@@ -20,16 +20,16 @@ runs did not move and are listed below as history.
 
 | measure | state | note |
 |---|---|---|
-| Release 1 issues closed | `█████░░░░░ 7/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 39 closed, 15 open |
-| Pull requests on GitHub | 26 merged, 1 open | [#19](https://github.com/itej89/rustinfer/pull/19) `infra/github-hosting` → `main` (merged), [#20](https://github.com/itej89/rustinfer/pull/20) `feat/15-planner-interfaces` → `main` (merged), [#21](https://github.com/itej89/rustinfer/pull/21) `feat/5-target-and-cpu-reference` → `main` (merged), [#22](https://github.com/itej89/rustinfer/pull/22) `docs/readme-docs-link` → `main` (merged), [#23](https://github.com/itej89/rustinfer/pull/23) `feat/18-sluice-weight-streamer` → `main` (merged), [#24](https://github.com/itej89/rustinfer/pull/24) `feat/6-frontend-llama` → `main` (merged), [#25](https://github.com/itej89/rustinfer/pull/25) `feat/7-kernel-ir-and-mlir-link` → `main` (merged), [#28](https://github.com/itej89/rustinfer/pull/28) `docs/27-srs-v0.3` → `main` (merged), [#29](https://github.com/itej89/rustinfer/pull/29) `fix/27-conformance` → `main` (merged), [#30](https://github.com/itej89/rustinfer/pull/30) `refactor/27-seams` → `main` (merged), [#32](https://github.com/itej89/rustinfer/pull/32) `feat/27-placement-v2` → `main` (merged), [#33](https://github.com/itej89/rustinfer/pull/33) `refactor/27-frontend-dtypes` → `main` (merged), [#40](https://github.com/itej89/rustinfer/pull/40) `docs/gpu-test-template` → `main` (merged), [#41](https://github.com/itej89/rustinfer/pull/41) `docs/srs-v0.4-mxfp4` → `main` (merged), [#42](https://github.com/itej89/rustinfer/pull/42) `feat/26-grouped-rmsnorm` → `main` (merged), [#43](https://github.com/itej89/rustinfer/pull/43) `feat/34-mxfp4-ir-oracle` → `main` (merged), [#44](https://github.com/itej89/rustinfer/pull/44) `feat/8-amd-lowering` → `main` (open), [#46](https://github.com/itej89/rustinfer/pull/46) `docs/srs-standards` → `main` (merged), [#47](https://github.com/itej89/rustinfer/pull/47) `feat/39-mxfp4-sluice` → `main` (merged), [#48](https://github.com/itej89/rustinfer/pull/48) `feat/37-kv-dtypes` → `main` (merged), [#49](https://github.com/itej89/rustinfer/pull/49) `feat/35-mxfp4-checkpoints` → `main` (merged), [#50](https://github.com/itej89/rustinfer/pull/50) `docs/srs-standards-conformance` → `main` (merged), [#52](https://github.com/itej89/rustinfer/pull/52) `fix/51-standards-defects` → `main` (merged), [#53](https://github.com/itej89/rustinfer/pull/53) `docs/srs-build-reads-weights` → `main` (merged), [#55](https://github.com/itej89/rustinfer/pull/55) `fix/51-e5m2-partial-rotary` → `main` (merged), [#56](https://github.com/itej89/rustinfer/pull/56) `docs/uml-close-fences` → `main` (merged), [#57](https://github.com/itej89/rustinfer/pull/57) `fix/51-used-range-u8-empty` → `main` (merged); four more were merged on Codeberg before the move, see below |
-| Latest CI run | [run 96](https://github.com/itej89/rustinfer/actions/runs/43602511505) (main, `99c1ec7`): **in_progress**, 2026-11-14 13:59 | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
-| SRS requirements implemented | `██░░░░░░░░ 39/188` | by the tag rule of `docs/testing.md`: a requirement is implemented when a test carries a `Verifies` tag for it and no test a `Groundwork for` tag; 39 implemented, 31 partial (a `Groundwork for` tag), 1 reserved only (only `Reserved` tags), 117 planned; by release: R1 39/30/0/41 of 110; R2 0/1/1/39 of 41; R3 0/0/0/33 of 33; R4 0/0/0/4 of 4 (implemented/partial/reserved only/planned); the tags and files per id are on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 188 |
-| Mandatory standards (R1) | `████░░░░░░ 6/15` | 6 works / 7 partly / 2 missing, of the 15 standards mandatory from R1 in SRS §1.4; the [standards map](standards.html), each one [below](#standards) |
+| Release 1 issues closed | `██████░░░░ 9/14` | #2 to #15; the Epic #1 is not counted. Milestone `R1 — foundation`: 47 closed, 12 open |
+| Pull requests on GitHub | 30 merged, 0 open | [#19](https://github.com/itej89/rustinfer/pull/19) `infra/github-hosting` → `main` (merged), [#20](https://github.com/itej89/rustinfer/pull/20) `feat/15-planner-interfaces` → `main` (merged), [#21](https://github.com/itej89/rustinfer/pull/21) `feat/5-target-and-cpu-reference` → `main` (merged), [#22](https://github.com/itej89/rustinfer/pull/22) `docs/readme-docs-link` → `main` (merged), [#23](https://github.com/itej89/rustinfer/pull/23) `feat/18-sluice-weight-streamer` → `main` (merged), [#24](https://github.com/itej89/rustinfer/pull/24) `feat/6-frontend-llama` → `main` (merged), [#25](https://github.com/itej89/rustinfer/pull/25) `feat/7-kernel-ir-and-mlir-link` → `main` (merged), [#28](https://github.com/itej89/rustinfer/pull/28) `docs/27-srs-v0.3` → `main` (merged), [#29](https://github.com/itej89/rustinfer/pull/29) `fix/27-conformance` → `main` (merged), [#30](https://github.com/itej89/rustinfer/pull/30) `refactor/27-seams` → `main` (merged), [#32](https://github.com/itej89/rustinfer/pull/32) `feat/27-placement-v2` → `main` (merged), [#33](https://github.com/itej89/rustinfer/pull/33) `refactor/27-frontend-dtypes` → `main` (merged), [#40](https://github.com/itej89/rustinfer/pull/40) `docs/gpu-test-template` → `main` (merged), [#41](https://github.com/itej89/rustinfer/pull/41) `docs/srs-v0.4-mxfp4` → `main` (merged), [#42](https://github.com/itej89/rustinfer/pull/42) `feat/26-grouped-rmsnorm` → `main` (merged), [#43](https://github.com/itej89/rustinfer/pull/43) `feat/34-mxfp4-ir-oracle` → `main` (merged), [#44](https://github.com/itej89/rustinfer/pull/44) `feat/8-amd-lowering` → `main` (merged), [#46](https://github.com/itej89/rustinfer/pull/46) `docs/srs-standards` → `main` (merged), [#47](https://github.com/itej89/rustinfer/pull/47) `feat/39-mxfp4-sluice` → `main` (merged), [#48](https://github.com/itej89/rustinfer/pull/48) `feat/37-kv-dtypes` → `main` (merged), [#49](https://github.com/itej89/rustinfer/pull/49) `feat/35-mxfp4-checkpoints` → `main` (merged), [#50](https://github.com/itej89/rustinfer/pull/50) `docs/srs-standards-conformance` → `main` (merged), [#52](https://github.com/itej89/rustinfer/pull/52) `fix/51-standards-defects` → `main` (merged), [#53](https://github.com/itej89/rustinfer/pull/53) `docs/srs-build-reads-weights` → `main` (merged), [#55](https://github.com/itej89/rustinfer/pull/55) `fix/51-e5m2-partial-rotary` → `main` (merged), [#56](https://github.com/itej89/rustinfer/pull/56) `docs/uml-close-fences` → `main` (merged), [#57](https://github.com/itej89/rustinfer/pull/57) `fix/51-used-range-u8-empty` → `main` (merged), [#58](https://github.com/itej89/rustinfer/pull/58) `feat/12-rocm-target` → `main` (merged), [#60](https://github.com/itej89/rustinfer/pull/60) `infra/pin-rust-toolchain` → `main` (merged), [#62](https://github.com/itej89/rustinfer/pull/62) `docs/srs-hip-runtime-major` → `main` (merged); four more were merged on Codeberg before the move, see below |
+| Latest CI run | [run 113](https://github.com/itej89/rustinfer/actions/runs/43672080555) (main, `81fbcba`): **in_progress**, 2026-11-15 03:22 | GitHub Actions on `ubuntu-latest`; the recent runs are listed below |
+| SRS requirements implemented | `██░░░░░░░░ 43/188` | by the tag rule of `docs/testing.md`: a requirement is implemented when a test carries a `Verifies` tag for it and no test a `Groundwork for` tag; 43 implemented, 32 partial (a `Groundwork for` tag), 1 reserved only (only `Reserved` tags), 112 planned; by release: R1 43/31/0/36 of 110; R2 0/1/1/39 of 41; R3 0/0/0/33 of 33; R4 0/0/0/4 of 4 (implemented/partial/reserved only/planned); the tags and files per id are on the [requirements](ref-requirements.html) page. The SRS's own status field changes only at a release, so by SRS status today: Draft 188 |
+| Mandatory standards (R1) | `████░░░░░░ 6/15` | 6 works / 9 partly / 0 missing, of the 15 standards mandatory from R1 in SRS §1.4; the [standards map](standards.html), each one [below](#standards) |
 | Mandatory standards (R2) | `░░░░░░░░░░ 0/4` | 0 works / 0 partly / 0 missing; 4 later release (not due yet), of the 4 standards mandatory from R2 in SRS §1.4; the [standards map](standards.html), each one [below](#standards) |
 | Mandatory standards (R3) | `░░░░░░░░░░ 0/6` | 0 works / 0 partly / 0 missing; 6 later release (not due yet), of the 6 standards mandatory from R3 in SRS §1.4; the [standards map](standards.html), each one [below](#standards) |
-| Tests | 1074 | `#[test]` functions across 15 crates |
+| Tests | 1203 | `#[test]` functions across 15 crates |
 | Line coverage | 96.44% | from the final test run of GitHub PR #21's merge-readiness checklist (`cargo llvm-cov --workspace --all-features`, after the rebase), 2026-11-12; the CI gate is 80 percent |
-| Rust | 61,184 lines in 278 files | `crates/**/*.rs`, tests and build scripts included |
+| Rust | 73,722 lines in 323 files | `crates/**/*.rs`, tests and build scripts included |
 
 ## Standards
 
@@ -47,18 +47,18 @@ what the states mean, is [Standards](standards.html).
 | [OCP OFP8](std-ocp-ofp8.html) Revision 1.1 | Number formats | mandatory R1 | <span class="state-part">partly works</span> | 1 | 2 | [tracker](std-ocp-ofp8-tracker.html) |
 | [AMD Quark MXFP4 export](std-quark.html) as surveyed (313cb0b) | Model formats | mandatory R1 | <span class="state-ok">works</span> | 0 | 3 | [tracker](std-quark-tracker.html) |
 | [compressed-tensors](std-ct.html) 0.13.0 | Model formats | mandatory R1 | <span class="state-ok">works</span> | 0 | 2 | [tracker](std-ct-tracker.html) |
-| [safetensors](std-safetensors.html) v0.8.0 | Model formats | mandatory R1 | <span class="state-part">partly works</span> | 3 | 4 | [tracker](std-safetensors-tracker.html) |
+| [safetensors](std-safetensors.html) v0.8.0 | Model formats | mandatory R1 | <span class="state-part">partly works</span> | 1 | 4 | [tracker](std-safetensors-tracker.html) |
 | [Transformers config](std-hf-config.html) v5.23.0 | Model formats | mandatory R1 | <span class="state-part">partly works</span> | 1 | 5 | [tracker](std-hf-config-tracker.html) |
-| [AMDGPU code object V5 (AMDGPUUsage)](std-amdgpu-abi.html) code object V5, LLVM 23.1.0 text | Compiler and code generation | mandatory R1 | <span class="state-no">missing</span> | 4 | 4 | [tracker](std-amdgpu-abi-tracker.html) |
+| [AMDGPU code object V5 (AMDGPUUsage)](std-amdgpu-abi.html) code object V5, LLVM 23.1.0 text | Compiler and code generation | mandatory R1 | <span class="state-part">partly works</span> | 4 | 4 | [tracker](std-amdgpu-abi-tracker.html) |
 | [LLVM](std-llvm.html) 23.1.x | Compiler and code generation | mandatory R1 | <span class="state-part">partly works</span> | 2 | 4 | [tracker](std-llvm-tracker.html) |
 | [MLIR](std-mlir.html) LLVM 23 (23.1.x) | Compiler and code generation | mandatory R1 | <span class="state-part">partly works</span> | 3 | 4 | [tracker](std-mlir-tracker.html) |
-| [HIP runtime API](std-hip.html) ROCm 7.0 to 7.2 (7.2.4 reference) | Runtime | mandatory R1 | <span class="state-no">missing</span> | 10 | 12 | [tracker](std-hip-tracker.html) |
-| [FIPS PUB 180-4 Secure Hash Standard (SHA-256)](std-fips-180-4.html) 180-4 | Data and integrity | mandatory R1 | <span class="state-ok">works</span> | 1 | 2 | [tracker](std-fips-180-4-tracker.html) |
+| [HIP runtime API](std-hip.html) HIP runtime major 7 (ROCm 7.2.4 reference; verified on ROCm 10.1) | Runtime | mandatory R1 | <span class="state-part">partly works</span> | 10 | 12 | [tracker](std-hip-tracker.html) |
+| [FIPS PUB 180-4 Secure Hash Standard (SHA-256)](std-fips-180-4.html) 180-4 | Data and integrity | mandatory R1 | <span class="state-ok">works</span> | 0 | 2 | [tracker](std-fips-180-4-tracker.html) |
 | [ISO 8601-1 Date and time (RFC 3339 profile)](std-iso-8601.html) ISO 8601-1:2019 with Amd 1:2022 | Data and integrity | mandatory R1 | <span class="state-ok">works</span> | 2 | 3 | [tracker](std-iso-8601-tracker.html) |
 | [RFC 8259 JSON](std-rfc-8259.html) RFC 8259 (STD 90) | Data and integrity | mandatory R1 | <span class="state-ok">works</span> | 0 | 2 | [tracker](std-rfc-8259-tracker.html) |
 | [Tokenizers](std-hf-tokenizer.html) v0.23.3 | Model formats | mandatory R2 | later release (R2) | 0 | 2 | [tracker](std-hf-tokenizer-tracker.html) |
 | [SPIR-V](std-spir-v.html) 1.6 Revision 8 | Compiler and code generation | mandatory R2 | later release (R2) | 0 | 3 | [tracker](std-spir-v-tracker.html) |
-| [RCCL](std-rccl.html) ROCm 7.0 to 7.2 (RCCL 2.27.7 reference) | Runtime | mandatory R2 | later release (R2) | 0 | 6 | [tracker](std-rccl-tracker.html) |
+| [RCCL](std-rccl.html) RCCL of the HIP 7 install (RCCL 2.27.7 reference) | Runtime | mandatory R2 | later release (R2) | 0 | 6 | [tracker](std-rccl-tracker.html) |
 | [Vulkan](std-vulkan.html) 1.4.368 text; no minimum core version (OI-016) | Runtime | mandatory R2 | later release (R2) | 1 | 5 | [tracker](std-vulkan-tracker.html) |
 | [PEFT](std-peft.html) v0.21.3 | Model formats | mandatory R3 | later release (R3) | 0 | 1 | [tracker](std-peft-tracker.html) |
 | [RISC-V V vector extension](std-rvv-1.0.html) 1.0 | Compiler and code generation | mandatory R3 | later release (R3) | 0 | 3 | [tracker](std-rvv-1.0-tracker.html) |
@@ -84,12 +84,12 @@ open issue in dependency order whose blockers are all closed. Bodies are drafted
 | R1-5 | [Target abstraction and CPU reference target](https://github.com/itej89/rustinfer/issues/5) | #3 | Done 2026-11-12 | branch `feat/5-target-and-cpu-reference`; [PR #21](https://github.com/itej89/rustinfer/pull/21) → `main`, opened 2026-11-12, merged 2026-11-12 |
 | R1-6 | [Frontend: LLaMA family from a Hugging Face checkpoint](https://github.com/itej89/rustinfer/issues/6) | #3 | Done 2026-11-12 | branch `feat/6-frontend-llama`; [PR #24](https://github.com/itej89/rustinfer/pull/24) → `main`, opened 2026-11-12, merged 2026-11-13 |
 | R1-7 | [Kernel IR dialect and the MLIR/LLVM link](https://github.com/itej89/rustinfer/issues/7) | #2 | Done 2026-11-13 | branch `feat/7-kernel-ir-and-mlir-link`; [PR #25](https://github.com/itej89/rustinfer/pull/25) → `main`, opened 2026-11-12, merged 2026-11-13; writes ADR-007 (OI-009); needs a self-hosted runner for LLVM |
-| R1-8 | [AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS](https://github.com/itej89/rustinfer/issues/8) | #7 | **In review 2026-11-13** | branch `feat/8-amd-lowering`; [PR #44](https://github.com/itej89/rustinfer/pull/44) → `main`, opened 2026-11-13, open |
-| R1-9 | [R1 kernel generators, catalog and autotuner (`tune` command)](https://github.com/itej89/rustinfer/issues/9) | #5, #8 | Not started; waits on #8 | needs an MI300X or MI355X on the bench (OI-008) |
+| R1-8 | [AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS](https://github.com/itej89/rustinfer/issues/8) | #7 | Done 2026-11-15 | branch `feat/8-amd-lowering`; [PR #44](https://github.com/itej89/rustinfer/pull/44) → `main`, opened 2026-11-13, merged 2026-11-15 |
+| R1-9 | [R1 kernel generators, catalog and autotuner (`tune` command)](https://github.com/itej89/rustinfer/issues/9) | #5, #8 | **Not started** | needs an MI300X or MI355X on the bench (OI-008) |
 | R1-10 | [Graph compiler: pass pipeline from Model IR to Plan](https://github.com/itej89/rustinfer/issues/10) | #3, #5, #9 | Not started; waits on #9 | — |
 | R1-11 | [`build` and `inspect` commands](https://github.com/itej89/rustinfer/issues/11) | #4, #6, #10 | Not started; waits on #10 | — |
-| R1-12 | [ROCm target: HIP binding behind one FFI module](https://github.com/itej89/rustinfer/issues/12) | #5 | Not started | needs an MI300X or MI355X on the bench (OI-008) |
-| R1-13 | [Executor: static batch, KV block pool, sampler](https://github.com/itej89/rustinfer/issues/13) | #10, #12, #18 | Not started; waits on #10, #12 | — |
+| R1-12 | [ROCm target: HIP binding behind one FFI module](https://github.com/itej89/rustinfer/issues/12) | #5 | Done 2026-11-15 | branch `feat/12-rocm-target`; [PR #58](https://github.com/itej89/rustinfer/pull/58) → `main`, opened 2026-11-14, merged 2026-11-15; needs an MI300X or MI355X on the bench (OI-008) |
+| R1-13 | [Executor: static batch, KV block pool, sampler](https://github.com/itej89/rustinfer/issues/13) | #10, #12, #18 | Not started; waits on #10 | — |
 | R1-14 | [`run` command end to end](https://github.com/itej89/rustinfer/issues/14) | #11, #13 | Not started; waits on #11, #13 | closes the Epic's acceptance criteria |
 | R1-15 | [Planner: topology model and placement interfaces](https://github.com/itej89/rustinfer/issues/15) | #3 | Done 2026-11-12 | branch `feat/15-planner-interfaces`; [PR #20](https://github.com/itej89/rustinfer/pull/20) → `main`, opened 2026-11-12, merged 2026-11-12 |
 
@@ -120,7 +120,7 @@ their numbers with Codeberg PR #19 (Model IR) and #21 (artifact) and are differe
 | PR-41 | [docs(srs): v0.4, MXFP4 in Release 1 (ADR-010)](https://github.com/itej89/rustinfer/pull/41) | a reviewer's sign-off | Merged 2026-11-13 | `docs/srs-v0.4-mxfp4` → `main`; mergeable |
 | PR-42 | [feat(mir): grouped rmsnorm, Qwen3 QK norm lowers (#26)](https://github.com/itej89/rustinfer/pull/42) | a reviewer's sign-off | Merged 2026-11-13 | `feat/26-grouped-rmsnorm` → `main`; mergeable |
 | PR-43 | [feat(mir,target): MXFP4 dtypes, mx encoding and the MX conversion oracle (#34)](https://github.com/itej89/rustinfer/pull/43) | a reviewer's sign-off | Merged 2026-11-13 | `feat/34-mxfp4-ir-oracle` → `main`; mergeable |
-| PR-44 | [feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)](https://github.com/itej89/rustinfer/pull/44) | a reviewer's sign-off | In review 2026-11-13 | `feat/8-amd-lowering` → `main`; mergeable |
+| PR-44 | [feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)](https://github.com/itej89/rustinfer/pull/44) | a reviewer's sign-off | Merged 2026-11-15 | `feat/8-amd-lowering` → `main`; mergeable |
 | PR-46 | [docs(srs): cite the external standards rustinfer depends on](https://github.com/itej89/rustinfer/pull/46) | a reviewer's sign-off | Merged 2026-11-13 | `docs/srs-standards` → `main`; mergeable |
 | PR-47 | [feat: MXFP4 in the weight manifest and Sluice, packed weights streamed with their scales (#39)](https://github.com/itej89/rustinfer/pull/47) | a reviewer's sign-off | Merged 2026-11-14 | `feat/39-mxfp4-sluice` → `main`; mergeable |
 | PR-48 | [feat: KV cache dtypes bf16, fp8 and MXFP4 with --kv-dtype (#37)](https://github.com/itej89/rustinfer/pull/48) | a reviewer's sign-off | Merged 2026-11-14 | `feat/37-kv-dtypes` → `main`; mergeable |
@@ -131,6 +131,9 @@ their numbers with Codeberg PR #19 (Model IR) and #21 (artifact) and are differe
 | PR-55 | [fix: refuse partial_rotary_factor ≠ 1.0 (HFC-5); add OCP E5M2 (fp8_e5m2) with CPU reference (#51)](https://github.com/itej89/rustinfer/pull/55) | a reviewer's sign-off | Merged 2026-11-14 | `fix/51-e5m2-partial-rotary` → `main`; mergeable |
 | PR-56 | [docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams](https://github.com/itej89/rustinfer/pull/56) | a reviewer's sign-off | Merged 2026-11-14 | `docs/uml-close-fences` → `main`; mergeable |
 | PR-57 | [fix: U8 as raw bytes, exact used-range digests, empty tensors (#51 SHA256-2, ST-3, ST-4)](https://github.com/itej89/rustinfer/pull/57) | a reviewer's sign-off | Merged 2026-11-14 | `fix/51-used-range-u8-empty` → `main`; mergeable |
+| PR-58 | [feat(target-rocm): HIP binding behind one ffi module (#12)](https://github.com/itej89/rustinfer/pull/58) | a reviewer's sign-off | Merged 2026-11-15 | `feat/12-rocm-target` → `main`; mergeable |
+| PR-60 | [build: pin the Rust toolchain to 1.100.0 (owner decision)](https://github.com/itej89/rustinfer/pull/60) | a reviewer's sign-off | Merged 2026-11-15 | `infra/pin-rust-toolchain` → `main`; mergeable |
+| PR-62 | [docs(srs): support HIP by runtime major version, ROCm 10.0 verified](https://github.com/itej89/rustinfer/pull/62) | a reviewer's sign-off | Merged 2026-11-15 | `docs/srs-hip-runtime-major` → `main`; mergeable |
 | PR-16 | SRS v0.2 and ADR-001 to ADR-006 | a reviewer's sign-off | Merged 2026-11-12 | `docs/1-srs-rustinfer` → `main`; merged on Codeberg before the move; the branch did not move |
 | PR-17 | Project scaffold: workspace, core, CLI, CI, mandatory files (#2) | a reviewer's sign-off | Merged 2026-11-12 | `feat/2-project-scaffold` → `main`; merged on Codeberg before the move; the branch did not move |
 | PR-19 | Model IR: typed graph, validator, canonical JSON (#3) | a reviewer's sign-off | Merged 2026-11-12 | `feat/3-model-ir` → `main`; merged on Codeberg before the move; the branch did not move |
@@ -147,18 +150,18 @@ to 11 green on Codeberg PRs #17 and #19 and `main`, did not move and is gone wit
 
 | run | for | commit | event | state | when |
 |---|---|---|---|---|---|
-| [96](https://github.com/itej89/rustinfer/actions/runs/43602511505) | main | `99c1ec7` | push | **in_progress** | 2026-11-14 13:59 |
-| [95](https://github.com/itej89/rustinfer/actions/runs/43559450351) | fix/51-used-range-u8-empty | `f5b921a` | pull_request | **success** | 2026-11-14 05:01 |
-| [94](https://github.com/itej89/rustinfer/actions/runs/43558065470) | main | `ce44f24` | push | **success** | 2026-11-14 04:43 |
-| [93](https://github.com/itej89/rustinfer/actions/runs/43556108310) | docs/uml-close-fences | `be831c5` | pull_request | **success** | 2026-11-14 04:19 |
-| [92](https://github.com/itej89/rustinfer/actions/runs/43556032360) | main | `8c7d47e` | push | **success** | 2026-11-14 04:19 |
-| [91](https://github.com/itej89/rustinfer/actions/runs/43555102083) | feat/35-mxfp4-checkpoints | `2491c56` | pull_request | **success** | 2026-11-14 04:08 |
-| [90](https://github.com/itej89/rustinfer/actions/runs/43555006868) | docs/uml-close-fences | `e8c9fa8` | pull_request | **success** | 2026-11-14 04:06 |
-| [89](https://github.com/itej89/rustinfer/actions/runs/43554993050) | docs/uml-close-fences | `05ae20b` | pull_request | **cancelled** | 2026-11-14 04:06 |
-| [88](https://github.com/itej89/rustinfer/actions/runs/43554364783) | main | `8d58ad6` | push | **success** | 2026-11-14 03:59 |
-| [87](https://github.com/itej89/rustinfer/actions/runs/43554054333) | feat/35-mxfp4-checkpoints | `380d7a3` | pull_request | **success** | 2026-11-14 03:55 |
-| [86](https://github.com/itej89/rustinfer/actions/runs/43553756452) | docs/srs-build-reads-weights | `c635ce7` | pull_request | **success** | 2026-11-14 03:51 |
-| [85](https://github.com/itej89/rustinfer/actions/runs/43553600779) | main | `6a18042` | push | **success** | 2026-11-14 03:49 |
+| [113](https://github.com/itej89/rustinfer/actions/runs/43672080555) | main | `81fbcba` | push | **in_progress** | 2026-11-15 03:22 |
+| [112](https://github.com/itej89/rustinfer/actions/runs/43670224156) | docs/srs-hip-runtime-major | `ccd7a54` | pull_request | **success** | 2026-11-15 02:58 |
+| [111](https://github.com/itej89/rustinfer/actions/runs/43669832084) | main | `38f2f60` | push | **success** | 2026-11-15 02:53 |
+| [110](https://github.com/itej89/rustinfer/actions/runs/43668455825) | feat/8-amd-lowering | `3070d85` | pull_request | **success** | 2026-11-15 02:34 |
+| [109](https://github.com/itej89/rustinfer/actions/runs/43667591012) | docs/srs-hip-runtime-major | `145c851` | pull_request | **success** | 2026-11-15 02:23 |
+| [108](https://github.com/itej89/rustinfer/actions/runs/43667499681) | main | `14ec27e` | push | **success** | 2026-11-15 02:22 |
+| [107](https://github.com/itej89/rustinfer/actions/runs/43667083546) | feat/8-amd-lowering | `4ad2d26` | pull_request | **success** | 2026-11-15 02:17 |
+| [106](https://github.com/itej89/rustinfer/actions/runs/43666111372) | main | `53dac5b` | push | **success** | 2026-11-15 02:05 |
+| [105](https://github.com/itej89/rustinfer/actions/runs/43620455054) | feat/12-rocm-target | `bb0ce2f` | pull_request | **success** | 2026-11-14 17:19 |
+| [104](https://github.com/itej89/rustinfer/actions/runs/43619039852) | infra/pin-rust-toolchain | `d2b120a` | pull_request | **success** | 2026-11-14 17:04 |
+| [103](https://github.com/itej89/rustinfer/actions/runs/43618718388) | feat/12-rocm-target | `019829f` | pull_request | **success** | 2026-11-14 17:00 |
+| [102](https://github.com/itej89/rustinfer/actions/runs/43618613953) | feat/12-rocm-target | `3a95a82` | pull_request | **cancelled** | 2026-11-14 16:59 |
 
 ## Branches on GitHub
 
@@ -168,10 +171,12 @@ to 11 green on Codeberg PRs #17 and #19 and `main`, did not move and is gone wit
 | [`docs/gpu-test-template`](https://github.com/itej89/rustinfer/tree/docs/gpu-test-template) | see its issue |
 | [`docs/readme-docs-link`](https://github.com/itej89/rustinfer/tree/docs/readme-docs-link) | the README's link to this site, GitHub PR #22 |
 | [`docs/srs-build-reads-weights`](https://github.com/itej89/rustinfer/tree/docs/srs-build-reads-weights) | see its issue |
+| [`docs/srs-hip-runtime-major`](https://github.com/itej89/rustinfer/tree/docs/srs-hip-runtime-major) | see its issue |
 | [`docs/srs-standards`](https://github.com/itej89/rustinfer/tree/docs/srs-standards) | see its issue |
 | [`docs/srs-standards-conformance`](https://github.com/itej89/rustinfer/tree/docs/srs-standards-conformance) | see its issue |
 | [`docs/srs-v0.4-mxfp4`](https://github.com/itej89/rustinfer/tree/docs/srs-v0.4-mxfp4) | see its issue |
 | [`docs/uml-close-fences`](https://github.com/itej89/rustinfer/tree/docs/uml-close-fences) | see its issue |
+| [`feat/12-rocm-target`](https://github.com/itej89/rustinfer/tree/feat/12-rocm-target) | see its issue |
 | [`feat/15-planner-interfaces`](https://github.com/itej89/rustinfer/tree/feat/15-planner-interfaces) | the planner's topology model, placement and `Planner` trait (#15), merged as GitHub PR #20 (d886a3c) |
 | [`feat/18-sluice-weight-streamer`](https://github.com/itej89/rustinfer/tree/feat/18-sluice-weight-streamer) | see its issue |
 | [`feat/26-grouped-rmsnorm`](https://github.com/itej89/rustinfer/tree/feat/26-grouped-rmsnorm) | see its issue |
@@ -189,6 +194,7 @@ to 11 green on Codeberg PRs #17 and #19 and `main`, did not move and is gone wit
 | [`fix/51-standards-defects`](https://github.com/itej89/rustinfer/tree/fix/51-standards-defects) | see its issue |
 | [`fix/51-used-range-u8-empty`](https://github.com/itej89/rustinfer/tree/fix/51-used-range-u8-empty) | see its issue |
 | [`infra/github-hosting`](https://github.com/itej89/rustinfer/tree/infra/github-hosting) | ADR-008 and the CI retarget to GitHub, merged as GitHub PR #19 (9d448ce) |
+| [`infra/pin-rust-toolchain`](https://github.com/itej89/rustinfer/tree/infra/pin-rust-toolchain) | see its issue |
 | [`main`](https://github.com/itej89/rustinfer/tree/main) | the approved SRS v0.2, ADR-001 to ADR-006 and ADR-008, the fourteen-crate workspace, the Model IR, the artifact crate, the planner interfaces and the target abstraction with the CPU reference (Codeberg PRs #16, #17, #19, #21; GitHub PRs #19, #20, #21) |
 | [`refactor/27-frontend-dtypes`](https://github.com/itej89/rustinfer/tree/refactor/27-frontend-dtypes) | see its issue |
 | [`refactor/27-seams`](https://github.com/itej89/rustinfer/tree/refactor/27-seams) | see its issue |

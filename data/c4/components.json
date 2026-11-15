@@ -234,11 +234,12 @@
    "id": "rustinfer-kc",
    "view": "library",
    "layer": "kernels",
-   "desc": "The kernel compiler: the Kernel IR dialect, its builder and the in-process MLIR/LLVM 23 link; generators and the autotuner to come.",
+   "desc": "The kernel compiler: the Kernel IR dialect, its builder, and the in-process lowering through MLIR/LLVM 23 to gfx942 and gfx950 code objects, linked by lld through a C++ shim; generators and the autotuner to come.",
    "types": [
     "KernelBuilder",
     "KernelModule",
     "KernelContext",
+    "CodeObject",
     "OpSpec"
    ],
    "issues": [
@@ -272,9 +273,12 @@
    "id": "rustinfer-target-rocm",
    "view": "library",
    "layer": "targets",
-   "desc": "The ROCm backend for gfx942 and gfx950; a registered stub until HIP is bound behind one FFI module.",
+   "desc": "The ROCm backend for gfx942 and gfx950: the HIP 7 runtime behind one FFI module, opened with dlopen; architecture from gcnArchName, resource check before loading.",
    "types": [
-    "RocmTarget"
+    "RocmTarget",
+    "RocmDevice",
+    "CodeObject",
+    "DeviceLimits"
    ],
    "issues": [
     12
