@@ -1,0 +1,13 @@
+{
+  "id": "AMD-SMI",
+  "name": "AMD SMI",
+  "version": "docs-7.2.4 (amdsmi.h at rocm-7.2.4)",
+  "area": "Runtime",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-15",
+  "gaps_open": 2,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

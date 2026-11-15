@@ -1,0 +1,13 @@
+{
+  "id": "LLVM-AMDGPU-INTRINSICS",
+  "name": "AMDGPU intrinsics (IntrinsicsAMDGPU.td)",
+  "version": "LLVM 23.1.0 text",
+  "area": "Compiler and code generation",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-15",
+  "gaps_open": 2,
+  "gaps_total": 3,
+  "spec_source": "downloaded"
+}

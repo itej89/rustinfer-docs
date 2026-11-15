@@ -1,0 +1,13 @@
+{
+  "id": "AMD-ACC",
+  "name": "AMD Instinct system acceptance guides",
+  "version": "latest, accessed 2026-11-15",
+  "area": "Runtime",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-15",
+  "gaps_open": 1,
+  "gaps_total": 2,
+  "spec_source": "downloaded"
+}

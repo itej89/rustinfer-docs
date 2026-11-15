@@ -1,0 +1,13 @@
+{
+  "id": "HIP-MEM",
+  "name": "HIP memory management how-to",
+  "version": "docs-7.2.4",
+  "area": "Runtime",
+  "conformance": "mandatory R1",
+  "state": "gap",
+  "assessed": true,
+  "audit_date": "2026-11-15",
+  "gaps_open": 3,
+  "gaps_total": 5,
+  "spec_source": "downloaded"
+}

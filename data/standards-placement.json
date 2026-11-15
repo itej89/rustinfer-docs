@@ -157,6 +157,76 @@
    "element": "rustinfer-kc"
   },
   {
+   "standard": "LLVM-AMDGPU-INTRINSICS",
+   "level": "context",
+   "element": "x-llvm"
+  },
+  {
+   "standard": "LLVM-AMDGPU-INTRINSICS",
+   "level": "component",
+   "element": "rustinfer-kc"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "context",
+   "element": "x-gpu"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "container",
+   "element": "cr-lib-dev"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "component",
+   "element": "rustinfer-target"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "component",
+   "element": "rustinfer-target-rocm"
+  },
+  {
+   "standard": "HIP-MEM",
+   "level": "component",
+   "element": "rustinfer-sluice"
+  },
+  {
+   "standard": "HIP-ENV",
+   "level": "container",
+   "element": "c-device"
+  },
+  {
+   "standard": "HIP-ENV",
+   "level": "component",
+   "element": "rustinfer-core"
+  },
+  {
+   "standard": "HIP-ENV",
+   "level": "component",
+   "element": "rustinfer-target-rocm"
+  },
+  {
+   "standard": "AMD-SMI",
+   "level": "context",
+   "element": "x-gpu"
+  },
+  {
+   "standard": "AMD-SMI",
+   "level": "container",
+   "element": "c-cli"
+  },
+  {
+   "standard": "AMD-ACC",
+   "level": "container",
+   "element": "c-cli"
+  },
+  {
    "standard": "RCCL",
    "level": "context",
    "element": "x-gpu"

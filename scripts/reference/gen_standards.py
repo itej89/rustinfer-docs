@@ -70,6 +70,27 @@ PURPOSE = {
                     "LDS 160 KB, L1 32 KB, L2 4 MB per XCD, 256 MB Infinity Cache.",
     "AMD-MI300-MODES": "Why work-group order decides L2 sharing on MI300X (RI-KC-016 (g)): in SPX mode "
                        "work groups go round-robin to the XCDs, each with its own L2.",
+    "AMD-INV": "The gfx942 and gfx950 feature inventory behind SRS v0.5: 143 rows, each with its "
+               "primary source, its path through the stack, its use at b057ef5 and its home.",
+    "AMD-PART": "The compute and memory partition modes of MI300X and MI355X: how many devices one "
+                "GPU is, behind the planner's partition fields (RI-PLN-001) and RI-PLN-007 (R3).",
+    "AMD-WL": "AMD's MI300 and MI350 workload tuning guide: QPX with NPS4 and DPX with NPS2 as the "
+              "most efficient modes for some workloads, behind RI-PLN-007 (R3).",
+    "ROCM-SRC": "The HIP and ROCr source at rocm-7.2.4, read where no document states the behaviour: "
+                "copy-path selection, stream-priority queue pools, peer copies, stream values, ROCr flags.",
+    "LINUX-AMDGPU": "Driver facts no AMD document states: the SDMA engine split, the CU-mask bit order "
+                    "and the 2 MiB VRAM fragment (RI-ROC-008, RI-ROC-011, RI-ROC-012).",
+    "FA3": "Evidence for loop rotation, wave ping-pong and fp8 attention with block scales and a "
+           "Hadamard rotation (RI-KC-016 (c), RI-KC-025, RI-KC-027), measured on H100.",
+    "FA4": "Evidence for the polynomial exponential, lazy rescaling with its threshold of 8 and the "
+           "longest-first attention order (RI-KC-021, RI-KC-026 (d), RI-KC-016 (g)).",
+    "FD": "Flash-Decoding: split-KV decode with a log-sum-exp merge, behind RI-KC-026 (c) and (e).",
+    "FI": "FlashInfer: the attention-state merge, grouped-query packing and planned persistent "
+          "kernels, behind RI-KC-026 (c), (e), (f) and RI-KC-029 (R2).",
+    "LEAN": "LeanAttention: stream-K decode attention, 1.73x over Flash-Decoding on average, behind "
+            "the persistent kernels of RI-KC-029 (R2).",
+    "FD-PP": "FlashDecoding++: its unified-max softmax, reviewed in the inventory (row AA-22) and "
+             "not pursued, since lazy rescaling (RI-KC-026 (d)) gets the benefit exactly.",
     "AMD-TDM": "AMD's name, Tensor Data Mover, for the gfx1250 descriptor-based tile mover that "
                "RI-KC-015's tensor mover describes.",
     "NV-KV": "Background for a low-precision KV cache (NVFP4 KV cache, long context and large batches).",
