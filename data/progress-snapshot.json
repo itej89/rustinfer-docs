@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-15T19:24:06+00:00",
+ "fetched_at": "2026-11-15T21:20:25+00:00",
  "source": "github",
  "issues": [
   {
@@ -185,7 +185,7 @@
     "RI-CLI-007"
    ],
    "branch": "feat/9-generators-autotuner",
-   "derived_status": "In review 2026-11-15"
+   "derived_status": "In progress"
   },
   {
    "number": 10,
@@ -650,7 +650,7 @@
     "RI-ART-010"
    ],
    "branch": "feat/64-kc-passes",
-   "derived_status": "In progress"
+   "derived_status": "In review 2026-11-15"
   },
   {
    "number": 69,
@@ -676,6 +676,591 @@
    ],
    "milestone": null,
    "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 78,
+   "title": "GPU test: optimisation passes, LDS features and tune on gfx950 (PR #77)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": null,
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 81,
+   "title": "Capabilities, part 2: matrix-op layouts, vector unit, shared memory, cross-lane, scheduling, occupancy, atomics",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 82,
+   "title": "Distributed tiles, refinements: transposing shared loads and block-variant matrix ops",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    81
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 83,
+   "title": "Cross-lane reductions and broadcasts on distributed tiles",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    81
+   ],
+   "requirements": [
+    "RI-KC-020"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 84,
+   "title": "Vector-unit selection: packed math, paired conversions, exp2 folding, reciprocal, dot product",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    81
+   ],
+   "requirements": [
+    "RI-KC-021"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 85,
+   "title": "Kernel-attributes pass: work-group size, waves per SIMD, accumulator budget, scheduling strategy",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80
+   ],
+   "requirements": [
+    "RI-KC-022"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 86,
+   "title": "Uniform scalarisation: block-table and length reads on the scalar path",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    64,
+    74,
+    80
+   ],
+   "requirements": [
+    "RI-KC-023"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 87,
+   "title": "Atomic accumulate and native atomics at the stated scope",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    81
+   ],
+   "requirements": [
+    "RI-KC-002",
+    "RI-KC-024"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 88,
+   "title": "Attention prefill: diagonal-only masking, log-sum-exp, merge generator, lazy rescaling",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    64,
+    74,
+    80
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 89,
+   "title": "Decode attention v2: grouped-query packing on the matrix op, split-KV",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    10,
+    64,
+    80,
+    88
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 90,
+   "title": "Split-K GEMM",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    10,
+    64,
+    80,
+    87
+   ],
+   "requirements": [
+    "RI-KC-028"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 91,
+   "title": "Capability microbenchmarks: measure what no AMD document states",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    81
+   ],
+   "requirements": [
+    "RI-KC-030"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 92,
+   "title": "ROCm device description and the planner's device fields",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    12,
+    15,
+    80
+   ],
+   "requirements": [
+    "RI-ROC-011",
+    "RI-PLN-001"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 93,
+   "title": "Pinned host staging buffers and copy classes",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    92
+   ],
+   "requirements": [
+    "RI-TGT-006",
+    "RI-ROC-008",
+    "RI-ROC-009"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 94,
+   "title": "Sluice on pinned staging buffers with asynchronous uploads",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    93
+   ],
+   "requirements": [
+    "RI-WST-006"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 95,
+   "title": "Priority streams and the HIP and HSA environment in the version manifest",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    93
+   ],
+   "requirements": [
+    "RI-ROC-010",
+    "RI-ROC-015"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 96,
+   "title": "Wave ping-pong and specialisation pass",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    81
+   ],
+   "requirements": [
+    "RI-KC-025"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 97,
+   "title": "Device and host state in tune and GPU test records",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    80,
+    92,
+    95
+   ],
+   "requirements": [
+    "RI-OBS-005"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 98,
+   "title": "Low-precision attention: fp8 with block scales, Hadamard rotation",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80,
+    88
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 99,
+   "title": "Persistent and stream-K kernels, cooperative launch, work-group flags",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    87,
+    89,
+    90
+   ],
+   "requirements": [
+    "RI-KC-029",
+    "RI-ROC-017"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 100,
+   "title": "Multi-GPU memory: peer access, per-buffer peer mapping, signal words, Sluice fan-out",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    93
+   ],
+   "requirements": [
+    "RI-ROC-013",
+    "RI-ROC-014",
+    "RI-WST-008"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 101,
+   "title": "Launch overhead: per-iteration metadata path, argument preload, host wait mode",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    85,
+    92,
+    95
+   ],
+   "requirements": [
+    "RI-ROC-016",
+    "RI-KC-022",
+    "RI-ROC-010"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 102,
+   "title": "Exponential implementation options: polynomial and split",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    84,
+    91
+   ],
+   "requirements": [
+    "RI-KC-021"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 103,
+   "title": "Background device-to-device copies off the compute units; batched small copies",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    93
+   ],
+   "requirements": [
+    "RI-ROC-009"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 104,
+   "title": "Sluice: registered page-cache upload option",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    94
+   ],
+   "requirements": [
+    "RI-WST-007"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 105,
+   "title": "Device timestamps and compute-die ids per work group",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    64,
+    80
+   ],
+   "requirements": [
+    "RI-OBS-006"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 106,
+   "title": "Instruction-cache size in the capability query and the resource report",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    81
+   ],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 107,
+   "title": "CU-masked streams",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    92,
+    105
+   ],
+   "requirements": [
+    "RI-ROC-012"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 108,
+   "title": "Partition-aware multi-instance placement",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    80,
+    92
+   ],
+   "requirements": [
+    "RI-PLN-007"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 109,
+   "title": "MX attention: MXFP8 and MXFP4 query and key on the scaled matrix op",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    38,
+    80,
+    98
+   ],
    "requirements": [],
    "branch": null,
    "derived_status": "Not started"
@@ -1095,7 +1680,7 @@
    "title": "feat(kc,cli): tuning catalog, autotuner and rustinfer tune (#9, 9c)",
    "state": "open",
    "head": "feat/9c-catalog-tune",
-   "base": "feat/9b-generators",
+   "base": "main",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
@@ -1128,10 +1713,10 @@
   },
   {
    "number": 73,
-   "title": "feat(cli): build and inspect commands, first-load build (#11, stage 1: compile waits on #10)",
+   "title": "feat(cli): build and inspect commands, first-load build (#11)",
    "state": "open",
    "head": "feat/11-build-inspect",
-   "base": "feat/9c-catalog-tune",
+   "base": "feat/10-graph-compiler",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
@@ -1141,11 +1726,11 @@
   {
    "number": 74,
    "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
-   "state": "open",
+   "state": "closed",
    "head": "feat/9-generators-autotuner",
    "base": "main",
-   "merged": false,
-   "merged_at": "",
+   "merged": true,
+   "merged_at": "2026-11-15",
    "mergeable": true,
    "created_at": "2026-11-15",
    "url": "https://github.com/itej89/rustinfer/pull/74"
@@ -1173,153 +1758,190 @@
    "mergeable": true,
    "created_at": "2026-11-15",
    "url": "https://github.com/itej89/rustinfer/pull/76"
+  },
+  {
+   "number": 77,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "state": "open",
+   "head": "feat/64-kc-passes",
+   "base": "feat/9c-catalog-tune",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/77"
+  },
+  {
+   "number": 79,
+   "title": "docs(planning): AMD gfx942/gfx950 feature inventory, SRS amendment and issue plan",
+   "state": "closed",
+   "head": "docs/amd-feature-inventory",
+   "base": "main",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/79"
+  },
+  {
+   "number": 80,
+   "title": "docs(srs): v0.5, AMD hardware and runtime features (gfx942/gfx950 inventory)",
+   "state": "closed",
+   "head": "docs/srs-v0.5-amd-features",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/80"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 16,
-   "closed": 53
+   "open": 46,
+   "closed": 55
   }
  ],
  "runs": [
   {
-   "id": 152,
-   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
+   "id": 166,
+   "title": "Merge pull request #74 from itej89/feat/9-generators-autotuner",
    "status": "in_progress",
    "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/36-mxfp4-precision",
-   "sha": "99bf9d5",
-   "created": "2026-11-15T19:21",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43751938787"
-  },
-  {
-   "id": 151,
-   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/9-generators-autotuner",
-   "sha": "82fed79",
-   "created": "2026-11-15T19:07",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43750598330"
-  },
-  {
-   "id": 150,
-   "title": "Merge pull request #72 from itej89/feat/13-executor-static-batch",
-   "status": "completed",
-   "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "b057ef5",
-   "created": "2026-11-15T19:03",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43750279890"
+   "sha": "5a6db49",
+   "created": "2026-11-15T21:17",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43762850214"
   },
   {
-   "id": 149,
-   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/13-executor-static-batch",
-   "sha": "49f1da2",
-   "created": "2026-11-15T18:39",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43747974596"
-  },
-  {
-   "id": 148,
-   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/10-graph-compiler",
-   "sha": "6235408",
-   "created": "2026-11-15T18:03",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43744601620"
-  },
-  {
-   "id": 147,
-   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/13-executor-static-batch",
-   "sha": "89f5f8e",
-   "created": "2026-11-15T17:49",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43743286447"
-  },
-  {
-   "id": 146,
-   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/9-generators-autotuner",
-   "sha": "74ef53b",
-   "created": "2026-11-15T17:08",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43739372117"
-  },
-  {
-   "id": 145,
-   "title": "Merge pull request #63 from itej89/feat/9-generators-autotuner",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "1255ee1",
-   "created": "2026-11-15T17:07",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43739273829"
-  },
-  {
-   "id": 144,
-   "title": "Merge pull request #71 from itej89/docs/srs-gfx942-not-r1-gate",
+   "id": 165,
+   "title": "Merge pull request #80 from itej89/docs/srs-v0.5-amd-features",
    "status": "completed",
    "conclusion": "cancelled",
    "event": "push",
    "ref": "main",
-   "sha": "2c5f5b8",
-   "created": "2026-11-15T17:06",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43739231475"
+   "sha": "4ee01b6",
+   "created": "2026-11-15T21:17",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43762831921"
   },
   {
-   "id": 143,
-   "title": "feat(cli): build and inspect commands, first-load build (#11, stage 1: compile waits on #10)",
-   "status": "completed",
-   "conclusion": "success",
+   "id": 164,
+   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
+   "status": "in_progress",
+   "conclusion": null,
    "event": "pull_request",
-   "ref": "feat/11-build-inspect",
-   "sha": "62f3953",
-   "created": "2026-11-15T16:53",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43737990082"
+   "ref": "feat/10-graph-compiler",
+   "sha": "4b6c7dc",
+   "created": "2026-11-15T21:15",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43762686071"
   },
   {
-   "id": 142,
-   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
-   "status": "completed",
-   "conclusion": "failure",
-   "event": "pull_request",
-   "ref": "feat/13-executor-static-batch",
-   "sha": "fc334b8",
-   "created": "2026-11-15T16:49",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43737640026"
-  },
-  {
-   "id": 141,
+   "id": 163,
    "title": "feat(kc,cli): tuning catalog, autotuner and rustinfer tune (#9, 9c)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
    "ref": "feat/9c-catalog-tune",
-   "sha": "3f5c321",
-   "created": "2026-11-15T16:00",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43733036895"
+   "sha": "647bf42",
+   "created": "2026-11-15T20:59",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43761071039"
+  },
+  {
+   "id": 162,
+   "title": "feat(cli): build and inspect commands, first-load build (#11)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/11-build-inspect",
+   "sha": "aaa3b9c",
+   "created": "2026-11-15T20:56",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43760844632"
+  },
+  {
+   "id": 161,
+   "title": "docs(srs): v0.5, AMD hardware and runtime features (gfx942/gfx950 inventory)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/srs-v0.5-amd-features",
+   "sha": "30f5758",
+   "created": "2026-11-15T20:42",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43759552511"
+  },
+  {
+   "id": 160,
+   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/10-graph-compiler",
+   "sha": "53c53a3",
+   "created": "2026-11-15T20:41",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43759527400"
+  },
+  {
+   "id": 159,
+   "title": "docs(srs): v0.5, AMD hardware and runtime features (gfx942/gfx950 inventory)",
+   "status": "completed",
+   "conclusion": "cancelled",
+   "event": "pull_request",
+   "ref": "docs/srs-v0.5-amd-features",
+   "sha": "b222a2e",
+   "created": "2026-11-15T20:34",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43758829572"
+  },
+  {
+   "id": 158,
+   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/36-mxfp4-precision",
+   "sha": "4ae9714",
+   "created": "2026-11-15T20:24",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43757900941"
+  },
+  {
+   "id": 157,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/64-kc-passes",
+   "sha": "56d4382",
+   "created": "2026-11-15T20:24",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43757861987"
+  },
+  {
+   "id": 156,
+   "title": "docs(planning): AMD gfx942/gfx950 feature inventory, SRS amendment and issue plan",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "docs/amd-feature-inventory",
+   "sha": "3935356",
+   "created": "2026-11-15T20:14",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43756953518"
+  },
+  {
+   "id": 155,
+   "title": "feat(cli): build and inspect commands, first-load build (#11)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/11-build-inspect",
+   "sha": "cb7d024",
+   "created": "2026-11-15T20:14",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43756946522"
   }
  ],
  "branches": [
   "docs/27-srs-v0.3",
   "docs/adr-011-ninja-compiler",
+  "docs/amd-feature-inventory",
   "docs/gpu-test-template",
   "docs/readme-docs-link",
   "docs/srs-build-reads-weights",
@@ -1328,8 +1950,10 @@
   "docs/srs-standards",
   "docs/srs-standards-conformance",
   "docs/srs-v0.4-mxfp4",
+  "docs/srs-v0.5-amd-features",
   "docs/uml-close-fences",
   "feat/10-graph-compiler",
+  "feat/10-plan-abi-for-13",
   "feat/11-build-inspect",
   "feat/12-rocm-target",
   "feat/13-executor-static-batch",

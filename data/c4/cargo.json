@@ -1,5 +1,5 @@
 {
- "commit": "b057ef5",
+ "commit": "5a6db49",
  "crates": {
   "rustinfer-artifact": {
    "deps": [

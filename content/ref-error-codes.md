@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit b057ef5 2026-11-15. A failure leaves the command as one line on
+`src/error.rs` at commit 5a6db49 2026-11-15. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -110,7 +110,8 @@ and component.
 | `rustinfer-kc` | `kc` | `Unsupported` | `unsupported` |
 | `rustinfer-kc` | `kc` | `Backend` | `delegated` |
 | `rustinfer-kc` | `kc` | `Interpret` | `delegated` |
-| `rustinfer-kc` | `kc` | `InvalidParameter` | `invalid` |
+| `rustinfer-kc` | `kc` | `InvalidParameter` | `delegated` |
+| `rustinfer-kc` | `kc` | `InvalidInput` | `invalid` |
 | `rustinfer-kc` | `kc` | `UnknownGenerator` | `not_found` |
 | `rustinfer-kc` | `kc` | `Reference` | `internal` |
 | `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |

@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-b057ef5 2026-11-15. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 201
+5a6db49 2026-11-15. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 203
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -221,3 +221,5 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KC_GFX950_LDS_BYTES` | `u64` | `160 * 1024` | LDS bytes per work group of gfx950 (AMD Instinct CDNA4 ISA reference guide, 5-Aug-2025, the §3.1 table: 160 KiB per CU). |
 | `KC_AMD_WAVE_LANES` | `u64` | `64` | Lanes of an AMD Instinct wave (wave64). |
 | `KC_AMD_VECTOR_BYTES` | `u64` | `16` | The widest global access of one AMD lane in bytes (`dwordx4`). |
+| `KC_FP8_E4M3_MAX` | `f64` | `448.0` | The largest finite value of fp8 E4M3 (OCP): the quantize kernels' scale denominator (OFP8 Rev 1.1 §5.1). |
+| `KC_FP8_E4M3_FNUZ_MAX` | `f64` | `240.0` | The largest finite value of fp8 E4M3 FNUZ (AMD-FNUZ). |
