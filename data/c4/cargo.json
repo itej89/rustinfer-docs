@@ -1,5 +1,5 @@
 {
- "commit": "81fbcba",
+ "commit": "b057ef5",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -27,6 +27,8 @@
     "Plan",
     "PlanEntry",
     "PlanSection",
+    "PlanBucket",
+    "StateField",
     "RawSections",
     "Sections",
     "ByteRange",
@@ -120,7 +122,9 @@
   },
   "rustinfer-kc": {
    "deps": [
-    "rustinfer-core"
+    "rustinfer-core",
+    "rustinfer-mir",
+    "rustinfer-target"
    ],
    "api": [
     "AmdArch",
@@ -128,6 +132,9 @@
     "KernelBuilder",
     "KernelModule",
     "Value",
+    "Capabilities",
+    "MatrixOp",
+    "MatrixOps",
     "irdl_definition",
     "operations",
     "Arity",
@@ -150,7 +157,15 @@
     "require_link",
     "LinkStatus",
     "CodeObject",
-    "KernelContext"
+    "KernelContext",
+    "CompilerSettings",
+    "SETTING_NAMES",
+    "HostBuffer",
+    "interpret",
+    "Predicate",
+    "generators",
+    "tolerance",
+    "validation"
    ]
   },
   "rustinfer-mir": {
@@ -241,10 +256,26 @@
   "rustinfer-runtime": {
    "deps": [
     "rustinfer-core",
+    "rustinfer-mir",
     "rustinfer-artifact",
+    "rustinfer-planner",
+    "rustinfer-sluice",
     "rustinfer-target"
    ],
    "api": [
+    "BlockId",
+    "BlockPool",
+    "Engine",
+    "Step",
+    "Failure",
+    "FinishReason",
+    "Request",
+    "RequestId",
+    "RequestLimits",
+    "Response",
+    "SamplingConfig",
+    "EngineConfig",
+    "Executor",
     "kernel_from_artifact"
    ]
   },

@@ -24,7 +24,7 @@ when the ADR or decision it asks for lands.
 | OI-005 | Multi-rank artifact layout | Open | RI-ART-007, RI-DIST-001 | an ADR before R2; one file per rank provisionally |
 | OI-006 | Grammar backend for guided decoding | Open | RI-SMP-006 | an ADR before R3; a Rust-native backend preferred over an FFI |
 | OI-007 | Tokenizer | Open | RI-SRV-003, RI-CLI-006 | new-dep evaluation of the `tokenizers` crate before R2 |
-| OI-008 | Reference hardware. Autotuning and the baselines need a gfx950 host with vLLM and AITER. | Open; only the owner can rent the node | RI-KC-006, RI-NFR-003, RI-NFR-004, RI-NFR-006 | rent an MI355X node for R1 autotuning and the R2 acceptance run |
+| OI-008 | Reference hardware. Autotuning and the baselines need a gfx950 host with vLLM and AITER. | In progress 2026-11-15: the owner has an MI350X (gfx950); the R1 tune runs on it (#69). The vLLM and AITER baselines on it are R2 | RI-KC-006, RI-NFR-003, RI-NFR-004, RI-NFR-006 | rent an MI355X node for R1 autotuning and the R2 acceptance run |
 | OI-009 | MLIR and LLVM build and link. `melior` needs a pinned MLIR and LLVM; building in CI is slow. | Decided 2026-11-12 by ADR-007 | RI-KC-003, RI-NFR-012, RI-NFR-016 | LLVM 23.1 packages from `apt.llvm.org`, `melior` 0.29.1, static link, installed in CI by `scripts/ci/install_llvm.sh` ([kernel compiler](kernel-compiler.html)) |
 | OI-010 | DPU agent ISA and deployment | Deferred | RI-PLN-006 | after a DPU is on the bench |
 | OI-011 | Tensix mesh lowering: whether the mesh path targets TT-MLIR's dialects or emits its own kernels for the Tensix cores | Deferred | RI-KC-004, RI-RV-001 | decide with a Blackhole card in hand |

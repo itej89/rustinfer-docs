@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-81fbcba 2026-11-14. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 171
+b057ef5 2026-11-15. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 201
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -32,8 +32,9 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `FP8_FNUZ_ARCHITECTURES` | `&[&str]` | `&["gfx942"]` | Architectures whose fp8 is AMD FNUZ E4M3 rather than OCP E4M3; fp8 KV is stored in that format there (RI-KVC-008). |
 | `FIRST_LOAD_KEY_VERSION` | `&str` | `"rustinfer-first-load-key-v2"` | Version prefix of the first-load cache key (RI-CLI-003): a change to the key's components or their encoding changes it, so an old entry is never reused under a new meaning. v2: length-prefixed fields (#37 review). |
 | `MODEL_HASH_VERSION` | `&str` | `"rustinfer-model-hash-v1"` | Version prefix of the model hash inside the first-load key: SHA-256 of the checkpoint identity's length-prefixed encoding (RI-CLI-003). |
-| `PLAN_SECTION_VERSION` | `u32` | `3` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010) and version 2 the geometry without the KV dtype's encoding, bytes per token and head and fp8 scales (RI-KVC-001, RI-KVC-008); no reader accepts either. |
-| `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
+| `PLAN_SECTION_VERSION` | `u32` | `4` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010) and version 2 the geometry without the KV dtype's encoding, bytes per token and head and fp8 scales (RI-KVC-001, RI-KVC-008); no reader accepts either. Version 4 adds the arena size and the enumerated buckets of each function (kernel per launch, arena offsets; RI-GC-006, RI-GC-015) and the entries' host-sync mark, KV pool layer and request-state inputs (RI-GC-007); every field is optional, so a version 3 plan reads as a version 4 plan without buckets. |
+| `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[3, PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
+| `ARTIFACT_MAX_PLAN_BUCKETS` | `usize` | `4096` | Most enumerated buckets one function's Plan may list (RI-GC-015, RI-SEC-002). |
 | `WEIGHTS_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `weights` section, written in its `weights_version` field. Version 2 adds the optional `quantization` record of an MXFP4 weight (RI-ART-005 v0.4); a version 1 manifest is a version 2 manifest without it (RI-ART-014). |
 | `WEIGHTS_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, WEIGHTS_SECTION_VERSION]` | The `weights_version` values a reader accepts (RI-ART-006): version 1 reads as version 2 without any quantization record. |
 | `METADATA_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `metadata` section, written in its `metadata_version` field. Version 2 adds the checkpoint identity's `used_ranges`: the digests of the weight bytes the build read and used (RI-ART-008 as amended); a version 1 section is a version 2 section without any (RI-ART-014). |
@@ -50,6 +51,13 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `MODEL_IR_LEGACY_VERSION` | `u32` | `1` | The Model IR version whose placement slots name a tier kind; the reader upgrades it to `MODEL_IR_FORMAT_VERSION` (RI-MIR-005, ADR-009). |
 | `MODEL_IR_FUNCTION_PREFILL` | `&str` | `"prefill"` | Name of the prefill function of a Model IR document (RI-MIR-009). |
 | `MODEL_IR_FUNCTION_DECODE` | `&str` | `"decode"` | Name of the decode function of a Model IR document (RI-MIR-009). |
+| `FUNCTION_INPUT_TOKEN_IDS` | `&str` | `"token_ids"` | Function input: token ids, `[num_tokens]`. |
+| `FUNCTION_INPUT_POSITIONS` | `&str` | `"positions"` | Function input: positions, `[num_tokens]`. |
+| `FUNCTION_INPUT_SLOT_MAPPING` | `&str` | `"slot_mapping"` | Function input: the KV pool slot of every token, `[num_tokens]`. |
+| `FUNCTION_INPUT_BLOCK_TABLE` | `&str` | `"block_table"` | Decode input: the block table, `[batch, max_blocks]`. |
+| `FUNCTION_INPUT_SEQ_LENS` | `&str` | `"seq_lens"` | Decode input: the context length of every sequence, `[batch]`. |
+| `FUNCTION_OUTPUT_LOGITS` | `&str` | `"logits"` | Function output: logits, `[num_tokens, vocab]`. |
+| `FUNCTION_OUTPUT_TOKENS` | `&str` | `"tokens"` | Function output: sampled tokens, `[num_tokens]`. |
 | `MODEL_IR_FUNCTION_NAMES` | `&[&str]` | `&[MODEL_IR_FUNCTION_PREFILL, MODEL_IR_FUNCTION_DECODE]` | Function names a Model IR document may define in this release (RI-MIR-009). |
 | `MODEL_IR_FUNCTION_NAMES_R3` | `&[&str]` | `&["draft", "adapter"]` | Function names the specification reserves for Release 3 (RI-MIR-009). |
 | `MODEL_IR_MAX_DOCUMENT_BYTES` | `usize` | `64 * 1024 * 1024` | Upper bound on the byte length of a Model IR JSON document the reader parses; checked before parsing (RI-SEC-003). |
@@ -142,6 +150,20 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ROCM_MAX_METADATA_DEPTH` | `usize` | `16` | Upper bound on the nesting depth of the `NT_AMDGPU_METADATA` `MessagePack` document the `ROCm` target decodes. |
 | `ROCM_MAX_METADATA_ITEMS` | `usize` | `65_536` | Upper bound on the elements of one `MessagePack` map or array in the metadata. |
 | `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |
+| `RUNTIME_MAX_KV_BLOCKS` | `u32` | `1 << 24` | Most blocks one KV pool may hold (RI-KVC-001): the host's block list costs a few bytes per block, so a pool size that would ask for more is refused as configuration before any allocation. |
+| `KV_TENSORS_PER_LAYER` | `u64` | `2` | K and V: the two pools, and the two tensors of a cache entry, of every layer (RI-KVC-001). |
+| `KV_NULL_SEQ_LEN` | `i64` | `1` | The context length a null row of the slot table reads: one token, of the null block (RI-KVC-001, RI-RT-010). |
+| `STATE_FIELD_TEMPERATURE` | `&str` | `"temperature"` | The request-state field of the per-row temperature (RI-GC-007). |
+| `STATE_FIELD_TOP_K` | `&str` | `"top_k"` | The request-state field of the per-row top-k (RI-GC-007). |
+| `STATE_FIELD_TOP_P` | `&str` | `"top_p"` | The request-state field of the per-row top-p (RI-GC-007). |
+| `KV_NULL_BLOCK` | `u32` | `0` | The null KV block (RI-KVC-001): never allocated; padding rows of a bucket and finished rows of a batch write their KV there. |
+| `SAMPLING_GREEDY_TEMPERATURE` | `f32` | `0.0` | The temperature of greedy sampling (RI-SMP-001). |
+| `SAMPLING_MIN_TEMPERATURE` | `f32` | `1e-3` | The smallest temperature above greedy a request may ask (RI-SMP-001): a positive temperature below it would scale finite logits past `f32`'s range; for sampling that close to greedy, ask for greedy (0). |
+| `SAMPLING_TOP_K_UNLIMITED` | `u32` | `0` | A top-k that keeps every token (RI-SMP-001). |
+| `SAMPLING_TOP_P_ALL` | `f32` | `1.0` | A top-p that keeps every token (RI-SMP-001). |
+| `RUNTIME_DEFAULT_QUEUE_CAPACITY` | `usize` | `1024` | Requests the executor's queue holds by default before `enqueue` refuses one (RI-RT-003). |
+| `RUNTIME_IDLE_WAIT_MS` | `u64` | `50` | How long the idle executor thread waits on the queue before it looks again, in milliseconds; a request or a stop wakes it at once. |
+| `RUNTIME_THREAD_NAME` | `&str` | `"rustinfer-executor"` | The name of the executor thread. |
 | `ENV_STAGING_BYTES` | `&str` | `"RUSTINFER_STAGING_BYTES"` | Environment variable bounding the host staging memory of the weight streamer, in bytes (RI-WST-002). |
 | `DEFAULT_STAGING_BYTES` | `u64` | `1024 * 1024 * 1024` | The staging budget when `ENV_STAGING_BYTES` is unset: 1 GiB (RI-WST-002). |
 | `STAGING_MIN_BYTES` | `u64` | `64 * 1024` | Smallest staging budget accepted; below it a chunk could not hold one row of a small weight and the pipeline would degenerate to one element per read. |
@@ -191,3 +213,11 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KIR_MAX_TEXT_BYTES` | `usize` | `16 * 1024 * 1024` | Upper bound on the byte length of a Kernel IR text entering the MLIR parser; checked before parsing (RI-SEC-003). |
 | `KIR_MAX_DIAGNOSTICS` | `usize` | `16` | Upper bound on the MLIR diagnostics kept for one structured error. |
 | `KIR_MAX_DIAGNOSTIC_BYTES` | `usize` | `1024` | Upper bound on the byte length of one captured MLIR diagnostic. |
+| `KC_MAX_IOTA_LENGTH` | `u64` | `64` | Upper bound on the length of a Kernel IR `iota` tile: below MLIR's threshold of 100 elements for printing a dense constant in hexadecimal, so the builder's text stays the elementwise form MLIR prints (RI-KC-002). |
+| `KC_INTERPRET_MAX_STEPS` | `u64` | `1 << 32` | Upper bound on the work the CPU interpreter of the Kernel IR does for one kernel, in element operations (an MMA weighs m * n * k, any other tile operation its elements), loop iterations included (RI-KC-007). |
+| `KC_HOST_MAX_ELEMENTS` | `u64` | `1 << 31` | Upper bound on the elements of one host buffer the interpreter or the autotuner allocates (RI-KC-007, RI-SEC-003). |
+| `KC_AMD_MAX_TILE_ELEMENTS` | `u64` | `4096` | Upper bound on the elements of one operand tile of a generated kernel on AMD: the R1 lowering keeps every tile whole in every lane (#8), so a larger tile exhausts the register file and the compile time (#9). |
+| `KC_GFX942_LDS_BYTES` | `u64` | `64 * 1024` | LDS bytes per work group of gfx942 (AMD Instinct CDNA3 ISA reference guide, 5-Aug-2025, the §3.1 table: 64 KiB per CU). |
+| `KC_GFX950_LDS_BYTES` | `u64` | `160 * 1024` | LDS bytes per work group of gfx950 (AMD Instinct CDNA4 ISA reference guide, 5-Aug-2025, the §3.1 table: 160 KiB per CU). |
+| `KC_AMD_WAVE_LANES` | `u64` | `64` | Lanes of an AMD Instinct wave (wave64). |
+| `KC_AMD_VECTOR_BYTES` | `u64` | `16` | The widest global access of one AMD lane in bytes (`dwordx4`). |

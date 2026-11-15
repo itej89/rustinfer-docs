@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-15T03:33:10+00:00",
+ "fetched_at": "2026-11-15T19:08:09+00:00",
  "source": "github",
  "issues": [
   {
@@ -184,8 +184,8 @@
     "RI-KC-013",
     "RI-CLI-007"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/9-generators-autotuner",
+   "derived_status": "In review 2026-11-15"
   },
   {
    "number": 10,
@@ -199,7 +199,8 @@
    "blocked_by": [
     3,
     5,
-    9
+    9,
+    64
    ],
    "requirements": [
     "RI-GC-001",
@@ -213,8 +214,8 @@
     "RI-GC-009",
     "RI-GC-014"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/10-graph-compiler",
+   "derived_status": "In review 2026-11-15"
   },
   {
    "number": 11,
@@ -237,8 +238,8 @@
     "RI-CLI-004",
     "RI-ART-004"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/11-build-inspect",
+   "derived_status": "In review 2026-11-15"
   },
   {
    "number": 12,
@@ -289,8 +290,8 @@
     "RI-KVC-004",
     "RI-SMP-001"
    ],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/13-executor-static-batch",
+   "derived_status": "In progress"
   },
   {
    "number": 14,
@@ -525,7 +526,8 @@
    "blocked_by": [
     8,
     9,
-    34
+    34,
+    64
    ],
    "requirements": [
     "RI-KC-003",
@@ -585,16 +587,14 @@
   {
    "number": 54,
    "title": "Tests required on GPU hardware (owner's queue)",
-   "state": "open",
-   "closed_at": "",
-   "labels": [
-    "gpu-test"
-   ],
+   "state": "closed",
+   "closed_at": "2026-11-15",
+   "labels": [],
    "milestone": "R1 — foundation",
    "blocked_by": [],
    "requirements": [],
    "branch": null,
-   "derived_status": "Not started"
+   "derived_status": "Done 2026-11-15"
   },
   {
    "number": 59,
@@ -612,13 +612,69 @@
   },
   {
    "number": 61,
-   "title": "GPU test: gfx942 (MI300X) runs of #45 and #59, and a gfx950 re-run of #45 on main",
+   "title": "GPU test: main on gfx942 (MI300X) [parked: no MI300X]",
    "state": "open",
    "closed_at": "",
    "labels": [
     "gpu-test"
    ],
    "milestone": "R1 — foundation",
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 64,
+   "title": "Kernel IR optimisation passes and the target capability model",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    63,
+    66
+   ],
+   "requirements": [
+    "RI-KC-014",
+    "RI-KC-015",
+    "RI-KC-016",
+    "RI-KC-017",
+    "RI-KC-018",
+    "RI-KC-001",
+    "RI-KC-006",
+    "RI-KC-013",
+    "RI-ART-010"
+   ],
+   "branch": "feat/64-kc-passes",
+   "derived_status": "In progress"
+  },
+  {
+   "number": 69,
+   "title": "GPU test: rustinfer tune on gfx950 (MI350X), R1 catalog (PR #68)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": null,
+   "blocked_by": [],
+   "requirements": [],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 70,
+   "title": "GPU test: main (2108502) on gfx950 (MI350X)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": null,
    "blocked_by": [],
    "requirements": [],
    "branch": null,
@@ -985,161 +1041,286 @@
    "mergeable": true,
    "created_at": "2026-11-15",
    "url": "https://github.com/itej89/rustinfer/pull/62"
+  },
+  {
+   "number": 63,
+   "title": "feat(kc): generator framework, GEMM generator and the Kernel IR interpreter (#9, 9a)",
+   "state": "closed",
+   "head": "feat/9-generators-autotuner",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/63"
+  },
+  {
+   "number": 65,
+   "title": "docs: ADR-011, a smart compiler instead of hand-tuned kernels; architecture-agnostic generators",
+   "state": "closed",
+   "head": "docs/adr-011-ninja-compiler",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/65"
+  },
+  {
+   "number": 66,
+   "title": "fix(rocm): no assembly in the ROCm tests; every test kernel comes from the compiler (ADR-011)",
+   "state": "closed",
+   "head": "fix/no-assembly-in-rocm-tests",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/66"
+  },
+  {
+   "number": 67,
+   "title": "feat(kc): the remaining R1 generators (#9, 9b)",
+   "state": "closed",
+   "head": "feat/9b-generators",
+   "base": "feat/9-generators-autotuner",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/67"
+  },
+  {
+   "number": 68,
+   "title": "feat(kc,cli): tuning catalog, autotuner and rustinfer tune (#9, 9c)",
+   "state": "open",
+   "head": "feat/9c-catalog-tune",
+   "base": "feat/9b-generators",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/68"
+  },
+  {
+   "number": 71,
+   "title": "docs(srs): v0.4.12, gfx942 hardware verification does not gate R1",
+   "state": "closed",
+   "head": "docs/srs-gfx942-not-r1-gate",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/71"
+  },
+  {
+   "number": 72,
+   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
+   "state": "closed",
+   "head": "feat/13-executor-static-batch",
+   "base": "main",
+   "merged": true,
+   "merged_at": "2026-11-15",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/72"
+  },
+  {
+   "number": 73,
+   "title": "feat(cli): build and inspect commands, first-load build (#11, stage 1: compile waits on #10)",
+   "state": "open",
+   "head": "feat/11-build-inspect",
+   "base": "feat/9c-catalog-tune",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/73"
+  },
+  {
+   "number": 74,
+   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
+   "state": "open",
+   "head": "feat/9-generators-autotuner",
+   "base": "main",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/74"
+  },
+  {
+   "number": 75,
+   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
+   "state": "open",
+   "head": "feat/10-graph-compiler",
+   "base": "feat/9c-catalog-tune",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-15",
+   "url": "https://github.com/itej89/rustinfer/pull/75"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 12,
-   "closed": 47
+   "open": 16,
+   "closed": 53
   }
  ],
  "runs": [
   {
-   "id": 113,
-   "title": "Merge pull request #62 from itej89/docs/srs-hip-runtime-major",
+   "id": 151,
+   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
+   "status": "in_progress",
+   "conclusion": null,
+   "event": "pull_request",
+   "ref": "feat/9-generators-autotuner",
+   "sha": "82fed79",
+   "created": "2026-11-15T19:07",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43750598330"
+  },
+  {
+   "id": 150,
+   "title": "Merge pull request #72 from itej89/feat/13-executor-static-batch",
+   "status": "in_progress",
+   "conclusion": null,
+   "event": "push",
+   "ref": "main",
+   "sha": "b057ef5",
+   "created": "2026-11-15T19:03",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43750279890"
+  },
+  {
+   "id": 149,
+   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/13-executor-static-batch",
+   "sha": "49f1da2",
+   "created": "2026-11-15T18:39",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43747974596"
+  },
+  {
+   "id": 148,
+   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/10-graph-compiler",
+   "sha": "6235408",
+   "created": "2026-11-15T18:03",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43744601620"
+  },
+  {
+   "id": 147,
+   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/13-executor-static-batch",
+   "sha": "89f5f8e",
+   "created": "2026-11-15T17:49",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43743286447"
+  },
+  {
+   "id": 146,
+   "title": "feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/9-generators-autotuner",
+   "sha": "74ef53b",
+   "created": "2026-11-15T17:08",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43739372117"
+  },
+  {
+   "id": 145,
+   "title": "Merge pull request #63 from itej89/feat/9-generators-autotuner",
    "status": "completed",
    "conclusion": "success",
    "event": "push",
    "ref": "main",
-   "sha": "81fbcba",
-   "created": "2026-11-15T03:22",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43672080555"
+   "sha": "1255ee1",
+   "created": "2026-11-15T17:07",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43739273829"
   },
   {
-   "id": 112,
-   "title": "docs(srs): support HIP by runtime major version, ROCm 10.0 verified",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-hip-runtime-major",
-   "sha": "ccd7a54",
-   "created": "2026-11-15T02:58",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43670224156"
-  },
-  {
-   "id": 111,
-   "title": "Merge pull request #44 from itej89/feat/8-amd-lowering",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "38f2f60",
-   "created": "2026-11-15T02:53",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43669832084"
-  },
-  {
-   "id": 110,
-   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/8-amd-lowering",
-   "sha": "3070d85",
-   "created": "2026-11-15T02:34",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43668455825"
-  },
-  {
-   "id": 109,
-   "title": "docs(srs): support HIP by runtime major version, ROCm 10.0 verified",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "docs/srs-hip-runtime-major",
-   "sha": "145c851",
-   "created": "2026-11-15T02:23",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43667591012"
-  },
-  {
-   "id": 108,
-   "title": "Merge pull request #60 from itej89/infra/pin-rust-toolchain",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "14ec27e",
-   "created": "2026-11-15T02:22",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43667499681"
-  },
-  {
-   "id": 107,
-   "title": "feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/8-amd-lowering",
-   "sha": "4ad2d26",
-   "created": "2026-11-15T02:17",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43667083546"
-  },
-  {
-   "id": 106,
-   "title": "Merge pull request #58 from itej89/feat/12-rocm-target",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "push",
-   "ref": "main",
-   "sha": "53dac5b",
-   "created": "2026-11-15T02:05",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43666111372"
-  },
-  {
-   "id": 105,
-   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/12-rocm-target",
-   "sha": "bb0ce2f",
-   "created": "2026-11-14T17:19",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43620455054"
-  },
-  {
-   "id": 104,
-   "title": "build: pin the Rust toolchain to 1.100.0 (owner decision)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "infra/pin-rust-toolchain",
-   "sha": "d2b120a",
-   "created": "2026-11-14T17:04",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43619039852"
-  },
-  {
-   "id": 103,
-   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
-   "status": "completed",
-   "conclusion": "success",
-   "event": "pull_request",
-   "ref": "feat/12-rocm-target",
-   "sha": "019829f",
-   "created": "2026-11-14T17:00",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43618718388"
-  },
-  {
-   "id": 102,
-   "title": "feat(target-rocm): HIP binding behind one ffi module (#12)",
+   "id": 144,
+   "title": "Merge pull request #71 from itej89/docs/srs-gfx942-not-r1-gate",
    "status": "completed",
    "conclusion": "cancelled",
+   "event": "push",
+   "ref": "main",
+   "sha": "2c5f5b8",
+   "created": "2026-11-15T17:06",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43739231475"
+  },
+  {
+   "id": 143,
+   "title": "feat(cli): build and inspect commands, first-load build (#11, stage 1: compile waits on #10)",
+   "status": "completed",
+   "conclusion": "success",
    "event": "pull_request",
-   "ref": "feat/12-rocm-target",
-   "sha": "3a95a82",
-   "created": "2026-11-14T16:59",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43618613953"
+   "ref": "feat/11-build-inspect",
+   "sha": "62f3953",
+   "created": "2026-11-15T16:53",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43737990082"
+  },
+  {
+   "id": 142,
+   "title": "feat(runtime): executor with static batches, KV block pool and sampler (#13)",
+   "status": "completed",
+   "conclusion": "failure",
+   "event": "pull_request",
+   "ref": "feat/13-executor-static-batch",
+   "sha": "fc334b8",
+   "created": "2026-11-15T16:49",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43737640026"
+  },
+  {
+   "id": 141,
+   "title": "feat(kc,cli): tuning catalog, autotuner and rustinfer tune (#9, 9c)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/9c-catalog-tune",
+   "sha": "3f5c321",
+   "created": "2026-11-15T16:00",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43733036895"
+  },
+  {
+   "id": 140,
+   "title": "feat(kc): the remaining R1 generators (#9, 9b)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/9b-generators",
+   "sha": "b41a8f1",
+   "created": "2026-11-15T16:00",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43733035378"
   }
  ],
  "branches": [
   "docs/27-srs-v0.3",
+  "docs/adr-011-ninja-compiler",
   "docs/gpu-test-template",
   "docs/readme-docs-link",
   "docs/srs-build-reads-weights",
+  "docs/srs-gfx942-not-r1-gate",
   "docs/srs-hip-runtime-major",
   "docs/srs-standards",
   "docs/srs-standards-conformance",
   "docs/srs-v0.4-mxfp4",
   "docs/uml-close-fences",
+  "feat/10-graph-compiler",
+  "feat/11-build-inspect",
   "feat/12-rocm-target",
+  "feat/13-executor-static-batch",
   "feat/15-planner-interfaces",
   "feat/18-sluice-weight-streamer",
   "feat/26-grouped-rmsnorm",
@@ -1150,12 +1331,17 @@
   "feat/39-mxfp4-sluice",
   "feat/5-target-and-cpu-reference",
   "feat/6-frontend-llama",
+  "feat/64-kc-passes",
   "feat/7-kernel-ir-and-mlir-link",
   "feat/8-amd-lowering",
+  "feat/9-generators-autotuner",
+  "feat/9b-generators",
+  "feat/9c-catalog-tune",
   "fix/27-conformance",
   "fix/51-e5m2-partial-rotary",
   "fix/51-standards-defects",
   "fix/51-used-range-u8-empty",
+  "fix/no-assembly-in-rocm-tests",
   "infra/github-hosting",
   "infra/pin-rust-toolchain",
   "main",

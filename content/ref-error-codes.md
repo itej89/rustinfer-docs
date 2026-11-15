@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 81fbcba 2026-11-14. A failure leaves the command as one line on
+`src/error.rs` at commit b057ef5 2026-11-15. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -106,9 +106,13 @@ and component.
 | `rustinfer-kc` | `kc` | `TypeMismatch` | `delegated` |
 | `rustinfer-kc` | `kc` | `ShapeMismatch` | `delegated` |
 | `rustinfer-kc` | `kc` | `TooLarge` | `delegated` |
-| `rustinfer-kc` | `kc` | `Mlir` | `invalid` |
+| `rustinfer-kc` | `kc` | `Mlir` | `delegated` |
 | `rustinfer-kc` | `kc` | `Unsupported` | `unsupported` |
-| `rustinfer-kc` | `kc` | `Backend` | `internal` |
+| `rustinfer-kc` | `kc` | `Backend` | `delegated` |
+| `rustinfer-kc` | `kc` | `Interpret` | `delegated` |
+| `rustinfer-kc` | `kc` | `InvalidParameter` | `invalid` |
+| `rustinfer-kc` | `kc` | `UnknownGenerator` | `not_found` |
+| `rustinfer-kc` | `kc` | `Reference` | `internal` |
 | `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
 | `rustinfer-mir` | `mir` | `Malformed` | `delegated` |
@@ -161,6 +165,23 @@ and component.
 | `rustinfer-planner` | `planner` | `Model` | `delegated` |
 | `rustinfer-planner` | `planner` | `NotImplemented` | `not_implemented` |
 | `rustinfer-runtime` | `runtime` | `NotImplemented` | `not_implemented` |
+| `rustinfer-runtime` | `runtime` | `Artifact` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `Planner` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `Sluice` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `Device` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `TargetMismatch` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `MissingFunction` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `InvalidPlan` | `artifact` |
+| `rustinfer-runtime` | `runtime` | `Launch` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `Iteration` | `device` |
+| `rustinfer-runtime` | `runtime` | `InvalidRequest` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `SequenceTooLong` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `QueueFull` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `ResponsesUncollected` | `invalid` |
+| `rustinfer-runtime` | `runtime` | `Stopped` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `InvalidConfig` | `config` |
+| `rustinfer-runtime` | `runtime` | `InvalidBlock` | `delegated` |
+| `rustinfer-runtime` | `runtime` | `Thread` | `internal` |
 | `rustinfer-sluice` | `sluice` | `Io` | `io` |
 | `rustinfer-sluice` | `sluice` | `InvalidPath` | `delegated` |
 | `rustinfer-sluice` | `sluice` | `TooLarge` | `delegated` |
