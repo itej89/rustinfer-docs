@@ -166,19 +166,13 @@ def tags_in(text):
     return found
 
 
-def test_tags():
-    """{requirement id: {"verifies": {file: n}, "groundwork": {file: n},
-    "reserved": {file: n}}}: how many tags of each kind each test file carries
-    for the id, over the integration tests under crates/*/tests and the
-    `#[cfg(test)]` modules under crates/*/src, files as 'crate/tests/file.rs'."""
+def _tags_of_sources(sources):
+    """The tag map of `test_tags` over (path relative to crates/, source text) pairs."""
     found = {}
-    crates = RUSTINFER / "crates"
-    for path in sorted(crates.rglob("*.rs")):
-        rel = path.relative_to(crates).as_posix()
+    for rel, src in sources:
         parts = rel.split("/")
-        if len(parts) < 3:
+        if len(parts) < 3 or not rel.endswith(".rs"):
             continue
-        src = path.read_text(encoding="utf-8", errors="replace")
         if parts[1] == "tests":
             blocks = _comment_blocks(src)
         elif parts[1] == "src":
@@ -190,6 +184,52 @@ def test_tags():
                 files = found.setdefault(rid, {k: {} for k in TAG_KINDS.values()})[kind]
                 files[rel] = files.get(rel, 0) + 1
     return found
+
+
+def test_tags():
+    """{requirement id: {"verifies": {file: n}, "groundwork": {file: n},
+    "reserved": {file: n}}}: how many tags of each kind each test file carries
+    for the id, over the integration tests under crates/*/tests and the
+    `#[cfg(test)]` modules under crates/*/src, files as 'crate/tests/file.rs'."""
+    crates = RUSTINFER / "crates"
+    return _tags_of_sources(
+        (path.relative_to(crates).as_posix(), path.read_text(encoding="utf-8", errors="replace"))
+        for path in sorted(crates.rglob("*.rs")))
+
+
+def _tarball_tags(sha):
+    """`test_tags` over the tree of commit `sha` on GitHub, read from its
+    tarball through `gh api` (the token never leaves `gh`'s keyring):
+    {"verifies": [ids], "groundwork": [ids], "reserved": [ids]}."""
+    import io
+    import tarfile
+    blob = subprocess.check_output(["gh", "api", f"repos/{REPO}/tarball/{sha}"],
+                                   stderr=subprocess.DEVNULL, timeout=300)
+
+    def sources():
+        with tarfile.open(fileobj=io.BytesIO(blob), mode="r:gz") as tar:
+            for m in tar:
+                # <owner>-<repo>-<sha>/crates/<crate>/...
+                parts = m.name.split("/", 2)
+                if m.isfile() and len(parts) == 3 and parts[1] == "crates":
+                    yield parts[2], tar.extractfile(m).read().decode("utf-8", "replace")
+    found = _tags_of_sources(sources())
+    return {k: sorted(rid for rid, t in found.items() if t[k]) for k in TAG_KINDS.values()}
+
+
+def pull_tags(pulls, previous):
+    """{pull number: {"sha", "verifies", "groundwork", "reserved"}} for every
+    open pull request (into main, or stacked on another open one): the
+    requirement ids its head's tests tag. A head already read (the same sha
+    in `previous`) is not fetched again."""
+    out = {}
+    for p in pulls:
+        if p["state"] != "open" or not p.get("sha"):
+            continue
+        key = str(p["number"])
+        old = previous.get(key)
+        out[key] = old if old and old.get("sha") == p["sha"] else {"sha": p["sha"], **_tarball_tags(p["sha"])}
+    return out
 
 
 # ------------------------------------------------------------------ GitHub
@@ -208,6 +248,24 @@ def checklist_requirements(body):
                 ids.append(f"{group}-{int(short.group(1)):03d}")
         found[int(n)] = ids
     return found
+
+
+# Any Epic checklist line, with or without requirement ids: `- [x] #2 Project scaffold ...`.
+EPIC_ITEM = re.compile(r"^- \[([ xX])\] #(\d+)\b(.*)$", re.M)
+# A later-release item says so at the end of its parentheses: `(RI-KC-029; ...; R2)`.
+EPIC_LATER = re.compile(r";\s*(R\d)\)")
+
+
+def epic_checklist(body):
+    """Every item of the Epic's task checklist in order: number, whether its
+    box is ticked, and the release it gates (`R1` unless the line names a later
+    one, as the items filed for later releases do)."""
+    out = []
+    for box, n, rest in EPIC_ITEM.findall(body or ""):
+        later = EPIC_LATER.search(rest)
+        out.append({"number": int(n), "checked": box != " ",
+                    "release": later.group(1) if later else "R1"})
+    return out
 
 
 def gh(path, paginate=True):
@@ -248,6 +306,14 @@ def _live_state():
         deps = {i["number"]: _blocked_by(i) for i in issues}
         epic = next((i for i in issues if i["number"] == EPIC), {})
         assigned = checklist_requirements(epic.get("body"))
+        checklist = epic_checklist(epic.get("body"))
+        try:
+            previous = json.loads(SNAPSHOT.read_text(encoding="utf-8")).get("pull_tags", {})
+        except (OSError, ValueError):
+            previous = {}
+        heads = [{"number": p["number"], "state": p["state"], "base": p["base"]["ref"],
+                  "sha": p["head"]["sha"]} for p in pulls]
+        tags_of_pulls = pull_tags(heads, previous)
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError, ValueError, KeyError):
         return None
     if not issues and not pulls:
@@ -263,7 +329,7 @@ def _live_state():
                     "requirements": assigned.get(i["number"], [])}
                    for i in sorted(issues, key=lambda x: x["number"])],
         "pulls": [{"number": p["number"], "title": p["title"], "state": p["state"],
-                   "head": p["head"]["ref"], "base": p["base"]["ref"],
+                   "head": p["head"]["ref"], "base": p["base"]["ref"], "sha": p["head"]["sha"],
                    "merged": bool(p.get("merged_at")), "merged_at": (p.get("merged_at") or "")[:10],
                    "mergeable": p.get("mergeable", True) is not False,
                    "created_at": p["created_at"][:10], "url": p["html_url"]}
@@ -276,6 +342,8 @@ def _live_state():
                   "created": (r.get("created_at") or "")[:16], "url": r.get("html_url")}
                  for r in runs],
         "branches": sorted(b["name"] for b in branches),
+        "epic_checklist": checklist,
+        "pull_tags": tags_of_pulls,
     }
 
 
@@ -383,6 +451,49 @@ def state_counts(states, release=None):
     requirement or for those whose first release is `release`."""
     vals = [v for v in states.values() if release is None or v["tag"] == release]
     return {st: sum(1 for v in vals if v["state"] == st) for st in STATES} | {"total": len(vals)}
+
+
+R1_DATA = SITE / "data" / "r1-progress.json"
+
+
+def r1_progress(states, state, source):
+    """The Release 1 headline the Progress page draws above the site-wide pie,
+    written to data/r1-progress.json by gen_srs.py:
+
+    * `requirements`: the R1 requirements (first release R1) by the state
+      `requirement_states` derives, the same numbers as the requirements page;
+    * `epic`: the items of the Epic #1 checklist that gate R1 (the items filed
+      for later releases left out) and how many of their issues are closed on
+      the tracker; None when the tracker state has no checklist;
+    * `open_pulls`: the R1 requirements that are planned (or reserved only) on
+      main but carry a `Verifies` or `Groundwork for` tag on the head of an open
+      pull request (any base: the stacked ones reach main through it), with
+      the pull requests; None when the heads could
+      not be read (no `gh`, or a snapshot from before they were recorded)."""
+    c = state_counts(states, "R1")
+    issues = {i["number"]: i for i in state["issues"]}
+    epic = None
+    if state.get("epic_checklist"):
+        gate = [x for x in state["epic_checklist"] if x["release"] == "R1"]
+        closed = [x["number"] for x in gate if issues.get(x["number"], {}).get("state") == "closed"]
+        epic = {"total": len(gate), "closed": len(closed), "closed_issues": closed,
+                "open_issues": [x["number"] for x in gate if x["number"] not in closed]}
+    open_pulls = None
+    if "pull_tags" in state:
+        not_on_main = {rid for rid, v in states.items()
+                       if v["tag"] == "R1" and v["state"] in (PLANNED, RESERVED_ONLY)}
+        found = {}
+        for n, t in sorted(state["pull_tags"].items(), key=lambda kv: int(kv[0])):
+            for rid in set(t["verifies"]) | set(t["groundwork"]):
+                if rid in not_on_main:
+                    found.setdefault(rid, []).append(int(n))
+        open_pulls = {"count": len(found), "pulls_read": sorted(int(n) for n in state["pull_tags"]),
+                      "requirements": {rid: found[rid] for rid in sorted(found)}}
+    return {"commit": commit(), "tracker": source, "fetched_at": state["fetched_at"],
+            "requirements": {"total": c["total"], "implemented": c[IMPLEMENTED],
+                             "partial": c[PARTIAL], "planned": c[PLANNED] + c[RESERVED_ONLY],
+                             "reserved_only": c[RESERVED_ONLY]},
+            "epic": epic, "open_pulls": open_pulls}
 
 
 # -------------------------------------------------------------- standards

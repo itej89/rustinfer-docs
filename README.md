@@ -41,7 +41,8 @@ section, group and order. The sections, in sidebar order, are Introduction
 Trackers and Reference.
 
 The Standards section follows the Matins model: `standards.md` is the
-Standards map, and each of the 27 standards SRS §1.4 marks `mandatory R<n>`
+Standards map, and each of the 32 standards SRS §1.4 marks `mandatory R<n>`
+(22 from R1, 4 from R2, 6 from R3)
 has four pages, `std-<id>.md` (overview), `std-<id>-requirements.md`,
 `std-<id>-audit.md` and `std-<id>-tracker.md`, grouped in the navigation as
 `<Area> / <Name> <version>`, with its record in `data/standards/<id>.json`
@@ -59,7 +60,7 @@ regenerated, not edited; each carries a comment saying so:
 
 | page | script | reads |
 |---|---|---|
-| `ref-requirements.md` | `gen_srs.py` | `docs/SRS-RI-v0.1.md`; the requirement tags (`Verifies`, `Groundwork for`, `Reserved`, the rule of the rustinfer repository's `docs/testing.md`) in the comments of `crates/*/tests/**/*.rs` and the `#[cfg(test)]` modules of `crates/*/src/**/*.rs`, from which each requirement's state (implemented, partial, reserved only, planned) is derived in `common.py`; the tracker state (live or `data/progress-snapshot.json`) for the Epic #1 checklist, shown beside it as information; the SRS's own status field |
+| `ref-requirements.md` | `gen_srs.py` | `docs/SRS-RI-v0.1.md`; the requirement tags (`Verifies`, `Groundwork for`, `Reserved`, the rule of the rustinfer repository's `docs/testing.md`) in the comments of `crates/*/tests/**/*.rs` and the `#[cfg(test)]` modules of `crates/*/src/**/*.rs`, from which each requirement's state (implemented, partial, reserved only, planned) is derived in `common.py`; the tracker state (live or `data/progress-snapshot.json`) for the Epic #1 checklist, shown beside it as information; the SRS's own status field. It also writes `data/r1-progress.json`, the Release 1 headline of the Progress page (`common.r1_progress`) |
 | `ref-constants.md` | `gen_constants.py` | `crates/rustinfer-core/src/config/constants.rs` |
 | `ref-error-codes.md` | `gen_errors.py` | every crate's `src/error.rs` |
 | `ref-crates.md` | `gen_crates.py` | `Cargo.toml` and each crate's manifest |
@@ -89,7 +90,20 @@ The Progress page is not a file: `progress.py`, ported from Matins, is
 imported by `build.py` and scans every page for tracker tables (a first
 column of ids such as `R1-3`, `OI-009`, `RI-KC-002`, `ADR-005` and a Status
 column), classifies each row from the start of its status cell, and draws
-the pies. A page whose header says `cards: headings` gets one card per
+the pies. The site-wide pie counts every item of every release, so it falls
+whenever the SRS adds scope; above it, the **Release 1 card** reads
+`data/r1-progress.json` (written by `gen_srs.py`) and shows three numbers,
+each defined in small text under it: the R1 requirements implemented,
+partial and planned of the R1 total (the requirements page's R1 row, from the
+test tags on `main`); the issues of the Epic #1 checklist that gate R1 and
+how many are closed on the tracker (the items the Epic lists for R2 and R3
+left out); and the R1 requirements planned on `main` whose `Verifies` or
+`Groundwork for` tags exist only on the head of an open pull request (any
+base, stacked ones included). The last needs `gh`: a live fetch stores the
+Epic's checklist (`epic_checklist`) and, per open pull request, the tags its
+head's tests carry (`pull_tags`, read from the head's tarball through `gh
+api`, cached by head sha) in `data/progress-snapshot.json`; without them the
+line is left out. A page whose header says `cards: headings` gets one card per
 `##` heading (the requirements page, one per SRS component). The footer names the commit the site was built against, read from
 the checkout at build time.
 

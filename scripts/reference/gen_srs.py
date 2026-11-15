@@ -10,15 +10,20 @@ the tests carry, by the rule of the rustinfer repository's docs/testing.md:
 *implemented* with at least one `Verifies` tag and no `Groundwork for` tag,
 *partial* with any `Groundwork for` tag, *reserved only* with only `Reserved`
 tags, *planned* otherwise. The issues page computes its headline from the
-same function."""
-from common import (WEB, badge, commit, header, requirement_states, srs_meta,
-                    srs_requirements, state_counts, test_tags, tracker_state, write)
+same function, and the Release 1 headline of the Progress page
+(data/r1-progress.json, common.r1_progress) from the same states."""
+import json
+
+from common import (R1_DATA, WEB, badge, commit, header, r1_progress, requirement_states,
+                    srs_meta, srs_requirements, state_counts, test_tags, tracker_state, write)
 
 reqs = srs_requirements()
 doc_version, doc_status = srs_meta()
 source, state = tracker_state()
 states = requirement_states(reqs, state, test_tags())
 counts = state_counts(states)
+# the Release 1 headline of the Progress page, from the same states
+R1_DATA.write_text(json.dumps(r1_progress(states, state, source), indent=1) + "\n", encoding="utf-8")
 groups = []
 for r in reqs:
     if not groups or groups[-1][0] != r["group"]:

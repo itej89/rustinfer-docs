@@ -11,13 +11,23 @@ write it ("**In review** 2026-11-11 ...", "Open", "Draft", "Decided ...").
 Drawn as pies in plain SVG: one for the whole site, one per page, or one
 per heading on a page whose header says `cards: headings` (the requirements
 page, one card per SRS component).
+
+Above the site-wide pie, the Release 1 card: the R1 requirements by their
+derived state, the Epic #1 checklist and the R1 requirements tagged only on
+open pull requests, read from data/r1-progress.json, which
+scripts/reference/gen_srs.py writes from the same states as the requirements
+page (common.r1_progress). The site-wide pie counts every release.
 """
 import html
+import json
 import math
+import pathlib
 import re
 
 from markdown.extensions.toc import slugify
 
+R1_DATA = pathlib.Path(__file__).resolve().parent / "data" / "r1-progress.json"
+WEB = "https://github.com/itej89/rustinfer"
 ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d+[a-z]?$")
 RULE = re.compile(r"^\|[\s:|-]+\|$")
 
@@ -219,6 +229,77 @@ def cards_of(p):
     return [(title, p["url"], rows)] if rows else []
 
 
+def _issue(n):
+    return f'<a href="{WEB}/issues/{n}">#{n}</a>'
+
+
+def r1_card():
+    """The Release 1 headline: what R1 has done, kept apart from the site-wide
+    count, which grows whenever the SRS adds scope to any release."""
+    try:
+        d = json.loads(R1_DATA.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ""
+    r = d["requirements"]
+    total = r["total"]
+    pct = round(100 * r["implemented"] / total) if total else 0
+    ring = pie({"done": r["implemented"], "progress": r["partial"], "later": r["planned"]}, 132, 0.58)
+    when = d["fetched_at"][:16].replace("T", " ")
+    tracker = "read live from GitHub" if d["tracker"] == "live" else "the committed snapshot"
+    stats = [
+        '<div class="r1-stat">'
+        f'<span class="r1-num">{r["implemented"]} <i>·</i> {r["partial"]} <i>·</i> {r["planned"]}'
+        f'<small> of {total}</small></span>'
+        '<span class="r1-what">R1 requirements implemented · partial · planned</span>'
+        '<span class="r1-def">The requirements whose first release is R1 in SRS-RI-v0.1, each in the '
+        'state the tests on <code>main</code> give it (<code>docs/testing.md</code>): implemented with a '
+        '<code>Verifies</code> tag and no <code>Groundwork for</code> tag, partial with any '
+        '<code>Groundwork for</code> tag, planned with neither'
+        + (f' ({r["reserved_only"]} of them with <code>Reserved</code> tags only)' if r["reserved_only"] else '')
+        + '. The same numbers as the R1 row of the <a href="ref-requirements.html#headline">requirements</a>.'
+        '</span></div>',
+    ]
+    e = d.get("epic")
+    if e:
+        stats.append(
+            '<div class="r1-stat">'
+            f'<span class="r1-num">{e["closed"]}<small> of {e["total"]}</small></span>'
+            f'<span class="r1-what">Epic {_issue(1)} checklist issues closed</span>'
+            '<span class="r1-def">The items of the Epic\'s task checklist that gate Release 1, counted '
+            'closed when their issue is closed on the tracker (a ticked box is not needed); the items it '
+            'lists for R2 and R3 are left out. Open: '
+            + ", ".join(_issue(n) for n in e["open_issues"]) + '.</span></div>')
+    o = d.get("open_pulls")
+    if o is not None:
+        reqs = ", ".join(f'<code>{html.escape(k)}</code> ({", ".join(f"#{n}" for n in v)})'
+                         for k, v in o["requirements"].items())
+        stats.append(
+            '<div class="r1-stat">'
+            f'<span class="r1-num">{o["count"]}<small> of {r["planned"]} planned</small></span>'
+            '<span class="r1-what">R1 requirements in open PRs</span>'
+            '<span class="r1-def">R1 requirements planned on <code>main</code> whose <code>Verifies</code> '
+            'or <code>Groundwork for</code> tags exist only on the head of an open pull request (any base: '
+            'the stacked ones reach <code>main</code> through it); read from the heads of '
+            + ", ".join(f"#{n}" for n in o["pulls_read"]) + ". Not counted above until merged"
+            + (f": {reqs}." if reqs else ".") + '</span></div>')
+    return (
+        '<section class="dash-r1" aria-labelledby="release-1">'
+        '<header class="r1-head">' + ring
+        + '<div class="dash-figure">'
+        '<span class="r1-kicker" id="release-1">Release 1</span>'
+        f'<span class="dash-big">{pct}%</span>'
+        f'<span class="dash-small">of the {total} R1 requirements implemented on <code>main</code></span>'
+        '<ul class="dash-legend">'
+        f'<li><span class="sw st-done"></span>Implemented <b>{r["implemented"]}</b></li>'
+        f'<li><span class="sw st-progress"></span>Partial <b>{r["partial"]}</b></li>'
+        f'<li><span class="sw st-later"></span>Planned <b>{r["planned"]}</b></li></ul></div></header>'
+        '<div class="r1-stats">' + "".join(stats) + '</div>'
+        f'<p class="r1-foot">At <code>{html.escape(d["commit"])}</code>; tracker {tracker}, fetched '
+        f'{when} UTC. Release 1 only: the pie below counts every tracker item of every release, so it '
+        'falls whenever the SRS adds scope to a later one.</p>'
+        '</section>')
+
+
 def page(pages, sections):
     """The Progress page's HTML, from the other pages."""
     tracked = []
@@ -235,15 +316,16 @@ def page(pages, sections):
     pct = round(100 * closed / len(every)) if every else 0
 
     out = [
-        '<p class="dash-sub">Under the <a href="roadmap.html">roadmap</a>: '
+        '<p class="dash-lede">Under the <a href="roadmap.html">roadmap</a>: '
         '<a href="#trackers">trackers</a>, <a href="#requirements">the requirements</a>, '
         '<a href="#standards">the standards</a> (one card per tracker; the '
         '<a href="standards.html">map</a> has their states), then the rest.</p>',
         waiting(tracked),
         week(pages),
         '<div class="dash">',
-        '<p class="dash-lede">Every item the trackers on this site hold, counted by its state as the '
-        'tracker writes it. Built with the site, so it is as current as the pages.</p>',
+        r1_card(),
+        '<p class="dash-lede">Every item the trackers on this site hold, of every release, counted by its '
+        'state as the tracker writes it. Built with the site, so it is as current as the pages.</p>',
         '<section class="dash-total">',
         pie(total, 168, 0.58),
         f'<div class="dash-figure"><span class="dash-big">{pct}%</span>'
