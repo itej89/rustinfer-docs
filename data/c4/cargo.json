@@ -1,5 +1,5 @@
 {
- "commit": "5a6db49",
+ "commit": "e361c82",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -163,8 +163,11 @@
     "HostBuffer",
     "interpret",
     "Predicate",
+    "catalog",
     "generators",
+    "shapes",
     "tolerance",
+    "tune",
     "validation"
    ]
   },
@@ -424,6 +427,8 @@
   "rustinfer-cli/src/targets.rs": [
    "registry",
    "resolve"
-  ]
+  ],
+  "rustinfer-cli/src/tune.rs": [],
+  "rustinfer-cli/src/tune_device.rs": []
  }
 }

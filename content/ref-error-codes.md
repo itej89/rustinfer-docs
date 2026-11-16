@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 5a6db49 2026-11-15. A failure leaves the command as one line on
+`src/error.rs` at commit e361c82 2026-11-15. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -27,6 +27,7 @@ a class may be added but never renamed (SWG-001 §14.4).
 | `Artifact` | `artifact` | The artifact failed an integrity or compatibility check. |
 | `Device` | `device` | A device or driver failure. |
 | `Internal` | `internal` | An invariant that should never fail did; a bug. |
+| `Incomplete` | `incomplete` | The command did part of its work and wrote it; the rest failed and is reported (`tune` with keys that got no entry). |
 
 ## Variants per crate
 
@@ -66,7 +67,10 @@ and component.
 | `rustinfer-cli` | `cli` | `NotAFile` | `delegated` |
 | `rustinfer-cli` | `cli` | `NotADirectory` | `delegated` |
 | `rustinfer-cli` | `cli` | `NotWritable` | `delegated` |
-| `rustinfer-cli` | `cli` | `PrebuiltRequired` | `invalid` |
+| `rustinfer-cli` | `cli` | `PrebuiltRequired` | `delegated` |
+| `rustinfer-cli` | `cli` | `NotAmd` | `unsupported` |
+| `rustinfer-cli` | `cli` | `TuneIncomplete` | `incomplete` |
+| `rustinfer-cli` | `cli` | `NothingToTune` | `invalid` |
 | `rustinfer-cli` | `cli` | `Settings` | `delegated` |
 | `rustinfer-cli` | `cli` | `Compiler` | `delegated` |
 | `rustinfer-cli` | `cli` | `Artifact` | `delegated` |
@@ -107,13 +111,17 @@ and component.
 | `rustinfer-kc` | `kc` | `ShapeMismatch` | `delegated` |
 | `rustinfer-kc` | `kc` | `TooLarge` | `delegated` |
 | `rustinfer-kc` | `kc` | `Mlir` | `delegated` |
-| `rustinfer-kc` | `kc` | `Unsupported` | `unsupported` |
+| `rustinfer-kc` | `kc` | `Unsupported` | `delegated` |
 | `rustinfer-kc` | `kc` | `Backend` | `delegated` |
 | `rustinfer-kc` | `kc` | `Interpret` | `delegated` |
 | `rustinfer-kc` | `kc` | `InvalidParameter` | `delegated` |
-| `rustinfer-kc` | `kc` | `InvalidInput` | `invalid` |
+| `rustinfer-kc` | `kc` | `InvalidInput` | `delegated` |
 | `rustinfer-kc` | `kc` | `UnknownGenerator` | `not_found` |
 | `rustinfer-kc` | `kc` | `Reference` | `internal` |
+| `rustinfer-kc` | `kc` | `Catalog` | `delegated` |
+| `rustinfer-kc` | `kc` | `WrongArchitecture` | `unsupported` |
+| `rustinfer-kc` | `kc` | `Shapes` | `invalid` |
+| `rustinfer-kc` | `kc` | `Device` | `device` |
 | `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |
 | `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
 | `rustinfer-mir` | `mir` | `Malformed` | `delegated` |

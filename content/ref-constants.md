@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-5a6db49 2026-11-15. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 203
+e361c82 2026-11-15. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 217
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -42,6 +42,7 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
 | `EXIT_CODE_FAILURE` | `i32` | `1` | Process exit code for a failure reported as a structured error (RI-CLI-001). |
 | `EXIT_CODE_USAGE` | `i32` | `2` | Process exit code for invalid command-line usage. |
+| `EXIT_CODE_INCOMPLETE` | `i32` | `3` | Exit code of a command that did part of its work and reports the rest failed: `tune` wrote its catalog but some keys got no entry. |
 | `OUTPUT_WRITE_PROBE_PREFIX` | `&str` | `".rustinfer-write-probe-"` | File name prefix of the probe the CLI creates and removes in an output's parent directory to prove it writable (RI-CLI-012); `<pid>-<nanos>-<counter>` follows. |
 | `LOG_FIELD_COMPONENT` | `&str` | `"component"` | Prefix of every log line's component field and of structured error lines. |
 | `ERROR_FIELD_CODE` | `&str` | `"error"` | Field name carrying the error code in a structured error line. |
@@ -223,3 +224,16 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KC_AMD_VECTOR_BYTES` | `u64` | `16` | The widest global access of one AMD lane in bytes (`dwordx4`). |
 | `KC_FP8_E4M3_MAX` | `f64` | `448.0` | The largest finite value of fp8 E4M3 (OCP): the quantize kernels' scale denominator (OFP8 Rev 1.1 §5.1). |
 | `KC_FP8_E4M3_FNUZ_MAX` | `f64` | `240.0` | The largest finite value of fp8 E4M3 FNUZ (AMD-FNUZ). |
+| `KC_CATALOG_FORMAT` | `&str` | `"rustinfer-kernel-catalog"` | The `format` of a tuning catalog file (RI-KC-006, RI-ART-010). |
+| `KC_CATALOG_FORMAT_VERSION` | `u32` | `1` | The `format_version` of a tuning catalog file this build reads and writes. |
+| `KC_CATALOG_MAX_BYTES` | `usize` | `16 * 1024 * 1024` | Upper bound on the byte length of a catalog file, checked before parsing (RI-SEC-003). |
+| `KC_CATALOG_MAX_ENTRIES` | `usize` | `65_536` | Upper bound on the entries of one catalog file. |
+| `KC_SHAPES_MAX_BYTES` | `usize` | `1024 * 1024` | Upper bound on the byte length of a `tune --shapes` file (RI-SEC-003). |
+| `KC_SHAPES_MAX_ENTRIES` | `usize` | `4096` | Upper bound on the entries of a shapes file. |
+| `KC_PASS_PIPELINE_VERSION` | `u32` | `1` | The version of the Kernel IR to MLIR to LLVM pass pipeline a catalog entry was compiled with (RI-KC-006, RI-ART-010; SRS v0.4.11). Bumped whenever a pass or pipeline change can change a kernel's code or speed: the entries of another version are refused. |
+| `KC_TUNE_SEED` | `u64` | `9` | The seed of the tuner's validation inputs. |
+| `KC_TUNE_LAUNCHES` | `u32` | `10` | Timed launches per timing sample. |
+| `KC_TUNE_SAMPLES` | `u32` | `5` | Timing samples per variant; the cost is their median (review of #68). |
+| `KC_TUNE_VARIANT_TIMEOUT_MS` | `u64` | `10_000` | The wall-clock limit of one timing sample (`KC_TUNE_LAUNCHES` launches) in milliseconds; a slower variant is rejected (review of #68). |
+| `KC_TUNE_WARMUP_LAUNCHES` | `u32` | `2` | Untimed launches before the timed ones. |
+| `KC_TUNE_WORK_GROUP` | `u32` | `64` | Work items of the one work group a tuned kernel launches with (one wave: the R1 lowering keeps every tile whole in every lane). |
