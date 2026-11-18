@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-e361c82 2026-11-15. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 217
+8f1c543 2026-11-17. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 231
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -101,8 +101,8 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ARTIFACT_MAX_RANKS_PER_WEIGHT` | `usize` | `65_536` | Upper bound on the ranks listed for one weight of the manifest (RI-SEC-003). |
 | `ARTIFACT_MAX_STRING_LENGTH` | `usize` | `1024` | Upper bound on the byte length of a name, path or version string inside an artifact section (RI-SEC-003). |
 | `ARTIFACT_TMP_SUFFIX` | `&str` | `"tmp"` | Suffix of the writer's temporary file: `<out>.tmp-<pid>` (RI-ART-004). |
-| `TOPOLOGY_FORMAT_VERSION` | `u32` | `1` | Topology section format version this build writes (RI-PLN-001). Versioned independently of `ARTIFACT_FORMAT_VERSION` and `MODEL_IR_FORMAT_VERSION`. |
-| `TOPOLOGY_SUPPORTED_VERSIONS` | `&[u32]` | `&[TOPOLOGY_FORMAT_VERSION]` | Topology section versions the reader accepts (RI-PLN-001). |
+| `TOPOLOGY_FORMAT_VERSION` | `u32` | `2` | Topology section format version this build writes (RI-PLN-001). Versioned independently of `ARTIFACT_FORMAT_VERSION` and `MODEL_IR_FORMAT_VERSION`. |
+| `TOPOLOGY_FORMAT_VERSION_V1` | `u32` | `1` | The topology section version before the v0.5 device fields (compute units, compute dies, partition modes, copy engines; RI-PLN-001): still read, and a version-1 document never carries those fields. |
 | `PLACEMENT_FORMAT_VERSION` | `u32` | `2` | Placement section format version this build writes (RI-PLN-005). |
 | `PLACEMENT_SUPPORTED_VERSIONS` | `&[u32]` | `&[PLACEMENT_FORMAT_VERSION]` | Placement section versions the reader accepts (RI-PLN-005). |
 | `TOPOLOGY_MAX_DOCUMENT_BYTES` | `usize` | `4 * 1024 * 1024` | Upper bound on the byte length of a topology JSON text the reader parses; checked before parsing (RI-SEC-003). |
@@ -150,6 +150,23 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ROCM_MAX_CODE_OBJECT_BYTES` | `usize` | `256 * 1024 * 1024` | Upper bound on the size of a code object the `ROCm` target parses before handing it to HIP (RI-SEC-002 style bound on an external input). |
 | `ROCM_MAX_METADATA_DEPTH` | `usize` | `16` | Upper bound on the nesting depth of the `NT_AMDGPU_METADATA` `MessagePack` document the `ROCm` target decodes. |
 | `ROCM_MAX_METADATA_ITEMS` | `usize` | `65_536` | Upper bound on the elements of one `MessagePack` map or array in the metadata. |
+| `DEVICE_DESCRIPTION_MAX_COUNT` | `u32` | `1 << 20` | Upper bound on a count of a device description (compute units, compute dies, cache instances, copy engines, lanes, work-group size): a value past it is refused as a bad reading, not a device (RI-ROC-011, SWG-001 §8.7). |
+| `ROCM_GFX942_SPX_COMPUTE_UNITS` | `u32` | `304` | The compute units an MI300X or MI325X (gfx942) has in SPX mode: 8 XCDs of 38 active CUs, 304 (AMD-CDNA3-WP p. 5, Table 2 p. 23; AMD-INV, row WD-01). The compile-only default of gfx942: a build without a device assumes it; an opened device's own count replaces it (an MI300A has 228). |
+| `ROCM_GFX942_SPX_COMPUTE_DIES` | `u32` | `8` | The compute dies (XCDs) of an MI300X or MI325X in SPX mode: 8 (AMD-CDNA3-WP p. 3). The compile-only default of gfx942. |
+| `ROCM_GFX950_SPX_COMPUTE_UNITS` | `u32` | `256` | The compute units an MI350X or MI355X (gfx950) has in SPX mode: 8 XCDs of 32 active CUs, 256 (AMD-CDNA4-WP p. 5, Table 2 p. 18; AMD-INV, row WD-01). The compile-only default of gfx950. |
+| `ROCM_GFX950_SPX_COMPUTE_DIES` | `u32` | `8` | The compute dies (XCDs) of an MI350X or MI355X in SPX mode: 8 (AMD-CDNA4-WP p. 5). The compile-only default of gfx950. |
+| `ROCM_KFD_TOPOLOGY_NODES` | `&str` | `"/sys/class/kfd/kfd/topology/nodes"` | The KFD topology's node directories (Linux `kfd_topology.c`), read-only: each node's `properties`, `caches/<n>/properties` and `io_links/<n>/properties` (RI-ROC-011). |
+| `ROCM_PCI_DEVICES` | `&str` | `"/sys/bus/pci/devices"` | The PCI devices directory: a GPU's `current_compute_partition`, `current_memory_partition` and `PCIe` link files (RI-ROC-011). |
+| `ROCM_AMDGPU_VM_FRAGMENT_SIZE` | `&str` | `"/sys/module/amdgpu/parameters/vm_fragment_size"` | The `amdgpu` module's `vm_fragment_size` parameter: the large-page fragment as a power of two of GPU pages, `-1` when the driver chooses (Linux `amdgpu_drv.c`); read-only (RI-ROC-011). |
+| `ROCM_SYSFS_ROOTS` | `&[&str]` | `&[
+    ROCM_KFD_TOPOLOGY_NODES,
+    ROCM_PCI_DEVICES,
+    ROCM_AMDGPU_VM_FRAGMENT_SIZE,
+]` | The sysfs roots the `ROCm` target reads under; any other path is refused before it is opened (RI-ROC-011, SWG-001 §8.7). |
+| `ROCM_SYSFS_MAX_FILE_BYTES` | `u64` | `64 * 1024` | Upper bound on the bytes read from one sysfs file (a KFD `properties` file is under 2 KiB). |
+| `ROCM_SYSFS_MAX_ENTRIES` | `usize` | `65_536` | Upper bound on the entries of one sysfs directory the `ROCm` target lists (KFD nodes, a node's caches, its I/O links). |
+| `ROCM_GPU_PAGE_BYTES` | `u64` | `4096` | One GPU page of the `amdgpu` virtual memory manager in bytes (`AMDGPU_GPU_PAGE_SIZE`, Linux `amdgpu_object.h`): the unit `vm_fragment_size` counts in powers of two. |
+| `ROCM_MAX_VM_FRAGMENT_SHIFT` | `u32` | `31` | Upper bound on `vm_fragment_size`: a fragment of `4 KiB << 31` would exceed any device (`amdgpu` accepts 4 to 31). |
 | `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |
 | `RUNTIME_MAX_KV_BLOCKS` | `u32` | `1 << 24` | Most blocks one KV pool may hold (RI-KVC-001): the host's block list costs a few bytes per block, so a pool size that would ask for more is refused as configuration before any allocation. |
 | `KV_TENSORS_PER_LAYER` | `u64` | `2` | K and V: the two pools, and the two tensors of a cache entry, of every layer (RI-KVC-001). |
@@ -232,6 +249,7 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KC_SHAPES_MAX_ENTRIES` | `usize` | `4096` | Upper bound on the entries of a shapes file. |
 | `KC_PASS_PIPELINE_VERSION` | `u32` | `1` | The version of the Kernel IR to MLIR to LLVM pass pipeline a catalog entry was compiled with (RI-KC-006, RI-ART-010; SRS v0.4.11). Bumped whenever a pass or pipeline change can change a kernel's code or speed: the entries of another version are refused. |
 | `KC_TUNE_SEED` | `u64` | `9` | The seed of the tuner's validation inputs. |
+| `KC_TUNE_MAX_DEVICES` | `u32` | `64` | The most devices one `tune --devices` run tunes on at once (#123): the bound of the device list a run accepts. |
 | `KC_TUNE_LAUNCHES` | `u32` | `10` | Timed launches per timing sample. |
 | `KC_TUNE_SAMPLES` | `u32` | `5` | Timing samples per variant; the cost is their median (review of #68). |
 | `KC_TUNE_VARIANT_TIMEOUT_MS` | `u64` | `10_000` | The wall-clock limit of one timing sample (`KC_TUNE_LAUNCHES` launches) in milliseconds; a slower variant is rejected (review of #68). |

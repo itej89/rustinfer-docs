@@ -1,5 +1,5 @@
 {
- "commit": "e361c82",
+ "commit": "8f1c543",
  "crates": {
   "rustinfer-artifact": {
    "deps": [
@@ -242,8 +242,12 @@
     "SingleDevicePlanner",
     "Adjacency",
     "ComputeKind",
+    "ComputePartition",
+    "CopyDirection",
+    "CopyEngine",
     "Device",
     "Link",
+    "MemoryPartition",
     "MemoryTierSpec",
     "OffloadEngine",
     "Phase",
@@ -279,7 +283,8 @@
     "SamplingConfig",
     "EngineConfig",
     "Executor",
-    "kernel_from_artifact"
+    "kernel_from_artifact",
+    "topology_device"
    ]
   },
   "rustinfer-sluice": {
@@ -328,6 +333,19 @@
     "ShapeDim",
     "ShapeRule",
     "Validation",
+    "CacheDescription",
+    "CacheKind",
+    "Clocks",
+    "ComputePartition",
+    "CopyEngines",
+    "DeviceDescription",
+    "KernelDeviceFacts",
+    "LinkKind",
+    "MemoryPartition",
+    "PcieLink",
+    "PeerLink",
+    "TargetFeature",
+    "ABSENT",
     "Arena",
     "Buffer",
     "BufferId",
@@ -382,15 +400,19 @@
     "rustinfer-target"
    ],
    "api": [
+    "compile_only_facts",
+    "ArchitectureDefaults",
+    "TargetId",
+    "ARCHITECTURE_DEFAULTS",
     "CodeObject",
     "FeatureMode",
     "KernelArgument",
     "KernelMetadata",
     "LaunchDims",
     "RocmDevice",
-    "TargetId",
     "DeviceLimits",
     "hip",
+    "sysfs",
     "ARCHITECTURES",
     "RocmTarget",
     "entry"
@@ -416,6 +438,7 @@
    "InspectArgs",
    "RunArgs",
    "TuneArgs",
+   "DeviceList",
    "BenchArgs",
    "ServeArgs"
   ],
@@ -429,6 +452,7 @@
    "resolve"
   ],
   "rustinfer-cli/src/tune.rs": [],
-  "rustinfer-cli/src/tune_device.rs": []
+  "rustinfer-cli/src/tune_device.rs": [],
+  "rustinfer-cli/src/tune_parallel.rs": []
  }
 }

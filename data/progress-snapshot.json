@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-16T03:28:17+00:00",
+ "fetched_at": "2026-11-18T13:56:14+00:00",
  "source": "github",
  "issues": [
   {
@@ -669,8 +669,8 @@
   {
    "number": 70,
    "title": "GPU test: main (2108502) on gfx950 (MI350X)",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-16",
    "labels": [
     "gpu-test"
    ],
@@ -678,7 +678,7 @@
    "blocked_by": [],
    "requirements": [],
    "branch": null,
-   "derived_status": "Not started"
+   "derived_status": "Done 2026-11-16"
   },
   {
    "number": 78,
@@ -708,8 +708,8 @@
     80
    ],
    "requirements": [],
-   "branch": null,
-   "derived_status": "Not started"
+   "branch": "feat/81-catalog-fingerprint",
+   "derived_status": "In progress"
   },
   {
    "number": 82,
@@ -927,7 +927,7 @@
     "RI-PLN-001"
    ],
    "branch": "feat/92-rocm-device-description",
-   "derived_status": "In review 2026-11-15"
+   "derived_status": "In progress"
   },
   {
    "number": 93,
@@ -1268,8 +1268,8 @@
   {
    "number": 111,
    "title": "GPU test: device description on gfx950 (PR #112)",
-   "state": "open",
-   "closed_at": "",
+   "state": "closed",
+   "closed_at": "2026-11-16",
    "labels": [
     "gpu-test"
    ],
@@ -1277,7 +1277,7 @@
    "blocked_by": [],
    "requirements": [],
    "branch": null,
-   "derived_status": "Not started"
+   "derived_status": "Done 2026-11-16"
   },
   {
    "number": 114,
@@ -1343,6 +1343,78 @@
     "RI-WST-003",
     "RI-KC-015"
    ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 123,
+   "title": "Parallel tuning across GPUs: rustinfer tune --devices",
+   "state": "closed",
+   "closed_at": "2026-11-17",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    9,
+    92,
+    112
+   ],
+   "requirements": [
+    "RI-KC-006",
+    "RI-CLI-007",
+    "RI-KC-013"
+   ],
+   "branch": "feat/123-parallel-tune",
+   "derived_status": "Done 2026-11-17"
+  },
+  {
+   "number": 124,
+   "title": "GPU test: tune --devices on the 8× MI350X node (#123)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": null,
+   "blocked_by": [],
+   "requirements": [],
+   "branch": "fix/124-tune-device-ordinal",
+   "derived_status": "In progress"
+  },
+  {
+   "number": 127,
+   "title": "Profiler: target-independent, zero cost when off (Chrome trace, per-kernel summary)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "feature"
+   ],
+   "milestone": "R1 — foundation",
+   "blocked_by": [
+    13,
+    14,
+    116,
+    119
+   ],
+   "requirements": [
+    "RI-OBS-004",
+    "RI-NFR-001"
+   ],
+   "branch": null,
+   "derived_status": "Not started"
+  },
+  {
+   "number": 130,
+   "title": "GPU test: reference kernel times on the R1 keys (AITER / hipBLASLt baseline for RI-NFR-006)",
+   "state": "open",
+   "closed_at": "",
+   "labels": [
+    "gpu-test"
+   ],
+   "milestone": null,
+   "blocked_by": [],
+   "requirements": [],
    "branch": null,
    "derived_status": "Not started"
   }
@@ -1887,7 +1959,7 @@
    "state": "open",
    "head": "feat/64-kc-passes",
    "base": "main",
-   "sha": "cc0e5b17a3026d414d63d01abfd6d5c18af4dcc5",
+   "sha": "6c38b5aacffe673f0b1dafebf39e865dda609dc8",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
@@ -1926,7 +1998,7 @@
    "state": "open",
    "head": "feat/93-pinned-staging",
    "base": "main",
-   "sha": "2950bccd1c558de13b28df185799d8b3785a236f",
+   "sha": "8b91095795b2ed526b2f71c2ab914a87ed2701b5",
    "merged": false,
    "merged_at": "",
    "mergeable": true,
@@ -1936,12 +2008,12 @@
   {
    "number": 112,
    "title": "feat(target,rocm,planner,runtime): the ROCm device description (#92)",
-   "state": "open",
+   "state": "closed",
    "head": "feat/92-rocm-device-description",
    "base": "main",
-   "sha": "860f02352faddfabb169f4fdbd9a531999e3c9a5",
-   "merged": false,
-   "merged_at": "",
+   "sha": "b10faf3e90961b16fd8cd3942caef3c40f0e6600",
+   "merged": true,
+   "merged_at": "2026-11-16",
    "mergeable": true,
    "created_at": "2026-11-15",
    "url": "https://github.com/itej89/rustinfer/pull/112"
@@ -2023,14 +2095,66 @@
    "mergeable": true,
    "created_at": "2026-11-16",
    "url": "https://github.com/itej89/rustinfer/pull/122"
+  },
+  {
+   "number": 125,
+   "title": "feat(cli): tune on several GPUs at once, tune --devices (#123)",
+   "state": "closed",
+   "head": "feat/123-parallel-tune",
+   "base": "main",
+   "sha": "9443a0a8a4fe41ba7d748b2c049cc620dc5a88de",
+   "merged": true,
+   "merged_at": "2026-11-17",
+   "mergeable": true,
+   "created_at": "2026-11-16",
+   "url": "https://github.com/itej89/rustinfer/pull/125"
+  },
+  {
+   "number": 126,
+   "title": "fix(cli): the tuner reaches the device it opened for every access (#123, GPU test #124)",
+   "state": "closed",
+   "head": "fix/124-tune-device-ordinal",
+   "base": "main",
+   "sha": "20739856507477eb48431e280465ada197fd215b",
+   "merged": true,
+   "merged_at": "2026-11-17",
+   "mergeable": true,
+   "created_at": "2026-11-17",
+   "url": "https://github.com/itej89/rustinfer/pull/126"
+  },
+  {
+   "number": 128,
+   "title": "feat(kc): catalog entries bound to their capability description; generator version pins (#81)",
+   "state": "closed",
+   "head": "feat/81-catalog-fingerprint",
+   "base": "feat/64-kc-passes",
+   "sha": "caf9983cd6f79341357a775d5c7f4663e6534ed4",
+   "merged": true,
+   "merged_at": "2026-11-18",
+   "mergeable": true,
+   "created_at": "2026-11-18",
+   "url": "https://github.com/itej89/rustinfer/pull/128"
+  },
+  {
+   "number": 129,
+   "title": "docs(srs): v0.5.2, parity with AITER is the floor; the pinned LLVM may be a fork (ADR-007)",
+   "state": "open",
+   "head": "docs/srs-aiter-parity-llvm-fork",
+   "base": "main",
+   "sha": "ea78cc560d5e50966866a71be1107a2fe6bf2d63",
+   "merged": false,
+   "merged_at": "",
+   "mergeable": true,
+   "created_at": "2026-11-18",
+   "url": "https://github.com/itej89/rustinfer/pull/129"
   }
  ],
  "milestones": [
   {
    "title": "R1 — foundation",
    "state": "open",
-   "open": 43,
-   "closed": 56
+   "open": 42,
+   "closed": 62
   },
   {
    "title": "R2",
@@ -2047,136 +2171,136 @@
  ],
  "runs": [
   {
-   "id": 216,
-   "title": "Merge pull request #68 from itej89/feat/9c-catalog-tune",
-   "status": "queued",
-   "conclusion": null,
-   "event": "push",
-   "ref": "main",
-   "sha": "e361c82",
-   "created": "2026-11-16T03:23",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43797867850"
-  },
-  {
-   "id": 215,
-   "title": "feat(cli): rustinfer run end to end, tune --model, the manifest's environment and device (#14)",
-   "status": "queued",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/14-run-e2e",
-   "sha": "9b24ea6",
-   "created": "2026-11-16T02:37",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43793286254"
-  },
-  {
-   "id": 214,
-   "title": "feat(cli): rustinfer run end to end, tune --model, the manifest's environment and device (#14)",
-   "status": "completed",
-   "conclusion": "cancelled",
-   "event": "pull_request",
-   "ref": "feat/14-run-e2e",
-   "sha": "8fc6fbe",
-   "created": "2026-11-16T02:32",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43792742859"
-  },
-  {
-   "id": 213,
-   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
-   "status": "queued",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/10-graph-compiler",
-   "sha": "fd71689",
-   "created": "2026-11-16T02:24",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43792019422"
-  },
-  {
-   "id": 212,
-   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
-   "status": "queued",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/36-mxfp4-precision",
-   "sha": "bbc036c",
-   "created": "2026-11-16T02:07",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43790223364"
-  },
-  {
-   "id": 211,
-   "title": "feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)",
-   "status": "completed",
-   "conclusion": "cancelled",
-   "event": "pull_request",
-   "ref": "feat/36-mxfp4-precision",
-   "sha": "27fb249",
-   "created": "2026-11-16T02:07",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43790196015"
-  },
-  {
-   "id": 210,
-   "title": "feat(runtime): bind every launch from the Plan's ABI arguments (#13)",
-   "status": "queued",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/13-abi-binding",
-   "sha": "e4d6f34",
-   "created": "2026-11-16T01:53",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43788922284"
-  },
-  {
-   "id": 209,
-   "title": "feat: MXFP4 on AMD: W4A16 GEMM, opt-in gfx950 scaled MFMA, MXFP4 KV, MX transforms (#38)",
-   "status": "queued",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/38-mxfp4-amd",
-   "sha": "83a8126",
-   "created": "2026-11-16T01:47",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43788315115"
-  },
-  {
-   "id": 208,
-   "title": "feat(compiler): the pass pipeline from Model IR to Plan (#10)",
+   "id": 230,
+   "title": "docs(srs): v0.5.2, parity with AITER is the floor; the pinned LLVM may be a fork (ADR-007)",
    "status": "completed",
    "conclusion": "failure",
    "event": "pull_request",
-   "ref": "feat/10-graph-compiler",
-   "sha": "9cb1a44",
-   "created": "2026-11-16T01:35",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43787155008"
+   "ref": "docs/srs-aiter-parity-llvm-fork",
+   "sha": "ea78cc5",
+   "created": "2026-11-18T04:13",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44235822517"
   },
   {
-   "id": 207,
+   "id": 229,
    "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
-   "status": "in_progress",
-   "conclusion": null,
-   "event": "pull_request",
-   "ref": "feat/64-kc-passes",
-   "sha": "cc0e5b1",
-   "created": "2026-11-16T01:35",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43787132739"
-  },
-  {
-   "id": 206,
-   "title": "feat(cli): rustinfer run end to end, tune --model, the manifest's environment and device (#14)",
-   "status": "completed",
-   "conclusion": "failure",
-   "event": "pull_request",
-   "ref": "feat/14-run-e2e",
-   "sha": "9f4ca3b",
-   "created": "2026-11-16T01:35",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43787110436"
-  },
-  {
-   "id": 205,
-   "title": "feat(rocm): priority streams and the HIP and HSA environment in the manifest (#95)",
    "status": "completed",
    "conclusion": "success",
    "event": "pull_request",
-   "ref": "feat/95-priority-streams",
-   "sha": "be37da6",
-   "created": "2026-11-16T01:33",
-   "url": "https://github.com/itej89/rustinfer/actions/runs/43787002231"
+   "ref": "feat/64-kc-passes",
+   "sha": "6c38b5a",
+   "created": "2026-11-18T03:45",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44232656046"
+  },
+  {
+   "id": 228,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/64-kc-passes",
+   "sha": "3af02d0",
+   "created": "2026-11-18T03:00",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44227307215"
+  },
+  {
+   "id": 227,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "status": "completed",
+   "conclusion": "cancelled",
+   "event": "pull_request",
+   "ref": "feat/64-kc-passes",
+   "sha": "e8379fe",
+   "created": "2026-11-18T02:36",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44224522409"
+  },
+  {
+   "id": 226,
+   "title": "feat(kc): catalog entries bound to their capability description; generator version pins (#81)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/81-catalog-fingerprint",
+   "sha": "caf9983",
+   "created": "2026-11-18T02:04",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44220590923"
+  },
+  {
+   "id": 225,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/64-kc-passes",
+   "sha": "6499a3f",
+   "created": "2026-11-17T21:58",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44185370648"
+  },
+  {
+   "id": 224,
+   "title": "Merge pull request #126 from itej89/fix/124-tune-device-ordinal",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "8f1c543",
+   "created": "2026-11-17T19:39",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44160928620"
+  },
+  {
+   "id": 223,
+   "title": "fix(cli): the tuner reaches the device it opened for every access (#123, GPU test #124)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "fix/124-tune-device-ordinal",
+   "sha": "2073985",
+   "created": "2026-11-17T19:36",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/44160325180"
+  },
+  {
+   "id": 222,
+   "title": "feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/64-kc-passes",
+   "sha": "56f0f92",
+   "created": "2026-11-17T00:07",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43985011951"
+  },
+  {
+   "id": 221,
+   "title": "Merge pull request #125 from itej89/feat/123-parallel-tune",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "f0bbb4a",
+   "created": "2026-11-17T00:01",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43984269439"
+  },
+  {
+   "id": 220,
+   "title": "feat(cli): tune on several GPUs at once, tune --devices (#123)",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "pull_request",
+   "ref": "feat/123-parallel-tune",
+   "sha": "9443a0a",
+   "created": "2026-11-16T23:56",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43983554446"
+  },
+  {
+   "id": 219,
+   "title": "Merge pull request #112 from itej89/feat/92-rocm-device-description",
+   "status": "completed",
+   "conclusion": "success",
+   "event": "push",
+   "ref": "main",
+   "sha": "94d7f82",
+   "created": "2026-11-16T04:05",
+   "url": "https://github.com/itej89/rustinfer/actions/runs/43801980911"
   }
  ],
  "branches": [
@@ -2186,6 +2310,7 @@
   "docs/amd-feature-inventory",
   "docs/gpu-test-template",
   "docs/readme-docs-link",
+  "docs/srs-aiter-parity-llvm-fork",
   "docs/srs-build-reads-weights",
   "docs/srs-gfx942-not-r1-gate",
   "docs/srs-hip-runtime-major",
@@ -2198,6 +2323,7 @@
   "feat/10-plan-abi-for-13",
   "feat/11-build-inspect",
   "feat/12-rocm-target",
+  "feat/123-parallel-tune",
   "feat/13-abi-binding",
   "feat/13-executor-static-batch",
   "feat/14-run-e2e",
@@ -2216,6 +2342,7 @@
   "feat/64-kc-passes",
   "feat/7-kernel-ir-and-mlir-link",
   "feat/8-amd-lowering",
+  "feat/81-catalog-fingerprint",
   "feat/9-generators-autotuner",
   "feat/92-rocm-device-description",
   "feat/93-pinned-staging",
@@ -2223,6 +2350,7 @@
   "feat/95-priority-streams",
   "feat/9b-generators",
   "feat/9c-catalog-tune",
+  "fix/124-tune-device-ordinal",
   "fix/27-conformance",
   "fix/51-e5m2-partial-rotary",
   "fix/51-standards-defects",
@@ -2436,6 +2564,16 @@
    "release": "R1"
   },
   {
+   "number": 123,
+   "checked": false,
+   "release": "R1"
+  },
+  {
+   "number": 127,
+   "checked": false,
+   "release": "R1"
+  },
+  {
    "number": 98,
    "checked": false,
    "release": "R2"
@@ -2497,6 +2635,124 @@
   }
  ],
  "pull_tags": {
+  "129": {
+   "sha": "ea78cc560d5e50966866a71be1107a2fe6bf2d63",
+   "verifies": [
+    "RI-ART-001",
+    "RI-ART-002",
+    "RI-ART-003",
+    "RI-ART-004",
+    "RI-ART-006",
+    "RI-ART-008",
+    "RI-ART-010",
+    "RI-ART-013",
+    "RI-ART-014",
+    "RI-CLI-001",
+    "RI-CLI-010",
+    "RI-CLI-011",
+    "RI-CLI-012",
+    "RI-FE-001",
+    "RI-FE-002",
+    "RI-FE-003",
+    "RI-FE-004",
+    "RI-KC-002",
+    "RI-KC-013",
+    "RI-KVC-002",
+    "RI-KVC-004",
+    "RI-MIR-001",
+    "RI-MIR-002",
+    "RI-MIR-003",
+    "RI-MIR-004",
+    "RI-MIR-005",
+    "RI-MIR-006",
+    "RI-MIR-007",
+    "RI-MIR-008",
+    "RI-NFR-007",
+    "RI-PLN-001",
+    "RI-PLN-003",
+    "RI-PLN-005",
+    "RI-ROC-001",
+    "RI-ROC-002",
+    "RI-ROC-003",
+    "RI-ROC-004",
+    "RI-RT-003",
+    "RI-RT-004",
+    "RI-RT-006",
+    "RI-RT-008",
+    "RI-RV-001",
+    "RI-SEC-001",
+    "RI-SEC-002",
+    "RI-SEC-003",
+    "RI-TGT-001",
+    "RI-TGT-002",
+    "RI-TGT-003",
+    "RI-WST-001",
+    "RI-WST-002",
+    "RI-WST-004",
+    "RI-WST-005"
+   ],
+   "groundwork": [
+    "RI-ART-005",
+    "RI-ART-009",
+    "RI-ART-010",
+    "RI-ART-012",
+    "RI-CLI-002",
+    "RI-CLI-003",
+    "RI-CLI-004",
+    "RI-CLI-007",
+    "RI-FE-006",
+    "RI-GC-005",
+    "RI-GC-006",
+    "RI-GC-007",
+    "RI-GC-008",
+    "RI-GC-009",
+    "RI-GC-015",
+    "RI-KC-001",
+    "RI-KC-003",
+    "RI-KC-005",
+    "RI-KC-006",
+    "RI-KC-007",
+    "RI-KC-008",
+    "RI-KC-011",
+    "RI-KC-013",
+    "RI-KC-014",
+    "RI-KC-015",
+    "RI-KC-017",
+    "RI-KVC-001",
+    "RI-KVC-008",
+    "RI-MIR-004",
+    "RI-MIR-009",
+    "RI-MIR-010",
+    "RI-MIR-011",
+    "RI-MIR-012",
+    "RI-NFR-001",
+    "RI-NFR-016",
+    "RI-NFR-017",
+    "RI-ROC-011",
+    "RI-RT-001",
+    "RI-RT-002",
+    "RI-RT-003",
+    "RI-RT-010",
+    "RI-RV-002",
+    "RI-SCH-003",
+    "RI-SEC-001",
+    "RI-SMP-001",
+    "RI-TGT-004",
+    "RI-TGT-005",
+    "RI-WST-003",
+    "RI-WST-005"
+   ],
+   "reserved": [
+    "RI-FE-006",
+    "RI-MIR-003",
+    "RI-MIR-004",
+    "RI-MIR-009",
+    "RI-MIR-010",
+    "RI-MIR-011",
+    "RI-PLN-002",
+    "RI-PLN-003"
+   ]
+  },
   "119": {
    "sha": "9b24ea687dae04f00141544b1db298867f3c12c7",
    "verifies": [
@@ -3143,123 +3399,8 @@
     "RI-PLN-003"
    ]
   },
-  "112": {
-   "sha": "860f02352faddfabb169f4fdbd9a531999e3c9a5",
-   "verifies": [
-    "RI-ART-001",
-    "RI-ART-002",
-    "RI-ART-003",
-    "RI-ART-004",
-    "RI-ART-006",
-    "RI-ART-008",
-    "RI-ART-010",
-    "RI-ART-013",
-    "RI-ART-014",
-    "RI-CLI-001",
-    "RI-CLI-010",
-    "RI-CLI-011",
-    "RI-CLI-012",
-    "RI-FE-001",
-    "RI-FE-002",
-    "RI-FE-003",
-    "RI-FE-004",
-    "RI-KC-002",
-    "RI-KC-013",
-    "RI-KVC-002",
-    "RI-KVC-004",
-    "RI-MIR-001",
-    "RI-MIR-002",
-    "RI-MIR-003",
-    "RI-MIR-004",
-    "RI-MIR-005",
-    "RI-MIR-006",
-    "RI-MIR-007",
-    "RI-MIR-008",
-    "RI-NFR-007",
-    "RI-PLN-001",
-    "RI-PLN-003",
-    "RI-PLN-005",
-    "RI-ROC-001",
-    "RI-ROC-002",
-    "RI-ROC-003",
-    "RI-ROC-004",
-    "RI-RT-003",
-    "RI-RT-004",
-    "RI-RT-006",
-    "RI-RT-008",
-    "RI-RV-001",
-    "RI-SEC-001",
-    "RI-SEC-002",
-    "RI-SEC-003",
-    "RI-TGT-001",
-    "RI-TGT-002",
-    "RI-TGT-003",
-    "RI-WST-001",
-    "RI-WST-002",
-    "RI-WST-004",
-    "RI-WST-005"
-   ],
-   "groundwork": [
-    "RI-ART-005",
-    "RI-ART-009",
-    "RI-ART-010",
-    "RI-ART-012",
-    "RI-CLI-002",
-    "RI-CLI-003",
-    "RI-CLI-004",
-    "RI-FE-006",
-    "RI-GC-005",
-    "RI-GC-006",
-    "RI-GC-007",
-    "RI-GC-008",
-    "RI-GC-009",
-    "RI-GC-015",
-    "RI-KC-001",
-    "RI-KC-003",
-    "RI-KC-005",
-    "RI-KC-006",
-    "RI-KC-007",
-    "RI-KC-008",
-    "RI-KC-011",
-    "RI-KC-014",
-    "RI-KC-015",
-    "RI-KVC-001",
-    "RI-KVC-008",
-    "RI-MIR-004",
-    "RI-MIR-009",
-    "RI-MIR-010",
-    "RI-MIR-011",
-    "RI-MIR-012",
-    "RI-NFR-001",
-    "RI-NFR-016",
-    "RI-NFR-017",
-    "RI-ROC-011",
-    "RI-RT-001",
-    "RI-RT-002",
-    "RI-RT-003",
-    "RI-RT-010",
-    "RI-RV-002",
-    "RI-SCH-003",
-    "RI-SEC-001",
-    "RI-SMP-001",
-    "RI-TGT-004",
-    "RI-TGT-005",
-    "RI-WST-003",
-    "RI-WST-005"
-   ],
-   "reserved": [
-    "RI-FE-006",
-    "RI-MIR-003",
-    "RI-MIR-004",
-    "RI-MIR-009",
-    "RI-MIR-010",
-    "RI-MIR-011",
-    "RI-PLN-002",
-    "RI-PLN-003"
-   ]
-  },
   "110": {
-   "sha": "2950bccd1c558de13b28df185799d8b3785a236f",
+   "sha": "8b91095795b2ed526b2f71c2ab914a87ed2701b5",
    "verifies": [
     "RI-ART-001",
     "RI-ART-002",
@@ -3324,6 +3465,7 @@
     "RI-CLI-002",
     "RI-CLI-003",
     "RI-CLI-004",
+    "RI-CLI-007",
     "RI-FE-006",
     "RI-GC-005",
     "RI-GC-006",
@@ -3338,8 +3480,10 @@
     "RI-KC-007",
     "RI-KC-008",
     "RI-KC-011",
+    "RI-KC-013",
     "RI-KC-014",
     "RI-KC-015",
+    "RI-KC-017",
     "RI-KVC-001",
     "RI-KVC-008",
     "RI-MIR-004",
@@ -3377,7 +3521,7 @@
    ]
   },
   "77": {
-   "sha": "cc0e5b17a3026d414d63d01abfd6d5c18af4dcc5",
+   "sha": "6c38b5aacffe673f0b1dafebf39e865dda609dc8",
    "verifies": [
     "RI-ART-001",
     "RI-ART-002",
@@ -3477,6 +3621,7 @@
     "RI-NFR-001",
     "RI-NFR-016",
     "RI-NFR-017",
+    "RI-ROC-011",
     "RI-RT-001",
     "RI-RT-002",
     "RI-RT-003",

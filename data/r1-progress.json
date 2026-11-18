@@ -1,17 +1,17 @@
 {
- "commit": "e361c82 2026-11-15",
+ "commit": "8f1c543 2026-11-17",
  "tracker": "live",
- "fetched_at": "2026-11-16T03:28:17+00:00",
+ "fetched_at": "2026-11-18T13:56:14+00:00",
  "requirements": {
   "total": 133,
   "implemented": 46,
-  "partial": 47,
-  "planned": 40,
+  "partial": 48,
+  "planned": 39,
   "reserved_only": 0
  },
  "epic": {
-  "total": 40,
-  "closed": 13,
+  "total": 42,
+  "closed": 14,
   "closed_issues": [
    2,
    3,
@@ -25,7 +25,8 @@
    15,
    34,
    35,
-   39
+   39,
+   123
   ],
   "open_issues": [
    9,
@@ -54,23 +55,24 @@
    95,
    96,
    97,
-   121
+   121,
+   127
   ]
  },
  "open_pulls": {
-  "count": 19,
+  "count": 18,
   "pulls_read": [
    73,
    75,
    76,
    77,
    110,
-   112,
    113,
    115,
    116,
    118,
-   119
+   119,
+   129
   ],
   "requirements": {
    "RI-CLI-005": [
@@ -166,10 +168,6 @@
     110,
     113,
     115
-   ],
-   "RI-ROC-011": [
-    112,
-    119
    ],
    "RI-ROC-015": [
     115,

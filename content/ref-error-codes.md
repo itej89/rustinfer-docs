@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit e361c82 2026-11-15. A failure leaves the command as one line on
+`src/error.rs` at commit 8f1c543 2026-11-17. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -229,8 +229,10 @@ and component.
 | `rustinfer-target` | `target` | `UnsupportedBinary` | `delegated` |
 | `rustinfer-target` | `target` | `MissingKernelIr` | `delegated` |
 | `rustinfer-target` | `target` | `OperandMismatch` | `delegated` |
-| `rustinfer-target` | `target` | `UnsupportedDtype` | `unsupported` |
+| `rustinfer-target` | `target` | `UnsupportedDtype` | `delegated` |
 | `rustinfer-target` | `target` | `IndexOutOfRange` | `delegated` |
+| `rustinfer-target` | `target` | `InvalidDeviceDescription` | `device` |
+| `rustinfer-target` | `target` | `MissingDeviceFact` | `unsupported` |
 | `rustinfer-target` | `target` | `NotImplemented` | `not_implemented` |
 | `rustinfer-target` | `target` | `Backend` | `delegated` |
 | `rustinfer-target-riscv-mesh` | `?` | `NotImplemented` | `not_implemented` |
@@ -245,6 +247,7 @@ and component.
 | `rustinfer-target-rocm` | `rocm` | `TargetFeature` | `delegated` |
 | `rustinfer-target-rocm` | `rocm` | `CodeObject` | `artifact` |
 | `rustinfer-target-rocm` | `rocm` | `KernelResources` | `unsupported` |
+| `rustinfer-target-rocm` | `rocm` | `DeviceDescription` | `delegated` |
 | `rustinfer-target-rocm` | `rocm` | `GraphBusy` | `device` |
 | `rustinfer-target-rocm` | `rocm` | `Launch` | `invalid` |
 | `rustinfer-target-spirv-vulkan` | `?` | `NotImplemented` | `not_implemented` |
