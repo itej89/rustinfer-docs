@@ -1,0 +1,1666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Issue tracker — rustinfer</title>
+<meta name="description" content="The Epic and the fourteen Release 1 issues and the pull requests on GitHub as a tracker: work, blockers, derived status and notes, with the numbers the roadmap is measured by.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Introduction</summary><ul><li><a href="index.html">rustinfer</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMD CDNA4 ISA (5 August 2025)</summary><ul><li><a href="std-amd-cdna4-isa.html">Overview</a></li><li><a href="std-amd-cdna4-isa-requirements.html">Requirements</a></li><li><a href="std-amd-cdna4-isa-audit.html">Audit</a></li><li><a href="std-amd-cdna4-isa-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU code object V5</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU DMA Operations (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-dma.html">Overview</a></li><li><a href="std-llvm-amdgpu-dma-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-dma-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-dma-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU intrinsics (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-intrinsics.html">Overview</a></li><li><a href="std-llvm-amdgpu-intrinsics-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-intrinsics-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-intrinsics-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Runtime</summary><ul><li><details class="nav-sub"><summary>AMD Instinct system acceptance (accessed 2026-11-15)</summary><ul><li><a href="std-amd-acc.html">Overview</a></li><li><a href="std-amd-acc-requirements.html">Requirements</a></li><li><a href="std-amd-acc-audit.html">Audit</a></li><li><a href="std-amd-acc-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMD SMI 7.2.4</summary><ul><li><a href="std-amd-smi.html">Overview</a></li><li><a href="std-amd-smi-requirements.html">Requirements</a></li><li><a href="std-amd-smi-audit.html">Audit</a></li><li><a href="std-amd-smi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP and ROCm environment variables 7.2.4</summary><ul><li><a href="std-hip-env.html">Overview</a></li><li><a href="std-hip-env-requirements.html">Requirements</a></li><li><a href="std-hip-env-audit.html">Audit</a></li><li><a href="std-hip-env-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP memory management 7.2.4</summary><ul><li><a href="std-hip-mem.html">Overview</a></li><li><a href="std-hip-mem-requirements.html">Requirements</a></li><li><a href="std-hip-mem-audit.html">Audit</a></li><li><a href="std-hip-mem-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li><li><a href="profiler.html">Profiler (design)</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html" class="here">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <!-- Generated by scripts/reference/gen_progress.py from the rustinfer checkout; do not edit by hand. Regenerate with `.venv/bin/python scripts/reference/gen_progress.py`. -->
+<h1 id="issue-tracker">Issue tracker</h1>
+<p><strong>As of 2026-11-19.</strong> The tracker state is read live from GitHub
+(fetched 2026-11-19 13:56 UTC, kept in <code>data/progress-snapshot.json</code>); the
+counts of requirements, tests and lines are read from the rustinfer tree at commit 53af206 2026-11-19.
+Coverage is not measured here: it is the final test run of GitHub PR #21's merge-readiness checklist (<code>cargo llvm-cov --workspace --all-features</code>, after the rebase), 2026-11-12. The <a href="progress.html">progress</a> page counts the rows
+below with every other tracker on the site; the <a href="roadmap.html">roadmap</a> is the same sequence as prose.
+The project moved from Codeberg to <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a> on 2026-11-12 (ADR-008,
+<a href="decisions.html">decisions</a>); the issues kept their numbers, the Codeberg pull requests and Actions
+runs did not move and are listed below as history.</p>
+<h2 id="headline">Headline</h2>
+<table>
+<thead>
+<tr>
+<th>measure</th>
+<th>state</th>
+<th>note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release 1 issues closed</td>
+<td><code>████████░░ 11/14</code></td>
+<td>#2 to #15; the Epic #1 is not counted. Milestone <code>R1 — foundation</code>: 80 closed, 39 open</td>
+</tr>
+<tr>
+<td>Pull requests on GitHub</td>
+<td>63 merged, 9 open</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/19">#19</a> <code>infra/github-hosting</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/20">#20</a> <code>feat/15-planner-interfaces</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/21">#21</a> <code>feat/5-target-and-cpu-reference</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/22">#22</a> <code>docs/readme-docs-link</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/23">#23</a> <code>feat/18-sluice-weight-streamer</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/24">#24</a> <code>feat/6-frontend-llama</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/25">#25</a> <code>feat/7-kernel-ir-and-mlir-link</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/28">#28</a> <code>docs/27-srs-v0.3</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/29">#29</a> <code>fix/27-conformance</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/30">#30</a> <code>refactor/27-seams</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/32">#32</a> <code>feat/27-placement-v2</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/33">#33</a> <code>refactor/27-frontend-dtypes</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/40">#40</a> <code>docs/gpu-test-template</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/41">#41</a> <code>docs/srs-v0.4-mxfp4</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/42">#42</a> <code>feat/26-grouped-rmsnorm</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/43">#43</a> <code>feat/34-mxfp4-ir-oracle</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/44">#44</a> <code>feat/8-amd-lowering</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/46">#46</a> <code>docs/srs-standards</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/47">#47</a> <code>feat/39-mxfp4-sluice</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/48">#48</a> <code>feat/37-kv-dtypes</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/49">#49</a> <code>feat/35-mxfp4-checkpoints</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/50">#50</a> <code>docs/srs-standards-conformance</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/52">#52</a> <code>fix/51-standards-defects</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/53">#53</a> <code>docs/srs-build-reads-weights</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/55">#55</a> <code>fix/51-e5m2-partial-rotary</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/56">#56</a> <code>docs/uml-close-fences</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/57">#57</a> <code>fix/51-used-range-u8-empty</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/58">#58</a> <code>feat/12-rocm-target</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/60">#60</a> <code>infra/pin-rust-toolchain</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/62">#62</a> <code>docs/srs-hip-runtime-major</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/63">#63</a> <code>feat/9-generators-autotuner</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/65">#65</a> <code>docs/adr-011-ninja-compiler</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/66">#66</a> <code>fix/no-assembly-in-rocm-tests</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/67">#67</a> <code>feat/9b-generators</code> → <code>feat/9-generators-autotuner</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/68">#68</a> <code>feat/9c-catalog-tune</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/71">#71</a> <code>docs/srs-gfx942-not-r1-gate</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/72">#72</a> <code>feat/13-executor-static-batch</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/73">#73</a> <code>feat/11-build-inspect</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/74">#74</a> <code>feat/9-generators-autotuner</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/75">#75</a> <code>feat/10-graph-compiler</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/76">#76</a> <code>feat/36-mxfp4-precision</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/77">#77</a> <code>feat/64-kc-passes</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/79">#79</a> <code>docs/amd-feature-inventory</code> → <code>main</code> (closed), <a href="https://github.com/itej89/rustinfer/pull/80">#80</a> <code>docs/srs-v0.5-amd-features</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/110">#110</a> <code>feat/93-pinned-staging</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/112">#112</a> <code>feat/92-rocm-device-description</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/113">#113</a> <code>feat/94-sluice-pinned</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/115">#115</a> <code>feat/95-priority-streams</code> → <code>feat/94-sluice-pinned</code> (open), <a href="https://github.com/itej89/rustinfer/pull/116">#116</a> <code>feat/13-abi-binding</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/118">#118</a> <code>feat/38-mxfp4-amd</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/119">#119</a> <code>feat/14-run-e2e</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/122">#122</a> <code>ci/self-hosted-runner</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/125">#125</a> <code>feat/123-parallel-tune</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/126">#126</a> <code>fix/124-tune-device-ordinal</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/128">#128</a> <code>feat/81-catalog-fingerprint</code> → <code>feat/64-kc-passes</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/129">#129</a> <code>docs/srs-aiter-parity-llvm-fork</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/131">#131</a> <code>feat/81-device-facts-check</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/132">#132</a> <code>docs/planning-121-123-127</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/133">#133</a> <code>docs/observability-inventory</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/134">#134</a> <code>feat/90-split-k</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/135">#135</a> <code>feat/85-kernel-attributes</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/137">#137</a> <code>feat/127-profiler</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/139">#139</a> <code>feat/86-uniform-scalar</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/141">#141</a> <code>feat/88-prefill-refinements</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/143">#143</a> <code>feat/84-vector-unit</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/145">#145</a> <code>fix/tune-timeout-margin</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/147">#147</a> <code>fix/146-graph-timing</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/149">#149</a> <code>fix/spin-fill-rounds</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/154">#154</a> <code>perf/150-decode-gemm</code> → <code>feat/90-split-k</code> (open), <a href="https://github.com/itej89/rustinfer/pull/156">#156</a> <code>perf/152-sampler</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/159">#159</a> <code>perf/153-rmsnorm</code> → <code>main</code> (open), <a href="https://github.com/itej89/rustinfer/pull/160">#160</a> <code>fix/sluice-overlap-delay</code> → <code>main</code> (merged), <a href="https://github.com/itej89/rustinfer/pull/162">#162</a> <code>perf/151-gemm-m32</code> → <code>perf/150-decode-gemm</code> (open); four more were merged on Codeberg before the move, see below</td>
+</tr>
+<tr>
+<td>Latest CI run</td>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44537399170">run 328</a> (main, <code>53af206</code>): <strong>in_progress</strong>, 2026-11-19 13:50</td>
+<td>GitHub Actions on <code>ubuntu-latest</code>; the recent runs are listed below</td>
+</tr>
+<tr>
+<td>SRS requirements implemented</td>
+<td><code>███░░░░░░░ 58/222</code></td>
+<td>by the tag rule of <code>docs/testing.md</code>: a requirement is implemented when a test carries a <code>Verifies</code> tag for it and no test a <code>Groundwork for</code> tag; 58 implemented, 55 partial (a <code>Groundwork for</code> tag), 1 reserved only (only <code>Reserved</code> tags), 108 planned; by release: R1 58/53/0/23 of 134; R2 0/2/1/47 of 50; R3 0/0/0/35 of 35; R4 0/0/0/3 of 3 (implemented/partial/reserved only/planned); the tags and files per id are on the <a href="ref-requirements.html">requirements</a> page. The SRS's own status field changes only at a release, so by SRS status today: Draft 222</td>
+</tr>
+<tr>
+<td>Mandatory standards (R1)</td>
+<td><code>███░░░░░░░ 6/22</code></td>
+<td>6 works / 10 partly / 6 missing, of the 22 standards mandatory from R1 in SRS §1.4; the <a href="standards.html">standards map</a>, each one <a href="#standards">below</a></td>
+</tr>
+<tr>
+<td>Mandatory standards (R2)</td>
+<td><code>░░░░░░░░░░ 0/4</code></td>
+<td>0 works / 0 partly / 0 missing; 4 later release (not due yet), of the 4 standards mandatory from R2 in SRS §1.4; the <a href="standards.html">standards map</a>, each one <a href="#standards">below</a></td>
+</tr>
+<tr>
+<td>Mandatory standards (R3)</td>
+<td><code>░░░░░░░░░░ 0/6</code></td>
+<td>0 works / 0 partly / 0 missing; 6 later release (not due yet), of the 6 standards mandatory from R3 in SRS §1.4; the <a href="standards.html">standards map</a>, each one <a href="#standards">below</a></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>1841</td>
+<td><code>#[test]</code> functions across 17 crates</td>
+</tr>
+<tr>
+<td>Line coverage</td>
+<td>96.44%</td>
+<td>from the final test run of GitHub PR #21's merge-readiness checklist (<code>cargo llvm-cov --workspace --all-features</code>, after the rebase), 2026-11-12; the CI gate is 80 percent</td>
+</tr>
+<tr>
+<td>Rust</td>
+<td>154,915 lines in 554 files</td>
+<td><code>crates/**/*.rs</code>, tests and build scripts included</td>
+</tr>
+</tbody>
+</table>
+<h2 id="standards">Standards</h2>
+<p>Every standard SRS §1.4 marks mandatory, from its record in <code>data/standards/</code> and its
+tracker: the state its audit found, the gaps open (status <em>Open</em> or <em>In PR #N</em>) and all
+its gaps, which include those recorded for a later release, never counted as open. A standard mandatory
+from a later release shows no state badge until that release is current. The map, with
+what the states mean, is <a href="standards.html">Standards</a>.</p>
+<table>
+<thead>
+<tr>
+<th>standard</th>
+<th>area</th>
+<th>conformance</th>
+<th>state</th>
+<th>open gaps</th>
+<th>all gaps</th>
+<th>tracker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="std-amd-fnuz.html">AMD FP8 FNUZ</a> CDNA3 ISA guide of 2025-08-05</td>
+<td>Number formats</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>2</td>
+<td>3</td>
+<td><a href="std-amd-fnuz-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-ieee-754.html">IEEE 754</a> 754-2019</td>
+<td>Number formats</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>0</td>
+<td>0</td>
+<td><a href="std-ieee-754-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-ocp-mx.html">OCP MX</a> v1.1.0</td>
+<td>Number formats</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>3</td>
+<td>3</td>
+<td><a href="std-ocp-mx-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-ocp-ofp8.html">OCP OFP8</a> Revision 1.1</td>
+<td>Number formats</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>1</td>
+<td>2</td>
+<td><a href="std-ocp-ofp8-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-quark.html">AMD Quark MXFP4 export</a> as surveyed (313cb0b)</td>
+<td>Model formats</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>0</td>
+<td>3</td>
+<td><a href="std-quark-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-ct.html">compressed-tensors</a> 0.13.0</td>
+<td>Model formats</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>0</td>
+<td>2</td>
+<td><a href="std-ct-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-safetensors.html">safetensors</a> v0.8.0</td>
+<td>Model formats</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>1</td>
+<td>4</td>
+<td><a href="std-safetensors-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-hf-config.html">Transformers config</a> v5.23.0</td>
+<td>Model formats</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>1</td>
+<td>5</td>
+<td><a href="std-hf-config-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-amd-cdna4-isa.html">AMD CDNA4 ISA</a> guide of 2025-08-05</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>3</td>
+<td>3</td>
+<td><a href="std-amd-cdna4-isa-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-amdgpu-abi.html">AMDGPU code object V5 (AMDGPUUsage)</a> code object V5, LLVM 23.1.0 text</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>3</td>
+<td>5</td>
+<td><a href="std-amdgpu-abi-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-llvm-amdgpu-dma.html">AMDGPU DMA Operations</a> LLVM 23.1.0 text</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>3</td>
+<td>3</td>
+<td><a href="std-llvm-amdgpu-dma-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-llvm-amdgpu-intrinsics.html">AMDGPU intrinsics (IntrinsicsAMDGPU.td)</a> LLVM 23.1.0 text</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>2</td>
+<td>3</td>
+<td><a href="std-llvm-amdgpu-intrinsics-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-llvm.html">LLVM</a> 23.1.x</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>1</td>
+<td>5</td>
+<td><a href="std-llvm-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-mlir.html">MLIR</a> LLVM 23 (23.1.x)</td>
+<td>Compiler and code generation</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>2</td>
+<td>4</td>
+<td><a href="std-mlir-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-amd-acc.html">AMD Instinct system acceptance guides</a> latest, accessed 2026-11-15</td>
+<td>Runtime</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>1</td>
+<td>2</td>
+<td><a href="std-amd-acc-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-amd-smi.html">AMD SMI</a> docs-7.2.4 (amdsmi.h at rocm-7.2.4)</td>
+<td>Runtime</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>2</td>
+<td>3</td>
+<td><a href="std-amd-smi-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-hip-env.html">HIP and ROCm environment variables</a> docs-7.2.4</td>
+<td>Runtime</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>2</td>
+<td>2</td>
+<td><a href="std-hip-env-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-hip-mem.html">HIP memory management how-to</a> docs-7.2.4</td>
+<td>Runtime</td>
+<td>mandatory R1</td>
+<td><span class="state-no">missing</span></td>
+<td>1</td>
+<td>5</td>
+<td><a href="std-hip-mem-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-hip.html">HIP runtime API</a> HIP runtime major 7 (ROCm 7.2.4 reference; verified on ROCm 10.1)</td>
+<td>Runtime</td>
+<td>mandatory R1</td>
+<td><span class="state-part">partly works</span></td>
+<td>1</td>
+<td>13</td>
+<td><a href="std-hip-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-fips-180-4.html">FIPS PUB 180-4 Secure Hash Standard (SHA-256)</a> 180-4</td>
+<td>Data and integrity</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>0</td>
+<td>2</td>
+<td><a href="std-fips-180-4-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-iso-8601.html">ISO 8601-1 Date and time (RFC 3339 profile)</a> ISO 8601-1:2019 with Amd 1:2022</td>
+<td>Data and integrity</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>2</td>
+<td>3</td>
+<td><a href="std-iso-8601-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-rfc-8259.html">RFC 8259 JSON</a> RFC 8259 (STD 90)</td>
+<td>Data and integrity</td>
+<td>mandatory R1</td>
+<td><span class="state-ok">works</span></td>
+<td>0</td>
+<td>2</td>
+<td><a href="std-rfc-8259-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-hf-tokenizer.html">Tokenizers</a> v0.23.3</td>
+<td>Model formats</td>
+<td>mandatory R2</td>
+<td>later release (R2)</td>
+<td>0</td>
+<td>2</td>
+<td><a href="std-hf-tokenizer-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-spir-v.html">SPIR-V</a> 1.6 Revision 8</td>
+<td>Compiler and code generation</td>
+<td>mandatory R2</td>
+<td>later release (R2)</td>
+<td>0</td>
+<td>3</td>
+<td><a href="std-spir-v-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-rccl.html">RCCL</a> RCCL of the HIP 7 install (RCCL 2.27.7 reference)</td>
+<td>Runtime</td>
+<td>mandatory R2</td>
+<td>later release (R2)</td>
+<td>0</td>
+<td>6</td>
+<td><a href="std-rccl-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-vulkan.html">Vulkan</a> 1.4.368 text; no minimum core version (OI-016)</td>
+<td>Runtime</td>
+<td>mandatory R2</td>
+<td>later release (R2)</td>
+<td>1</td>
+<td>5</td>
+<td><a href="std-vulkan-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-peft.html">PEFT</a> v0.21.3</td>
+<td>Model formats</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>1</td>
+<td><a href="std-peft-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-rvv-1.0.html">RISC-V V vector extension</a> 1.0</td>
+<td>Compiler and code generation</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>3</td>
+<td><a href="std-rvv-1.0-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-rfc-9110.html">HTTP RFC 9110 and RFC 9112</a> RFC 9110, RFC 9112</td>
+<td>Serving</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>4</td>
+<td><a href="std-rfc-9110-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-openai-api.html">OpenAI API</a> 2.3.0</td>
+<td>Serving</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>5</td>
+<td><a href="std-openai-api-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-prom-text.html">Prometheus text format</a> 0.0.4</td>
+<td>Serving</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>3</td>
+<td><a href="std-prom-text-tracker.html">tracker</a></td>
+</tr>
+<tr>
+<td><a href="std-sse.html">Server-sent events</a> WHATWG 2026-11-13</td>
+<td>Serving</td>
+<td>mandatory R3</td>
+<td>later release (R3)</td>
+<td>0</td>
+<td>3</td>
+<td><a href="std-sse-tracker.html">tracker</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="release-1-issues">Release 1 issues</h2>
+<p>The ids are <code>R1-n</code> for <a href="https://github.com/itej89/rustinfer/issues">GitHub issue</a> #n. The status is derived, not typed: <strong>Done</strong> with its
+date when the issue is closed; <strong>In review</strong> with the date its pull request opened; <strong>In
+progress</strong> when its branch exists on GitHub; otherwise <strong>Not started</strong>, with <code>waits on #n</code> for
+each blocker still open. The bold <strong>Open</strong> marks the item everything else waits on: the first
+open issue in dependency order whose blockers are all closed. Bodies are drafted in
+<code>docs/planning/issues/</code> in the tree.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>work</th>
+<th>required by</th>
+<th>status</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1-2</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/2">Project scaffold: workspace, core, CLI, CI, mandatory files</a></td>
+<td>—</td>
+<td>Done 2026-11-12</td>
+<td>Codeberg PR #17 <code>feat/2-project-scaffold</code> merged 2026-11-12, before the move (not GitHub PR #17)</td>
+</tr>
+<tr>
+<td>R1-3</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/3">Model IR: typed SSA graph, shapes, dtypes, validation, JSON round-trip</a></td>
+<td>#2</td>
+<td>Done 2026-11-12</td>
+<td>Codeberg PR #19 <code>feat/3-model-ir</code> merged 2026-11-12, before the move (not GitHub PR #19)</td>
+</tr>
+<tr>
+<td>R1-4</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/4">Artifact format: <code>.rie</code> header, section table, hash, bounded reader, writer</a></td>
+<td>#3</td>
+<td>Done 2026-11-12</td>
+<td>Codeberg PR #21 <code>feat/4-artifact-format</code> merged 2026-11-12, before the move (not GitHub PR #21)</td>
+</tr>
+<tr>
+<td>R1-5</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/5">Target abstraction and CPU reference target</a></td>
+<td>#3</td>
+<td>Done 2026-11-12</td>
+<td>branch <code>feat/5-target-and-cpu-reference</code>; <a href="https://github.com/itej89/rustinfer/pull/21">PR #21</a> → <code>main</code>, opened 2026-11-12, merged 2026-11-12</td>
+</tr>
+<tr>
+<td>R1-6</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/6">Frontend: LLaMA family from a Hugging Face checkpoint</a></td>
+<td>#3</td>
+<td>Done 2026-11-12</td>
+<td>branch <code>feat/6-frontend-llama</code>; <a href="https://github.com/itej89/rustinfer/pull/24">PR #24</a> → <code>main</code>, opened 2026-11-12, merged 2026-11-13</td>
+</tr>
+<tr>
+<td>R1-7</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/7">Kernel IR dialect and the MLIR/LLVM link</a></td>
+<td>#2</td>
+<td>Done 2026-11-13</td>
+<td>branch <code>feat/7-kernel-ir-and-mlir-link</code>; <a href="https://github.com/itej89/rustinfer/pull/25">PR #25</a> → <code>main</code>, opened 2026-11-12, merged 2026-11-13; writes ADR-007 (OI-009); needs a self-hosted runner for LLVM</td>
+</tr>
+<tr>
+<td>R1-8</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/8">AMD lowering: gpu → rocdl → AMDGPU with MFMA and LDS</a></td>
+<td>#7</td>
+<td>Done 2026-11-15</td>
+<td>branch <code>feat/8-amd-lowering</code>; <a href="https://github.com/itej89/rustinfer/pull/44">PR #44</a> → <code>main</code>, opened 2026-11-13, merged 2026-11-15</td>
+</tr>
+<tr>
+<td>R1-9</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/9">R1 kernel generators, catalog and autotuner (<code>tune</code> command)</a></td>
+<td>#5, #8</td>
+<td><strong>In progress</strong></td>
+<td>branch <code>feat/9-generators-autotuner</code>; <a href="https://github.com/itej89/rustinfer/pull/74">PR #74</a> → <code>main</code>, opened 2026-11-15, merged 2026-11-15; needs an MI300X or MI355X on the bench (OI-008)</td>
+</tr>
+<tr>
+<td>R1-10</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/10">Graph compiler: pass pipeline from Model IR to Plan</a></td>
+<td>#3, #5, #9, #64</td>
+<td>Done 2026-11-19</td>
+<td>branch <code>feat/10-graph-compiler</code>; <a href="https://github.com/itej89/rustinfer/pull/75">PR #75</a> → <code>main</code>, opened 2026-11-15, merged 2026-11-19</td>
+</tr>
+<tr>
+<td>R1-11</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/11"><code>build</code> and <code>inspect</code> commands</a></td>
+<td>#4, #6, #10</td>
+<td>Done 2026-11-19</td>
+<td>branch <code>feat/11-build-inspect</code>; <a href="https://github.com/itej89/rustinfer/pull/73">PR #73</a> → <code>main</code>, opened 2026-11-15, merged 2026-11-19</td>
+</tr>
+<tr>
+<td>R1-12</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/12">ROCm target: HIP binding behind one FFI module</a></td>
+<td>#5</td>
+<td>Done 2026-11-15</td>
+<td>branch <code>feat/12-rocm-target</code>; <a href="https://github.com/itej89/rustinfer/pull/58">PR #58</a> → <code>main</code>, opened 2026-11-14, merged 2026-11-15; needs an MI300X or MI355X on the bench (OI-008)</td>
+</tr>
+<tr>
+<td>R1-13</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/13">Executor: static batch, KV block pool, sampler</a></td>
+<td>#10, #12, #18</td>
+<td>In progress</td>
+<td>branch <code>feat/13-abi-binding</code>; <a href="https://github.com/itej89/rustinfer/pull/116">PR #116</a> → <code>main</code>, opened 2026-11-15, merged 2026-11-19</td>
+</tr>
+<tr>
+<td>R1-14</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/14"><code>run</code> command end to end</a></td>
+<td>#11, #13</td>
+<td>In progress; waits on #13</td>
+<td>branch <code>feat/14-run-e2e</code>; <a href="https://github.com/itej89/rustinfer/pull/119">PR #119</a> → <code>main</code>, opened 2026-11-15, merged 2026-11-19; closes the Epic's acceptance criteria</td>
+</tr>
+<tr>
+<td>R1-15</td>
+<td><a href="https://github.com/itej89/rustinfer/issues/15">Planner: topology model and placement interfaces</a></td>
+<td>#3</td>
+<td>Done 2026-11-12</td>
+<td>branch <code>feat/15-planner-interfaces</code>; <a href="https://github.com/itej89/rustinfer/pull/20">PR #20</a> → <code>main</code>, opened 2026-11-12, merged 2026-11-12</td>
+</tr>
+</tbody>
+</table>
+<p>The Epic <a href="https://github.com/itej89/rustinfer/issues/1">#1</a> is <code>open</code> with labels <code>epic</code>, <code>feature</code>; it closes with R1-14.</p>
+<h2 id="pull-requests">Pull requests</h2>
+<p>GitHub's pull requests, then the four merged on Codeberg before the move. The Codeberg numbers
+are history: they are not GitHub pull requests, and GitHub's own numbering restarted after the
+eighteen issues it holds, so GitHub PR #19 (hosting), #20 (planner) and #21 (target) share
+their numbers with Codeberg PR #19 (Model IR) and #21 (artifact) and are different pull requests.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>work</th>
+<th>required by</th>
+<th>status</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR-19</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/19">ci: move hosting to GitHub (ADR-008)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>infra/github-hosting</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-20</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/20">feat(planner): topology model, placement interfaces and the single-device planner (#15)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/15-planner-interfaces</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-21</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/21">feat(target): Target trait family, architecture registry and the CPU reference target (#5)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/5-target-and-cpu-reference</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-22</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/22">docs(readme): link the documentation site</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>docs/readme-docs-link</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-23</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/23">feat(sluice): stream checkpoint weights into device memory from the weight manifest (#18)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/18-sluice-weight-streamer</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-24</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/24">feat(frontend): LLaMA family from a HF checkpoint to Model IR, manifest and identity (#6)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>feat/6-frontend-llama</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-25</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/25">feat(kir): Kernel IR dialect, typed builder and the pinned LLVM 23 MLIR link (#7)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>feat/7-kernel-ir-and-mlir-link</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-28</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/28">docs(srs): v0.3 amendment from the 2026-11-12 reviews (#27)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>docs/27-srs-v0.3</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-29</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/29">fix: conformance defects from the 2026-11-12 review (#27)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>fix/27-conformance</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-30</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/30">refactor: extension seams from the 2026-11-12 review (#27)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>refactor/27-seams</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-32</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/32">feat(mir,planner): placement names devices and tiers, ir_version 2, pinned placement checked at load (#27, ADR-009)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>feat/27-placement-v2</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-33</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/33">refactor(frontend): per-tensor dtype expectations (#27)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>refactor/27-frontend-dtypes</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-40</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/40">docs: GPU test request template and process</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>docs/gpu-test-template</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-41</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/41">docs(srs): v0.4, MXFP4 in Release 1 (ADR-010)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>docs/srs-v0.4-mxfp4</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-42</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/42">feat(mir): grouped rmsnorm, Qwen3 QK norm lowers (#26)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>feat/26-grouped-rmsnorm</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-43</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/43">feat(mir,target): MXFP4 dtypes, mx encoding and the MX conversion oracle (#34)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>feat/34-mxfp4-ir-oracle</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-44</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/44">feat(kc): AMD lowering to gfx942/gfx950 code objects, in-process (#8)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/8-amd-lowering</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-46</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/46">docs(srs): cite the external standards rustinfer depends on</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-13</td>
+<td><code>docs/srs-standards</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-47</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/47">feat: MXFP4 in the weight manifest and Sluice, packed weights streamed with their scales (#39)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>feat/39-mxfp4-sluice</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-48</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/48">feat: KV cache dtypes bf16, fp8 and MXFP4 with --kv-dtype (#37)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>feat/37-kv-dtypes</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-49</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/49">feat(frontend): import Quark and compressed-tensors MXFP4 checkpoints (#35)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>feat/35-mxfp4-checkpoints</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-50</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/50">docs(srs): mark each standard mandatory or informative</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>docs/srs-standards-conformance</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-52</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/52">fix: standards audit defects on main (#51)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>fix/51-standards-defects</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-53</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/53">docs(srs): the build may read weights; the artifact binds to the content it used</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>docs/srs-build-reads-weights</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-55</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/55">fix: refuse partial_rotary_factor ≠ 1.0 (HFC-5); add OCP E5M2 (fp8_e5m2) with CPU reference (#51)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>fix/51-e5m2-partial-rotary</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-56</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/56">docs(uml): close the four unclosed Mermaid code blocks in the sequence diagrams</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>docs/uml-close-fences</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-57</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/57">fix: U8 as raw bytes, exact used-range digests, empty tensors (#51 SHA256-2, ST-3, ST-4)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-14</td>
+<td><code>fix/51-used-range-u8-empty</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-58</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/58">feat(target-rocm): HIP binding behind one ffi module (#12)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/12-rocm-target</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-60</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/60">build: pin the Rust toolchain to 1.100.0 (owner decision)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>infra/pin-rust-toolchain</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-62</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/62">docs(srs): support HIP by runtime major version, ROCm 10.0 verified</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>docs/srs-hip-runtime-major</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-63</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/63">feat(kc): generator framework, GEMM generator and the Kernel IR interpreter (#9, 9a)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/9-generators-autotuner</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-65</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/65">docs: ADR-011, a smart compiler instead of hand-tuned kernels; architecture-agnostic generators</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>docs/adr-011-ninja-compiler</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-66</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/66">fix(rocm): no assembly in the ROCm tests; every test kernel comes from the compiler (ADR-011)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>fix/no-assembly-in-rocm-tests</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-67</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/67">feat(kc): the remaining R1 generators (#9, 9b)</a></td>
+<td>PR-63 merged first (stacked)</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/9b-generators</code> → <code>feat/9-generators-autotuner</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-68</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/68">feat(kc,cli): tuning catalog, autotuner and rustinfer tune (#9, 9c)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-16</td>
+<td><code>feat/9c-catalog-tune</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-71</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/71">docs(srs): v0.4.12, gfx942 hardware verification does not gate R1</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>docs/srs-gfx942-not-r1-gate</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-72</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/72">feat(runtime): executor with static batches, KV block pool and sampler (#13)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/13-executor-static-batch</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-73</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/73">feat(cli): build and inspect commands, first-load build (#11)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/11-build-inspect</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-74</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/74">feat(kc): the remaining R1 generators, onto main (#9, 9b; PR #67)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>feat/9-generators-autotuner</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-75</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/75">feat(compiler): the pass pipeline from Model IR to Plan (#10)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/10-graph-compiler</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-76</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/76">feat(compiler,artifact,sluice): build --precision mxfp4 by RTN, --activations (#36)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/36-mxfp4-precision</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-77</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/77">feat(kc): optimisation passes, capability model, tiles over lanes and the generator crate (#64)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/64-kc-passes</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-79</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/79">docs(planning): AMD gfx942/gfx950 feature inventory, SRS amendment and issue plan</a></td>
+<td>a reviewer's sign-off</td>
+<td>Closed closed</td>
+<td><code>docs/amd-feature-inventory</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-80</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/80">docs(srs): v0.5, AMD hardware and runtime features (gfx942/gfx950 inventory)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-15</td>
+<td><code>docs/srs-v0.5-amd-features</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-110</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/110">feat(target,rocm,sluice): pinned host staging and copy classes (#93)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/93-pinned-staging</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-112</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/112">feat(target,rocm,planner,runtime): the ROCm device description (#92)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-16</td>
+<td><code>feat/92-rocm-device-description</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-113</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/113">feat(sluice): Sluice on pinned staging with asynchronous uploads (#94)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-15</td>
+<td><code>feat/94-sluice-pinned</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-115</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/115">feat(rocm): priority streams and the HIP and HSA environment in the manifest (#95)</a></td>
+<td>PR-113 merged first (stacked)</td>
+<td>In review 2026-11-15</td>
+<td><code>feat/95-priority-streams</code> → <code>feat/94-sluice-pinned</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-116</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/116">feat(runtime): bind every launch from the Plan's ABI arguments (#13)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/13-abi-binding</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-118</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/118">feat: MXFP4 on AMD: W4A16 GEMM, opt-in gfx950 scaled MFMA, MXFP4 KV, MX transforms (#38)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-15</td>
+<td><code>feat/38-mxfp4-amd</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-119</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/119">feat(cli): rustinfer run end to end, tune --model, the manifest's environment and device (#14)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/14-run-e2e</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-122</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/122">ci: run on the owner's self-hosted runner (ADR-008 amendment)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-16</td>
+<td><code>ci/self-hosted-runner</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-125</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/125">feat(cli): tune on several GPUs at once, tune --devices (#123)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-17</td>
+<td><code>feat/123-parallel-tune</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-126</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/126">fix(cli): the tuner reaches the device it opened for every access (#123, GPU test #124)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-17</td>
+<td><code>fix/124-tune-device-ordinal</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-128</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/128">feat(kc): catalog entries bound to their capability description; generator version pins (#81)</a></td>
+<td>PR-77 merged first (stacked)</td>
+<td>Merged 2026-11-18</td>
+<td><code>feat/81-catalog-fingerprint</code> → <code>feat/64-kc-passes</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-129</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/129">docs(srs): v0.5.2, parity with AITER is the floor; the pinned LLVM may be a fork (ADR-007)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-18</td>
+<td><code>docs/srs-aiter-parity-llvm-fork</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-131</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/131">feat(kc): catalog lookup refuses entries validated on other device facts (#81)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/81-device-facts-check</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-132</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/132">docs(planning): issues #121, #123, #127 and the epic checklist</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-18</td>
+<td><code>docs/planning-121-123-127</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-133</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/133">docs(observability): the R1 log events by component and stage (RI-OBS-004)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-18</td>
+<td><code>docs/observability-inventory</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-134</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/134">feat(kc): split-K GEMM over a grid axis with a deterministic combine stage (#90)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-18</td>
+<td><code>feat/90-split-k</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-135</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/135">feat(kc): kernel-attributes, the code-generation attribute settings (#85, RI-KC-022)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/85-kernel-attributes</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-137</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/137">feat(runtime): target-independent profiler, zero cost when off (#127)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-18</td>
+<td><code>feat/127-profiler</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-139</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/139">feat(kc): uniform reads on the scalar path (#86, RI-KC-023)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/86-uniform-scalar</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-141</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/141">feat(kc): attention prefill diagonal-only masking and log-sum-exp output (#88)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-18</td>
+<td><code>feat/88-prefill-refinements</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-143</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/143">feat(kc): f32 division by the native reciprocal, exp as exp2 (#84 part, RI-KC-021)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>feat/84-vector-unit</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-145</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/145">test(kc): widen the slow-variant timing margin of the tuner test</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>fix/tune-timeout-margin</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-147</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/147">fix(tune): time kernels from graph replays, not host-issued launches (#146)</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>fix/146-graph-timing</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-149</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/149">test(rocm): spin_fill runs 256 rounds, over three times the 10 ms floor</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>fix/spin-fill-rounds</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-154</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/154">perf(kc): the dot form of the decode GEMM, a register pipeline, streamed weight rows (#150)</a></td>
+<td>PR-134 merged first (stacked)</td>
+<td>In review 2026-11-19</td>
+<td><code>perf/150-decode-gemm</code> → <code>feat/90-split-k</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-156</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/156">perf(generators): the sampler in sweeps over all lanes, one reduction each (#152)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-19</td>
+<td><code>perf/152-sampler</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-159</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/159">perf(generators,kc): rmsnorm in one pass, line views and DPP butterflies in the lowering (#153)</a></td>
+<td>a reviewer's sign-off</td>
+<td>In review 2026-11-19</td>
+<td><code>perf/153-rmsnorm</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-160</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/160">test(sluice): overlap test's device stages dominate a stalled read stage</a></td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-19</td>
+<td><code>fix/sluice-overlap-delay</code> → <code>main</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-162</td>
+<td><a href="https://github.com/itej89/rustinfer/pull/162">perf(kc): the m=32 GEMM streams its weight: the direct-to-LDS mover, a ring of 4, each tile copied once (#151)</a></td>
+<td>PR-154 merged first (stacked)</td>
+<td>In review 2026-11-19</td>
+<td><code>perf/151-gemm-m32</code> → <code>perf/150-decode-gemm</code>; mergeable</td>
+</tr>
+<tr>
+<td>PR-16</td>
+<td>SRS v0.2 and ADR-001 to ADR-006</td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>docs/1-srs-rustinfer</code> → <code>main</code>; merged on Codeberg before the move; the branch did not move</td>
+</tr>
+<tr>
+<td>PR-17</td>
+<td>Project scaffold: workspace, core, CLI, CI, mandatory files (#2)</td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/2-project-scaffold</code> → <code>main</code>; merged on Codeberg before the move; the branch did not move</td>
+</tr>
+<tr>
+<td>PR-19</td>
+<td>Model IR: typed graph, validator, canonical JSON (#3)</td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/3-model-ir</code> → <code>main</code>; merged on Codeberg before the move; the branch did not move</td>
+</tr>
+<tr>
+<td>PR-21</td>
+<td>The .rie engine artifact, verifying reader and atomic writer (#4)</td>
+<td>a reviewer's sign-off</td>
+<td>Merged 2026-11-12</td>
+<td><code>feat/4-artifact-format</code> → <code>main</code>; merged on Codeberg before the move; the branch did not move</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ci-runs">CI runs</h2>
+<p>The most recent runs of <code>ci.yml</code> on GitHub Actions, newest first. <code>queued</code> means waiting for a
+hosted runner. GitHub's run numbers restart at 1: the Codeberg history, runs 1 and 2 of
+2026-11-11 cancelled unanswered (<code>ubuntu-latest</code>, a label Codeberg never served), runs 3 to 6
+each failing on one Codeberg-specific rule recorded in ADR-004, run 7 the first green run, runs 8
+to 11 green on Codeberg PRs #17 and #19 and <code>main</code>, did not move and is gone with the Codeberg repository
+(<a href="build-steps.html">build steps</a>).</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>for</th>
+<th>commit</th>
+<th>event</th>
+<th>state</th>
+<th>when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44537399170">328</a></td>
+<td>main</td>
+<td><code>53af206</code></td>
+<td>push</td>
+<td><strong>in_progress</strong></td>
+<td>2026-11-19 13:50</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44537328188">327</a></td>
+<td>main</td>
+<td><code>31db828</code></td>
+<td>push</td>
+<td><strong>cancelled</strong></td>
+<td>2026-11-19 13:49</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44537297672">326</a></td>
+<td>main</td>
+<td><code>56067f0</code></td>
+<td>push</td>
+<td><strong>cancelled</strong></td>
+<td>2026-11-19 13:49</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44526572419">325</a></td>
+<td>perf/151-gemm-m32</td>
+<td><code>8293c92</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 12:43</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44519896059">324</a></td>
+<td>perf/150-decode-gemm</td>
+<td><code>ab66e3a</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 12:00</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44519418403">323</a></td>
+<td>feat/14-run-e2e</td>
+<td><code>ea522c7</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:57</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44517197411">322</a></td>
+<td>feat/36-mxfp4-precision</td>
+<td><code>8de0000</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:42</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44515809222">321</a></td>
+<td>feat/13-abi-binding</td>
+<td><code>91494f4</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:32</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44514409086">320</a></td>
+<td>feat/11-build-inspect</td>
+<td><code>9a21448</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:23</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44513520584">319</a></td>
+<td>perf/151-gemm-m32</td>
+<td><code>4a5f595</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:17</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44512804641">318</a></td>
+<td>feat/10-graph-compiler</td>
+<td><code>bedf40a</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:13</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/actions/runs/44511661874">317</a></td>
+<td>feat/90-split-k</td>
+<td><code>a735c42</code></td>
+<td>pull_request</td>
+<td><strong>success</strong></td>
+<td>2026-11-19 11:05</td>
+</tr>
+</tbody>
+</table>
+<h2 id="branches-on-github">Branches on GitHub</h2>
+<table>
+<thead>
+<tr>
+<th>branch</th>
+<th>holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/ci/self-hosted-runner"><code>ci/self-hosted-runner</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/27-srs-v0.3"><code>docs/27-srs-v0.3</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/adr-011-ninja-compiler"><code>docs/adr-011-ninja-compiler</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/amd-feature-inventory"><code>docs/amd-feature-inventory</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/gpu-test-template"><code>docs/gpu-test-template</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/readme-docs-link"><code>docs/readme-docs-link</code></a></td>
+<td>the README's link to this site, GitHub PR #22</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-build-reads-weights"><code>docs/srs-build-reads-weights</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-gfx942-not-r1-gate"><code>docs/srs-gfx942-not-r1-gate</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-hip-runtime-major"><code>docs/srs-hip-runtime-major</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-standards"><code>docs/srs-standards</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-standards-conformance"><code>docs/srs-standards-conformance</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-v0.4-mxfp4"><code>docs/srs-v0.4-mxfp4</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/srs-v0.5-amd-features"><code>docs/srs-v0.5-amd-features</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/docs/uml-close-fences"><code>docs/uml-close-fences</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/10-graph-compiler"><code>feat/10-graph-compiler</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/10-plan-abi-for-13"><code>feat/10-plan-abi-for-13</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/11-build-inspect"><code>feat/11-build-inspect</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/12-rocm-target"><code>feat/12-rocm-target</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/123-parallel-tune"><code>feat/123-parallel-tune</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/127-profiler"><code>feat/127-profiler</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/13-abi-binding"><code>feat/13-abi-binding</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/13-executor-static-batch"><code>feat/13-executor-static-batch</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/14-run-e2e"><code>feat/14-run-e2e</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/15-planner-interfaces"><code>feat/15-planner-interfaces</code></a></td>
+<td>the planner's topology model, placement and <code>Planner</code> trait (#15), merged as GitHub PR #20 (d886a3c)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/18-sluice-weight-streamer"><code>feat/18-sluice-weight-streamer</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/26-grouped-rmsnorm"><code>feat/26-grouped-rmsnorm</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/27-placement-v2"><code>feat/27-placement-v2</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/34-mxfp4-ir-oracle"><code>feat/34-mxfp4-ir-oracle</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/35-mxfp4-checkpoints"><code>feat/35-mxfp4-checkpoints</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/36-mxfp4-precision"><code>feat/36-mxfp4-precision</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/37-kv-dtypes"><code>feat/37-kv-dtypes</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/38-mxfp4-amd"><code>feat/38-mxfp4-amd</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/39-mxfp4-sluice"><code>feat/39-mxfp4-sluice</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/5-target-and-cpu-reference"><code>feat/5-target-and-cpu-reference</code></a></td>
+<td>the <code>Target</code> trait family, the registry and the CPU reference target (#5), merged as GitHub PR #21 (f039b4d)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/6-frontend-llama"><code>feat/6-frontend-llama</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/64-kc-passes"><code>feat/64-kc-passes</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/7-kernel-ir-and-mlir-link"><code>feat/7-kernel-ir-and-mlir-link</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/8-amd-lowering"><code>feat/8-amd-lowering</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/81-catalog-fingerprint"><code>feat/81-catalog-fingerprint</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/81-device-facts-check"><code>feat/81-device-facts-check</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/84-vector-unit"><code>feat/84-vector-unit</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/85-kernel-attributes"><code>feat/85-kernel-attributes</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/86-uniform-scalar"><code>feat/86-uniform-scalar</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/88-prefill-refinements"><code>feat/88-prefill-refinements</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/9-generators-autotuner"><code>feat/9-generators-autotuner</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/90-split-k"><code>feat/90-split-k</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/92-rocm-device-description"><code>feat/92-rocm-device-description</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/93-pinned-staging"><code>feat/93-pinned-staging</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/94-sluice-pinned"><code>feat/94-sluice-pinned</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/95-priority-streams"><code>feat/95-priority-streams</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/9b-generators"><code>feat/9b-generators</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/feat/9c-catalog-tune"><code>feat/9c-catalog-tune</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/124-tune-device-ordinal"><code>fix/124-tune-device-ordinal</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/146-graph-timing"><code>fix/146-graph-timing</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/27-conformance"><code>fix/27-conformance</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/51-e5m2-partial-rotary"><code>fix/51-e5m2-partial-rotary</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/51-standards-defects"><code>fix/51-standards-defects</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/51-used-range-u8-empty"><code>fix/51-used-range-u8-empty</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/no-assembly-in-rocm-tests"><code>fix/no-assembly-in-rocm-tests</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/sluice-overlap-delay"><code>fix/sluice-overlap-delay</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/spin-fill-rounds"><code>fix/spin-fill-rounds</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/fix/tune-timeout-margin"><code>fix/tune-timeout-margin</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/gpu/152-sampler-with-146"><code>gpu/152-sampler-with-146</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/gpu/153-rmsnorm-with-146"><code>gpu/153-rmsnorm-with-146</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/infra/github-hosting"><code>infra/github-hosting</code></a></td>
+<td>ADR-008 and the CI retarget to GitHub, merged as GitHub PR #19 (9d448ce)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/infra/pin-rust-toolchain"><code>infra/pin-rust-toolchain</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/main"><code>main</code></a></td>
+<td>the approved SRS v0.2, ADR-001 to ADR-006 and ADR-008, the fourteen-crate workspace, the Model IR, the artifact crate, the planner interfaces and the target abstraction with the CPU reference (Codeberg PRs #16, #17, #19, #21; GitHub PRs #19, #20, #21)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/perf/150-decode-gemm"><code>perf/150-decode-gemm</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/perf/151-gemm-m32"><code>perf/151-gemm-m32</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/perf/152-sampler"><code>perf/152-sampler</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/perf/153-rmsnorm"><code>perf/153-rmsnorm</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/refactor/27-frontend-dtypes"><code>refactor/27-frontend-dtypes</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/refactor/27-seams"><code>refactor/27-seams</code></a></td>
+<td>see its issue</td>
+</tr>
+<tr>
+<td><a href="https://github.com/itej89/rustinfer/tree/test/151-graph-timing"><code>test/151-graph-timing</code></a></td>
+<td>see its issue</td>
+</tr>
+</tbody>
+</table>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#headline">Headline</a></li><li><a href="#standards">Standards</a></li><li><a href="#release-1-issues">Release 1 issues</a></li><li><a href="#pull-requests">Pull requests</a></li><li><a href="#ci-runs">CI runs</a></li><li><a href="#branches-on-github">Branches on GitHub</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>53af206 2026-11-19</code>, branch <code>detached</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise. GPU results are the owner's hardware runs, cited by issue (<a href="https://github.com/itej89/rustinfer/issues/54">#54</a>); this site itself runs nothing.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

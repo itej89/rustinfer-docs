@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>safetensors v0.8.0 audit — rustinfer</title>
+<meta name="description" content="The audit of rustinfer&#x27;s safetensors header reader against the v0.8.0 format, re-audited 2026-11-14 at 99c1ec7: U8 read as raw bytes and typed only by role, empty and 0-rank tensors tested; ST-1 open.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Introduction</summary><ul><li><a href="index.html">rustinfer</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMD CDNA4 ISA (5 August 2025)</summary><ul><li><a href="std-amd-cdna4-isa.html">Overview</a></li><li><a href="std-amd-cdna4-isa-requirements.html">Requirements</a></li><li><a href="std-amd-cdna4-isa-audit.html">Audit</a></li><li><a href="std-amd-cdna4-isa-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU code object V5</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU DMA Operations (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-dma.html">Overview</a></li><li><a href="std-llvm-amdgpu-dma-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-dma-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-dma-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU intrinsics (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-intrinsics.html">Overview</a></li><li><a href="std-llvm-amdgpu-intrinsics-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-intrinsics-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-intrinsics-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub" open><summary>safetensors v0.8.0</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html" class="here">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Number formats</summary><ul><li><details class="nav-sub"><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Runtime</summary><ul><li><details class="nav-sub"><summary>AMD Instinct system acceptance (accessed 2026-11-15)</summary><ul><li><a href="std-amd-acc.html">Overview</a></li><li><a href="std-amd-acc-requirements.html">Requirements</a></li><li><a href="std-amd-acc-audit.html">Audit</a></li><li><a href="std-amd-acc-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMD SMI 7.2.4</summary><ul><li><a href="std-amd-smi.html">Overview</a></li><li><a href="std-amd-smi-requirements.html">Requirements</a></li><li><a href="std-amd-smi-audit.html">Audit</a></li><li><a href="std-amd-smi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP and ROCm environment variables 7.2.4</summary><ul><li><a href="std-hip-env.html">Overview</a></li><li><a href="std-hip-env-requirements.html">Requirements</a></li><li><a href="std-hip-env-audit.html">Audit</a></li><li><a href="std-hip-env-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP memory management 7.2.4</summary><ul><li><a href="std-hip-mem.html">Overview</a></li><li><a href="std-hip-mem-requirements.html">Requirements</a></li><li><a href="std-hip-mem-audit.html">Audit</a></li><li><a href="std-hip-mem-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li><li><a href="profiler.html">Profiler (design)</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="safetensors-v080-audit">safetensors v0.8.0 audit</h1>
+<p><strong>Re-audit of 2026-11-14 at <code>99c1ec7</code></strong>, against the <a href="std-safetensors-requirements.html">requirements</a>,
+on origin/main after PR #57 (issue #51, merge <code>99c1ec7</code>: <code>U8</code> read as raw bytes,
+<code>StoredDtype::U8</code>, and typed only by role; empty and 0-rank tensor tests). The
+reader changed in that PR, so every <code>safetensors.rs</code> line below is read at
+<code>99c1ec7</code>. The earlier re-audit that day was on <code>8c7d47e</code>, after PRs #55, #53 (<code>8d58ad6</code>, SRS v0.4.7: the
+build may read weight bytes and binds the artifact to the ranges it used) and</p>
+<h1 id="49-8c7d47e-quark-and-compressed-tensors-mxfp4-import-the-first-u8">49 (<code>8c7d47e</code>, Quark and compressed-tensors MXFP4 import, the first <code>U8</code></h1>
+<p>consumer) merged. History: first audit 2026-11-13 on <code>ccf02b3</code>; re-audited on
+<code>b99720a</code> after PR #52 (duplicate keys).</p>
+<p><strong>Method.</strong> Read <code>crates/rustinfer-artifact/src/safetensors.rs</code> and its
+callers in the frontend and Sluice, and the tests that exercise the reader:
+<code>crates/rustinfer-artifact/tests/safetensors.rs</code>,
+<code>crates/rustinfer-artifact/tests/mx_manifest.rs</code>,
+<code>crates/rustinfer-artifact/tests/safetensors_duplicates.rs</code> (PR #52),
+<code>crates/rustinfer-frontend/tests/safetensors.rs</code> and
+<code>crates/rustinfer-sluice/tests/refusal.rs</code>; for the 2026-11-14 re-audit also
+the build's reads of weight bytes by header range
+(<code>crates/rustinfer-frontend/src/kv_scales.rs</code>, <code>src/mapping.rs</code>), Sluice's
+used-range check (<code>crates/rustinfer-sluice/src/checkpoint.rs</code>) and the tests
+<code>crates/rustinfer-frontend/tests/mxfp4.rs</code>, <code>mxfp4_audit.rs</code>,
+<code>mxfp4_kv_fp8.rs</code> and <code>crates/rustinfer-sluice/tests/used_ranges.rs</code>; for the
+<code>99c1ec7</code> re-audit, the diff of PR #57 in the reader, <code>mapping.rs</code>, <code>kv_scales.rs</code>
+and <code>crates/rustinfer-sluice/src/plan.rs</code>, and its tests in
+<code>crates/rustinfer-artifact/tests/safetensors.rs</code>, <code>crates/rustinfer-frontend/tests/mapping.rs</code>,
+<code>mxfp4_audit.rs</code>, <code>crates/rustinfer-sluice/tests/mxfp4.rs</code> and <code>refusal.rs</code>. Compared each check with the
+README and with the reference reader's <code>read_metadata</code> and
+<code>Metadata::validate</code>. One probe was run: a scratch program against
+<code>serde_json</code> 1.0.154, the version in the workspace <code>Cargo.lock</code>, to see how
+the reader's JSON step treats a duplicate key and leading whitespace. The
+rustinfer test suite was not run; results are as the tests are written.</p>
+<h2 id="header-layout">Header layout</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ST-R1</td>
+<td><strong>conforms</strong></td>
+<td><code>header_end</code> reads the 8-byte prefix as <code>u64::from_le_bytes</code> (<code>header_end</code>, <code>safetensors.rs:362-367</code>). A short file is malformed: <code>test_short_prefix_is_malformed</code> (<code>crates/rustinfer-frontend/tests/safetensors.rs:142</code>), <code>test_bounds_and_malformed_headers</code> (<code>crates/rustinfer-artifact/tests/safetensors.rs:285</code>).</td>
+</tr>
+<tr>
+<td>ST-R2</td>
+<td><strong>conforms</strong></td>
+<td>Exactly <code>N</code> bytes are read (<code>read_prefix</code>, 285-301) and decoded as UTF-8 then JSON with unique keys (<code>parse_object</code>, 621-626; <code>parse_unique</code>, 641-649). <code>test_header_must_be_a_json_object</code> (<code>frontend/tests/safetensors.rs:199</code>).</td>
+</tr>
+<tr>
+<td>ST-R3</td>
+<td><strong>missing</strong> (ST-1)</td>
+<td><code>serde_json::from_str</code> accepts leading whitespace; the probe parsed <code>"  {}  "</code> as an empty object. No check that the first header byte is <code>{</code>. The reference reader does not check it either.</td>
+</tr>
+<tr>
+<td>ST-R4</td>
+<td><strong>conforms</strong></td>
+<td>Trailing whitespace is accepted by <code>serde_json</code>; a header whose length is not a multiple of eight passes: <code>test_unpadded_header_is_accepted_and_a_truncated_prefix_is_refused</code> (<code>crates/rustinfer-sluice/tests/refusal.rs:358</code>). The reader also accepts tab, CR and LF as padding, which is more than the README's 0x20.</td>
+</tr>
+<tr>
+<td>ST-R5</td>
+<td><strong>conforms</strong></td>
+<td>Each entry must be an object with exactly <code>dtype</code>, <code>shape</code>, <code>data_offsets</code>; a missing, mistyped or extra key is a schema fault naming the tensor and field (<code>parse_entry</code>, 469-486). <code>test_schema_faults_name_the_tensor_and_field</code> (<code>artifact/tests/safetensors.rs:63</code>), <code>test_malformed_entries_name_the_tensor_and_field</code> (<code>frontend/tests/safetensors.rs:218</code>). Refusing an extra key is stricter than the reference reader.</td>
+</tr>
+<tr>
+<td>ST-R6</td>
+<td><strong>conforms</strong></td>
+<td>Offsets are relative to the data region and turned into absolute byte ranges (<code>parse_offsets</code>, 569-589). <code>test_header_parses_into_typed_entries_and_identity</code> (<code>artifact/tests/safetensors.rs:36</code>), <code>test_offsets_are_checked_against_the_data_region_and_shape</code> (<code>frontend/tests/safetensors.rs:267</code>). Since <code>8c7d47e</code> the build reads bytes by these ranges: each checkpoint KV scale tensor is read at its header <code>byte_range</code> (<code>read_range</code>, <code>crates/rustinfer-frontend/src/kv_scales.rs:223-240</code>, exactly the range since PR #57) and recorded as a used range, which Sluice re-reads and re-hashes at load (<code>observe_range</code>, <code>crates/rustinfer-sluice/src/checkpoint.rs:79-99</code>); <code>test_kv_scale_ranges_are_recorded_in_the_identity</code> (<code>crates/rustinfer-frontend/tests/mxfp4_kv_fp8.rs:140</code>) checks the recorded range is the header's and its digest that of exactly those file bytes.</td>
+</tr>
+<tr>
+<td>ST-R7</td>
+<td><strong>conforms</strong></td>
+<td><code>__metadata__</code> must be an object of strings (<code>parse_object</code>, 627-634). <code>test_metadata_key_is_accepted_only_as_a_string_map</code> (<code>frontend/tests/safetensors.rs:377</code>).</td>
+</tr>
+<tr>
+<td>ST-R8</td>
+<td><strong>conforms</strong> (ST-2 fixed in <code>b99720a</code>)</td>
+<td>The header is parsed by <code>unique_json::parse</code>, a <code>serde_json</code> visitor that refuses any object repeating a name with <code>duplicate key "&lt;name&gt;"</code>, at every nesting level and in the same single pass as the parse (<code>crates/rustinfer-artifact/src/unique_json.rs:24-26, 83-90</code>); the reader reports it as a malformed header naming the key (<code>parse_unique</code>, <code>safetensors.rs:641-649</code>, called from <code>parse_object</code> <code>:624</code>). Keys are compared as the decoded strings <code>serde_json</code> hands the visitor, so an escaped spelling of a name collides with the plain one by construction. <code>test_duplicate_tensor_name_is_refused_naming_the_key</code> (<code>crates/rustinfer-artifact/tests/safetensors_duplicates.rs:37</code>), <code>test_duplicate_nested_keys_are_refused_naming_the_key</code> (<code>:47</code>), each <code>Verifies RI-SEC-003</code>. Note: <code>test_duplicates_are_compared_after_unescaping</code> (<code>:71</code>) writes the same literal key <code>"a"</code> twice and no escape (its doc comment shows <code>"a"</code> and <code>"a"</code>), so the escaped case its name promises is not exercised; a one-line fix to the fixture (<code>"\u0061"</code>).</td>
+</tr>
+<tr>
+<td>ST-R9</td>
+<td><strong>conforms</strong> (ST-4 fixed in <code>99c1ec7</code>)</td>
+<td>The element count is the product of the shape folded from 1 with <code>checked_mul</code>, so 1 for <code>[]</code> and 0 for a zero dimension, whatever the others (<code>tensor_bytes</code>, 612-617); a zero-length range tiles. <code>test_empty_tensor_with_a_zero_dimension_and_zero_bytes_is_accepted</code> (<code>crates/rustinfer-artifact/tests/safetensors.rs:192</code>) accepts an empty tensor alone in a shard with no data, between two tensors, two zero-length tensors at one offset, and <code>[0, u64::MAX]</code> as zero elements; <code>test_zero_rank_tensor_is_one_element</code> (<code>:226</code>) types <code>[]</code> as one element and refuses it with a zero-byte range, as <code>Metadata::validate</code> does; <code>test_empty_tensor_where_the_format_refuses_it_is_refused</code> (<code>:249</code>) refuses, naming the tensor and field, a non-empty range for zero elements and a zero-byte range inside another tensor or past the data region; all <code>Verifies RI-SEC-003</code>. A 0-rank tensor also passes through the reader in the frontend's KV scale fixtures (<code>test_quark_kv_scales_are_recorded_per_layer_and_read</code>, <code>crates/rustinfer-frontend/tests/mxfp4_audit.rs:69</code>). Sluice refuses a weight over an empty tensor at open naming <code>shape</code> (<code>test_weight_over_an_empty_tensor_is_refused_at_open</code>, <code>crates/rustinfer-sluice/tests/refusal.rs:508</code>).</td>
+</tr>
+<tr>
+<td>ST-R10</td>
+<td><strong>conforms</strong></td>
+<td>Sorted by start, each range begins where the last ends, the first at 0 and the last at the end of the data region (<code>check_contiguous</code>, 428-448; <code>check_region_end</code>, 451-467). <code>test_overlapping_ranges_are_refused_naming_both_tensors</code> (<code>frontend/tests/safetensors.rs:437</code>), <code>test_gaps_in_the_data_region_are_refused</code> (<code>:464</code>), <code>test_contiguous_ranges_pass_in_any_header_order</code> (<code>:494</code>), <code>test_gap_in_the_data_region_is_refused</code> (<code>sluice/tests/refusal.rs:463</code>).</td>
+</tr>
+<tr>
+<td>ST-R11</td>
+<td><strong>conforms</strong></td>
+<td><code>END - BEGIN</code> must equal <code>storage_bytes(product(shape))</code> (<code>parse_offsets</code>, 578-584); overflow is refused (<code>test_shape_product_overflow_is_refused</code>, <code>frontend/tests/safetensors.rs:308</code>). For <code>F4</code> the reader requires an even innermost axis (<code>tensor_bytes</code>, 490-498), where the reference requires only an even element count: a <code>F4 [2, 3]</code> tensor valid in the format is refused. That is a narrower reading, consistent with <code>fp4x2</code> packing pairs along the innermost axis (RI-MIR-003), not a misreading. <code>test_safetensors_reader_types_f4_and_e8m0_with_packed_sizes</code> (<code>crates/rustinfer-artifact/tests/mx_manifest.rs:407</code>).</td>
+</tr>
+<tr>
+<td>ST-R12</td>
+<td><strong>conforms</strong></td>
+<td>Sluice reads multi-byte values with <code>from_le_bytes</code> (<code>crates/rustinfer-sluice/src/convert.rs:484-496</code>) and slices tensors row-major.</td>
+</tr>
+<tr>
+<td>ST-R13</td>
+<td><strong>conforms</strong></td>
+<td><code>SAFETENSORS_MAX_HEADER_BYTES</code> is 100,000,000, the reference value (<code>crates/rustinfer-core/src/config/constants.rs:393</code>), checked before the header is allocated (<code>check_header_bound</code>, 386-393); a length past the file is <code>HeaderPastFile</code> (370-378). <code>test_header_over_the_bound_is_refused_before_reading</code> (<code>frontend/tests/safetensors.rs:155</code>), <code>test_header_length_is_bounded_by_the_file_size</code> (<code>:174</code>), <code>test_header_length_past_the_bound_or_the_file_is_refused</code> (<code>sluice/tests/refusal.rs:230</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dtype-names">Dtype names</h2>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ST-R14</td>
+<td><strong>conforms</strong> for the names read</td>
+<td><code>DTYPES</code> (<code>safetensors.rs:54-64</code>) and <code>U8_NAME</code> (<code>:66</code>, read as <code>StoredDtype::U8</code>) read <code>BF16</code>, <code>F16</code>, <code>F32</code>, <code>F8_E4M3</code>, <code>F4</code>, <code>F8_E8M0</code>, <code>U8</code>, <code>I32</code>, <code>I64</code>, <code>BOOL</code>, spelled as <code>enum Dtype</code> spells them, with the format's bit sizes. The other twelve (<code>F6_E2M3</code>, <code>F6_E3M2</code>, <code>I8</code>, <code>F8_E5M2</code>, <code>F8_E4M3FNUZ</code>, <code>F8_E5M2FNUZ</code>, <code>I16</code>, <code>U16</code>, <code>U32</code>, <code>C64</code>, <code>F64</code>, <code>U64</code>) are refused naming the tensor and the name: <code>test_dtype_names_map_and_others_are_refused</code> (<code>frontend/tests/safetensors.rs:111</code>), <code>test_unknown_dtype_is_refused</code> (<code>artifact/tests/safetensors.rs:135</code>), <code>test_dtype_this_release_does_not_read_is_refused</code> (<code>sluice/tests/refusal.rs:480</code>). Reading a subset is allowed: the format defines names, it does not require a reader to support each.</td>
+</tr>
+<tr>
+<td>ST-R15</td>
+<td><strong>conforms</strong> (ST-3 fixed in <code>99c1ec7</code>)</td>
+<td><code>U8</code> is read as <code>StoredDtype::U8</code>, the format's unsigned byte: raw bytes, one per element, with no Model IR dtype (<code>safetensors.rs:71-81</code>; <code>parse_dtype</code>, <code>:511-530</code>, <code>U8</code> at <code>:516-518</code>), and its storage size is the element count (<code>storage_bytes</code>, <code>:104-109</code>); <code>F8_E8M0</code> alone reads as <code>ue8m0</code>. <code>test_u8_reads_as_raw_bytes_without_a_model_ir_dtype</code> (<code>crates/rustinfer-artifact/tests/safetensors.rs:153</code>, <code>Verifies RI-SEC-003</code>) checks <code>U8</code> is neither <code>ue8m0</code> nor <code>fp4x2</code>. A consumer types the bytes by role only: the frontend's MXFP4 packed-data slot takes <code>U8</code> with the innermost axis halved or <code>F4</code>, and refuses <code>F8_E8M0</code> there (<code>check_packed</code>, <code>crates/rustinfer-frontend/src/mapping.rs:319-334</code>), a scale slot takes <code>U8</code> or <code>F8_E8M0</code> (<code>check_scale</code>, <code>:337-348</code>), and anywhere else <code>model_dtype</code> refuses <code>U8</code> naming the tensor and <code>dtype</code> (<code>:256-269</code>), KV scales included (<code>kv_scales.rs:164-186</code>); Sluice gives a <code>U8</code> header a type only under a <code>ue8m0</code> or packed <code>fp4x2</code> manifest entry (<code>header_shape</code>, <code>crates/rustinfer-sluice/src/plan.rs:323-341</code>). Tests: <code>test_u8_tensor_where_bf16_is_expected_is_refused_naming_tensor_and_field</code> (<code>crates/rustinfer-frontend/tests/mapping.rs:146</code>, <code>Verifies RI-FE-002</code>); <code>test_u8_kv_scale_is_refused_naming_tensor_and_field</code> (<code>crates/rustinfer-frontend/tests/mxfp4_audit.rs:234</code>) and <code>test_e8m0_tensor_in_a_packed_data_slot_is_refused</code> (<code>:258</code>); <code>test_u8_header_under_a_bf16_entry_is_refused</code> (<code>crates/rustinfer-sluice/tests/mxfp4.rs:727</code>) and <code>test_e8m0_header_under_a_packed_fp4x2_entry_is_refused</code> (<code>:756</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="result">Result</h2>
+<p>Fourteen of fifteen requirements conform (ST-R8 since <code>b99720a</code>; ST-R9 and
+ST-R15 since <code>99c1ec7</code>, PR #57: <code>U8</code> is raw bytes typed only by role, and empty
+and 0-rank tensors are tested against the format's rules); ST-R3 is missing
+(ST-1, the first header byte is not checked to be <code>{</code>). State: <strong>partial</strong>. Gaps on the
+<a href="std-safetensors-tracker.html">tracker</a>.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#header-layout">Header layout</a></li><li><a href="#dtype-names">Dtype names</a></li><li><a href="#result">Result</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>53af206 2026-11-19</code>, branch <code>detached</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise. GPU results are the owner's hardware runs, cited by issue (<a href="https://github.com/itej89/rustinfer/issues/54">#54</a>); this site itself runs nothing.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>

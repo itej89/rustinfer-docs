@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025) audit — rustinfer</title>
+<meta name="description" content="The audit of rustinfer&#x27;s FP8 E4M3 FNUZ encoding against the CDNA3 ISA guide and LLVM APFloat (main 81fbcba) and of the gfx942 capability values (main b057ef5); the encoding conforms, the cache bits and direct-to-LDS loads are #64.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="wordmark" href="index.html">
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="name">rustinfer</span>
+  </a>
+  <p class="tagline">The inference engine for AMD Instinct and RISC-V, read from the tree</p>
+  <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sidenav">Contents</button>
+</header>
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="Documentation">
+    <details class="nav-group" open><summary class="nav-head">Introduction</summary><ul><li><a href="index.html">rustinfer</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Standards</summary><ul><li><a href="standards.html">Standards map</a></li><li><details class="nav-sub"><summary>Compiler and code generation</summary><ul><li><details class="nav-sub"><summary>AMD CDNA4 ISA (5 August 2025)</summary><ul><li><a href="std-amd-cdna4-isa.html">Overview</a></li><li><a href="std-amd-cdna4-isa-requirements.html">Requirements</a></li><li><a href="std-amd-cdna4-isa-audit.html">Audit</a></li><li><a href="std-amd-cdna4-isa-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU code object V5</summary><ul><li><a href="std-amdgpu-abi.html">Overview</a></li><li><a href="std-amdgpu-abi-requirements.html">Requirements</a></li><li><a href="std-amdgpu-abi-audit.html">Audit</a></li><li><a href="std-amdgpu-abi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU DMA Operations (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-dma.html">Overview</a></li><li><a href="std-llvm-amdgpu-dma-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-dma-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-dma-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMDGPU intrinsics (LLVM 23.1)</summary><ul><li><a href="std-llvm-amdgpu-intrinsics.html">Overview</a></li><li><a href="std-llvm-amdgpu-intrinsics-requirements.html">Requirements</a></li><li><a href="std-llvm-amdgpu-intrinsics-audit.html">Audit</a></li><li><a href="std-llvm-amdgpu-intrinsics-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>LLVM 23.1</summary><ul><li><a href="std-llvm.html">Overview</a></li><li><a href="std-llvm-requirements.html">Requirements</a></li><li><a href="std-llvm-audit.html">Audit</a></li><li><a href="std-llvm-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>MLIR (LLVM 23)</summary><ul><li><a href="std-mlir.html">Overview</a></li><li><a href="std-mlir-requirements.html">Requirements</a></li><li><a href="std-mlir-audit.html">Audit</a></li><li><a href="std-mlir-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RISC-V V 1.0</summary><ul><li><a href="std-rvv-1.0.html">Overview</a></li><li><a href="std-rvv-1.0-requirements.html">Requirements</a></li><li><a href="std-rvv-1.0-audit.html">Audit</a></li><li><a href="std-rvv-1.0-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>SPIR-V 1.6 rev 8</summary><ul><li><a href="std-spir-v.html">Overview</a></li><li><a href="std-spir-v-requirements.html">Requirements</a></li><li><a href="std-spir-v-audit.html">Audit</a></li><li><a href="std-spir-v-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Data and integrity</summary><ul><li><details class="nav-sub"><summary>FIPS 180-4</summary><ul><li><a href="std-fips-180-4.html">Overview</a></li><li><a href="std-fips-180-4-requirements.html">Requirements</a></li><li><a href="std-fips-180-4-audit.html">Audit</a></li><li><a href="std-fips-180-4-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>ISO 8601-1:2019</summary><ul><li><a href="std-iso-8601.html">Overview</a></li><li><a href="std-iso-8601-requirements.html">Requirements</a></li><li><a href="std-iso-8601-audit.html">Audit</a></li><li><a href="std-iso-8601-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RFC 8259</summary><ul><li><a href="std-rfc-8259.html">Overview</a></li><li><a href="std-rfc-8259-requirements.html">Requirements</a></li><li><a href="std-rfc-8259-audit.html">Audit</a></li><li><a href="std-rfc-8259-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Model formats</summary><ul><li><details class="nav-sub"><summary>AMD Quark MXFP4 export (surveyed 313cb0b)</summary><ul><li><a href="std-quark.html">Overview</a></li><li><a href="std-quark-requirements.html">Requirements</a></li><li><a href="std-quark-audit.html">Audit</a></li><li><a href="std-quark-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>compressed-tensors 0.13.0</summary><ul><li><a href="std-ct.html">Overview</a></li><li><a href="std-ct-requirements.html">Requirements</a></li><li><a href="std-ct-audit.html">Audit</a></li><li><a href="std-ct-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>PEFT v0.21.3</summary><ul><li><a href="std-peft.html">Overview</a></li><li><a href="std-peft-requirements.html">Requirements</a></li><li><a href="std-peft-audit.html">Audit</a></li><li><a href="std-peft-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>safetensors v0.8.0</summary><ul><li><a href="std-safetensors.html">Overview</a></li><li><a href="std-safetensors-requirements.html">Requirements</a></li><li><a href="std-safetensors-audit.html">Audit</a></li><li><a href="std-safetensors-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Tokenizers v0.23.3</summary><ul><li><a href="std-hf-tokenizer.html">Overview</a></li><li><a href="std-hf-tokenizer-requirements.html">Requirements</a></li><li><a href="std-hf-tokenizer-audit.html">Audit</a></li><li><a href="std-hf-tokenizer-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Transformers config v5.23.0</summary><ul><li><a href="std-hf-config.html">Overview</a></li><li><a href="std-hf-config-requirements.html">Requirements</a></li><li><a href="std-hf-config-audit.html">Audit</a></li><li><a href="std-hf-config-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub" open><summary>Number formats</summary><ul><li><details class="nav-sub" open><summary>AMD FP8 FNUZ (CDNA3 ISA, 5 August 2025)</summary><ul><li><a href="std-amd-fnuz.html">Overview</a></li><li><a href="std-amd-fnuz-requirements.html">Requirements</a></li><li><a href="std-amd-fnuz-audit.html" class="here">Audit</a></li><li><a href="std-amd-fnuz-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>IEEE 754-2019</summary><ul><li><a href="std-ieee-754.html">Overview</a></li><li><a href="std-ieee-754-requirements.html">Requirements</a></li><li><a href="std-ieee-754-audit.html">Audit</a></li><li><a href="std-ieee-754-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP MX v1.1.0</summary><ul><li><a href="std-ocp-mx.html">Overview</a></li><li><a href="std-ocp-mx-requirements.html">Requirements</a></li><li><a href="std-ocp-mx-audit.html">Audit</a></li><li><a href="std-ocp-mx-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OCP OFP8 Revision 1.1</summary><ul><li><a href="std-ocp-ofp8.html">Overview</a></li><li><a href="std-ocp-ofp8-requirements.html">Requirements</a></li><li><a href="std-ocp-ofp8-audit.html">Audit</a></li><li><a href="std-ocp-ofp8-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Runtime</summary><ul><li><details class="nav-sub"><summary>AMD Instinct system acceptance (accessed 2026-11-15)</summary><ul><li><a href="std-amd-acc.html">Overview</a></li><li><a href="std-amd-acc-requirements.html">Requirements</a></li><li><a href="std-amd-acc-audit.html">Audit</a></li><li><a href="std-amd-acc-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>AMD SMI 7.2.4</summary><ul><li><a href="std-amd-smi.html">Overview</a></li><li><a href="std-amd-smi-requirements.html">Requirements</a></li><li><a href="std-amd-smi-audit.html">Audit</a></li><li><a href="std-amd-smi-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP and ROCm environment variables 7.2.4</summary><ul><li><a href="std-hip-env.html">Overview</a></li><li><a href="std-hip-env-requirements.html">Requirements</a></li><li><a href="std-hip-env-audit.html">Audit</a></li><li><a href="std-hip-env-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP memory management 7.2.4</summary><ul><li><a href="std-hip-mem.html">Overview</a></li><li><a href="std-hip-mem-requirements.html">Requirements</a></li><li><a href="std-hip-mem-audit.html">Audit</a></li><li><a href="std-hip-mem-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>HIP runtime API ROCm 7.2</summary><ul><li><a href="std-hip.html">Overview</a></li><li><a href="std-hip-requirements.html">Requirements</a></li><li><a href="std-hip-audit.html">Audit</a></li><li><a href="std-hip-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>RCCL ROCm 7.2</summary><ul><li><a href="std-rccl.html">Overview</a></li><li><a href="std-rccl-requirements.html">Requirements</a></li><li><a href="std-rccl-audit.html">Audit</a></li><li><a href="std-rccl-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Vulkan 1.4.368</summary><ul><li><a href="std-vulkan.html">Overview</a></li><li><a href="std-vulkan-requirements.html">Requirements</a></li><li><a href="std-vulkan-audit.html">Audit</a></li><li><a href="std-vulkan-tracker.html">Tracker</a></li></ul></details></li></ul></details></li><li><details class="nav-sub"><summary>Serving</summary><ul><li><details class="nav-sub"><summary>HTTP RFC 9110 and RFC 9112</summary><ul><li><a href="std-rfc-9110.html">Overview</a></li><li><a href="std-rfc-9110-requirements.html">Requirements</a></li><li><a href="std-rfc-9110-audit.html">Audit</a></li><li><a href="std-rfc-9110-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>OpenAI API 2.3.0</summary><ul><li><a href="std-openai-api.html">Overview</a></li><li><a href="std-openai-api-requirements.html">Requirements</a></li><li><a href="std-openai-api-audit.html">Audit</a></li><li><a href="std-openai-api-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Prometheus text format 0.0.4</summary><ul><li><a href="std-prom-text.html">Overview</a></li><li><a href="std-prom-text-requirements.html">Requirements</a></li><li><a href="std-prom-text-audit.html">Audit</a></li><li><a href="std-prom-text-tracker.html">Tracker</a></li></ul></details></li><li><details class="nav-sub"><summary>Server-sent events (WHATWG 2026-11-13)</summary><ul><li><a href="std-sse.html">Overview</a></li><li><a href="std-sse-requirements.html">Requirements</a></li><li><a href="std-sse-audit.html">Audit</a></li><li><a href="std-sse-tracker.html">Tracker</a></li></ul></details></li></ul></details></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Overview</summary><ul><li><a href="progress.html">Progress</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="supported-models.html">Supported models</a></li><li><a href="features.html">Features</a></li><li><a href="release-plan.html">Release plan</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Design</summary><ul><li><a href="design.html">Design</a></li><li><a href="architecture-diagram.html">Architecture diagram</a></li><li><a href="design-diagrams.html">Design diagrams</a></li><li><a href="artifact.html">Artifact format (.rie)</a></li><li><a href="lessons.html">Lessons from the incumbents</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Compiler</summary><ul><li><a href="frontend.html">Frontend</a></li><li><a href="graph-compiler.html">Graph compiler</a></li><li><a href="kernel-compiler.html">Kernel compiler</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Runtime</summary><ul><li><a href="runtime.html">Runtime and serving</a></li><li><a href="sluice.html">Sluice, the weight streamer</a></li><li><a href="artifact-cache.html">Artifact as cache, strict mode</a></li><li><a href="planner.html">Topology planner</a></li><li><a href="profiler.html">Profiler (design)</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Hardware</summary><ul><li><a href="hardware.html">Hardware</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Development</summary><ul><li><a href="engineering-rules.html">Engineering rules</a></li><li><a href="build-steps.html">Build steps</a></li><li><a href="deployment.html">Deployment</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Trackers</summary><ul><li><a href="issues.html">Issue tracker</a></li><li><a href="open-issues.html">Open issues (OI)</a></li><li><a href="decisions.html">Decisions</a></li></ul></details>
+<details class="nav-group" open><summary class="nav-head">Reference</summary><ul><li><a href="ref-requirements.html">Requirements (SRS)</a></li><li><a href="ref-constants.html">Constants</a></li><li><a href="ref-error-codes.html">Error codes</a></li><li><a href="ref-crates.html">Crates</a></li></ul></details>
+  </nav>
+  <main id="main">
+    <article class="prose">
+      <h1 id="amd-fp8-fnuz-audit">AMD FP8 FNUZ audit</h1>
+<p><strong>Audit of 2026-11-14</strong>, against the <a href="std-amd-fnuz-requirements.html">requirements</a>,
+on <code>origin/main</code> <code>81fbcba</code>, after PR #44 (issue #8, merge <code>38f2f60</code>: the AMD
+lowering with the gfx942 FNUZ MFMA). First audited 2026-11-13 on <code>ccf02b3</code>,
+re-audited the same day on <code>b99720a</code> after PRs #48 (KV dtypes) and #52
+(issue #51 fixes). PR #44 and the other merges since (#58, #60, #62) change
+no line of <code>numeric.rs</code>, <code>dtype.rs</code>, <code>kv.rs</code> or <code>lower.rs</code>, so the encoding
+results and their line numbers below stand.</p>
+<p><strong>Method.</strong> Read §7.2 of the ISA guide (<code>pdftotext -layout</code> of
+<code>specs/number-formats/amd-cdna3-isa.pdf</code>, pages 50 and 51) and LLVM APFloat
+at <code>llvmorg-23.1.0</code> (<code>semFloat8E4M3FNUZ</code>, <code>fltNonfiniteBehavior</code>,
+<code>fltNanEncoding</code>, <code>handleOverflow</code>, <code>convert</code>). Read <code>origin/main</code> at
+<code>b99720a</code>: <code>crates/rustinfer-target/src/numeric.rs</code>,
+<code>crates/rustinfer-mir/src/dtype.rs</code>, <code>crates/rustinfer-kc/src/dialect/types.rs</code>,
+<code>crates/rustinfer-kc/src/mlir/lower.rs</code>, and the tests in
+<code>crates/rustinfer-target/tests/numeric.rs</code>, and the fp8 KV path of PR #48
+(<code>crates/rustinfer-mir/src/kv.rs</code>, <code>crates/rustinfer-target/src/reference/kv.rs</code>,
+their tests). On <code>81fbcba</code>, also read the MFMA table <code>crates/rustinfer-kc/src/amd.rs</code>, the
+gfx942 tests of <code>crates/rustinfer-kc/tests/amd_lowering.rs</code> and the hardware
+test <code>crates/rustinfer-target-rocm/tests/gpu_code_objects.rs</code>, and the GPU
+results of #45 in #54 and the open request #61. No tests were run.</p>
+<p><strong>Test tags.</strong> <code>tests/numeric.rs</code> tags <code>Verifies RI-MIR-003</code> and <code>Verifies
+RI-TGT-003</code>.</p>
+<p><strong>The exhaustive check.</strong> <code>test_every_fp8_pattern_round_trips</code>
+(<code>tests/numeric.rs:141</code>) decodes all 256 FNUZ patterns and requires each
+non-NaN one to encode back to itself. Since the encoder gives 0x80 only for a
+NaN, and 0x00 for every zero (<code>numeric.rs:141-146</code>), the test proves that 0x80
+is the only pattern decoding to NaN, and that 0x00 to 0x7F and 0x81 to 0xFF
+decode to 255 distinct values the encoder maps back to them. Together with
+the explicit assertion that 0x7F is 240, no pattern is an infinity.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>requirement</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FNUZ-R1</td>
+<td>S1E4M3, bias 8</td>
+<td>conforms</td>
+<td><code>MiniFloat::E4M3FNUZ</code> 4 exponent bits, 3 mantissa bits, bias 8 (<code>numeric.rs:57-64</code>). Asserted: 1.0 is 0x40 (<code>tests/numeric.rs:123-124</code>)</td>
+</tr>
+<tr>
+<td>FNUZ-R2</td>
+<td>IEEE-like values; min normal 2^−7, min subnormal 2^−10</td>
+<td>conforms</td>
+<td>the shared decode, <code>min_exponent</code> 1 − 8 = −7 (<code>numeric.rs:79-81</code>, <code>:103-108</code>). Asserted: 2^−10 round-trips, −3.5 round-trips (<code>tests/numeric.rs:131-135</code>). Min normal 2^−7 is not asserted by value; it follows from the formula and the exhaustive round trip</td>
+</tr>
+<tr>
+<td>FNUZ-R3</td>
+<td>no infinity</td>
+<td>conforms</td>
+<td><code>special</code> returns a value only for the NaN pattern when <code>fnuz</code> (<code>numeric.rs:113-115</code>); exponent 15 decodes as a normal binade</td>
+</tr>
+<tr>
+<td>FNUZ-R4</td>
+<td>one zero, no negative zero</td>
+<td>conforms</td>
+<td>a zero result is 0x00 whatever the sign (<code>numeric.rs:141-146</code>). Asserted: −0.0 encodes to 0 (<code>tests/numeric.rs:130</code>). A negative value that rounds to zero takes the same branch</td>
+</tr>
+<tr>
+<td>FNUZ-R5</td>
+<td>one NaN, 0x80</td>
+<td>conforms</td>
+<td>decode: only <code>bits == 0x80</code> is NaN (<code>numeric.rs:113-114</code>); encode: a NaN gives 0x80 (<code>:21</code>, <code>:132-133</code>). Asserted (<code>tests/numeric.rs:128-129</code>) and by the exhaustive round trip</td>
+</tr>
+<tr>
+<td>FNUZ-R6</td>
+<td>max 240</td>
+<td>conforms</td>
+<td><code>max</code> uses all-ones exponent and mantissa when <code>fnuz</code> (<code>numeric.rs:87-88</code>). Asserted: 240 is 0x7F and decodes to 240 (<code>tests/numeric.rs:122</code>, <code>:125-126</code>), <code>test_format_maxima</code> (<code>numeric.rs:336</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="other-users-of-fnuz-on-originmain">Other users of FNUZ on <code>origin/main</code></h2>
+<ul>
+<li>The Kernel IR's <code>max</code> identity for <code>f8E4M3FNUZ</code> is 0xFF, S.1111.111 =
+  −240, the most negative FNUZ value (<code>crates/rustinfer-kc/src/mlir/lower.rs:25</code>).
+  Correct by FNUZ-R6, and asserted since PR #52 by
+  <code>test_max_identity_of_fnuz_e4m3_is_minus_240</code> (<code>lower.rs:454</code>), which decodes
+  the byte with its own bit-field decoder and checks it is the most negative
+  of all 256 patterns (FNUZ-1 fixed).</li>
+<li>fp8 KV (PR #48, <code>e218b8a</code>): <code>kv_fp8_dtype</code> gives <code>fp8_e4m3fnuz</code> on gfx942
+  (<code>crates/rustinfer-mir/src/kv.rs:15-25</code>; <code>crates/rustinfer-mir/tests/kv_dtypes.rs:88</code>),
+  and the CPU reference cache write encodes with the same saturating
+  <code>f32_to_fp8</code> (<code>crates/rustinfer-target/src/reference/kv.rs:277</code>);
+  <code>test_cached_k_and_v_equal_the_oracle_conversion_bit_exactly</code>
+  (<code>crates/rustinfer-target/tests/kv.rs:212</code>) covers FNUZ storage (<code>tests/kv.rs:57</code>).</li>
+</ul>
+<h2 id="the-gfx942-capability-values-audit-of-2026-11-15">The gfx942 capability values, audit of 2026-11-15</h2>
+<p>Against FNUZ-R7 to FNUZ-R9, added to the scope by SRS v0.4.11 (PR #65), on
+<code>main</code> <code>b057ef5</code>. Read §3.1, §9.1.10.2, §10.1, §10.2, §11 and §12.15 of the
+guide; on <code>b057ef5</code> read <code>crates/rustinfer-kc/src/capabilities.rs</code>,
+<code>amd.rs</code>, <code>dialect/ops.rs</code>, <code>mlir/rocdl/</code>, the constants and the tests named
+below, and searched every crate for direct-to-LDS and cache-policy
+spellings (none). No tests were run. gfx942 hardware runs no longer gate R1
+(SRS v0.4.12 §2.4); the checks below are all offline.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>requirement</th>
+<th>result</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FNUZ-R7</td>
+<td>LDS 64 kB per work group</td>
+<td>conforms; no per-field test (FNUZ-3)</td>
+<td><code>KC_GFX942_LDS_BYTES</code> = <code>64 * 1024</code>, citing "the §3.1 table: 64 KiB per CU" (<code>crates/rustinfer-core/src/config/constants.rs:717-719</code>), the gfx942 description's <code>shared_memory_bytes</code> (<code>crates/rustinfer-kc/src/amd.rs:116</code>). The back end refuses 65540 bytes and compiles 65536 for gfx942 (<code>test_kernel_over_the_lds_limit_is_refused_by_the_back_end</code>, <code>crates/rustinfer-kc/tests/amd_lowering.rs:437</code>); the ROCm target checks against the device before loading (<code>crates/rustinfer-target-rocm/src/resources.rs:65</code>). No test reads the capability field</td>
+</tr>
+<tr>
+<td>FNUZ-R8</td>
+<td>SC1, SC0, NT and Table 48</td>
+<td>missing (FNUZ-3)</td>
+<td>No hint field in <code>Capabilities</code> (<code>capabilities.rs:47-64</code>); the lowered accesses carry no cache-policy attribute (<code>crates/rustinfer-kc/src/mlir/rocdl/helpers.rs:78</code>, <code>:154</code>, <code>:321-330</code>), so all are wave scope, NT = 0</td>
+</tr>
+<tr>
+<td>FNUZ-R9</td>
+<td><code>GLOBAL_LOAD_LDS_*</code> at 1, 2, 4 bytes</td>
+<td>missing (FNUZ-3)</td>
+<td>No mover field and no asynchronous tile copy (<code>crates/rustinfer-kc/src/dialect/ops.rs:8-21</code>); no <code>rocdl.load.to.lds</code>, <code>global.load.lds</code> or <code>amdgpu.gather_to_lds</code> emitted. LLVM's widths for gfx942 are <a href="std-llvm-amdgpu-dma-tracker.html">DMA-1</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="conversion-behaviour-outside-the-scope">Conversion behaviour, outside the scope</h2>
+<p>Recorded for the gfx942 work, not judged:</p>
+<ul>
+<li>The CPU reference rounds to nearest even and <strong>saturates</strong>: overflow and
+  ±Inf give ±240 (<code>numeric.rs:137-139</code>, <code>:161-168</code>; asserted for 1e9,
+  <code>tests/numeric.rs:127</code>, and for ±Inf since PR #52,
+  <code>tests/numeric.rs:199</code>). This is the ISA's FP16_OVFL = 1 column, not the
+  FP16_OVFL = 0 column (NaN), and not LLVM APFloat's conversion, which gives
+  NaN on overflow under round-to-nearest (<code>APFloat.cpp:1490-1503</code>).</li>
+<li>RI-KVC-008 requires the cached K and V to equal the CPU reference
+  bit-exactly. A gfx942 cache-write kernel therefore has to saturate the same
+  way: run its <code>V_CVT_PK_FP8_F32</code> with FP16_OVFL = 1, or clamp to ±240 before
+  converting, and not rely on MLIR constant folding (APFloat semantics) for
+  out-of-range values. This belongs to issue #37 and #38.</li>
+</ul>
+<h2 id="requirements-of-the-srs-not-yet-met-on-originmain">Requirements of the SRS not yet met on <code>origin/main</code></h2>
+<table>
+<thead>
+<tr>
+<th>SRS requirement</th>
+<th>what needs FNUZ</th>
+<th>where it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RI-KC-003</td>
+<td>fp8 FNUZ MFMA operands on gfx942</td>
+<td>merged with PR #44 (<code>38f2f60</code>): <code>crates/rustinfer-kc/src/amd.rs:154-156</code>, host disassembly tests <code>crates/rustinfer-kc/tests/amd_lowering.rs:220</code>, <code>:226</code>; not yet run on gfx942 hardware (#61)</td>
+</tr>
+<tr>
+<td>RI-KVC-008</td>
+<td><code>--kv-dtype fp8</code> on gfx942: FNUZ KV written by the cache-write kernel, read by attention</td>
+<td>configuration and CPU reference merged (PR #48, <code>e218b8a</code>); GPU kernels issue #38</td>
+</tr>
+</tbody>
+</table>
+<p>Recorded as FNUZ-2.</p>
+<h2 id="the-gfx942-fnuz-mfma-pr-44">The gfx942 FNUZ MFMA (PR #44)</h2>
+<p>The MFMA table maps <code>F8E4M3Fnuz</code> on gfx942 to <code>v_mfma_f32_32x32x16_fp8_fp8</code>
+and <code>v_mfma_f32_16x16x32_fp8_fp8</code> (<code>crates/rustinfer-kc/src/amd.rs:154-156</code>),
+the CDNA3 instructions that read FNUZ operands; OCP E4M3 on gfx942 and FNUZ on
+gfx950 are refused (<code>test_mfma_table_refuses_every_pair_outside_the_r1_set_naming_both</code>,
+<code>crates/rustinfer-kc/tests/amd_target.rs:90</code>). On the host this is checked by
+disassembly only (<code>crates/rustinfer-kc/tests/amd_lowering.rs:220</code>, <code>:226</code>,
+Groundwork for RI-KC-003). Whether the hardware reads the FNUZ codes as
+Table 30 defines is shown only by the gfx942 run of
+<code>test_matrix_op_matches_the_cpu_on_the_gpu</code>
+(<code>crates/rustinfer-target-rocm/tests/gpu_code_objects.rs:257</code>), whose inputs
+are encoded with <code>f32_to_fp8(x, Fp8Format::E4m3Fnuz)</code> (<code>:149</code>). That run is</p>
+<h1 id="61-not-yet-made-the-gfx950-run-of-45-54-has-no-fnuz-case">61, not yet made; the gfx950 run of #45 (#54) has no FNUZ case.</h1>
+<h2 id="result">Result</h2>
+<p>Every in-scope item of the encoding conforms on <code>origin/main</code> and is tested;
+the identity constant is asserted since PR #52 (FNUZ-1 fixed), and the fp8 KV
+CPU reference of PR #48 writes FNUZ on gfx942. The gfx942 FNUZ MFMA is merged
+(PR #44) but not yet run on gfx942 hardware (#61), and the GPU cache-write
+kernel (#38) is not written (FNUZ-2). Of the gfx942 capability values the
+scope gained on 2026-11-15, the 64 kB LDS is right but its capability field
+is untested, and the cache bits and the direct-to-LDS loads are not yet in
+the description (FNUZ-3, #64). <strong>Partial</strong>, for the R1 coverage, not for
+any wrong encoding.</p>
+    </article>
+  </main>
+  <nav class="toc" aria-label="On this page"><p class="nav-head">On this page</p><ul><li><a href="#other-users-of-fnuz-on-originmain">Other users of FNUZ on origin/main</a></li><li><a href="#the-gfx942-capability-values-audit-of-2026-11-15">The gfx942 capability values, audit of 2026-11-15</a></li><li><a href="#conversion-behaviour-outside-the-scope">Conversion behaviour, outside the scope</a></li><li><a href="#requirements-of-the-srs-not-yet-met-on-originmain">Requirements of the SRS not yet met on origin/main</a></li><li><a href="#the-gfx942-fnuz-mfma-pr-44">The gfx942 FNUZ MFMA (PR #44)</a></li><li><a href="#result">Result</a></li></ul></nav>
+</div>
+<footer class="footpad">
+  <p>Read from the rustinfer tree at commit <code>53af206 2026-11-19</code>, branch <code>detached</code> of <a href="https://github.com/itej89/rustinfer">github.com/itej89/rustinfer</a>. Every claim here was read from the source unless a page says otherwise. GPU results are the owner's hardware runs, cited by issue (<a href="https://github.com/itej89/rustinfer/issues/54">#54</a>); this site itself runs nothing.</p>
+</footer>
+<script>
+(function () {
+  // The architecture page: C4 levels as tabs, each with its own link, and
+  // the "show standards" switch, remembered per viewer.
+  var KEY = 'rustinfer-c4-standards';
+  var ALIAS = { 'level-system': 'c4-context', 'level-layers': 'c4-layers',
+                'level-components': 'c4-components', 'level-standards': 'c4-standards' };
+  function init(root) {
+    var c4 = (root || document).querySelector('.c4');
+    if (!c4 || c4.dataset.ready) return;
+    c4.dataset.ready = '1'; c4.classList.add('js');
+    var views = [].slice.call(c4.querySelectorAll('.c4-view'));
+    var tabs = [].slice.call(c4.querySelectorAll('.c4-tab'));
+    var toggle = c4.querySelector('.c4-stdtoggle');
+    function setStd(on, save) {
+      c4.classList.toggle('show-std', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Hide standards' : 'Show standards';
+      if (save) { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {} }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    setStd(saved === 'on', false);
+    toggle.addEventListener('click', function () { setStd(!c4.classList.contains('show-std'), true); });
+    function show(v) {
+      views.forEach(function (x) { x.classList.toggle('on', x === v); });
+      tabs.forEach(function (t) { t.setAttribute('aria-current', t.dataset.view === v.id ? 'true' : 'false'); });
+      toggle.hidden = !v.hasAttribute('data-std');
+    }
+    function route(hash, scroll) {
+      var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+      id = ALIAS[id] || id;
+      var el = id && document.getElementById(id);
+      var v = el && (el.classList.contains('c4-view') ? el : el.closest('.c4-view'));
+      if (!v || !c4.contains(v)) { if (!c4.querySelector('.c4-view.on')) show(views[0]); return false; }
+      show(v);
+      if (scroll) (el === v ? c4 : el).scrollIntoView({ block: 'start' });
+      return true;
+    }
+    c4.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var h = a.getAttribute('href');
+      if (!route(h, true)) return;
+      e.preventDefault();
+      try { history.replaceState(history.state, '', h); } catch (x) {}
+      var layer = a.dataset.layer;
+      if (layer) {
+        c4.querySelectorAll('.c4-comp[data-layer="' + layer + '"]').forEach(function (c) {
+          c.classList.add('hl'); setTimeout(function () { c.classList.remove('hl'); }, 2600);
+        });
+      }
+    });
+    window.addEventListener('hashchange', function () { if (document.body.contains(c4)) route(location.hash, true); });
+    if (!route(location.hash, !!location.hash)) show(views[0]);
+  }
+  window.rustinferC4 = init;
+  init(document);
+})();
+(function () {
+  var b = document.querySelector('.navtoggle');
+  var n = document.getElementById('sidenav');
+  if (!b || !n) return;
+  b.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+(function () {
+  // Keep the sidebar where the reader left it: every link loads a new page,
+  // and the sidebar scrolls on its own, so it would start at the top again.
+  var n = document.getElementById('sidenav');
+  if (!n) return;
+  var key = 'rustinfer-sidenav-scroll', saved = null;
+  try { saved = sessionStorage.getItem(key); } catch (e) {}
+  var here = n.querySelector('a.here');
+  if (saved !== null) {
+    n.scrollTop = +saved;
+  }
+  if (here) {
+    // Still make sure the current page's entry is visible.
+    var nr = n.getBoundingClientRect(), hr = here.getBoundingClientRect();
+    if (hr.top < nr.top || hr.bottom > nr.bottom) {
+      n.scrollTop += hr.top - nr.top - nr.height / 3;
+    }
+  }
+  var save = function () {
+    try { sessionStorage.setItem(key, String(n.scrollTop)); } catch (e) {}
+  };
+  n.addEventListener('click', save);
+  window.addEventListener('pagehide', save);
+
+  // Sidebar links swap the page body in place instead of reloading, so the
+  // sidebar itself never redraws. Any failure falls back to a normal load.
+  if (!window.fetch || !window.history || !history.pushState) return;
+  function swap(url, push) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function (t) {
+      var doc = new DOMParser().parseFromString(t, 'text/html');
+      var m = doc.getElementById('main'), cur = document.getElementById('main');
+      if (!m || !cur) throw new Error('no main');
+      cur.innerHTML = m.innerHTML;
+      var oldAside = document.querySelector('.shell > .toc');
+      var newAside = doc.querySelector('.shell > .toc');
+      if (oldAside) oldAside.remove();
+      if (newAside) document.querySelector('.shell').appendChild(document.importNode(newAside, true));
+      document.title = doc.title;
+      if (push) history.pushState({}, '', url);
+      var abs = new URL(url, location.href).href;
+      n.querySelectorAll('a.here').forEach(function (a) { a.classList.remove('here'); });
+      n.querySelectorAll('a').forEach(function (a) {
+        if (a.href === abs.split('#')[0]) {
+          a.classList.add('here');
+          for (var d = a.parentElement; d && d !== n; d = d.parentElement)
+            if (d.tagName === 'DETAILS') d.open = true;
+        }
+      });
+      // The architecture page's tabs in the swapped body are not wired yet.
+      if (window.rustinferC4) window.rustinferC4(document.getElementById('main'));
+      var hash = new URL(url, location.href).hash;
+      var target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+      n.classList.remove('open');
+    });
+  }
+  n.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.origin !== location.origin) return;
+    e.preventDefault();
+    swap(a.href, true).catch(function () { location.href = a.href; });
+  });
+  window.addEventListener('popstate', function () {
+    swap(location.href, false).catch(function () { location.reload(); });
+  });
+})();
+</script>
+</body>
+</html>
