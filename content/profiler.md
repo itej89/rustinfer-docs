@@ -7,10 +7,12 @@ summary: The design under review for the profiler that finds the gaps by itself:
 
 # Profiler (design)
 
-**Status: design for review, 2026-11-19.** It is not built yet beyond the R1
-profiler of #127 (RI-OBS-007) and `run --profile-out` (#165). This page
-describes what the profiler PRs will build, and the order they build it in.
-Every overhead figure below is a target until a PR measures it.
+**Status: under review, 2026-11-19.** PR 1,
+[#168](https://github.com/itej89/rustinfer/pull/168) (issue #166,
+ADR-012), is merged. It contains the timeline, the gap report, the device
+track, `profile report`, roctx markers and Tracy (behind a feature). PRs 2
+and 3 are still design. The contracts below are the merged code. Overheads
+are measured where marked, and the rest are targets.
 
 ## Why
 
@@ -61,35 +63,49 @@ The runtime never names a target. Each target's `Device` hands out a
 below shows the shape for review. The PRs will fix the names.
 
 ```rust
-/// What a run measures. Only one mode at a time: counters and thread trace
-/// serialise dispatches, so mixing them with timing would distort it.
-pub enum ProfileMode {
-    Off,           // zero cost: one predictable branch per launch
-    Timing,        // device start/end per launch, host spans
-    Counters(CounterSet),   // hardware counters per launch
-    PcSampling,    // hot instructions per kernel
-    ThreadTrace(KernelId),  // instruction timing for one kernel
-    InKernelStamps,         // phase timestamps the kernel writes
-}
+/// What a run measures, one mode at a time. `#[non_exhaustive]`: Counters,
+/// PcSampling, ThreadTrace and InKernelStamps are added by PRs 2 and 3.
+pub enum ProfileMode { Off, Timing }
 
-/// One per target. Each method is a no-op on a target that lacks the mode;
-/// `capabilities` says which modes it offers.
+/// How a backend times kernels: `HostSpans` (cpu), `EventPairs` (ROCm,
+/// PR 1); `Rocprofiler` comes with PR 2.
+pub struct ProfileCapabilities { pub timing: TimingMethod }
+
+/// One per target. Every call takes the device it profiles, so a backend
+/// built on the `Device` trait holds no reference to it.
 pub trait DeviceProfiler {
     fn capabilities(&self) -> ProfileCapabilities;
-    fn start(&mut self, mode: &ProfileMode) -> Result<()>;
-    /// Called at launch time with the launch's correlation id; the backend
-    /// adds no driver call when its platform tags dispatches itself.
-    fn on_launch(&mut self, id: CorrelationId);
-    /// Drain buffered device records after the iteration (never during).
-    fn drain(&mut self, into: &mut Vec<DeviceRecord>) -> Result<()>;
-    /// Host-to-device clock offset and drift, measured at start and drain.
-    fn calibrate(&mut self) -> Result<ClockMap>;
+    /// Creates what the mode needs, sized from the Plan's launch count;
+    /// returns the events it made, which the engine destroys.
+    fn start(&mut self, device: &dyn Device, mode: &ProfileMode, launches: usize)
+        -> Result<Vec<EventId>>;
+    /// The anchor that aligns device time to the host clock (this is the
+    /// calibration for event pairs; a ClockMap comes with rocprofiler-sdk).
+    fn begin_iteration(&mut self, device: &dyn Device, stream: StreamId, clock: &HostClock)
+        -> Result<()>;
+    /// Either side of a launch: the event fallback records here; a
+    /// rocprofiler backend makes `before_launch` a no-op.
+    fn before_launch(&mut self, device: &dyn Device, stream: StreamId, id: CorrelationId) -> Result<()>;
+    fn after_launch(&mut self, device: &dyn Device, stream: StreamId, id: CorrelationId) -> Result<()>;
+    /// After the readback, never during: fills the preallocated `into`
+    /// without growing it.
+    fn drain(&mut self, device: &dyn Device, into: &mut Vec<DeviceRecord>) -> Result<()>;
 }
 ```
 
-`HostCollector` works the same way for the host side: spans, plus optional
-counters per span. Neither contract allocates on the hot path. Buffers are
-sized at load from the Plan's launch count and `RUNTIME_PROFILE_MAX_SPANS`.
+On the host side, the built-in collector is our own span buffer. It is
+preallocated and touched at load, and it keeps the first spans rather than
+overwriting the oldest, so no iteration is cut in half (ADR-012 §4). The
+host clock is `quanta`, which reads the TSC in 32 ns against 66 ns for
+`Instant`. roctx ranges and Tracy are crate-private `HostCollector`s. Tracy
+gets a GPU-context timeline sent at the end of each iteration, because its
+zone guard is not `Send`. Nothing allocates on the hot path.
+
+The device start of a kernel is the later of its start event and the
+return of its launch call. On a host-bound stream the start event fires
+before the kernel exists, so it cannot be used alone. This can understate a
+kernel by about 1 µs. The per-iteration anchor shifts all device times by a
+few µs, which cancels in busy time and in gaps (ADR-012).
 
 ## What each target uses
 
@@ -138,9 +154,10 @@ here.
 
 | mode | added driver calls per launch | allocations per launch | added host time per launch (target) |
 |---|---|---|---|
-| Off | 0 | 0 | one branch (< 1 ns) |
+| Off | 0 (tested) | 0 (tested) | none: no branch per launch (tested) |
 | Timing, rocprofiler-sdk | 0 | 0 | one span write (< 100 ns) |
-| Timing, event fallback | 2 `hipEventRecord` | 0 | a few µs; logged as `method=events` |
+| Timing, event pairs (PR 1, `method=events`) | 2 `hipEventRecord`, plus 1 per iteration; 2 `hipEventElapsedTime` after the readback | 0 | 1.13 µs on the in-process test device; the HIP cost is measured by #120 |
+| one span | none | 0 | 28.6 ns (measured, release, P-core) |
 | Counters, PC sampling, thread trace | per the platform | 0 | the run is serialised: use it for diagnosis, never for timing |
 | Tracy, perf_event | 0 | 0 | tens of ns per span |
 
@@ -155,7 +172,7 @@ The tests check three things on the mock device:
 
 | PR | content | GPU check |
 |---|---|---|
-| 1 | Timeline, gap report, summary lines, Perfetto device tracks, `profile report`, TSC ring buffer, Tracy feature, roctx markers, the samply/perf wrapper | #120 step: `run --profile-out` then `profile report` on the bf16 TinyLlama run |
+| 1 — **merged** (#168) | Timeline, gap report, summary lines, Perfetto device, gap and idle tracks, `profile report`, the span buffer on `quanta`, Tracy feature, roctx markers, `scripts/profile/record.sh` | #120 step: `run --profile-out` then `profile report` on the bf16 TinyLlama run |
 | 2 | ROCm: rocprofiler-sdk buffered dispatch tracing as the timing method, the event-pair fallback, rocprofv3 import into `profile report` | #120: `method=rocprofiler`, and the report matches `rocprofv3 --kernel-trace` within 2% |
 | 3 | Hardware: rocprofiler-sdk counters and the roofline verdict, PC sampling, ATT for one kernel, `s.memrealtime` stamps; perf_event counters on the host | one decode GEMM and the sampler under each mode |
 | R2+ | the Vulkan, RISC-V vector and RISC-V mesh backends, each with its target | with each target's lowering |
@@ -167,7 +184,7 @@ blocking input copies. The profiler then measures the result.
 
 ## Open questions for review
 
-1. **Tracy:** this needs the Tracy C++ client, built by `tracy-client-sys`
+1. **Tracy (built, off by default):** this needs the Tracy C++ client, built by `tracy-client-sys`
    through `cc`. That is a C++ dependency behind a feature, off by default.
    Is it acceptable, or should the live view stay Perfetto-only?
 2. **Counter permissions:** in the GPU test container, are counters and PC
