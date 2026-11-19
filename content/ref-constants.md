@@ -8,8 +8,8 @@ summary: Every named constant of rustinfer-core, the single definition of each d
 # Constants
 
 Generated from `crates/rustinfer-core/src/config/constants.rs` at commit
-8f1c543 2026-11-17. The file's own header says a literal that encodes a concept appears
-there and nowhere else (design heuristics G25 and G35 of SWG-001); 231
+53af206 2026-11-19. The file's own header says a literal that encodes a concept appears
+there and nowhere else (design heuristics G25 and G35 of SWG-001); 300
 constants are defined. The requirement id in a note is the one the source cites.
 
 | constant | type | value | what it is for |
@@ -27,18 +27,41 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KV_DTYPE_NAMES` | `&[&str]` | `&["bf16", "fp8", "mxfp4"]` | The R1 KV storage dtypes of `--kv-dtype`, in help order (RI-CLI-002, RI-KVC-008); the first is the default. |
 | `KV_DTYPE_CAVEAT_SOURCE` | `&str` | `"https://developer.nvidia.com/blog/optimizing-inference-for-long-context-and-large-batch-sizes-with-nvfp4-kv-cache/"` | Source of the MXFP4 KV accuracy caveat (RI-KVC-008, ADR-010): NVIDIA's NVFP4 KV cache article. |
 | `KV_DTYPE_HELP` | `&str` | `"KV cache storage dtype: bf16 (default), fp8 (E4M3, one scale per layer for K and for V) or mxfp4 (fp4x2 with one UE8M0 scale per 32 values along head_dim). Accuracy caveat: FP8 E4M3 is the industry's KV format` | The `--kv-dtype` help text with the accuracy caveat of RI-KVC-008 and its source (RI-CLI-002); `docs/entry-points.md` carries the same text. |
+| `PRECISION_NAMES` | `&[&str]` | `&["bf16", "fp8", "mxfp4"]` | The R1 weight formats of `build --precision`, in help order (RI-CLI-002, RI-GC-004). |
+| `PRECISION_HELP` | `&str` | `"Format of the eligible matmul weights: bf16, fp8 or mxfp4 (fp4x2 with one UE8M0 scale per 32 values, by RTN at load). Absent, each weight keeps its imported quantization or source dtype` | The `--precision` help text (RI-CLI-002). |
+| `ACTIVATIONS_NAMES` | `&[&str]` | `&["bf16", "mxfp8", "mxfp4"]` | The R1 activation formats of `build --activations`, in help order; the first is the default (RI-CLI-002, RI-KC-003). |
+| `ACTIVATIONS_HELP` | `&str` | `"Format the matrix unit receives activations in for every MXFP4 GEMM: bf16 (default, every target)` | The `--activations` help text (RI-CLI-002). |
+| `ENV_SOURCE_DATE_EPOCH` | `&str` | `"SOURCE_DATE_EPOCH"` | Environment variable fixing the build timestamp in seconds since the Unix epoch, for byte-identical builds (reproducible-builds.org `SOURCE_DATE_EPOCH`; RI-ART-008, RI-GC-009). |
+| `BUILD_OPTION_PRECISION` | `&str` | `"precision"` | The `build_options` keys of the artifact `metadata` (RI-ART-008): the options `build` and a first load record. `precision` is absent when the weights keep their imported quantization or source dtype. |
+| `BUILD_OPTION_KV_DTYPE` | `&str` | `"kv_dtype"` | The KV storage dtype (RI-KVC-008). |
+| `BUILD_OPTION_ACTIVATIONS` | `&str` | `"activations"` | The activation format (RI-KC-003). |
+| `BUILD_OPTION_HASH_WEIGHTS` | `&str` | `"hash_weights"` | Whether the manifest records per-tensor digests (`--hash-weights`, RI-ART-005). |
+| `BUILD_PROFILE_MAX_BYTES` | `usize` | `64 * 1024` | Upper bound on the byte length of a `build --profile` file, checked before it is read (RI-SEC-003). |
+| `DEFAULT_PROFILE_BATCH` | `(u64, u64, u64)` | `(1, 1, 16)` | The profile of a build without `--profile`, as `(min, opt, max)` per dynamic dimension (RI-MIR-002, RI-ART-009): up to 16 sequences, 2048 tokens per step and 4096 tokens of context, one beam. `num_tokens.max` is a multiple of the default KV block size (RI-GC-002). |
+| `DEFAULT_PROFILE_NUM_TOKENS` | `(u64, u64, u64)` | `(1, 256, 2048)` | `num_tokens` of the default profile. |
+| `DEFAULT_PROFILE_SEQ_LEN` | `(u64, u64, u64)` | `(1, 1024, 4096)` | `seq_len` of the default profile. |
+| `DEFAULT_PROFILE_BEAM` | `(u64, u64, u64)` | `(1, 1, 1)` | `beam` of the default profile. |
+| `CATALOG_VERSION_NONE` | `&str` | `"none"` | The `metadata` `catalog_version` of a build whose kernels come from no tuning catalog (the CPU reference's operator catalog; RI-ART-008). |
+| `PRODUCER_NAME` | `&str` | `"rustinfer"` | The software name an artifact's producer string starts with (RI-ART-001, RI-ART-008): `rustinfer <version>`. |
+| `INSPECT_REPORT_VERSION` | `u32` | `1` | Version of the JSON `inspect --json` prints, in its `inspect_version` field (RI-CLI-005). |
+| `BUILD_OPTION_KV_BLOCK_SIZE` | `&str` | `"kv_block_size"` | Tokens per KV block the graph compiler built for (RI-KVC-001). |
 | `KV_FP8_DEFAULT_SCALE` | `f32` | `1.0` | The fp8 KV scale of a layer whose checkpoint has none (RI-KVC-008). |
 | `KV_POOL_HEAD_DIM_AXIS` | `u64` | `3` | Axis of `head_dim` in a KV pool `[num_blocks, block_size, num_kv_heads, head_dim]`: the block axis of an MXFP4 KV group's `mx` encoding (RI-MIR-010, RI-MIR-011). |
-| `FP8_FNUZ_ARCHITECTURES` | `&[&str]` | `&["gfx942"]` | Architectures whose fp8 is AMD FNUZ E4M3 rather than OCP E4M3; fp8 KV is stored in that format there (RI-KVC-008). |
-| `FIRST_LOAD_KEY_VERSION` | `&str` | `"rustinfer-first-load-key-v2"` | Version prefix of the first-load cache key (RI-CLI-003): a change to the key's components or their encoding changes it, so an old entry is never reused under a new meaning. v2: length-prefixed fields (#37 review). |
+| `FIRST_LOAD_KEY_VERSION` | `&str` | `"rustinfer-first-load-key-v3"` | Version prefix of the first-load cache key (RI-CLI-003): a change to the key's components or their encoding changes it, so an old entry is never reused under a new meaning. v2: length-prefixed fields (#37 review); v3: precision, activation format and profile join the key (#11). |
 | `MODEL_HASH_VERSION` | `&str` | `"rustinfer-model-hash-v1"` | Version prefix of the model hash inside the first-load key: SHA-256 of the checkpoint identity's length-prefixed encoding (RI-CLI-003). |
 | `PLAN_SECTION_VERSION` | `u32` | `4` | Version of the artifact's `plan` section, written in its `plan_version` field. Version 1 is the earlier unversioned form without KV-group geometry (RI-MIR-010) and version 2 the geometry without the KV dtype's encoding, bytes per token and head and fp8 scales (RI-KVC-001, RI-KVC-008); no reader accepts either. Version 4 adds the arena size and the enumerated buckets of each function (kernel per launch, arena offsets; RI-GC-006, RI-GC-015) and the entries' host-sync mark, KV pool layer and request-state inputs (RI-GC-007); every field is optional, so a version 3 plan reads as a version 4 plan without buckets. |
+| `PLAN_MAX_LOAD_LAUNCHES` | `usize` | `MODEL_IR_MAX_WEIGHTS` | Upper bound on the load-phase launches of a plan section: one per weight at most (RI-GC-008, RI-SEC-003). |
+| `KERNELS_SECTION_VERSION` | `u32` | `2` | Version of the `kernels` section's index, written in its `kernels_version` field: version 2 adds each kernel's argument list (`abi`, RI-GC-007); version 1, without the field, reads with no ABIs. |
+| `KERNELS_SECTION_LEGACY_VERSION` | `u32` | `1` | The version an index without `kernels_version` has. |
+| `COMPILER_ARENA_ALIGNMENT` | `u64` | `256` | Alignment in bytes of every offset in the activation arena (RI-GC-006): a multiple of every element size and of the widest vector access. |
 | `PLAN_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[3, PLAN_SECTION_VERSION]` | The `plan_version` values a reader accepts (RI-ART-006). |
 | `ARTIFACT_MAX_PLAN_BUCKETS` | `usize` | `4096` | Most enumerated buckets one function's Plan may list (RI-GC-015, RI-SEC-002). |
-| `WEIGHTS_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `weights` section, written in its `weights_version` field. Version 2 adds the optional `quantization` record of an MXFP4 weight (RI-ART-005 v0.4); a version 1 manifest is a version 2 manifest without it (RI-ART-014). |
-| `WEIGHTS_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, WEIGHTS_SECTION_VERSION]` | The `weights_version` values a reader accepts (RI-ART-006): version 1 reads as version 2 without any quantization record. |
+| `WEIGHTS_SECTION_VERSION` | `u32` | `3` | Version of the artifact's `weights` section, written in its `weights_version` field. Version 2 adds the optional `quantization` record of an MXFP4 weight (RI-ART-005 v0.4); version 3 adds the optional `quantization.scale_weight` of a weight quantized at build and the optional `precision_excluded` of an eligible weight `--precision` left in its source dtype (RI-GC-004, #36). An older manifest is a version 3 manifest without them (RI-ART-014). |
+| `WEIGHTS_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, 2, WEIGHTS_SECTION_VERSION]` | The `weights_version` values a reader accepts (RI-ART-006): versions 1 and 2 read as version 3 without the fields they lack. |
 | `METADATA_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `metadata` section, written in its `metadata_version` field. Version 2 adds the checkpoint identity's `used_ranges`: the digests of the weight bytes the build read and used (RI-ART-008 as amended); a version 1 section is a version 2 section without any (RI-ART-014). |
 | `METADATA_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, METADATA_SECTION_VERSION]` | The `metadata_version` values a reader accepts: version 1 reads as version 2 with no used ranges. |
+| `CATALOG_SECTION_VERSION` | `u32` | `2` | Version of the artifact's `catalog` section, written in its `catalog_version` field. Version 2 adds each entry's optional resource report (RI-CLI-005); a version 1 section is a version 2 section without any (RI-ART-014). |
+| `CATALOG_SECTION_SUPPORTED_VERSIONS` | `&[u32]` | `&[1, CATALOG_SECTION_VERSION]` | The `catalog_version` values a reader accepts: version 1 reads as version 2 with no resource reports. |
 | `DEFAULT_KV_BLOCK_PRIORITY` | `u8` | `35` | Default eviction priority of a KV block, on the 0 to 100 scale (RI-KVC-006). |
 | `EXIT_CODE_FAILURE` | `i32` | `1` | Process exit code for a failure reported as a structured error (RI-CLI-001). |
 | `EXIT_CODE_USAGE` | `i32` | `2` | Process exit code for invalid command-line usage. |
@@ -130,6 +153,7 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `CPU_DEVICE_NAME` | `&str` | `"cpu reference"` | Device name the CPU reference target reports. |
 | `CPU_DEVICE_DEFAULT_MEMORY_BYTES` | `u64` | `16 * 1024 * 1024 * 1024` | Default memory budget of the CPU reference device, in bytes; allocations beyond it fail like a device out of memory. |
 | `CPU_KERNEL_ID_PREFIX` | `&str` | `"cpu."` | Prefix of every CPU reference kernel id: `cpu.<operator>`. |
+| `CPU_MX_MATMUL_KERNEL_ID` | `&str` | `"cpu.fused.dequantize_matmul_mx"` | The CPU reference kernel of the fused `dequantize → matmul` of an `mx` weight: the packed values and scales read as they are, each block dequantized inside the matmul (RI-MIR-011, RI-KC-003, #36). |
 | `ROCM_HIP_LIBRARY_PATHS` | `&[&str]` | `&[
     "/opt/rocm/lib/libamdhip64.so.7",
     "/usr/lib/x86_64-linux-gnu/libamdhip64.so.7",
@@ -150,6 +174,16 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ROCM_MAX_CODE_OBJECT_BYTES` | `usize` | `256 * 1024 * 1024` | Upper bound on the size of a code object the `ROCm` target parses before handing it to HIP (RI-SEC-002 style bound on an external input). |
 | `ROCM_MAX_METADATA_DEPTH` | `usize` | `16` | Upper bound on the nesting depth of the `NT_AMDGPU_METADATA` `MessagePack` document the `ROCm` target decodes. |
 | `ROCM_MAX_METADATA_ITEMS` | `usize` | `65_536` | Upper bound on the elements of one `MessagePack` map or array in the metadata. |
+| `SAMPLE_MASS_CHUNK` | `usize` | `16` | Weights per chunk of the sampler's mass sums (RI-SMP-001): each chunk is summed in index order and the chunk sums added in order, in `f32`, by the CPU reference and the device sampler alike, so both keep the same tokens and invert a draw to the same one. Every `sample` kernel's `tile_n` is a multiple of it. |
+| `MEMORY_OVERWRITTEN_ROOT` | `&str` | `""` | The root the memory planner gives an activation a launch overwrote in place (RI-GC-006): the name of no activation, so a later read of the overwritten input is refused instead of reading the result's bytes. |
+| `PLAN_SCRATCH_SEPARATOR` | `&str` | `"#scratch"` | What joins a node's name and a scratch index in the arena-offset key of that launch's scratch buffer (RI-GC-006): `<node>#scratch<index>`. |
+| `PLAN_MAX_GRID_EXTENT` | `u32` | `65_535` | Most work groups along one axis of a Plan launch's grid (RI-GC-007): the Kernel IR's grid bound. |
+| `PLAN_MAX_WORK_GROUP_ITEMS` | `u64` | `1024` | Most work items of one Plan launch's work group (RI-GC-007): the AMD flat maximum. |
+| `SAMPLE_SEARCH_RADIX` | `u64` | `16` | Candidates the device sampler measures per pass over a row (RI-SMP-001): its threshold searches fix one base-16 digit per pass. |
+| `SAMPLE_KEY_DIGITS` | `u64` | `8` | Base-16 digits of a sampler key: every key lies below [`SAMPLE_KEY_END`], below 2^32. |
+| `SAMPLE_KEY_END` | `u32` | `0x3F80_0001` | One past the largest sampler key (RI-SMP-001): the key of a weight is its `f32` bits, and the largest weight is 1.0 (`0x3F80_0000`). |
+| `SAMPLE_VALIDATION_MARGIN` | `f32` | `1e-3` | How far the `sample` validation case keeps every draw and top-p mass from a boundary of its row's CDF (RI-SMP-001): the device `exp` is not correctly rounded, so hardware matches the reference exactly only on rows whose token does not change when either moves by this much. |
+| `SAMPLE_VALIDATION_TRIES` | `usize` | `16` | Draws the `sample` validation case tries for a row before it sets the row's top-p to 1 and draws once more (RI-SMP-001). |
 | `DEVICE_DESCRIPTION_MAX_COUNT` | `u32` | `1 << 20` | Upper bound on a count of a device description (compute units, compute dies, cache instances, copy engines, lanes, work-group size): a value past it is refused as a bad reading, not a device (RI-ROC-011, SWG-001 §8.7). |
 | `ROCM_GFX942_SPX_COMPUTE_UNITS` | `u32` | `304` | The compute units an MI300X or MI325X (gfx942) has in SPX mode: 8 XCDs of 38 active CUs, 304 (AMD-CDNA3-WP p. 5, Table 2 p. 23; AMD-INV, row WD-01). The compile-only default of gfx942: a build without a device assumes it; an opened device's own count replaces it (an MI300A has 228). |
 | `ROCM_GFX942_SPX_COMPUTE_DIES` | `u32` | `8` | The compute dies (XCDs) of an MI300X or MI325X in SPX mode: 8 (AMD-CDNA3-WP p. 3). The compile-only default of gfx942. |
@@ -167,7 +201,10 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `ROCM_SYSFS_MAX_ENTRIES` | `usize` | `65_536` | Upper bound on the entries of one sysfs directory the `ROCm` target lists (KFD nodes, a node's caches, its I/O links). |
 | `ROCM_GPU_PAGE_BYTES` | `u64` | `4096` | One GPU page of the `amdgpu` virtual memory manager in bytes (`AMDGPU_GPU_PAGE_SIZE`, Linux `amdgpu_object.h`): the unit `vm_fragment_size` counts in powers of two. |
 | `ROCM_MAX_VM_FRAGMENT_SHIFT` | `u32` | `31` | Upper bound on `vm_fragment_size`: a fragment of `4 KiB << 31` would exceed any device (`amdgpu` accepts 4 to 31). |
+| `ROCM_DEFAULT_LARGE_PAGE_FRAGMENT_BYTES` | `u64` | `2 * 1024 * 1024` | The large-page fragment every device allocation of the `ROCm` target is aligned to when the device description (RI-ROC-011) reports none: 2 MiB, the default VRAM page-table fragment of GC 9.4.3 and 9.5.0 (LINUX-AMDGPU v6.17, `gmc_v9_0.c`; AMD-INV row CE-14). A named default, not an architecture branch: the description's value replaces it (RI-ROC-008). |
 | `CPU_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0005` | Seed of the CPU reference sampler's deterministic generator (RI-TGT-003). |
+| `RUNTIME_SAMPLE_SEED` | `u64` | `0x5EED_0000_0000_0013` | Seed of the executor's uniform draws (RI-SMP-001, RI-RT-010): the per-row draws a device sampler reads (`random` arguments), made on the host when a static batch's iterations are known (a prefill's with its upload, the decode steps' at admission) and kept on the device. |
+| `RUNTIME_CONSTANT_ALIGNMENT` | `u64` | `COMPILER_ARENA_ALIGNMENT` | Alignment in bytes of every constant the executor uploads at load (RI-GC-007): a scalar, rope's table, a layer's KV scales; the arena's. |
 | `RUNTIME_MAX_KV_BLOCKS` | `u32` | `1 << 24` | Most blocks one KV pool may hold (RI-KVC-001): the host's block list costs a few bytes per block, so a pool size that would ask for more is refused as configuration before any allocation. |
 | `KV_TENSORS_PER_LAYER` | `u64` | `2` | K and V: the two pools, and the two tensors of a cache entry, of every layer (RI-KVC-001). |
 | `KV_NULL_SEQ_LEN` | `i64` | `1` | The context length a null row of the slot table reads: one token, of the null block (RI-KVC-001, RI-RT-010). |
@@ -179,8 +216,29 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `SAMPLING_MIN_TEMPERATURE` | `f32` | `1e-3` | The smallest temperature above greedy a request may ask (RI-SMP-001): a positive temperature below it would scale finite logits past `f32`'s range; for sampling that close to greedy, ask for greedy (0). |
 | `SAMPLING_TOP_K_UNLIMITED` | `u32` | `0` | A top-k that keeps every token (RI-SMP-001). |
 | `SAMPLING_TOP_P_ALL` | `f32` | `1.0` | A top-p that keeps every token (RI-SMP-001). |
+| `RUN_DEFAULT_MAX_NEW_TOKENS` | `u32` | `16` | Tokens `rustinfer run` generates when `--max-new-tokens` is not given (RI-CLI-006). |
+| `RUN_BATCH_SIZE` | `u32` | `1` | Requests in the static batch of `rustinfer run`: the one request of the command line (RI-CLI-006, RI-SCH-003). |
+| `MANIFEST_ENVIRONMENT_VARIABLES` | `[&str; 13]` | `[
+    "HSA_ENABLE_SDMA",
+    "HSA_ENABLE_PEER_SDMA",
+    "HSA_FORCE_SDMA_SIZE",
+    "HSA_XNACK",
+    "HSA_CU_MASK",
+    "ROC_GLOBAL_CU_MASK",
+    "GPU_MAX_HW_QUEUES",
+    "HIP_FORCE_DEV_KERNARG",
+    "HIP_HOST_COHERENT",
+    "GPU_FORCE_BLIT_COPY_SIZE",
+    "ROC_P2P_SDMA_SIZE",
+    "AMD_SERIALIZE_KERNEL",
+    "AMD_SERIALIZE_COPY",
+]` | The HIP and HSA environment the version manifest records, set or unset (RI-ROC-015): the variables that change copy, queue, memory or launch behaviour. rustinfer reads them and never sets them. |
+| `MANIFEST_ENVIRONMENT_UNSET` | `&str` | `"unset"` | The manifest's value of an environment variable that is not set (RI-ROC-015). |
+| `MANIFEST_ENVIRONMENT_MAX_VALUE_BYTES` | `usize` | `256` | Bytes of an environment value the manifest records; a longer value is cut at a character boundary and marked (RI-ROC-015, RI-SEC-003). |
 | `RUNTIME_DEFAULT_QUEUE_CAPACITY` | `usize` | `1024` | Requests the executor's queue holds by default before `enqueue` refuses one (RI-RT-003). |
 | `RUNTIME_IDLE_WAIT_MS` | `u64` | `50` | How long the idle executor thread waits on the queue before it looks again, in milliseconds; a request or a stop wakes it at once. |
+| `RUNTIME_PROFILE_DEFAULT_SPANS` | `usize` | `1 << 18` | Spans the profiler holds by default (RI-OBS-007): its buffer is allocated once, before the first iteration, and a span past it is dropped and counted. |
+| `RUNTIME_PROFILE_MAX_SPANS` | `usize` | `1 << 20` | Most spans a profile may hold (RI-OBS-007), which bounds its memory and the size of its trace file (a few hundred bytes a span). |
 | `RUNTIME_THREAD_NAME` | `&str` | `"rustinfer-executor"` | The name of the executor thread. |
 | `ENV_STAGING_BYTES` | `&str` | `"RUSTINFER_STAGING_BYTES"` | Environment variable bounding the host staging memory of the weight streamer, in bytes (RI-WST-002). |
 | `DEFAULT_STAGING_BYTES` | `u64` | `1024 * 1024 * 1024` | The staging budget when `ENV_STAGING_BYTES` is unset: 1 GiB (RI-WST-002). |
@@ -194,11 +252,13 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `CHECKPOINT_CONFIG_FILE` | `&str` | `"config.json"` | The model configuration file of a checkpoint, hashed into the identity (RI-ART-008). |
 | `CHECKPOINT_MAX_CONFIG_BYTES` | `u64` | `16 * 1024 * 1024` | Upper bound on `config.json`, checked before it is read (RI-SEC-003). |
 | `WEIGHT_LAYOUT_ROW_MAJOR` | `&str` | `"row_major"` | The only source layout the weight streamer accepts in this release. |
+| `WEIGHT_LAYOUT_COLUMN_MAJOR` | `&str` | `"column_major"` | The target layout of a weight the layout pass transposes at load: the source's columns contiguous (RI-GC-008). |
 | `WEIGHT_TRANSFORM_IDENTITY` | `&str` | `"identity"` | Manifest transform leaving the source layout unchanged (RI-GC-008). |
 | `WEIGHT_TRANSFORM_TRANSPOSE` | `&str` | `"transpose"` | Manifest transform turning a rank-2 row-major tensor into its transpose. |
 | `WEIGHT_TRANSFORM_PAD` | `&str` | `"pad"` | Manifest transform zero-padding a rank-2 tensor: `pad:<rows>x<cols>`. |
 | `WEIGHT_TRANSFORM_DEQUANTIZE_MX` | `&str` | `"dequantize_mx"` | Manifest transform of the at-load fallback of RI-MIR-011: an `mx` weight (packed `fp4x2` values and `ue8m0` scales) dequantized to bf16 at load. |
 | `WEIGHT_TRANSFORM_QUANTIZE_MX` | `&str` | `"quantize_mx"` | Manifest transform of a weight quantized at build (RI-GC-004): a float source quantized to `fp4x2` values and `ue8m0` scales at load by RI-MIR-012. |
+| `MX_SCALE_WEIGHT_SUFFIX` | `&str` | `".mx_scale"` | Suffix of the Model IR weight holding the `ue8m0` scales of a weight quantized at build (RI-GC-004): `<weight>.mx_scale`. It has no checkpoint source and no manifest entry of its own; the weight's `quantize_mx` transform writes it (RI-ART-005, RI-WST-003). |
 | `WEIGHT_SCALE_DIGEST_SUFFIX` | `&str` | `"#scale"` | Suffix of a scale tensor's key among the weight digests of `--verify-weights`: `<weight>#scale` (RI-WST-005). |
 | `WEIGHT_TRANSFORM_ARGUMENT_SEPARATOR` | `&str` | `":"` | Separator between a transform name and its arguments: `pad:64x128`. |
 | `WEIGHT_TRANSFORM_SHAPE_SEPARATOR` | `&str` | `"x"` | Separator between the row and column arguments of `pad`: `64x128`. |
@@ -228,17 +288,38 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KIR_MAX_BUFFERS` | `usize` | `64` | Upper bound on the buffers (function arguments) of one kernel. |
 | `KIR_MAX_OPERATIONS` | `usize` | `65_536` | Upper bound on the operations of one kernel, loops included. |
 | `KIR_MAX_LOOP_DEPTH` | `usize` | `8` | Upper bound on loop nesting in one kernel. |
+| `KIR_MAX_GRID_AXES` | `usize` | `3` | Axes of the launch grid a kernel may index with `kir.program_id` and `kir.num_programs` (RI-KC-002, #64): `x`, `y`, `z`. |
+| `KIR_MAX_GRID_EXTENT` | `u64` | `65_535` | Upper bound on the work groups along one grid axis a kernel asks for (`KernelModule::grid`): 65 535, a design bound of the Kernel IR, not a device fact: the smallest per-axis grid limit HIP launches accept on any platform it runs on (HIP, `hipModuleLaunchKernel`: `gridDimY` and `gridDimZ` of 65 535 on the CUDA platform; AMD devices report larger), so a grid in bound is a valid launch on every axis and every device. |
+| `KIR_MAX_PENDING_COPIES` | `u64` | `7` | Upper bound on the `pending` attribute of `kir.async_wait`: the most recent asynchronous copies a wait may leave in flight (a software pipeline `pipeline_depth − 2` stages deep, per staged operand). |
 | `KIR_MAX_TEXT_BYTES` | `usize` | `16 * 1024 * 1024` | Upper bound on the byte length of a Kernel IR text entering the MLIR parser; checked before parsing (RI-SEC-003). |
 | `KIR_MAX_DIAGNOSTICS` | `usize` | `16` | Upper bound on the MLIR diagnostics kept for one structured error. |
 | `KIR_MAX_DIAGNOSTIC_BYTES` | `usize` | `1024` | Upper bound on the byte length of one captured MLIR diagnostic. |
 | `KC_MAX_IOTA_LENGTH` | `u64` | `64` | Upper bound on the length of a Kernel IR `iota` tile: below MLIR's threshold of 100 elements for printing a dense constant in hexadecimal, so the builder's text stays the elementwise form MLIR prints (RI-KC-002). |
 | `KC_INTERPRET_MAX_STEPS` | `u64` | `1 << 32` | Upper bound on the work the CPU interpreter of the Kernel IR does for one kernel, in element operations (an MMA weighs m * n * k, any other tile operation its elements), loop iterations included (RI-KC-007). |
 | `KC_HOST_MAX_ELEMENTS` | `u64` | `1 << 31` | Upper bound on the elements of one host buffer the interpreter or the autotuner allocates (RI-KC-007, RI-SEC-003). |
-| `KC_AMD_MAX_TILE_ELEMENTS` | `u64` | `4096` | Upper bound on the elements of one operand tile of a generated kernel on AMD: the R1 lowering keeps every tile whole in every lane (#8), so a larger tile exhausts the register file and the compile time (#9). |
+| `KC_AMD_MAX_FRAGMENT_ELEMENTS` | `u64` | `KC_AMD_REGISTERS_PER_LANE` | Upper bound on the elements of one tile a lane's fragment holds on AMD (RI-KC-019 (a)): the 512 registers a lane may use (`KC_AMD_REGISTERS_PER_LANE`), one 32-bit element each, the R1 bound on the tile search until register-pressure-aware tiling (RI-KC-016 (f), R2); a variant whose live fragments do not fit spills and is discarded by the tuner (RI-KC-006). |
 | `KC_GFX942_LDS_BYTES` | `u64` | `64 * 1024` | LDS bytes per work group of gfx942 (AMD Instinct CDNA3 ISA reference guide, 5-Aug-2025, the §3.1 table: 64 KiB per CU). |
 | `KC_GFX950_LDS_BYTES` | `u64` | `160 * 1024` | LDS bytes per work group of gfx950 (AMD Instinct CDNA4 ISA reference guide, 5-Aug-2025, the §3.1 table: 160 KiB per CU). |
 | `KC_AMD_WAVE_LANES` | `u64` | `64` | Lanes of an AMD Instinct wave (wave64). |
-| `KC_AMD_VECTOR_BYTES` | `u64` | `16` | The widest global access of one AMD lane in bytes (`dwordx4`). |
+| `KC_DEFAULT_WAVES` | `u64` | `4` | Waves of one work group when the compiler settings name none (#64): the AMD lowering distributes each tile over `4 x 64` lanes. |
+| `KC_MAX_WAVES` | `u64` | `16` | The most waves of one work group a setting may ask for: 16 waves of 64 lanes is the 1024 work items of the largest AMD work group. |
+| `KC_TUNE_WAVES` | `[u64; 4]` | `[1, 2, 4, 8]` | The waves of a work group the tuner tries around the fastest point of a space (RI-KC-017): 1 to 8, the default 4 among them; 16 stays a setting a catalog may name but is not searched (half the register file per lane, so the R1 tiles rarely fit). |
+| `KC_MAX_WAVES_PER_EU` | `u64` | `16` | The largest minimum occupancy (waves per SIMD-equivalent) the `waves_per_eu` setting may ask for (RI-KC-022, #85): the most any backend target accepts; one above its own target's limit is ignored by the backend, so the tuner measures the default instead. |
+| `KC_TUNE_WAVES_PER_EU` | `[u64; 5]` | `[0, 1, 2, 3, 4]` | The `waves_per_eu` values the tuner tries (RI-KC-017, #85): the backend's choice (0) and a minimum occupancy of 1 to 4 waves. |
+| `KC_SCHED_STRATEGIES` | `u64` | `5` | Backend scheduling strategies the `sched_strategy` setting selects (RI-KC-022, #85): 1 to this count, 0 the backend's default. |
+| `KC_AMD_VECTOR_BYTES` | `u64` | `16` | The widest global access of one AMD lane in bytes: `GLOBAL_LOAD_DWORDX4` and `BUFFER_LOAD_DWORDX4` (AMD-FNUZ and AMD-CDNA4-ISA, the global and buffer instruction lists: 4 dwords). |
+| `KC_AMD_SHARED_VECTOR_BYTES` | `u64` | `16` | The widest LDS access of one AMD lane in bytes: `DS_READ_B128` and `DS_WRITE_B128` (AMD-FNUZ and AMD-CDNA4-ISA, the LDS instructions). |
+| `KC_GFX942_LDS_BANKS` | `u64` | `32` | LDS banks of gfx942: 32 (AMD-FNUZ, sections 2.2.1 and 3.6.5). |
+| `KC_GFX950_LDS_BANKS` | `u64` | `64` | LDS banks of gfx950: 64 (AMD-CDNA4-ISA, sections 2.2.1 and 3.6.5). |
+| `KC_AMD_LDS_BANK_BYTES` | `u64` | `4` | Bytes of one LDS bank's word on gfx942 and gfx950: a dword (AMD-FNUZ and AMD-CDNA4-ISA, sections 2.2.1 and 3.6.5). |
+| `KC_AMD_TRANSPOSED_READ_LANES` | `u64` | `16` | Lanes of one group of a transposed LDS read on gfx950 (`ds_read_b64_tr_b16`, AMD-CDNA4-ISA section 11.4): 16. The lane permutation the lowering assumes (lane `l` of a group gets element `l mod 4` of the reads of lanes `l / 4 + 4 e`) is UNVERIFIED on hardware: the GPU test request of #64 checks it in isolation. |
+| `KC_AMD_TRANSPOSED_READ_ELEMENTS` | `u64` | `4` | Elements one lane reads, and gets, in a transposed LDS read on gfx950: 4 of 16 bits (AMD-CDNA4-ISA section 11.4; see `KC_AMD_TRANSPOSED_READ_LANES`). |
+| `KC_TRANSPOSED_READ_BITS` | `u64` | `16` | The element width in bits the matrix op reads transposed from LDS: the 16-bit element of `ds_read_b64_tr_b16` (AMD-CDNA4-ISA section 11.4), one of `KC_GFX950_TRANSPOSED_LDS_READ_BITS`. |
+| `KC_AMD_REGISTERS_PER_LANE` | `u64` | `512` | Vector registers one lane may use on gfx942 and gfx950, architectural and accumulation registers together: 512, one unified file of 256 VGPRs and 256 AGPRs (AMD-FNUZ and AMD-CDNA4-ISA, section 3.6.4, VGPR and AGPR allocation; AMDGPU-ABI, `compute_pgm_rsrc1` of GFX90A, GFX942 and GFX950: `vgprs_used 0..512`; the value of `ROCM_MAX_VGPRS`). |
+| `KC_GFX942_DIRECT_TO_LDS_WIDTHS` | `[u64; 3]` | `[1, 2, 4]` | The per-lane direct-to-LDS load widths of gfx942 in bytes: `GLOBAL_LOAD_LDS_UBYTE`/`USHORT`/`DWORD` (AMD-FNUZ section 12.15); LLVM-AMDGPU-DMA and `IntrinsicsAMDGPU.td` ("Data byte size: 1/2/4 (/12/16 for gfx950)"). |
+| `KC_GFX950_DIRECT_TO_LDS_WIDTHS` | `[u64; 5]` | `[1, 2, 4, 12, 16]` | The per-lane direct-to-LDS load widths of gfx950 in bytes: gfx942's and `GLOBAL_LOAD_LDS_DWORDX3`/`DWORDX4` (AMD-CDNA4-ISA section 10.1; LLVM-AMDGPU-DMA). |
+| `KC_GFX950_TRANSPOSED_LDS_READ_BITS` | `[u64; 4]` | `[4, 6, 8, 16]` | The element widths in bits gfx950 reads transposed from LDS: `DS_READ_B64_TR_B4`, `_TR_B8`, `_TR_B16` and `DS_READ_B96_TR_B6` (AMD-CDNA4-ISA, the LDS instructions; LLVM 23 `ROCDLOps.td`, "LDS transpose intrinsics (available in GFX950)": `rocdl.ds.read.tr4.b64`, `tr6.b96`, `tr8.b64`, `tr16.b64`). gfx942 has none. |
+| `KC_AMD_BUFFER_RSRC_FLAGS` | `u32` | `(7 << 12) | (4 << 15)` | The flags word (word 3) of a raw buffer resource on gfx942 and gfx950: `DST_SEL`/`NUM_FORMAT`/`DATA_FORMAT` for 32-bit untyped access, `(7 << 12) | (4 << 15)` = 159 744, the word MLIR 23's `amdgpu.fat_raw_buffer_cast` lowering builds for gfx9 (AMD-FNUZ and AMD-CDNA4-ISA, the buffer resource table, §9.1.8). |
 | `KC_FP8_E4M3_MAX` | `f64` | `448.0` | The largest finite value of fp8 E4M3 (OCP): the quantize kernels' scale denominator (OFP8 Rev 1.1 §5.1). |
 | `KC_FP8_E4M3_FNUZ_MAX` | `f64` | `240.0` | The largest finite value of fp8 E4M3 FNUZ (AMD-FNUZ). |
 | `KC_CATALOG_FORMAT` | `&str` | `"rustinfer-kernel-catalog"` | The `format` of a tuning catalog file (RI-KC-006, RI-ART-010). |
@@ -247,11 +328,13 @@ constants are defined. The requirement id in a note is the one the source cites.
 | `KC_CATALOG_MAX_ENTRIES` | `usize` | `65_536` | Upper bound on the entries of one catalog file. |
 | `KC_SHAPES_MAX_BYTES` | `usize` | `1024 * 1024` | Upper bound on the byte length of a `tune --shapes` file (RI-SEC-003). |
 | `KC_SHAPES_MAX_ENTRIES` | `usize` | `4096` | Upper bound on the entries of a shapes file. |
-| `KC_PASS_PIPELINE_VERSION` | `u32` | `1` | The version of the Kernel IR to MLIR to LLVM pass pipeline a catalog entry was compiled with (RI-KC-006, RI-ART-010; SRS v0.4.11). Bumped whenever a pass or pipeline change can change a kernel's code or speed: the entries of another version are refused. |
+| `KC_PASS_PIPELINE_VERSION` | `u32` | `7` | The version of the Kernel IR to MLIR to LLVM pass pipeline a catalog entry was compiled with (RI-KC-006, RI-ART-010; SRS v0.4.11). Bumped whenever a pass or pipeline change can change a kernel's code or speed, or a change of how the tuner times a kernel changes its recorded cost: the entries of another version are refused. 5: loads from read-only arguments through the constant address space (#86). 6: f32 division by the native reciprocal, `exp` as `exp2` (#84). 7: costs timed from graph replays, not from host-issued launches (#146). |
 | `KC_TUNE_SEED` | `u64` | `9` | The seed of the tuner's validation inputs. |
 | `KC_TUNE_MAX_DEVICES` | `u32` | `64` | The most devices one `tune --devices` run tunes on at once (#123): the bound of the device list a run accepts. |
-| `KC_TUNE_LAUNCHES` | `u32` | `10` | Timed launches per timing sample. |
+| `KC_TUNE_LAUNCHES` | `u32` | `10` | Timed launches per timing sample: on `ROCm` the first count N of the graph pair (N and 2N launches, #146), doubled while the pair is too short (`KC_TUNE_GRAPH_MIN_DEVICE_US`). |
+| `KC_TUNE_GRAPH_MIN_DEVICE_US` | `f64` | `50.0` | The least device time, in microseconds, of the longer replay (2N launches) of a graph timing sample (#146): N doubles from `KC_TUNE_LAUNCHES` until `2 × (T(2N) − T(N))`, the 2N launches' own device time, reaches it. 50 µs keeps a 1 µs timer or dispatch jitter (event timestamps resolve far finer; the jitter between two replays is the larger term) to at most 2% of the measured difference, and is 3× the 16.7 µs host issue floor GPU test #144 measured, so the smallest kernels (1 to 3 µs on MI350X) run 16 to 50 times back to back per replay. |
+| `KC_TUNE_GRAPH_MAX_LAUNCHES` | `u32` | `256` | The most launches N of a graph timing sample's shorter replay (#146): the longer one queues 2N = 512 kernel nodes behind the stream gate. The bound keeps them, with their barrier packets, under the packets of one `ROCm` hardware queue (an assumption GPU test #148 checks: a full queue would make the host wait on the closed stream, which the watchdog catches and logs); at N = 256 the doubling stops for kernels under about 0.1 µs. |
+| `KC_TUNE_GATE_WATCHDOG_MS` | `u64` | `1000` | Milliseconds after which the stream gate's watchdog opens the gate itself (#146): queueing the gated sequence is host work of at most a few milliseconds (2 × `KC_TUNE_GRAPH_MAX_LAUNCHES` nodes), so a gate still closed after a second means a HIP call blocked on the closed stream; the watchdog opens it so the stream cannot deadlock, and the sample is logged as `timing=graph_ungated`. |
 | `KC_TUNE_SAMPLES` | `u32` | `5` | Timing samples per variant; the cost is their median (review of #68). |
 | `KC_TUNE_VARIANT_TIMEOUT_MS` | `u64` | `10_000` | The wall-clock limit of one timing sample (`KC_TUNE_LAUNCHES` launches) in milliseconds; a slower variant is rejected (review of #68). |
 | `KC_TUNE_WARMUP_LAUNCHES` | `u32` | `2` | Untimed launches before the timed ones. |
-| `KC_TUNE_WORK_GROUP` | `u32` | `64` | Work items of the one work group a tuned kernel launches with (one wave: the R1 lowering keeps every tile whole in every lane). |

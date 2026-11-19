@@ -8,7 +8,7 @@ summary: The stable error codes of the structured failure line and the error var
 # Error codes
 
 Generated from `crates/rustinfer-core/src/error.rs` and each crate's
-`src/error.rs` at commit 8f1c543 2026-11-17. A failure leaves the command as one line on
+`src/error.rs` at commit 53af206 2026-11-19. A failure leaves the command as one line on
 stderr, `error=<code> component=<name> detail="<text>"`, and the code column
 below is the wire value. The source marks the enum `#[non_exhaustive]` and says
 a class may be added but never renamed (SWG-001 §14.4).
@@ -54,12 +54,14 @@ and component.
 | `rustinfer-artifact` | `artifact` | `HashMismatch` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `MalformedSection` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `UnsupportedSectionVersion` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `UnsupportedRequirement` | `unsupported` |
 | `rustinfer-artifact` | `artifact` | `ModelIr` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `InvalidKernel` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `InvalidField` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `Inconsistent` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `DuplicateCatalogKey` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `OutsideProfile` | `delegated` |
+| `rustinfer-artifact` | `artifact` | `NoBucket` | `delegated` |
 | `rustinfer-artifact` | `artifact` | `NotImplemented` | `not_implemented` |
 | `rustinfer-artifact` | `artifact` | `CheckpointMismatch` | `delegated` |
 | `rustinfer-cli` | `cli` | `Usage` | `usage` |
@@ -68,9 +70,25 @@ and component.
 | `rustinfer-cli` | `cli` | `NotADirectory` | `delegated` |
 | `rustinfer-cli` | `cli` | `NotWritable` | `delegated` |
 | `rustinfer-cli` | `cli` | `PrebuiltRequired` | `delegated` |
-| `rustinfer-cli` | `cli` | `NotAmd` | `unsupported` |
+| `rustinfer-cli` | `cli` | `Reserved` | `not_implemented` |
+| `rustinfer-cli` | `cli` | `Generation` | `device` |
+| `rustinfer-cli` | `cli` | `NoResponse` | `delegated` |
+| `rustinfer-cli` | `cli` | `NotAmd` | `delegated` |
 | `rustinfer-cli` | `cli` | `TuneIncomplete` | `incomplete` |
-| `rustinfer-cli` | `cli` | `NothingToTune` | `invalid` |
+| `rustinfer-cli` | `cli` | `NothingToTune` | `delegated` |
+| `rustinfer-cli` | `cli` | `ActivationsUnsupported` | `delegated` |
+| `rustinfer-cli` | `cli` | `NoCapabilities` | `delegated` |
+| `rustinfer-cli` | `cli` | `PrecisionConflict` | `delegated` |
+| `rustinfer-cli` | `cli` | `FileTooLarge` | `delegated` |
+| `rustinfer-cli` | `cli` | `InvalidProfile` | `delegated` |
+| `rustinfer-cli` | `cli` | `NotUtf8` | `delegated` |
+| `rustinfer-cli` | `cli` | `Report` | `delegated` |
+| `rustinfer-cli` | `cli` | `Stdout` | `io` |
+| `rustinfer-cli` | `cli` | `CatalogTarget` | `delegated` |
+| `rustinfer-cli` | `cli` | `NoGeneratedConfig` | `unsupported` |
+| `rustinfer-cli` | `cli` | `Frontend` | `delegated` |
+| `rustinfer-cli` | `cli` | `Sluice` | `delegated` |
+| `rustinfer-cli` | `cli` | `ModelIr` | `delegated` |
 | `rustinfer-cli` | `cli` | `Settings` | `delegated` |
 | `rustinfer-cli` | `cli` | `Compiler` | `delegated` |
 | `rustinfer-cli` | `cli` | `Artifact` | `delegated` |
@@ -79,6 +97,21 @@ and component.
 | `rustinfer-cli` | `cli` | `Target` | `delegated` |
 | `rustinfer-cli` | `cli` | `Planner` | `delegated` |
 | `rustinfer-compiler` | `compiler` | `NotImplemented` | `not_implemented` |
+| `rustinfer-compiler` | `compiler` | `ModelIr` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Profile` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Shape` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `UnsupportedCombination` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Precision` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Activations` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `ScaleName` | `invalid` |
+| `rustinfer-compiler` | `compiler` | `NoKernel` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `KernelMismatch` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Binding` | `unsupported` |
+| `rustinfer-compiler` | `compiler` | `Abi` | `internal` |
+| `rustinfer-compiler` | `compiler` | `TooLarge` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Target` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Kernel` | `delegated` |
+| `rustinfer-compiler` | `compiler` | `Artifact` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `Io` | `io` |
 | `rustinfer-frontend` | `frontend` | `TooLarge` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `MalformedConfig` | `delegated` |
@@ -103,27 +136,28 @@ and component.
 | `rustinfer-frontend` | `frontend` | `ArchitectureMismatch` | `internal` |
 | `rustinfer-frontend` | `frontend` | `Mir` | `delegated` |
 | `rustinfer-frontend` | `frontend` | `NotImplemented` | `not_implemented` |
-| `rustinfer-kc` | `kc` | `InvalidName` | `delegated` |
-| `rustinfer-kc` | `kc` | `InvalidType` | `delegated` |
-| `rustinfer-kc` | `kc` | `UnknownValue` | `delegated` |
-| `rustinfer-kc` | `kc` | `ValueOutOfScope` | `delegated` |
-| `rustinfer-kc` | `kc` | `TypeMismatch` | `delegated` |
-| `rustinfer-kc` | `kc` | `ShapeMismatch` | `delegated` |
-| `rustinfer-kc` | `kc` | `TooLarge` | `delegated` |
-| `rustinfer-kc` | `kc` | `Mlir` | `delegated` |
-| `rustinfer-kc` | `kc` | `Unsupported` | `delegated` |
-| `rustinfer-kc` | `kc` | `Backend` | `delegated` |
-| `rustinfer-kc` | `kc` | `Interpret` | `delegated` |
-| `rustinfer-kc` | `kc` | `InvalidParameter` | `delegated` |
-| `rustinfer-kc` | `kc` | `InvalidInput` | `delegated` |
-| `rustinfer-kc` | `kc` | `UnknownGenerator` | `not_found` |
-| `rustinfer-kc` | `kc` | `Reference` | `internal` |
-| `rustinfer-kc` | `kc` | `Catalog` | `delegated` |
-| `rustinfer-kc` | `kc` | `WrongArchitecture` | `unsupported` |
-| `rustinfer-kc` | `kc` | `Shapes` | `invalid` |
-| `rustinfer-kc` | `kc` | `Device` | `device` |
-| `rustinfer-kc` | `kc` | `MlirUnavailable` | `delegated` |
-| `rustinfer-kc` | `kc` | `NotImplemented` | `not_implemented` |
+| `rustinfer-kir` | `kc` | `InvalidName` | `delegated` |
+| `rustinfer-kir` | `kc` | `InvalidType` | `delegated` |
+| `rustinfer-kir` | `kc` | `UnknownValue` | `delegated` |
+| `rustinfer-kir` | `kc` | `ValueOutOfScope` | `delegated` |
+| `rustinfer-kir` | `kc` | `TypeMismatch` | `delegated` |
+| `rustinfer-kir` | `kc` | `ShapeMismatch` | `delegated` |
+| `rustinfer-kir` | `kc` | `TooLarge` | `delegated` |
+| `rustinfer-kir` | `kc` | `Mlir` | `delegated` |
+| `rustinfer-kir` | `kc` | `Unsupported` | `delegated` |
+| `rustinfer-kir` | `kc` | `Backend` | `delegated` |
+| `rustinfer-kir` | `kc` | `Interpret` | `delegated` |
+| `rustinfer-kir` | `kc` | `InvalidParameter` | `delegated` |
+| `rustinfer-kir` | `kc` | `InvalidInput` | `delegated` |
+| `rustinfer-kir` | `kc` | `InvalidRealInput` | `delegated` |
+| `rustinfer-kir` | `kc` | `UnknownGenerator` | `not_found` |
+| `rustinfer-kir` | `kc` | `Reference` | `delegated` |
+| `rustinfer-kir` | `kc` | `Catalog` | `delegated` |
+| `rustinfer-kir` | `kc` | `WrongArchitecture` | `unsupported` |
+| `rustinfer-kir` | `kc` | `Shapes` | `invalid` |
+| `rustinfer-kir` | `kc` | `Device` | `device` |
+| `rustinfer-kir` | `kc` | `MlirUnavailable` | `delegated` |
+| `rustinfer-kir` | `kc` | `NotImplemented` | `not_implemented` |
 | `rustinfer-mir` | `mir` | `Malformed` | `delegated` |
 | `rustinfer-mir` | `mir` | `TooLarge` | `delegated` |
 | `rustinfer-mir` | `mir` | `UnsupportedVersion` | `delegated` |
@@ -223,6 +257,9 @@ and component.
 | `rustinfer-target` | `target` | `UnknownBuffer` | `delegated` |
 | `rustinfer-target` | `target` | `OutOfBounds` | `delegated` |
 | `rustinfer-target` | `target` | `BufferBusy` | `delegated` |
+| `rustinfer-target` | `target` | `UnknownStaging` | `delegated` |
+| `rustinfer-target` | `target` | `StagingOutOfBounds` | `delegated` |
+| `rustinfer-target` | `target` | `StagingBusy` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownStream` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownEvent` | `delegated` |
 | `rustinfer-target` | `target` | `UnknownKernel` | `delegated` |

@@ -231,15 +231,46 @@
    "page": "design.html"
   },
   {
+   "id": "rustinfer-kir",
+   "view": "library",
+   "layer": "kernels",
+   "desc": "Kernel IR: the kir dialect, the typed builder every generator emits through, the program it records, the target capability description and the compiler settings. Names no architecture, instruction or lowering (RI-KC-014, ADR-011).",
+   "types": [
+    "KernelBuilder",
+    "TileProgram",
+    "Capabilities",
+    "CompilerSettings"
+   ],
+   "issues": [
+    7,
+    9
+   ],
+   "page": "kernel-compiler.html"
+  },
+  {
+   "id": "rustinfer-generators",
+   "view": "library",
+   "layer": "kernels",
+   "desc": "The R1 kernel generators: Rust functions that take a parameter struct and emit Kernel IR through the builder, each with a documented parameter space; architecture-agnostic, depending only on rustinfer-kir, rustinfer-core and rustinfer-mir (RI-KC-001, RI-KC-005, ADR-011).",
+   "types": [
+    "Generator",
+    "Parameters"
+   ],
+   "issues": [
+    9
+   ],
+   "page": "kernel-compiler.html"
+  },
+  {
    "id": "rustinfer-kc",
    "view": "library",
    "layer": "kernels",
-   "desc": "The kernel compiler: the Kernel IR dialect, its builder, and the in-process lowering through MLIR/LLVM 23 to gfx942 and gfx950 code objects, linked by lld through a C++ shim; generators and the autotuner to come.",
+   "desc": "The kernel compiler: the passes, the CPU reference and validation, the in-process lowering through MLIR/LLVM 23 to gfx942 and gfx950 code objects linked by lld, the catalog and the autotuner (`tune`).",
    "types": [
-    "KernelBuilder",
     "KernelModule",
-    "KernelContext",
     "CodeObject",
+    "Catalog",
+    "Tuner",
     "OpSpec"
    ],
    "issues": [
